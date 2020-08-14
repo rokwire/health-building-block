@@ -4564,6 +4564,9 @@ var doc = `{
                 "date_added": {
                     "type": "integer"
                 },
+                "expirestamp": {
+                    "type": "integer"
+                },
                 "tek": {
                     "type": "string"
                 },
@@ -4610,6 +4613,9 @@ var doc = `{
                     "timestamp"
                 ],
                 "properties": {
+                    "expirestamp": {
+                        "type": "integer"
+                    },
                     "tek": {
                         "type": "string"
                     },

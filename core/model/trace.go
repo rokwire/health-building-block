@@ -19,7 +19,8 @@ package model
 
 //TraceExposure represents contact tracing exposure entity
 type TraceExposure struct {
-	DateAdded int64  `json:"date_added" bson:"date_added"`
-	Timestamp int64  `json:"timestamp" bson:"timestamp"`
-	TEK       string `json:"tek" bson:"tek"`
+	DateAdded   int64  `json:"date_added" bson:"date_added"`
+	Timestamp   int64  `json:"timestamp" bson:"timestamp"`
+	TEK         string `json:"tek" bson:"tek"`
+	Expirestamp *int64 `json:"expirestamp" bson:"expirestamp"`
 } // @name TraceExposure

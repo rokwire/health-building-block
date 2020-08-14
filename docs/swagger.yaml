@@ -447,6 +447,8 @@ definitions:
     properties:
       date_added:
         type: integer
+      expirestamp:
+        type: integer
       tek:
         type: string
       timestamp:
@@ -474,6 +476,8 @@ definitions:
   addTraceReportRequest:
     items:
       properties:
+        expirestamp:
+          type: integer
         tek:
           type: string
         timestamp:

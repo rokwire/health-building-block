@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Update Trace APIs. [#2](https://github.com/rokwire/health-building-block/issues/2)
 - Update README. 
 
 ## [1.9.0] - 2020-08-12

@@ -1821,8 +1821,9 @@ func (h ApisHandler) GetAccessRuleByCounty(w http.ResponseWriter, r *http.Reques
 }
 
 type addTraceReportRequest []struct {
-	Timestamp int64  `json:"timestamp" validate:"required"`
-	TEK       string `json:"tek" validate:"required"`
+	Timestamp   int64  `json:"timestamp" validate:"required"`
+	TEK         string `json:"tek" validate:"required"`
+	Expirestamp *int64 `json:"expirestamp"`
 } // @name addTraceReportRequest
 
 //AddTraceReport adds a trace report
@@ -1863,9 +1864,8 @@ func (h ApisHandler) AddTraceReport(w http.ResponseWriter, r *http.Request) {
 	//construct the trace exposure items
 	var traceExposures []model.TraceExposure
 	now := time.Now().UnixNano() / 1000000 //we need milliseconds
-	log.Println(now)
 	for _, item := range requestData {
-		traceExposure := model.TraceExposure{DateAdded: now, Timestamp: item.Timestamp, TEK: item.TEK}
+		traceExposure := model.TraceExposure{DateAdded: now, Timestamp: item.Timestamp, TEK: item.TEK, Expirestamp: item.Expirestamp}
 		traceExposures = append(traceExposures, traceExposure)
 	}
 

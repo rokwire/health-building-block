@@ -447,6 +447,8 @@ definitions:
     properties:
       date_added:
         type: integer
+      expirestamp:
+        type: integer
       tek:
         type: string
       timestamp:
@@ -474,6 +476,8 @@ definitions:
   addTraceReportRequest:
     items:
       properties:
+        expirestamp:
+          type: integer
         tek:
           type: string
         timestamp:
@@ -1130,7 +1134,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 1.9.0
+  version: 1.10.0
 paths:
   /admin/access-rules:
     get:

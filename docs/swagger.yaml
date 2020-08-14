@@ -1,0 +1,3569 @@
+basePath: /health
+definitions:
+  ACounty:
+    properties:
+      country:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      state_province:
+        type: string
+    type: object
+  ARule:
+    properties:
+      county_id:
+        type: string
+      id:
+        type: string
+      priority:
+        type: integer
+      results_statuses:
+        items:
+          $ref: '#/definitions/ATestTypeResultCountyStatus'
+        type: array
+      test_type_id:
+        type: string
+    type: object
+  ATestType:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      priority:
+        type: integer
+    type: object
+  ATestTypeResultCountyStatus:
+    properties:
+      county_status_id:
+        type: string
+      test_type_result_id:
+        type: string
+    type: object
+  AccessRule:
+    properties:
+      county_id:
+        type: string
+      id:
+        type: string
+      rules:
+        items:
+          $ref: '#/definitions/AccessRuleCountyStatus'
+        type: array
+    type: object
+  AccessRuleCountyStatus:
+    properties:
+      county_status_id:
+        type: string
+      value:
+        type: string
+    type: object
+  CTest:
+    properties:
+      date_created:
+        type: string
+      date_updated:
+        type: string
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      id:
+        type: string
+      processed:
+        type: boolean
+      provider_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  County:
+    properties:
+      country:
+        type: string
+      county_statuses:
+        items:
+          $ref: '#/definitions/CountyStatus'
+        type: array
+      guidelines:
+        items:
+          $ref: '#/definitions/Guideline'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      state_province:
+        type: string
+    type: object
+  CountyStatus:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  FAQ:
+    properties:
+      dateUpdated:
+        type: string
+      general:
+        items:
+          $ref: '#/definitions/FAQGeneral'
+        type: array
+      sections:
+        items:
+          $ref: '#/definitions/FAQSection'
+        type: array
+    type: object
+  FAQGeneral:
+    properties:
+      description:
+        type: string
+      link:
+        type: string
+      title:
+        type: string
+    type: object
+  FAQQuestion:
+    properties:
+      description:
+        type: string
+      display_order:
+        type: integer
+      id:
+        type: string
+      link:
+        type: string
+      title:
+        type: string
+    type: object
+  FAQSection:
+    properties:
+      display_order:
+        type: integer
+      id:
+        type: string
+      questions:
+        items:
+          $ref: '#/definitions/FAQQuestion'
+        type: array
+      title:
+        type: string
+    type: object
+  GetUserByShibbolethUINResponse:
+    properties:
+      consent:
+        type: boolean
+      public_key:
+        type: string
+    type: object
+  Guideline:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/GuidelineItem'
+        type: array
+      name:
+        type: string
+    type: object
+  GuidelineItem:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      type:
+        type: string
+    type: object
+  History:
+    properties:
+      date:
+        type: string
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      id:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  Location:
+    properties:
+      address_1:
+        type: string
+      address_2:
+        type: string
+      available_tests:
+        items:
+          type: string
+        type: array
+      city:
+        type: string
+      contact:
+        type: string
+      country:
+        type: string
+      county_id:
+        type: string
+      days_of_operation:
+        items:
+          $ref: '#/definitions/OperationDay'
+        type: array
+      id:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      notes:
+        type: string
+      provider_id:
+        type: string
+      state:
+        type: string
+      url:
+        type: string
+      zip:
+        type: string
+    type: object
+  ManualTest:
+    properties:
+      county_id:
+        type: string
+      date:
+        type: string
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      history_id:
+        type: string
+      id:
+        type: string
+      location_id:
+        type: string
+      status:
+        type: string
+      user:
+        $ref: '#/definitions/User'
+        type: object
+    type: object
+  ManualTestImage:
+    properties:
+      encrypted_image_blob:
+        type: string
+      encrypted_image_key:
+        type: string
+    type: object
+  News:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      htmlContent:
+        type: string
+      id:
+        type: string
+      link:
+        type: string
+      title:
+        type: string
+    type: object
+  OperationDay:
+    properties:
+      close_time:
+        type: string
+      name:
+        type: string
+      open_time:
+        type: string
+    type: object
+  PUser:
+    properties:
+      consent:
+        type: boolean
+      public_key:
+        type: string
+      uin:
+        type: string
+    type: object
+  Provider:
+    properties:
+      available_mechanisms:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      manual_test:
+        type: boolean
+      provider_name:
+        type: string
+    type: object
+  Resource:
+    properties:
+      display_order:
+        type: integer
+      icon:
+        type: string
+      id:
+        type: string
+      link:
+        type: string
+      title:
+        type: string
+    type: object
+  Rule:
+    properties:
+      priority:
+        type: integer
+      results:
+        items:
+          $ref: '#/definitions/TestTypeResultCountyStatus'
+        type: array
+      test_type:
+        type: string
+      test_type_id:
+        type: string
+    type: object
+  Status:
+    properties:
+      app_version:
+        type: string
+      date:
+        type: string
+      date_updated:
+        type: string
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  Symptom:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  SymptomGroup:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      symptoms:
+        items:
+          $ref: '#/definitions/Symptom'
+        type: array
+    type: object
+  SymptomRule:
+    properties:
+      gr1_count:
+        type: integer
+      gr2_count:
+        type: integer
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/SymptomRuleItem'
+        type: array
+    type: object
+  SymptomRuleItem:
+    properties:
+      county_status_id:
+        type: string
+      gr1:
+        type: boolean
+      gr2:
+        type: boolean
+      health_status:
+        type: string
+      next_step:
+        type: string
+    type: object
+  TestType:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      priority:
+        type: integer
+      results:
+        items:
+          $ref: '#/definitions/TestTypeResult'
+        type: array
+    type: object
+  TestTypeResult:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      next_step:
+        type: string
+      next_step_offset:
+        type: integer
+      result_expires_offset:
+        type: integer
+    type: object
+  TestTypeResultCountyStatus:
+    properties:
+      health_status:
+        type: string
+      health_status_id:
+        type: string
+      result:
+        type: string
+      result_id:
+        type: string
+      result_next_step:
+        type: string
+      result_next_step_time_interval:
+        type: integer
+    type: object
+  TraceExposure:
+    properties:
+      date_added:
+        type: integer
+      tek:
+        type: string
+      timestamp:
+        type: integer
+    type: object
+  User:
+    properties:
+      consent:
+        type: boolean
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      exposure_notification:
+        type: boolean
+      id:
+        type: string
+      public_key:
+        type: string
+      re_post:
+        type: boolean
+      uuid:
+        type: string
+    type: object
+  addTraceReportRequest:
+    items:
+      properties:
+        tek:
+          type: string
+        timestamp:
+          type: integer
+      required:
+      - tek
+      - timestamp
+      type: object
+    type: array
+  createAccessRuleItemRequest:
+    properties:
+      county_status_id:
+        type: string
+      value:
+        type: string
+    required:
+    - county_status_id
+    - value
+    type: object
+  createAccessRuleRequest:
+    properties:
+      county_id:
+        type: string
+      rules:
+        items:
+          $ref: '#/definitions/createAccessRuleItemRequest'
+        type: array
+    required:
+    - county_id
+    - rules
+    type: object
+  createActionRequest:
+    properties:
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      provider_id:
+        type: string
+      user_id:
+        type: string
+    required:
+    - encrypted_blob
+    - encrypted_key
+    - provider_id
+    - user_id
+    type: object
+  createCTestRequest:
+    properties:
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      provider_id:
+        type: string
+      uin:
+        type: string
+    required:
+    - encrypted_blob
+    - encrypted_key
+    - provider_id
+    - uin
+    type: object
+  createCountyRequest:
+    properties:
+      country:
+        type: string
+      name:
+        type: string
+      state_province:
+        type: string
+    required:
+    - country
+    - name
+    - state_province
+    type: object
+  createCountyStatusRequest:
+    properties:
+      county_id:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  createFAQQuestionRequest:
+    properties:
+      description:
+        type: string
+      display_order:
+        type: integer
+      title:
+        type: string
+    type: object
+  createFAQRequest:
+    properties:
+      display_order:
+        type: integer
+      question:
+        $ref: '#/definitions/createFAQQuestionRequest'
+        type: object
+      section:
+        type: string
+    type: object
+  createGuidelineItemsRequest:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      type:
+        type: string
+    required:
+    - description
+    - icon
+    - type
+    type: object
+  createGuidelineRequest:
+    properties:
+      county_id:
+        type: string
+      description:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/createGuidelineItemsRequest'
+        type: array
+      name:
+        type: string
+    required:
+    - items
+    - name
+    type: object
+  createHistoryRequest:
+    properties:
+      county_id:
+        type: string
+      date:
+        type: string
+      encrypted_blob:
+        type: string
+      encrypted_image_blob:
+        type: string
+      encrypted_image_key:
+        type: string
+      encrypted_key:
+        type: string
+      location_id:
+        type: string
+      type:
+        type: string
+    required:
+    - date
+    - encrypted_blob
+    - encrypted_key
+    - type
+    type: object
+  createLocationRequest:
+    properties:
+      address_1:
+        type: string
+      address_2:
+        type: string
+      available_tests:
+        items:
+          type: string
+        type: array
+      city:
+        type: string
+      contact:
+        type: string
+      country:
+        type: string
+      county_id:
+        type: string
+      days_of_operation:
+        items:
+          $ref: '#/definitions/locationOperationDayRequest'
+        type: array
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      notes:
+        type: string
+      provider_id:
+        type: string
+      state:
+        type: string
+      url:
+        type: string
+      zip:
+        type: string
+    required:
+    - available_tests
+    - county_id
+    - latitude
+    - longitude
+    - name
+    - provider_id
+    type: object
+  createNewsRequest:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      htmlContent:
+        type: string
+      title:
+        type: string
+    type: object
+  createOrUpdateStatusRequest:
+    properties:
+      date:
+        type: string
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+    required:
+    - encrypted_blob
+    - encrypted_key
+    type: object
+  createProviderRequest:
+    properties:
+      available_mechanisms:
+        items:
+          type: string
+        type: array
+      manual_test:
+        type: boolean
+      provider_name:
+        type: string
+    required:
+    - manual_test
+    - provider_name
+    type: object
+  createResourceRequest:
+    properties:
+      display_order:
+        type: integer
+      link:
+        type: string
+      title:
+        type: string
+    type: object
+  createRuleRequest:
+    properties:
+      county_id:
+        type: string
+      priority:
+        type: integer
+      results_statuses:
+        items:
+          $ref: '#/definitions/createRuleResultsStatusesTypeRequest'
+        type: array
+      test_type_id:
+        type: string
+    required:
+    - county_id
+    - results_statuses
+    - test_type_id
+    type: object
+  createRuleResultsStatusesTypeRequest:
+    properties:
+      county_status_id:
+        type: string
+      test_type_result_id:
+        type: string
+    required:
+    - county_status_id
+    - test_type_result_id
+    type: object
+  createSymptomRequest:
+    properties:
+      name:
+        type: string
+      symptom_group:
+        type: string
+    required:
+    - name
+    - symptom_group
+    type: object
+  createSymptomRuleItemRequest:
+    properties:
+      county_status_id:
+        type: string
+      gr1:
+        type: boolean
+      gr2:
+        type: boolean
+      next_step:
+        type: string
+    required:
+    - county_status_id
+    - gr1
+    - gr2
+    - next_step
+    type: object
+  createSymptomRuleRequest:
+    properties:
+      county_id:
+        type: string
+      gr1_count:
+        type: integer
+      gr2_count:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/createSymptomRuleItemRequest'
+        type: array
+    required:
+    - county_id
+    - gr1_count
+    - gr2_count
+    - items
+    type: object
+  createTestTypeRequest:
+    properties:
+      name:
+        type: string
+      priority:
+        type: integer
+    required:
+    - name
+    type: object
+  createTestTypeResultRequest:
+    properties:
+      name:
+        type: string
+      next_step:
+        type: string
+      next_step_offset:
+        type: integer
+      result_expires_offset:
+        type: integer
+      test_type_id:
+        type: string
+    required:
+    - name
+    - next_step
+    type: object
+  locationOperationDayRequest:
+    properties:
+      close_time:
+        type: string
+      name:
+        type: string
+      open_time:
+        type: string
+    type: object
+  loginUserRequest:
+    properties:
+      consent:
+        type: boolean
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      exposure_notification:
+        type: boolean
+      public_key:
+        type: string
+      re_post:
+        type: boolean
+      uuid:
+        type: string
+    required:
+    - consent
+    - exposure_notification
+    - public_key
+    - uuid
+    type: object
+  processManualTestRequest:
+    properties:
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      status:
+        type: string
+    required:
+    - status
+    type: object
+  updateAccessRuleItemRequest:
+    properties:
+      county_status_id:
+        type: string
+      value:
+        type: string
+    required:
+    - county_status_id
+    - value
+    type: object
+  updateAccessRuleRequest:
+    properties:
+      county_id:
+        type: string
+      rules:
+        items:
+          $ref: '#/definitions/updateAccessRuleItemRequest'
+        type: array
+    required:
+    - county_id
+    - rules
+    type: object
+  updateCTestRequest:
+    properties:
+      processed:
+        type: boolean
+    required:
+    - processed
+    type: object
+  updateCountyRequest:
+    properties:
+      country:
+        type: string
+      name:
+        type: string
+      state_province:
+        type: string
+    required:
+    - country
+    - name
+    - state_province
+    type: object
+  updateCountyStatusRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  updateDisplayOrderResourceRequest:
+    properties:
+      ids:
+        items:
+          type: string
+        type: array
+    type: object
+  updateFAQRequest:
+    properties:
+      description:
+        type: string
+      display_order:
+        type: integer
+      title:
+        type: string
+    type: object
+  updateFAQSection:
+    properties:
+      display_order:
+        type: integer
+      title:
+        type: string
+    type: object
+  updateGuidelineItemsRequest:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      type:
+        type: string
+    required:
+    - description
+    - icon
+    - type
+    type: object
+  updateGuidelineRequest:
+    properties:
+      description:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/updateGuidelineItemsRequest'
+        type: array
+      name:
+        type: string
+    required:
+    - items
+    - name
+    type: object
+  updateHistoryRequest:
+    properties:
+      date:
+        type: string
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+    type: object
+  updateLocationRequest:
+    properties:
+      address_1:
+        type: string
+      address_2:
+        type: string
+      available_tests:
+        items:
+          type: string
+        type: array
+      city:
+        type: string
+      contact:
+        type: string
+      country:
+        type: string
+      days_of_operation:
+        items:
+          $ref: '#/definitions/locationOperationDayRequest'
+        type: array
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      notes:
+        type: string
+      state:
+        type: string
+      url:
+        type: string
+      zip:
+        type: string
+    required:
+    - available_tests
+    - latitude
+    - longitude
+    - name
+    type: object
+  updateNewsRequest:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      htmlContent:
+        type: string
+      title:
+        type: string
+    type: object
+  updateProviderRequest:
+    properties:
+      available_mechanisms:
+        items:
+          type: string
+        type: array
+      manual_test:
+        type: boolean
+      provider_name:
+        type: string
+    required:
+    - manual_test
+    - provider_name
+    type: object
+  updateResourceRequest:
+    properties:
+      display_order:
+        type: integer
+      link:
+        type: string
+      title:
+        type: string
+    type: object
+  updateRuleRequest:
+    properties:
+      priority:
+        type: integer
+      results_statuses:
+        items:
+          $ref: '#/definitions/createRuleResultsStatusesTypeRequest'
+        type: array
+    required:
+    - results_statuses
+    type: object
+  updateSymptomRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  updateSymptomRuleItemRequest:
+    properties:
+      county_status_id:
+        type: string
+      gr1:
+        type: boolean
+      gr2:
+        type: boolean
+      next_step:
+        type: string
+    required:
+    - county_status_id
+    - gr1
+    - gr2
+    - next_step
+    type: object
+  updateSymptomRuleRequest:
+    properties:
+      county_id:
+        type: string
+      gr1_count:
+        type: integer
+      gr2_count:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/updateSymptomRuleItemRequest'
+        type: array
+    required:
+    - county_id
+    - gr1_count
+    - gr2_count
+    - items
+    type: object
+  updateTestTypeRequest:
+    properties:
+      name:
+        type: string
+      priority:
+        type: integer
+    required:
+    - name
+    type: object
+  updateTestTypeResultRequest:
+    properties:
+      name:
+        type: string
+      next_step:
+        type: string
+      next_step_offset:
+        type: integer
+      result_expires_offset:
+        type: integer
+    required:
+    - name
+    - next_step
+    type: object
+host: localhost
+info:
+  contact: {}
+  description: Rokwire Health Building Block API Documentation.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Rokwire Health Building Block API
+  version: 1.9.0
+paths:
+  /admin/access-rules:
+    get:
+      consumes:
+      - application/json
+      description: Gives the access rules
+      operationId: GetAccessRules
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/AccessRule'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates an access rule.
+      operationId: CreateAccessRule
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createAccessRuleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AccessRule'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/access-rules/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes an access rule
+      operationId: deleteAccessRule
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates an access rule.
+      operationId: UpdateAccessRule
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateAccessRuleRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AccessRule'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/actions:
+    post:
+      consumes:
+      - application/json
+      description: Creates an action
+      operationId: CreateAction
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createActionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/CTest'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/counties:
+    get:
+      consumes:
+      - application/json
+      description: Gives the counties list
+      operationId: getCounties
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ACounty'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a county
+      operationId: CreateCounty
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createCountyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ACounty'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/counties/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a county
+      operationId: deleteCounty
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a county
+      operationId: UpdateCounty
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateCountyRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ACounty'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/county-statuses:
+    get:
+      consumes:
+      - application/json
+      description: Gets all county statuses for a county.
+      operationId: getCountyStatusesByCountyID
+      parameters:
+      - description: County ID
+        in: query
+        name: county-id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/CountyStatus'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a county status.
+      operationId: CreateCountyStatus
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createCountyStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/CountyStatus'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/county-statuses/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a county status
+      operationId: deleteCountyStatus
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a county status.
+      operationId: UpdateCountyStatus
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateCountyStatusRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/CountyStatus'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/faq:
+    get:
+      consumes:
+      - application/json
+      description: Gives FAQs list
+      operationId: getFAQs
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/FAQ'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a faq item
+      operationId: createFAQItem
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createFAQRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/faq/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a faq item
+      operationId: deleteFAQItem
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted FAQ item
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a faq item.
+      operationId: UpdateFAQItem
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateFAQRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/faq/section/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a faq section
+      operationId: deleteFAQSection
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a faq section.
+      operationId: UpdateFAQSection
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateFAQSection'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/guidelines:
+    get:
+      consumes:
+      - application/json
+      description: Gets all guidelines for a county
+      operationId: getGuidelinesByCountyID
+      parameters:
+      - description: County ID
+        in: query
+        name: county-id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Guideline'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a guideline
+      operationId: CreateGuideline
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createGuidelineRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Guideline'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/guidelines/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a guideline.
+      operationId: deleteGuideline
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a guideline.
+      operationId: UpdateGuideline
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateGuidelineRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Guideline'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/locations:
+    get:
+      consumes:
+      - application/json
+      description: Gives the locations list
+      operationId: getLocations
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Location'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a location.
+      operationId: CreateLocation
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createLocationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Location'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/locations/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a location
+      operationId: deleteLocation
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a location.
+      operationId: UpdateLocation
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateLocationRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Location'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/manual-tests:
+    get:
+      consumes:
+      - application/json
+      description: Gives the manual tests for a county
+      operationId: getManualTestsByCountyID
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ManualTest'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/manual-tests/{id}/image:
+    get:
+      consumes:
+      - application/json
+      description: Gives the image for a manual test
+      operationId: getManualTestImage
+      parameters:
+      - description: Manual Test ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ManualTestImage'
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/manual-tests/{id}/process:
+    put:
+      consumes:
+      - application/json
+      description: Processes manual test.
+      operationId: ProcessManualTest
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/processManualTestRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/news:
+    get:
+      consumes:
+      - application/json
+      description: Gives news.
+      operationId: GetNews
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/News'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates news
+      operationId: CreateNews
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createNewsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/News'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/news/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes news
+      operationId: deleteNews
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted new items
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates news.
+      operationId: UpdateNews
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateNewsRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/News'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/providers:
+    get:
+      consumes:
+      - application/json
+      description: Gives the providers list
+      operationId: getProviders
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Provider'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a provider
+      operationId: createProvider
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createProviderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Provider'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/providers/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a provider
+      operationId: deleteProvider
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a provider.
+      operationId: UpdateProvider
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateProviderRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Provider'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/resources:
+    get:
+      consumes:
+      - application/json
+      description: Gives the resources.
+      operationId: getResources
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Resource'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a resource
+      operationId: createResources
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createResourceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resource'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/resources/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a resource.
+      operationId: deleteResource
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted resource item
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a resource.
+      operationId: UpdateResource
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateResourceRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Resource'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/resources/display-order:
+    post:
+      consumes:
+      - application/json
+      description: Updates the display order for all resources.
+      operationId: updateDisplaOrderResources
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateDisplayOrderResourceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated resource items
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/rules:
+    get:
+      consumes:
+      - application/json
+      description: Gives the rules list
+      operationId: getRules
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ARule'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a rule
+      operationId: CreateRule
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createRuleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ARule'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/rules/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a rule
+      operationId: deleteRule
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a rule.
+      operationId: UpdateRule
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateRuleRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ARule'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/symptom-groups:
+    get:
+      consumes:
+      - application/json
+      description: Gives the symptom groups
+      operationId: getSymptomGroups
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/SymptomGroup'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/symptom-rules:
+    get:
+      consumes:
+      - application/json
+      description: Gives the symptom rules
+      operationId: getSymptomRules
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/SymptomRule'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a symptom rule.
+      operationId: CreateSymptomRule
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createSymptomRuleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/SymptomRule'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/symptom-rules/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a symptom rule.
+      operationId: deleteSymptomRule
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a symptom rule.
+      operationId: UpdateSymptomRule
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateSymptomRuleRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/SymptomRule'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/symptoms:
+    post:
+      consumes:
+      - application/json
+      description: Creates a symptom
+      operationId: CreateSymptom
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createSymptomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Symptom'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/symptoms/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a symptom
+      operationId: deleteSymptom
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a symptom.
+      operationId: UpdateSymptom
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateSymptomRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Symptom'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/test-type-results:
+    get:
+      consumes:
+      - application/json
+      description: Gets all test type results for a test type.
+      operationId: getTestTypeResultsByTestTypeID
+      parameters:
+      - description: Test Type ID
+        in: query
+        name: test-type-id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/TestTypeResult'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a test type result for a specific test type.
+      operationId: CreateTestTypeResult
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createTestTypeResultRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/TestTypeResult'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/test-type-results/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a test type result
+      operationId: deleteTestTypeResult
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates test type result.
+      operationId: UpdateTestTypeResult
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateTestTypeResultRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/TestTypeResult'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/test-types:
+    get:
+      consumes:
+      - application/json
+      description: Gives the test types
+      operationId: getTestTypes
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ATestType'
+            type: array
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a test type.
+      operationId: createTestType
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createTestTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ATestType'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/test-types/{id}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a test type
+      operationId: deleteTestType
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates a test type.
+      operationId: UpdateTestType
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateTestTypeRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ATestType'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Admin
+  /admin/user:
+    get:
+      consumes:
+      - application/json
+      description: Gets the user by external id.
+      operationId: GetUserByExternalID
+      parameters:
+      - description: External ID
+        in: query
+        name: external-id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /covid19/access-rules/county/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gives the access rule for a county.
+      operationId: GetAccessRuleByCounty
+      parameters:
+      - description: County ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: TODO
+          schema:
+            type: string
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/counties:
+    get:
+      consumes:
+      - application/json
+      description: Gives the counties. Optionally you can filter the results by one
+        or many of the following three fields - name, state_province and country
+      operationId: GetCounties
+      parameters:
+      - description: name
+        in: query
+        name: name
+        type: string
+      - description: State province
+        in: query
+        name: state_province
+        type: string
+      - description: Country
+        in: query
+        name: country
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/County'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/counties/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gets a county
+      operationId: getCounty
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/County'
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/ctests:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes all ctests for a user
+      operationId: deleteCTests
+      responses:
+        "200":
+          description: Successfuly deleted [n] items
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+    get:
+      consumes:
+      - application/json
+      description: Gets not processed ctests for a user.
+      operationId: getCTests
+      parameters:
+      - description: select false value
+        in: query
+        name: processed
+        type: boolean
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/CTest'
+            type: array
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+    post:
+      consumes:
+      - application/json
+      description: Creates CTest.
+      operationId: createCTest
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createCTestRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created
+          schema:
+            type: string
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
+  /covid19/ctests/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Mark ctest as processed.
+      operationId: updateCTest
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateCTestRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/CTest'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+  /covid19/faq:
+    get:
+      consumes:
+      - application/json
+      description: Gives the covid19 FAQs. The sections are sorted by the display
+        order field. The questions within a section are sorted by the display order
+        field.
+      operationId: getFAQ
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/FAQ'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/locations:
+    get:
+      consumes:
+      - application/json
+      description: Gets locations for county and provider - pass county-id and provider-id
+        params. Get locations for county - pass county-id param.
+      operationId: GetLocations
+      parameters:
+      - description: County ID
+        in: query
+        name: county-id
+        type: string
+      - description: Provider ID
+        in: query
+        name: provider-id
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Location'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/locations/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gets a location
+      operationId: getLocation
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Location'
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/login:
+    post:
+      consumes:
+      - application/json
+      description: Creates a user, updates it if already created
+      operationId: loginUser
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/loginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created or Successfully updated
+          schema:
+            type: string
+        "400":
+          description: Authentication error
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server error
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+  /covid19/news:
+    get:
+      consumes:
+      - application/json
+      description: Gives the covid19 news.
+      operationId: GetNews
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/News'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/providers:
+    get:
+      consumes:
+      - application/json
+      description: Gives all the providers
+      operationId: getProviders
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Provider'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/providers/county/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gives the providers which have locations in a specific county
+      operationId: getProvidersByCounty
+      parameters:
+      - description: County ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Provider'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/resources:
+    get:
+      consumes:
+      - application/json
+      description: Gives the covid19 resources
+      operationId: getResources
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Resource'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/rules/county/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gets the rules for a county
+      operationId: GetRulesByCounty
+      parameters:
+      - description: County ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Rule'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/symptom-groups:
+    get:
+      consumes:
+      - application/json
+      description: Gives the symptom groups
+      operationId: getSymptomGroups
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/SymptomGroup'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/symptom-rules/county/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gives the symptom rule for a county.
+      operationId: getSymptomRuleByCounty
+      parameters:
+      - description: County ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/SymptomRule'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/test-types:
+    get:
+      consumes:
+      - application/json
+      description: Gets test types. You can filter by id. The ids have to be comma
+        separated.
+      operationId: GetTestTypes
+      parameters:
+      - description: Test Type IDs
+        in: query
+        name: ids
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/TestType'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/trace/exposures:
+    get:
+      consumes:
+      - application/json
+      description: Gives the exposures records. "timestamp" and "date-added" params
+        are optional. It is the time in milliseconds.
+      operationId: GetExposures
+      parameters:
+      - description: timestamp
+        in: query
+        name: timestamp
+        type: integer
+      - description: date-added
+        in: query
+        name: date-added
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/TraceExposure'
+            type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/trace/report:
+    post:
+      consumes:
+      - application/json
+      description: Adds contact tracing report. "timestamp" - Unix time, the number
+        of milliseconds elapsed since January 1, 1970 UTC
+      operationId: AddTraceReport
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/addTraceReportRequest'
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Successfully added [n] items
+          schema:
+            type: string
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/user:
+    get:
+      consumes:
+      - application/json
+      description: Gives the current user.
+      operationId: getUser
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+  /covid19/user/clear:
+    get:
+      consumes:
+      - text/plain
+      description: Clears everything for that user as if the user has never seen the
+        service before.
+      operationId: clearUserData
+      responses:
+        "200":
+          description: Successfully cleared
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+  /covid19/users/re-post:
+    get:
+      consumes:
+      - application/json
+      description: Gives the users for re-posting the test results
+      operationId: GetUsersForRePost
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/PUser'
+            type: array
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
+  /covid19/users/uin/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gives the user info needed for the providers
+      operationId: getUserByShibbolethUIN
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GetUserByShibbolethUINResponse'
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
+  /covid19/v2/app-version/{app-version}/statuses:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes the status for the user for a specific app version.
+      operationId: DeleteStatusV2
+      parameters:
+      - description: App version
+        in: path
+        name: app-version
+        type: string
+      responses:
+        "200":
+          description: Successfully deleted
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+    get:
+      consumes:
+      - application/json
+      description: Gets the status for the current user for a specific app version
+      operationId: GetStatusV2
+      parameters:
+      - description: App version
+        in: path
+        name: app-version
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Status'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+    put:
+      consumes:
+      - application/json
+      description: Updates the status for the user for a specific app version. it
+        creates it if not already created.
+      operationId: CreateOrUpdateStatusV2
+      parameters:
+      - description: App version
+        in: path
+        name: app-version
+        type: string
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createOrUpdateStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Status'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+  /covid19/v2/histories:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes the history items for an user.
+      operationId: deleteHistoriesV2
+      responses:
+        "200":
+          description: Successfully deleted [n] items
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+    get:
+      consumes:
+      - application/json
+      description: Gets all histories for the current user user
+      operationId: getHistoriesV2
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/History'
+            type: array
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+    post:
+      consumes:
+      - application/json
+      description: '"date", "type", "encrypted_key" and "encrypted_blob" are mandatory
+        fields. When the type is "unverified_manual_test" then the client must pass
+        also "encrypted_image_key", "encrypted_image_blob" and ("location_id" or "county_id").'
+      operationId: createHistoryV2
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createHistoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/History'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+  /covid19/v2/histories/{id}:
+    put:
+      consumes:
+      - application/json
+      description: '"date", "encrypted_key" and "encrypted_blob" are optional. If
+        a field is omitted then it will not be updated.'
+      operationId: updateHistoryV2
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateHistoryRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/History'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+  /covid19/v2/statuses:
+    delete:
+      consumes:
+      - text/plain
+      deprecated: true
+      description: Deletes the status for the user.
+      operationId: DeleteStatusV2Deprecated
+      responses:
+        "200":
+          description: Successfully deleted
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+    get:
+      consumes:
+      - application/json
+      deprecated: true
+      description: Gets the status for the current user
+      operationId: GetStatusV2Deprecated
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Status'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+    put:
+      consumes:
+      - application/json
+      deprecated: true
+      description: Updates the status for the user. it creates it if not already created.
+      operationId: CreateOrUpdateStatusV2Deprecated
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createOrUpdateStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Status'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+schemes:
+- https
+securityDefinitions:
+  AdminUserAuth:
+    in: header (add Bearer prefix to the Authorization value)
+    name: Authorization
+    type: apiKey
+  AppUserAuth:
+    in: header (add Bearer prefix to the Authorization value)
+    name: Authorization
+    type: apiKey
+  ProvidersAuth:
+    in: header
+    name: ROKWIRE-HS-API-KEY
+    type: apiKey
+  RokwireAuth:
+    in: header
+    name: ROKWIRE-API-KEY
+    type: apiKey
+swagger: "2.0"

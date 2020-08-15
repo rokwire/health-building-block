@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.9.0] - 2020-08-12
 ### Added
-- CODEONWERS file. 
+- CODEOWNERS file. 
 - Implement admin APIs for putting into and removing a user from quarantine. 
 
 ## [1.8.0] - 2020-08-10

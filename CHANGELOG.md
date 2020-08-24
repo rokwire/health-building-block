@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update issue templates. [#5](https://github.com/rokwire/health-building-block/issues/5)
 
+### Fixed
+- Admin app appears to do nothing. [#7](https://github.com/rokwire/health-building-block/issues/7)
+
 ## [1.10.0] - 2020-08-14
 ### Changed
 - Update Trace APIs. [#2](https://github.com/rokwire/health-building-block/issues/2)

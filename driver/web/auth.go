@@ -254,7 +254,7 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 	}
 	//we must have UIuceduUIN
 	if userData.UIuceduUIN == nil {
-		log.Printf("missing uiuceuin data in the token - %s\n", err)
+		log.Printf("error - missing uiuceuin data in the token - %s\n", err)
 
 		auth.responseUnauthorized(rawIDToken, w)
 		return false, nil, nil

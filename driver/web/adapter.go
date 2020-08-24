@@ -293,6 +293,7 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler authFunc) http.HandlerFunc
 
 		//handle global access control for now
 		if !user.IsAdmin() {
+			log.Println("Access control error")
 			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}

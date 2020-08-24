@@ -381,21 +381,21 @@ func (auth *AdminAuth) getUser(uiUceduUIN string) (*model.User, error) {
 }
 
 func (auth *AdminAuth) responseBadRequest(w http.ResponseWriter) {
-	log.Println(fmt.Sprintf("400 - Bad Request"))
+	log.Println("AdminAuth -> 400 - Bad Request")
 
 	w.WriteHeader(http.StatusBadRequest)
 	w.Write([]byte("Bad Request"))
 }
 
 func (auth *AdminAuth) responseUnauthorized(token string, w http.ResponseWriter) {
-	log.Println(fmt.Sprintf("401 - Unauthorized for token %s", token))
+	log.Printf("AdminAuth -> 401 - Unauthorized for token %s", token)
 
 	w.WriteHeader(http.StatusUnauthorized)
 	w.Write([]byte("Unauthorized"))
 }
 
 func (auth *AdminAuth) responseInternalServerError(w http.ResponseWriter) {
-	log.Println(fmt.Sprintf("500 - Internal Server Error"))
+	log.Println("AdminAuth -> 500 - Internal Server Error")
 
 	w.WriteHeader(http.StatusInternalServerError)
 	w.Write([]byte("Internal Server Error"))

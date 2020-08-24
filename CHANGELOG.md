@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.1] - 2020-08-24
+### Changed
+- Update issue templates. [#5](https://github.com/rokwire/health-building-block/issues/5)
+- Improve logs around the admin users authentication. [#7](https://github.com/rokwire/health-building-block/issues/7)
+
 ## [1.10.0] - 2020-08-14
 ### Changed
 - Update Trace APIs. [#2](https://github.com/rokwire/health-building-block/issues/2)
@@ -13,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.9.0] - 2020-08-12
 ### Added
-- CODEONWERS file. 
+- CODEOWNERS file. 
 - Implement admin APIs for putting into and removing a user from quarantine. 
 
 ## [1.8.0] - 2020-08-10
@@ -69,5 +74,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.10.1...HEAD
+[1.10.1]: https://github.com/rokwire/health-building-block/compare/v1.10.0...v1.10.1
 [1.10.0]: https://github.com/rokwire/health-building-block/compare/v1.9.0...v1.10.0

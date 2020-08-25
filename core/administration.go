@@ -406,11 +406,19 @@ func (app *Application) deleteProvider(ID string) error {
 	return nil
 }
 
-func (app *Application) createCounty(name string, stateProvince string, country string) (*model.County, error) {
+func (app *Application) createCounty(current model.User, name string, stateProvince string, country string) (*model.County, error) {
 	county, err := app.storage.CreateCounty(name, stateProvince, country)
 	if err != nil {
 		return nil, err
 	}
+
+	//TODO
+	//TODO groups
+
+	defer app.audit.Log(AuditEntity{UserIdentifier: current.ID, UserInfo: current.ShibbolethAuth.Email,
+		UserGroups: *current.ShibbolethAuth.IsMemberOf, Entity: "county", EntityID: county.ID,
+		Operation: "create", Change: nil, CreatedAt: time.Now()})
+
 	return county, nil
 }
 

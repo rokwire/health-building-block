@@ -249,7 +249,7 @@ type Administration interface {
 	DeleteProvider(ID string) error
 
 	FindCounties(f *utils.Filter) ([]*model.County, error)
-	CreateCounty(name string, stateProvince string, country string) (*model.County, error)
+	CreateCounty(current model.User, name string, stateProvince string, country string) (*model.County, error)
 	UpdateCounty(ID string, name string, stateProvince string, country string) (*model.County, error)
 	DeleteCounty(ID string) error
 
@@ -404,8 +404,8 @@ func (s *administrationImpl) FindCounties(f *utils.Filter) ([]*model.County, err
 	return s.app.findCounties(f)
 }
 
-func (s *administrationImpl) CreateCounty(name string, stateProvince string, country string) (*model.County, error) {
-	return s.app.createCounty(name, stateProvince, country)
+func (s *administrationImpl) CreateCounty(current model.User, name string, stateProvince string, country string) (*model.County, error) {
+	return s.app.createCounty(current, name, stateProvince, country)
 }
 
 func (s *administrationImpl) UpdateCounty(ID string, name string, stateProvince string, country string) (*model.County, error) {
@@ -779,7 +779,7 @@ type ProfileUserData struct {
 
 //Audit is used by core to log history
 type Audit interface {
-	Log(entity AuditEntity) error
+	Log(entity AuditEntity)
 	//TODO add params
 	Find() ([]AuditEntity, error)
 }

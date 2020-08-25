@@ -36,9 +36,13 @@ func (sa *Adapter) Start() error {
 }
 
 //Log logs an item
-func (a *Adapter) Log(entity core.AuditEntity) error {
-	//TODO
-	return nil
+func (a *Adapter) Log(entity core.AuditEntity) {
+	go func(e core.AuditEntity) {
+		_, err := a.db.audit.InsertOne(&e)
+		if err != nil {
+			log.Printf("error audit logging - %s", err.Error())
+		}
+	}(entity)
 }
 
 //Find finds items

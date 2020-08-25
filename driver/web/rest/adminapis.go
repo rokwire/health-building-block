@@ -1036,7 +1036,7 @@ func (h AdminApisHandler) CreateCounty(current model.User, w http.ResponseWriter
 	stateProvince := requestData.StateProvince
 	country := requestData.Country
 
-	county, err := h.app.Administration.CreateCounty(name, stateProvince, country)
+	county, err := h.app.Administration.CreateCounty(current, name, stateProvince, country)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

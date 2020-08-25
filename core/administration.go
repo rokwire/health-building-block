@@ -491,32 +491,15 @@ func (app *Application) updateGuideline(current model.User, ID string, name stri
 		return nil, err
 	}
 
-	//TODO
-	//	userIdentifier, userInfo, groups := current.GetLogData()
-	//	defer app.audit.LogCreateEvent(userIdentifier, userInfo, groups, "guideline", ID)
-
-	//app.testtt(name, description, items)
-
-	mapp := map[string]interface{}{
+	updateData := map[string]interface{}{
 		"name":        name,
 		"description": description,
 		"items":       items,
 	}
-	app.testtt2(mapp)
+	userIdentifier, userInfo, groups := current.GetLogData()
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, groups, "guideline", ID, updateData)
 
 	return guideline, nil
-}
-
-func (app *Application) testtt(nums ...interface{}) {
-	for _, num := range nums {
-		log.Println(num)
-	}
-}
-
-func (app *Application) testtt2(mapp map[string]interface{}) {
-	for key, value := range mapp {
-		log.Printf("%s - %s", key, value)
-	}
 }
 
 func (app *Application) deleteGuideline(ID string) error {

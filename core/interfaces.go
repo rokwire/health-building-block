@@ -777,6 +777,13 @@ type ProfileUserData struct {
 	FCMTokens []string `json:"fcmTokens"`
 }
 
+//Audit is used by core to log history
+type Audit interface {
+	Log(entity AuditEntity) error
+	//TODO add params
+	Find() ([]AuditEntity, error)
+}
+
 //AuditEntity represents audit module entity
 type AuditEntity struct {
 	UserIdentifier string    `json:"user_identifier" bson:"user_identifier"`

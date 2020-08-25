@@ -471,7 +471,7 @@ func (app *Application) createGuideline(countyID string, name string, descriptio
 	return guideline, nil
 }
 
-func (app *Application) updateGuideline(ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+func (app *Application) updateGuideline(current model.User, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
 	guideline, err := app.storage.FindGuideline(ID)
 	if err != nil {
 		return nil, err
@@ -491,7 +491,32 @@ func (app *Application) updateGuideline(ID string, name string, description stri
 		return nil, err
 	}
 
+	//TODO
+	//	userIdentifier, userInfo, groups := current.GetLogData()
+	//	defer app.audit.LogCreateEvent(userIdentifier, userInfo, groups, "guideline", ID)
+
+	//app.testtt(name, description, items)
+
+	mapp := map[string]interface{}{
+		"name":        name,
+		"description": description,
+		"items":       items,
+	}
+	app.testtt2(mapp)
+
 	return guideline, nil
+}
+
+func (app *Application) testtt(nums ...interface{}) {
+	for _, num := range nums {
+		log.Println(num)
+	}
+}
+
+func (app *Application) testtt2(mapp map[string]interface{}) {
+	for key, value := range mapp {
+		log.Printf("%s - %s", key, value)
+	}
 }
 
 func (app *Application) deleteGuideline(ID string) error {

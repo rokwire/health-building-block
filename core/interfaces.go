@@ -254,7 +254,7 @@ type Administration interface {
 	DeleteCounty(current model.User, ID string) error
 
 	CreateGuideline(countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
-	UpdateGuideline(ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
+	UpdateGuideline(current model.User, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
 	DeleteGuideline(ID string) error
 	GetGuidelinesByCountyID(countyID string) ([]*model.Guideline, error)
 
@@ -420,8 +420,8 @@ func (s *administrationImpl) CreateGuideline(countyID string, name string, descr
 	return s.app.createGuideline(countyID, name, description, items)
 }
 
-func (s *administrationImpl) UpdateGuideline(ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
-	return s.app.updateGuideline(ID, name, description, items)
+func (s *administrationImpl) UpdateGuideline(current model.User, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+	return s.app.updateGuideline(current, ID, name, description, items)
 }
 
 func (s *administrationImpl) DeleteGuideline(ID string) error {

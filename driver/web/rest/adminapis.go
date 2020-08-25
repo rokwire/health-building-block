@@ -1386,7 +1386,7 @@ func (h AdminApisHandler) UpdateGuideline(current model.User, w http.ResponseWri
 		items = append(items, r)
 	}
 
-	guideline, err := h.app.Administration.UpdateGuideline(ID, name, description, items)
+	guideline, err := h.app.Administration.UpdateGuideline(current, ID, name, description, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -412,12 +412,7 @@ func (app *Application) createCounty(current model.User, name string, stateProvi
 		return nil, err
 	}
 
-	//TODO
-	//TODO groups
-
-	defer app.audit.Log(AuditEntity{UserIdentifier: current.ID, UserInfo: current.ShibbolethAuth.Email,
-		UserGroups: *current.ShibbolethAuth.IsMemberOf, Entity: "county", EntityID: county.ID,
-		Operation: "create", Change: nil, CreatedAt: time.Now()})
+	defer app.audit.Log(app.prepareCreateLog(current, "county", county.ID))
 
 	return county, nil
 }
@@ -1277,4 +1272,16 @@ func (app *Application) createAction(providerID string, userID string, encrypted
 	}(user.UUID)
 
 	return item, nil
+}
+
+func (app *Application) prepareCreateLog(user model.User, entity string, entityID string) *AuditEntity {
+	if user.ShibbolethAuth == nil {
+		return nil
+	}
+
+	//TODO groups
+	var groups []string
+	return &AuditEntity{UserIdentifier: user.ID, UserInfo: user.ShibbolethAuth.Email,
+		UserGroups: groups, Entity: "county", EntityID: entityID,
+		Operation: "create", Change: nil, CreatedAt: time.Now()}
 }

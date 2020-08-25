@@ -19,6 +19,7 @@ package audit
 
 import (
 	"health/core"
+	"health/core/model"
 	"log"
 	"strconv"
 	"time"
@@ -35,14 +36,39 @@ func (sa *Adapter) Start() error {
 	return err
 }
 
-//Log logs an item
-func (a *Adapter) Log(entity core.AuditEntity) {
-	go func(e core.AuditEntity) {
-		_, err := a.db.audit.InsertOne(&e)
+func (a *Adapter) LogCreateEvent(user model.User, entity string, entityID string) {
+	go func(e *core.AuditEntity) {
+		if e == nil {
+			log.Printf("cannot log for nil entity")
+			return
+		}
+		_, err := a.db.audit.InsertOne(e)
 		if err != nil {
 			log.Printf("error audit logging - %s", err.Error())
 		}
 	}(entity)
+
+	/*if user.ShibbolethAuth == nil {
+		return nil
+	}
+
+	//TODO groups
+	var groups []string
+	return &AuditEntity{UserIdentifier: user.ID, UserInfo: user.ShibbolethAuth.Email,
+		UserGroups: groups, Entity: "county", EntityID: entityID,
+		Operation: "create", Change: nil, CreatedAt: time.Now()} */
+}
+
+//Log logs an item
+func (a *Adapter) log(entity *core.AuditEntity) {
+	if e == nil {
+		log.Printf("cannot log for nil entity")
+		return
+	}
+	_, err := a.db.audit.InsertOne(e)
+	if err != nil {
+		log.Printf("error audit logging - %s", err.Error())
+	}
 }
 
 //Find finds items

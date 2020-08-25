@@ -779,7 +779,7 @@ type ProfileUserData struct {
 
 //Audit is used by core to log history
 type Audit interface {
-	Log(entity AuditEntity)
+	LogCreateEvent(user model.User, entity string, entityID string)
 	//TODO add params
 	Find() ([]AuditEntity, error)
 }

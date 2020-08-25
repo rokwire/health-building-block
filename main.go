@@ -84,7 +84,7 @@ func main() {
 	profileBBAdapter := profilebb.NewProfileBBAdapter(profileHost, profileAPIKey)
 
 	//application
-	application := core.NewApplication(Version, Build, dataProvider, sender, messaging, profileBBAdapter, storageAdapter)
+	application := core.NewApplication(Version, Build, dataProvider, sender, messaging, profileBBAdapter, storageAdapter, auditAdapter)
 	application.Start()
 
 	//web adapter

@@ -777,12 +777,16 @@ type ProfileUserData struct {
 	FCMTokens []string `json:"fcmTokens"`
 }
 
+//AuditEntity represents audit module entity
 type AuditEntity struct {
-	UserIdentifier string   `json:"user_identifier" bson:"user_identifier"`
-	UserInfo       string   `json:"user_info" bson:"user_info"`
-	UserGroups     []string `json:"user_groups" bson:"user_groups"`
-	Entity         string   `json:"entity" bson:"entity"`
-	EntityID       string   `json:"entity_id" bson:"entity_id"`
+	UserIdentifier string    `json:"user_identifier" bson:"user_identifier"`
+	UserInfo       string    `json:"user_info" bson:"user_info"`
+	UserGroups     []string  `json:"user_groups" bson:"user_groups"`
+	Entity         string    `json:"entity" bson:"entity"`
+	EntityID       string    `json:"entity_id" bson:"entity_id"`
+	Operation      string    `json:"operation" bson:"operation"`
+	Change         *string   `json:"change" bson:"change"`
+	CreatedAt      time.Time `json:"created_at" bson:"created_at"`
 }
 
 //ApplicationListener represents application listener

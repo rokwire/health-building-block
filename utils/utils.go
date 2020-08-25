@@ -19,12 +19,9 @@ package utils
 
 import (
 	"fmt"
-	"health/core"
-	"health/core/model"
 	"log"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -177,16 +174,4 @@ func EqualPointers(a, b *[]string) bool {
 
 	//both are not nil
 	return Equal(*a, *b)
-}
-
-func PrepareCreateLog(user model.User, entity string, entityID string) *core.AuditEntity {
-	if user.ShibbolethAuth == nil {
-		return nil
-	}
-
-	//TODO groups
-	var groups []string
-	return &core.AuditEntity{UserIdentifier: user.ID, UserInfo: user.ShibbolethAuth.Email,
-		UserGroups: groups, Entity: "county", EntityID: entityID,
-		Operation: "create", Change: nil, CreatedAt: time.Now()}
 }

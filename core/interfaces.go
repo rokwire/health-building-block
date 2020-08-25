@@ -777,6 +777,14 @@ type ProfileUserData struct {
 	FCMTokens []string `json:"fcmTokens"`
 }
 
+type AuditEntity struct {
+	UserIdentifier string   `json:"user_identifier" bson:"user_identifier"`
+	UserInfo       string   `json:"user_info" bson:"user_info"`
+	UserGroups     []string `json:"user_groups" bson:"user_groups"`
+	Entity         string   `json:"entity" bson:"entity"`
+	EntityID       string   `json:"entity_id" bson:"entity_id"`
+}
+
 //ApplicationListener represents application listener
 type ApplicationListener interface {
 	OnClearUserData(user model.User)

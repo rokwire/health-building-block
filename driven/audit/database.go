@@ -43,7 +43,7 @@ func (m *database) start() error {
 	//apply checks
 	db := client.Database(m.mongoDBName)
 	audit := &collectionWrapper{database: m, coll: db.Collection("audit")}
-	err = m.applyAuditChecks(configs)
+	err = m.applyAuditChecks(audit)
 	if err != nil {
 		return err
 	}

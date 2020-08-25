@@ -186,39 +186,6 @@ func (collWrapper *collectionWrapper) CountDocuments(filter interface{}) (int64,
 	return count, nil
 }
 
-func (collWrapper *collectionWrapper) Watch(pipeline interface{}) error {
-	if pipeline == nil {
-		pipeline = []bson.M{}
-	}
-
-	var opts *options.ChangeStreamOptions
-	opts = options.ChangeStream()
-	opts.SetFullDocument(options.UpdateLookup)
-
-	ctx := context.Background()
-	cur, err := collWrapper.coll.Watch(ctx, pipeline, opts)
-	if err != nil {
-		log.Printf("error watching: %s\n", err)
-		return err
-	}
-	defer cur.Close(ctx)
-
-	var changeDoc map[string]interface{}
-	log.Println("waiting for changes")
-	for cur.Next(ctx) {
-		if e := cur.Decode(&changeDoc); e != nil {
-			log.Printf("error decoding: %s\n", e)
-		}
-		collWrapper.database.onDataChanged(changeDoc)
-	}
-
-	if err := cur.Err(); err != nil {
-		log.Printf("error cur.Err(): %s\n", err)
-		return err
-	}
-	return nil
-}
-
 func (collWrapper *collectionWrapper) ListIndexes() ([]bson.M, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*15000)
 	defer cancel()

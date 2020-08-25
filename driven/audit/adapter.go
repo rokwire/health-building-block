@@ -17,21 +17,45 @@
 
 package audit
 
+import (
+	"health/core"
+	"log"
+	"strconv"
+	"time"
+)
+
 //Adapter implements the Audit interface
 type Adapter struct {
+	db *database
+}
+
+//Start starts the audit
+func (sa *Adapter) Start() error {
+	err := sa.db.start()
+	return err
 }
 
 //Log logs an item
-func (a *Adapter) Log(entity AuditEntity) error {
-
+func (a *Adapter) Log(entity core.AuditEntity) error {
+	//TODO
+	return nil
 }
 
 //Find finds items
-func (a *Adapter) Find() ([]AuditEntity, error) {
-
+func (a *Adapter) Find() ([]core.AuditEntity, error) {
+	//TODO
+	return nil, nil
 }
 
 //NewAuditAdapter creates a new audit adapter instance
-func NewAuditAdapter() *Adapter {
-	return &Adapter{}
+func NewAuditAdapter(mongoDBAuth string, mongoDBName string, mongoTimeout string) *Adapter {
+	timeout, err := strconv.Atoi(mongoTimeout)
+	if err != nil {
+		log.Println("Audit - Set default timeout - 500")
+		timeout = 500
+	}
+	timeoutMS := time.Millisecond * time.Duration(timeout)
+
+	db := &database{mongoDBAuth: mongoDBAuth, mongoDBName: mongoDBName, mongoTimeout: timeoutMS}
+	return &Adapter{db: db}
 }

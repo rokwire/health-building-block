@@ -19,6 +19,7 @@ package main
 
 import (
 	"health/core"
+	audit "health/driven/audit"
 	dataprovider "health/driven/dataprovider"
 	messaging "health/driven/messaging"
 	profilebb "health/driven/profilebb"
@@ -50,6 +51,13 @@ func main() {
 	err := storageAdapter.Start()
 	if err != nil {
 		log.Fatal("Cannot start the mongoDB adapter - " + err.Error())
+	}
+
+	//audit adapter
+	auditAdapter := audit.NewAuditAdapter(mongoDBAuth, mongoDBName, mongoTimeout)
+	err = auditAdapter.Start()
+	if err != nil {
+		log.Fatal("Cannot start the audit adapter - " + err.Error())
 	}
 
 	//data provider adapter

@@ -251,7 +251,7 @@ type Administration interface {
 	FindCounties(f *utils.Filter) ([]*model.County, error)
 	CreateCounty(current model.User, name string, stateProvince string, country string) (*model.County, error)
 	UpdateCounty(ID string, name string, stateProvince string, country string) (*model.County, error)
-	DeleteCounty(ID string) error
+	DeleteCounty(current model.User, ID string) error
 
 	CreateGuideline(countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
 	UpdateGuideline(ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
@@ -412,8 +412,8 @@ func (s *administrationImpl) UpdateCounty(ID string, name string, stateProvince 
 	return s.app.updateCounty(ID, name, stateProvince, country)
 }
 
-func (s *administrationImpl) DeleteCounty(ID string) error {
-	return s.app.deleteCounty(ID)
+func (s *administrationImpl) DeleteCounty(current model.User, ID string) error {
+	return s.app.deleteCounty(current, ID)
 }
 
 func (s *administrationImpl) CreateGuideline(countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
@@ -780,6 +780,7 @@ type ProfileUserData struct {
 //Audit is used by core to log history
 type Audit interface {
 	LogCreateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string)
+	LogDeleteEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string)
 	//TODO add params
 	Find() ([]AuditEntity, error)
 }

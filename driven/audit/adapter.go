@@ -47,6 +47,18 @@ func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, userGro
 	}(userIdentifier, userInfo, userGroups, entity, entityID)
 }
 
+//LogDeleteEvent logs a delete event item
+func (a *Adapter) LogDeleteEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
+	go func(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
+		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
+			UserGroups: userGroups, Entity: "county", EntityID: entityID,
+			Operation: "delete", Change: nil, CreatedAt: time.Now()}
+
+		a.log(auditEntity)
+
+	}(userIdentifier, userInfo, userGroups, entity, entityID)
+}
+
 func (a *Adapter) log(entity core.AuditEntity) {
 	_, err := a.db.audit.InsertOne(&entity)
 	if err != nil {

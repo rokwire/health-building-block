@@ -1151,7 +1151,7 @@ func (h AdminApisHandler) DeleteCounty(current model.User, w http.ResponseWriter
 		http.Error(w, "County id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteCounty(ID)
+	err := h.app.Administration.DeleteCounty(current, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

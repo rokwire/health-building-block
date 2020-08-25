@@ -441,11 +441,15 @@ func (app *Application) updateCounty(ID string, name string, stateProvince strin
 	return county, nil
 }
 
-func (app *Application) deleteCounty(ID string) error {
+func (app *Application) deleteCounty(current model.User, ID string) error {
 	err := app.storage.DeleteCounty(ID)
 	if err != nil {
 		return err
 	}
+
+	userIdentifier, userInfo, groups := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, groups, "county", ID)
+
 	return nil
 }
 

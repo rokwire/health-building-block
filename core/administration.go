@@ -412,8 +412,13 @@ func (app *Application) createCounty(current model.User, name string, stateProvi
 		return nil, err
 	}
 
+	lData := map[string]interface{}{
+		"name":          name,
+		"stateProvince": stateProvince,
+		"country":       country,
+	}
 	userIdentifier, userInfo, groups := current.GetLogData()
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, groups, "county", county.ID)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, groups, "county", county.ID, lData)
 
 	return county, nil
 }

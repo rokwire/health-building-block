@@ -75,7 +75,7 @@ func (a *Adapter) prepareData(data map[string]interface{}) *string {
 		res := fmt.Sprintf("%s:%s", key, value)
 		b.WriteString(res)
 
-		if i < count {
+		if i < (count - 1) {
 			b.WriteString(", ")
 		}
 		i++

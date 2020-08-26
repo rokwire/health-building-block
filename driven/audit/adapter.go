@@ -18,6 +18,8 @@
 package audit
 
 import (
+	"bytes"
+	"fmt"
 	"health/core"
 	"log"
 	"strconv"
@@ -39,7 +41,7 @@ func (sa *Adapter) Start() error {
 func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
 	go func(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
 		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
-			UserGroups: userGroups, Entity: "county", EntityID: entityID,
+			UserGroups: userGroups, Entity: entity, EntityID: entityID,
 			Operation: "create", Change: nil, CreatedAt: time.Now()}
 
 		a.log(auditEntity)
@@ -49,16 +51,17 @@ func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, userGro
 
 //LogUpdateEvent logs an update event item
 func (a *Adapter) LogUpdateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data map[string]interface{}) {
-	//TODO data
-	change := "TODO"
-
-	for key, value := range data {
-		log.Printf("%s - %s", key, value)
-	}
-
 	go func(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
+		var b bytes.Buffer
+		for key, value := range data {
+			res := fmt.Sprintf("%s - %s", key, value)
+			b.WriteString(res)
+			b.WriteString("\t")
+		}
+		change := b.String()
+
 		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
-			UserGroups: userGroups, Entity: "county", EntityID: entityID,
+			UserGroups: userGroups, Entity: entity, EntityID: entityID,
 			Operation: "update", Change: &change, CreatedAt: time.Now()}
 
 		a.log(auditEntity)
@@ -70,7 +73,7 @@ func (a *Adapter) LogUpdateEvent(userIdentifier string, userInfo string, userGro
 func (a *Adapter) LogDeleteEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
 	go func(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
 		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
-			UserGroups: userGroups, Entity: "county", EntityID: entityID,
+			UserGroups: userGroups, Entity: entity, EntityID: entityID,
 			Operation: "delete", Change: nil, CreatedAt: time.Now()}
 
 		a.log(auditEntity)

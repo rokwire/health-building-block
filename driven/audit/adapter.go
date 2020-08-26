@@ -42,7 +42,7 @@ func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, userGro
 	go func(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
 		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
 			UserGroups: userGroups, Entity: entity, EntityID: entityID,
-			Operation: "create", Change: nil, CreatedAt: time.Now()}
+			Operation: "create", Data: nil, CreatedAt: time.Now()}
 
 		a.log(auditEntity)
 
@@ -65,11 +65,11 @@ func (a *Adapter) LogUpdateEvent(userIdentifier string, userInfo string, userGro
 			}
 			i++
 		}
-		change := b.String()
+		dataFormatted := b.String()
 
 		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
 			UserGroups: userGroups, Entity: entity, EntityID: entityID,
-			Operation: "update", Change: &change, CreatedAt: time.Now()}
+			Operation: "update", Data: &dataFormatted, CreatedAt: time.Now()}
 
 		a.log(auditEntity)
 
@@ -81,7 +81,7 @@ func (a *Adapter) LogDeleteEvent(userIdentifier string, userInfo string, userGro
 	go func(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
 		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
 			UserGroups: userGroups, Entity: entity, EntityID: entityID,
-			Operation: "delete", Change: nil, CreatedAt: time.Now()}
+			Operation: "delete", Data: nil, CreatedAt: time.Now()}
 
 		a.log(auditEntity)
 

@@ -794,7 +794,7 @@ type AuditEntity struct {
 	Entity         string    `json:"entity" bson:"entity"`
 	EntityID       string    `json:"entity_id" bson:"entity_id"`
 	Operation      string    `json:"operation" bson:"operation"`
-	Change         *string   `json:"change" bson:"change"`
+	Data           *string   `json:"data" bson:"data"`
 	CreatedAt      time.Time `json:"created_at" bson:"created_at"`
 }
 

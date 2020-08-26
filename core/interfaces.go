@@ -310,6 +310,8 @@ type Administration interface {
 	GetUserByExternalID(externalID string) (*model.User, error)
 
 	CreateAction(providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
+
+	GetAudit() ([]*AuditEntity, error)
 }
 
 type administrationImpl struct {
@@ -586,6 +588,10 @@ func (s *administrationImpl) CreateAction(providerID string, userID string, encr
 	return s.app.createAction(providerID, userID, encryptedKey, encryptedBlob)
 }
 
+func (s *administrationImpl) GetAudit() ([]*AuditEntity, error) {
+	return s.app.getAudit()
+}
+
 //Storage is used by core to storage data - DB storage adapter, file storage adapter etc
 type Storage interface {
 	SetStorageListener(storageListener StorageListener)
@@ -783,7 +789,7 @@ type Audit interface {
 	LogUpdateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry)
 	LogDeleteEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string)
 	//TODO add params
-	Find() ([]AuditEntity, error)
+	Find() ([]*AuditEntity, error)
 }
 
 //AuditEntity represents audit module entity

@@ -1304,6 +1304,14 @@ func (app *Application) createAction(providerID string, userID string, encrypted
 	return item, nil
 }
 
+func (app *Application) getAudit() ([]*AuditEntity, error) {
+	items, err := app.audit.Find()
+	if err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 func (app *Application) getUsedGroup() string {
 	//TODO - rework when the authorization is added
 	//return the admin role for now

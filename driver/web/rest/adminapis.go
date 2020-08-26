@@ -3828,6 +3828,28 @@ func (h ApisHandler) CreateAction(current model.User, w http.ResponseWriter, r *
 	w.Write(data)
 }
 
+func (h ApisHandler) GetAudit(current model.User, w http.ResponseWriter, r *http.Request) {
+	items, err := h.app.Administration.GetAudit()
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if len(items) == 0 {
+		items = make([]*core.AuditEntity, 0)
+	}
+	data, err := json.Marshal(items)
+	if err != nil {
+		log.Println("Error on marshal the audit items")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //NewAdminApisHandler creates new admin rest Handler instance
 func NewAdminApisHandler(app *core.Application) AdminApisHandler {
 	return AdminApisHandler{app: app}

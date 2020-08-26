@@ -235,6 +235,8 @@ func (we Adapter) Start() {
 
 	adminRestSubrouter.HandleFunc("/actions", we.adminAppIDTokenAuthWrapFunc(we.apisHandler.CreateAction)).Methods("POST")
 
+	adminRestSubrouter.HandleFunc("/audit", we.adminAppIDTokenAuthWrapFunc(we.apisHandler.GetAudit)).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(":80", router))
 }
 

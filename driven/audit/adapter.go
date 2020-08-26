@@ -104,9 +104,13 @@ func (a *Adapter) log(entity core.AuditEntity) {
 }
 
 //Find finds items
-func (a *Adapter) Find() ([]core.AuditEntity, error) {
-	//TODO
-	return nil, nil
+func (a *Adapter) Find() ([]*core.AuditEntity, error) {
+	var result []*core.AuditEntity
+	err := a.db.audit.Find(nil, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 //NewAuditAdapter creates a new audit adapter instance

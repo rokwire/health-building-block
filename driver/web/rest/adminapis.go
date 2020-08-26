@@ -1281,7 +1281,7 @@ func (h AdminApisHandler) CreateGuideline(current model.User, w http.ResponseWri
 		items = append(items, r)
 	}
 
-	guideline, err := h.app.Administration.CreateGuideline(countyID, name, description, items)
+	guideline, err := h.app.Administration.CreateGuideline(current, countyID, name, description, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1428,7 +1428,7 @@ func (h AdminApisHandler) DeleteGuideline(current model.User, w http.ResponseWri
 		http.Error(w, "Guideline id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteGuideline(ID)
+	err := h.app.Administration.DeleteGuideline(current, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

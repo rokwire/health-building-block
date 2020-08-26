@@ -253,9 +253,9 @@ type Administration interface {
 	UpdateCounty(current model.User, ID string, name string, stateProvince string, country string) (*model.County, error)
 	DeleteCounty(current model.User, ID string) error
 
-	CreateGuideline(countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
+	CreateGuideline(current model.User, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
 	UpdateGuideline(current model.User, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
-	DeleteGuideline(ID string) error
+	DeleteGuideline(current model.User, ID string) error
 	GetGuidelinesByCountyID(countyID string) ([]*model.Guideline, error)
 
 	CreateCountyStatus(countyID string, name string, description string) (*model.CountyStatus, error)
@@ -416,16 +416,16 @@ func (s *administrationImpl) DeleteCounty(current model.User, ID string) error {
 	return s.app.deleteCounty(current, ID)
 }
 
-func (s *administrationImpl) CreateGuideline(countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
-	return s.app.createGuideline(countyID, name, description, items)
+func (s *administrationImpl) CreateGuideline(current model.User, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+	return s.app.createGuideline(current, countyID, name, description, items)
 }
 
 func (s *administrationImpl) UpdateGuideline(current model.User, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
 	return s.app.updateGuideline(current, ID, name, description, items)
 }
 
-func (s *administrationImpl) DeleteGuideline(ID string) error {
-	return s.app.deleteGuideline(ID)
+func (s *administrationImpl) DeleteGuideline(current model.User, ID string) error {
+	return s.app.deleteGuideline(current, ID)
 }
 
 func (s *administrationImpl) GetGuidelinesByCountyID(countyID string) ([]*model.Guideline, error) {

@@ -462,7 +462,7 @@ func (app *Application) deleteCounty(current model.User, ID string) error {
 	return nil
 }
 
-func (app *Application) createGuideline(countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+func (app *Application) createGuideline(current model.User, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
 	//1. find if we have a county for the provided ID
 	county, err := app.storage.FindCounty(countyID)
 	if err != nil {
@@ -477,6 +477,12 @@ func (app *Application) createGuideline(countyID string, name string, descriptio
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}, {Key: "items", Value: fmt.Sprint(items)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, app.getUsedGroup(), "guideline", county.ID, lData)
+
 	return guideline, nil
 }
 
@@ -508,11 +514,16 @@ func (app *Application) updateGuideline(current model.User, ID string, name stri
 	return guideline, nil
 }
 
-func (app *Application) deleteGuideline(ID string) error {
+func (app *Application) deleteGuideline(current model.User, ID string) error {
 	err := app.storage.DeleteGuideline(ID)
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, app.getUsedGroup(), "guideline", ID)
+
 	return nil
 }
 

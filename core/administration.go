@@ -19,6 +19,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	"health/core/model"
 	"log"
 	"time"
@@ -414,9 +415,7 @@ func (app *Application) createCounty(current model.User, name string, stateProvi
 
 	//audit
 	userIdentifier, userInfo, groups := current.GetLogData()
-	//lData := map[string]interface{}{"name": name, "stateProvince": stateProvince, "country": country}
-	lData := NewAuditData(map[string]interface{}{"name": name, "stateProvince": stateProvince, "country": country},
-		[]string{"name", "stateProvince", "country"})
+	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "stateProvince", Value: stateProvince}, {Key: "country", Value: country}}
 	defer app.audit.LogCreateEvent(userIdentifier, userInfo, groups, "county", county.ID, lData)
 
 	return county, nil
@@ -498,7 +497,7 @@ func (app *Application) updateGuideline(current model.User, ID string, name stri
 
 	//audit
 	userIdentifier, userInfo, groups := current.GetLogData()
-	lData := map[string]interface{}{"name": name, "description": description, "items": items}
+	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}, {Key: "items", Value: fmt.Sprint(items)}}
 	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, groups, "guideline", ID, lData)
 
 	return guideline, nil

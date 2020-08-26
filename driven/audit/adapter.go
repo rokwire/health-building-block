@@ -38,9 +38,9 @@ func (sa *Adapter) Start() error {
 }
 
 //LogCreateEvent logs a create event item
-func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data core.AuditData) {
+func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data []core.AuditDataEntry) {
 	go func(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
-		dataFormatted := data.GetData()
+		dataFormatted := a.prepareData(data)
 		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
 			UserGroups: userGroups, Entity: entity, EntityID: entityID,
 			Operation: "create", Data: dataFormatted, CreatedAt: time.Now()}
@@ -51,7 +51,7 @@ func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, userGro
 }
 
 //LogUpdateEvent logs an update event item
-func (a *Adapter) LogUpdateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data map[string]interface{}) {
+func (a *Adapter) LogUpdateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data []core.AuditDataEntry) {
 	go func(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
 		dataFormatted := a.prepareData(data)
 		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
@@ -63,7 +63,7 @@ func (a *Adapter) LogUpdateEvent(userIdentifier string, userInfo string, userGro
 	}(userIdentifier, userInfo, userGroups, entity, entityID)
 }
 
-func (a *Adapter) prepareData(data map[string]interface{}) *string {
+func (a *Adapter) prepareData(data []core.AuditDataEntry) *string {
 	if len(data) <= 0 {
 		return nil
 	}
@@ -71,8 +71,8 @@ func (a *Adapter) prepareData(data map[string]interface{}) *string {
 	var b bytes.Buffer
 	i := 0
 	count := len(data)
-	for key, value := range data {
-		res := fmt.Sprintf("%s:%s", key, value)
+	for _, current := range data {
+		res := fmt.Sprintf("%s:%s", current.Key, current.Value)
 		b.WriteString(res)
 
 		if i < (count - 1) {

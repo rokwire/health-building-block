@@ -412,12 +412,11 @@ func (app *Application) createCounty(current model.User, name string, stateProvi
 		return nil, err
 	}
 
-	lData := map[string]interface{}{
-		"name":          name,
-		"stateProvince": stateProvince,
-		"country":       country,
-	}
+	//audit
 	userIdentifier, userInfo, groups := current.GetLogData()
+	//lData := map[string]interface{}{"name": name, "stateProvince": stateProvince, "country": country}
+	lData := NewAuditData(map[string]interface{}{"name": name, "stateProvince": stateProvince, "country": country},
+		[]string{"name", "stateProvince", "country"})
 	defer app.audit.LogCreateEvent(userIdentifier, userInfo, groups, "county", county.ID, lData)
 
 	return county, nil
@@ -452,6 +451,7 @@ func (app *Application) deleteCounty(current model.User, ID string) error {
 		return err
 	}
 
+	//audit
 	userIdentifier, userInfo, groups := current.GetLogData()
 	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, groups, "county", ID)
 
@@ -496,13 +496,10 @@ func (app *Application) updateGuideline(current model.User, ID string, name stri
 		return nil, err
 	}
 
-	updateData := map[string]interface{}{
-		"name":        name,
-		"description": description,
-		"items":       items,
-	}
+	//audit
 	userIdentifier, userInfo, groups := current.GetLogData()
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, groups, "guideline", ID, updateData)
+	lData := map[string]interface{}{"name": name, "description": description, "items": items}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, groups, "guideline", ID, lData)
 
 	return guideline, nil
 }

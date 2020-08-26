@@ -18,6 +18,8 @@
 package core
 
 import (
+	"bytes"
+	"fmt"
 	"health/core/model"
 	"health/utils"
 	"time"
@@ -779,7 +781,7 @@ type ProfileUserData struct {
 
 //Audit is used by core to log history
 type Audit interface {
-	LogCreateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data map[string]interface{})
+	LogCreateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data AuditData)
 	LogUpdateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data map[string]interface{})
 	LogDeleteEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string)
 	//TODO add params
@@ -796,6 +798,43 @@ type AuditEntity struct {
 	Operation      string    `json:"operation" bson:"operation"`
 	Data           *string   `json:"data" bson:"data"`
 	CreatedAt      time.Time `json:"created_at" bson:"created_at"`
+}
+
+//AuditData represents audit data
+type AuditData struct {
+	data  map[string]interface{}
+	order []string
+}
+
+//GetData gets the data in string
+func (ad AuditData) GetData() *string {
+	if len(ad.data) <= 0 || len(ad.order) <= 0 {
+		return nil
+	}
+	if len(ad.data) != len(ad.order) {
+		value := "bad data"
+		return &value
+	}
+
+	var b bytes.Buffer
+	i := 0
+	count := len(ad.order)
+	for _, key := range ad.order {
+		value := ad.data[key]
+		res := fmt.Sprintf("%s:%s", key, value)
+		b.WriteString(res)
+
+		if i < (count - 1) {
+			b.WriteString(", ")
+		}
+		i++
+	}
+	dataFormatted := b.String()
+	return &dataFormatted
+}
+
+func NewAuditData(data map[string]interface{}, order []string) AuditData {
+	return AuditData{data: data, order: order}
 }
 
 //ApplicationListener represents application listener

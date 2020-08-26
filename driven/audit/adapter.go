@@ -38,9 +38,9 @@ func (sa *Adapter) Start() error {
 }
 
 //LogCreateEvent logs a create event item
-func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data map[string]interface{}) {
+func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data core.AuditData) {
 	go func(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
-		dataFormatted := a.prepareData(data)
+		dataFormatted := data.GetData()
 		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
 			UserGroups: userGroups, Entity: entity, EntityID: entityID,
 			Operation: "create", Data: dataFormatted, CreatedAt: time.Now()}

@@ -53,10 +53,17 @@ func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, userGro
 func (a *Adapter) LogUpdateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data map[string]interface{}) {
 	go func(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string) {
 		var b bytes.Buffer
+
+		i := 0
+		count := len(data)
 		for key, value := range data {
-			res := fmt.Sprintf("%s - %s", key, value)
+			res := fmt.Sprintf("%s:%s", key, value)
 			b.WriteString(res)
-			b.WriteString("\t")
+
+			if i < count {
+				b.WriteString(", ")
+			}
+			i++
 		}
 		change := b.String()
 

@@ -421,7 +421,7 @@ func (app *Application) createCounty(current model.User, name string, stateProvi
 	return county, nil
 }
 
-func (app *Application) updateCounty(ID string, name string, stateProvince string, country string) (*model.County, error) {
+func (app *Application) updateCounty(current model.User, ID string, name string, stateProvince string, country string) (*model.County, error) {
 	county, err := app.storage.FindCounty(ID)
 	if err != nil {
 		return nil, err
@@ -440,6 +440,11 @@ func (app *Application) updateCounty(ID string, name string, stateProvince strin
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "stateProvince", Value: stateProvince}, {Key: "country", Value: country}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, app.getUsedGroup(), "county", county.ID, lData)
 
 	return county, nil
 }

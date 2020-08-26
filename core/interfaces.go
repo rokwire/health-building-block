@@ -250,7 +250,7 @@ type Administration interface {
 
 	FindCounties(f *utils.Filter) ([]*model.County, error)
 	CreateCounty(current model.User, name string, stateProvince string, country string) (*model.County, error)
-	UpdateCounty(ID string, name string, stateProvince string, country string) (*model.County, error)
+	UpdateCounty(current model.User, ID string, name string, stateProvince string, country string) (*model.County, error)
 	DeleteCounty(current model.User, ID string) error
 
 	CreateGuideline(countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
@@ -408,8 +408,8 @@ func (s *administrationImpl) CreateCounty(current model.User, name string, state
 	return s.app.createCounty(current, name, stateProvince, country)
 }
 
-func (s *administrationImpl) UpdateCounty(ID string, name string, stateProvince string, country string) (*model.County, error) {
-	return s.app.updateCounty(ID, name, stateProvince, country)
+func (s *administrationImpl) UpdateCounty(current model.User, ID string, name string, stateProvince string, country string) (*model.County, error) {
+	return s.app.updateCounty(current, ID, name, stateProvince, country)
 }
 
 func (s *administrationImpl) DeleteCounty(current model.User, ID string) error {

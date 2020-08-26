@@ -1113,7 +1113,7 @@ func (h AdminApisHandler) UpdateCounty(current model.User, w http.ResponseWriter
 		return
 	}
 
-	county, err := h.app.Administration.UpdateCounty(ID, requestData.Name,
+	county, err := h.app.Administration.UpdateCounty(current, ID, requestData.Name,
 		requestData.StateProvince, requestData.Country)
 	if err != nil {
 		log.Println(err.Error())

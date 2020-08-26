@@ -57,19 +57,15 @@ func (user User) IsAdmin() bool {
 }
 
 //GetLogData gives the user audit log data
-func (user User) GetLogData() (string, string, []string) {
+func (user User) GetLogData() (string, string) {
 	if user.ShibbolethAuth == nil {
-		return "", "", nil
+		return "", ""
 	}
 
 	userIdentifier := user.ID
 	userInfo := user.ShibbolethAuth.Email
-	var groups []string
-	if user.ShibbolethAuth.IsMemberOf != nil {
-		groups = *user.ShibbolethAuth.IsMemberOf
-	}
 
-	return userIdentifier, userInfo, groups
+	return userIdentifier, userInfo
 }
 
 //ShibbolethAuth represents shibboleth auth entity

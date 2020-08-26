@@ -779,9 +779,9 @@ type ProfileUserData struct {
 
 //Audit is used by core to log history
 type Audit interface {
-	LogCreateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data []AuditDataEntry)
-	LogUpdateEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string, data []AuditDataEntry)
-	LogDeleteEvent(userIdentifier string, userInfo string, userGroups []string, entity string, entityID string)
+	LogCreateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry)
+	LogUpdateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry)
+	LogDeleteEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string)
 	//TODO add params
 	Find() ([]AuditEntity, error)
 }
@@ -790,7 +790,7 @@ type Audit interface {
 type AuditEntity struct {
 	UserIdentifier string    `json:"user_identifier" bson:"user_identifier"`
 	UserInfo       string    `json:"user_info" bson:"user_info"`
-	UserGroups     []string  `json:"user_groups" bson:"user_groups"`
+	UsedGroup      string    `json:"used_group" bson:"used_group"`
 	Entity         string    `json:"entity" bson:"entity"`
 	EntityID       string    `json:"entity_id" bson:"entity_id"`
 	Operation      string    `json:"operation" bson:"operation"`

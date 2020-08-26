@@ -414,9 +414,9 @@ func (app *Application) createCounty(current model.User, name string, stateProvi
 	}
 
 	//audit
-	userIdentifier, userInfo, groups := current.GetLogData()
+	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "stateProvince", Value: stateProvince}, {Key: "country", Value: country}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, groups, "county", county.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, app.getUsedGroup(), "county", county.ID, lData)
 
 	return county, nil
 }
@@ -451,8 +451,8 @@ func (app *Application) deleteCounty(current model.User, ID string) error {
 	}
 
 	//audit
-	userIdentifier, userInfo, groups := current.GetLogData()
-	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, groups, "county", ID)
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, app.getUsedGroup(), "county", ID)
 
 	return nil
 }
@@ -496,9 +496,9 @@ func (app *Application) updateGuideline(current model.User, ID string, name stri
 	}
 
 	//audit
-	userIdentifier, userInfo, groups := current.GetLogData()
+	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}, {Key: "items", Value: fmt.Sprint(items)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, groups, "guideline", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, app.getUsedGroup(), "guideline", ID, lData)
 
 	return guideline, nil
 }
@@ -1286,4 +1286,10 @@ func (app *Application) createAction(providerID string, userID string, encrypted
 	}(user.UUID)
 
 	return item, nil
+}
+
+func (app *Application) getUsedGroup() string {
+	//TODO - rework when the authorization is added
+	//return the admin role for now
+	return "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app"
 }

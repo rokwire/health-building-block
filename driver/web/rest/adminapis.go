@@ -24,6 +24,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -3872,14 +3873,31 @@ func (h ApisHandler) GetAudit(current model.User, group string, w http.ResponseW
 		}
 	}
 
-	sort := "created_at"
-	asc := true
+	//sort by
+	var sort *string
+	sortByKeys, ok := r.URL.Query()["sort"]
+	if ok {
+		sort = &sortByKeys[0]
+	}
+
+	//asc
+	var asc *bool
+	ascKeys, ok := r.URL.Query()["asc"]
+	if ok {
+		ascValue, err := strconv.ParseBool(ascKeys[0])
+		if err == nil {
+			asc = &ascValue
+		} else {
+			log.Printf("error parsing asc - %s\n", err)
+		}
+	}
+
 	var limit int64
 	limit = 900
 
-	//   &sort, &asc, &limit
+	//  &limit
 
-	items, err := h.app.Administration.GetAudit(current, group, userIdentifier, entity, entityID, operation, createdAt, &sort, &asc, &limit)
+	items, err := h.app.Administration.GetAudit(current, group, userIdentifier, entity, entityID, operation, createdAt, sort, asc, &limit)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

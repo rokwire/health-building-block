@@ -230,9 +230,9 @@ type Administration interface {
 	DeleteNews(current model.User, group string, ID string) error
 
 	GetResources() ([]*model.Resource, error)
-	CreateResource(title string, link string, displayOrder int) (*model.Resource, error)
-	UpdateResource(ID string, title string, link string, displayOrder int) (*model.Resource, error)
-	DeleteResource(ID string) error
+	CreateResource(current model.User, group string, title string, link string, displayOrder int) (*model.Resource, error)
+	UpdateResource(current model.User, group string, ID string, title string, link string, displayOrder int) (*model.Resource, error)
+	DeleteResource(current model.User, group string, ID string) error
 	UpdateResourceDisplayOrder(IDs []string) error
 
 	GetFAQs() (*model.FAQ, error)
@@ -346,16 +346,16 @@ func (s *administrationImpl) GetResources() ([]*model.Resource, error) {
 	return s.app.getAllResources()
 }
 
-func (s *administrationImpl) CreateResource(title string, link string, displayOrder int) (*model.Resource, error) {
-	return s.app.createResource(title, link, displayOrder)
+func (s *administrationImpl) CreateResource(current model.User, group string, title string, link string, displayOrder int) (*model.Resource, error) {
+	return s.app.createResource(current, group, title, link, displayOrder)
 }
 
-func (s *administrationImpl) UpdateResource(ID string, title string, link string, displayOrder int) (*model.Resource, error) {
-	return s.app.updateResource(ID, title, link, displayOrder)
+func (s *administrationImpl) UpdateResource(current model.User, group string, ID string, title string, link string, displayOrder int) (*model.Resource, error) {
+	return s.app.updateResource(current, group, ID, title, link, displayOrder)
 }
 
-func (s *administrationImpl) DeleteResource(ID string) error {
-	return s.app.deleteResource(ID)
+func (s *administrationImpl) DeleteResource(current model.User, group string, ID string) error {
+	return s.app.deleteResource(current, group, ID)
 }
 
 func (s *administrationImpl) UpdateResourceDisplayOrder(IDs []string) error {

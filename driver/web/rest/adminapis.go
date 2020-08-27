@@ -343,7 +343,7 @@ func (h AdminApisHandler) CreateResources(current model.User, group string, w ht
 		return
 	}
 
-	resource, err := h.app.Administration.CreateResource(title, link, displayOrder)
+	resource, err := h.app.Administration.CreateResource(current, group, title, link, displayOrder)
 	if err != nil {
 		log.Println("Error on creating a resource")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -407,7 +407,7 @@ func (h AdminApisHandler) UpdateResource(current model.User, group string, w htt
 		return
 	}
 
-	resource, err := h.app.Administration.UpdateResource(ID, requestData.Title, requestData.Link, displayOrder)
+	resource, err := h.app.Administration.UpdateResource(current, group, ID, requestData.Title, requestData.Link, displayOrder)
 	if err != nil {
 		log.Println("Error on updating the resource item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -442,7 +442,7 @@ func (h AdminApisHandler) DeleteResource(current model.User, group string, w htt
 		http.Error(w, "Resource item id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteResource(ID)
+	err := h.app.Administration.DeleteResource(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -117,15 +117,21 @@ func (app *Application) getAllResources() ([]*model.Resource, error) {
 	return news, nil
 }
 
-func (app *Application) createResource(title string, link string, displayOrder int) (*model.Resource, error) {
+func (app *Application) createResource(current model.User, group string, title string, link string, displayOrder int) (*model.Resource, error) {
 	resource, err := app.storage.CreateResource(title, link, displayOrder)
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "link", Value: link}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "resource", resource.ID, lData)
+
 	return resource, nil
 }
 
-func (app *Application) updateResource(ID string, title string, link string, displayOrder int) (*model.Resource, error) {
+func (app *Application) updateResource(current model.User, group string, ID string, title string, link string, displayOrder int) (*model.Resource, error) {
 	resource, err := app.storage.FindResource(ID)
 	if err != nil {
 		return nil, err
@@ -145,14 +151,24 @@ func (app *Application) updateResource(ID string, title string, link string, dis
 		return nil, err
 	}
 
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "link", Value: link}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "resource", ID, lData)
+
 	return resource, nil
 }
 
-func (app *Application) deleteResource(ID string) error {
+func (app *Application) deleteResource(current model.User, group string, ID string) error {
 	err := app.storage.DeleteResource(ID)
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "resource", ID)
+
 	return nil
 }
 

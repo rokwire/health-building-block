@@ -311,7 +311,8 @@ type Administration interface {
 
 	CreateAction(providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
 
-	GetAudit() ([]*AuditEntity, error)
+	GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,
+		createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error)
 }
 
 type administrationImpl struct {
@@ -588,8 +589,9 @@ func (s *administrationImpl) CreateAction(providerID string, userID string, encr
 	return s.app.createAction(providerID, userID, encryptedKey, encryptedBlob)
 }
 
-func (s *administrationImpl) GetAudit() ([]*AuditEntity, error) {
-	return s.app.getAudit()
+func (s *administrationImpl) GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,
+	createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error) {
+	return s.app.getAudit(current, group, userIdentifier, entity, entityID, operation, createdAt, sortBy, asc, limit)
 }
 
 //Storage is used by core to storage data - DB storage adapter, file storage adapter etc

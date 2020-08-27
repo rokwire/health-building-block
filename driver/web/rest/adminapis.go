@@ -3829,7 +3829,19 @@ func (h ApisHandler) CreateAction(current model.User, group string, w http.Respo
 }
 
 func (h ApisHandler) GetAudit(current model.User, group string, w http.ResponseWriter, r *http.Request) {
-	items, err := h.app.Administration.GetAudit()
+
+	sort := "created_at"
+	asc := true
+	var limit int64
+	limit = 900
+
+	userIdentifier := "d6930d68-a007-11ea-85a6-60f81db5ecc0"
+	entity := "county"
+	entityID := "ede698ac-e852-11ea-bd0a-60f81db5ecc0"
+	operation := "create"
+	createdAt := time.Now()
+
+	items, err := h.app.Administration.GetAudit(current, group, &userIdentifier, &entity, &entityID, &operation, &createdAt, &sort, &asc, &limit)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

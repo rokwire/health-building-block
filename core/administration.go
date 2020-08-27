@@ -1524,22 +1524,18 @@ func (app *Application) createAction(providerID string, userID string, encrypted
 	return item, nil
 }
 
-func (app *Application) getAudit() ([]*AuditEntity, error) {
-	//TODO
+func (app *Application) getAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,
+	createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error) {
 
-	sort := "created_at"
-	asc := true
-	var limit int64
-	limit = 900
+	//Admin can look all logs
+	var usedGroup *string
+	if current.IsAdmin() {
+		usedGroup = nil
+	} else {
+		usedGroup = &group
+	}
 
-	userIdentifier := "d6930d68-a007-11ea-85a6-60f81db5ecc0"
-	usedGroup := "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app"
-	entity := "county"
-	entityID := "ede698ac-e852-11ea-bd0a-60f81db5ecc0"
-	operation := "create"
-	createdAt := time.Now()
-
-	items, err := app.audit.Find(&userIdentifier, &usedGroup, &entity, &entityID, &operation, &createdAt, &sort, &asc, &limit)
+	items, err := app.audit.Find(userIdentifier, usedGroup, entity, entityID, operation, createdAt, sortBy, asc, limit)
 	if err != nil {
 		return nil, err
 	}

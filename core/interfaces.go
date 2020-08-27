@@ -303,9 +303,9 @@ type Administration interface {
 	GetManualTestImage(ID string) (*string, *string, error)
 
 	GetAccessRules() ([]*model.AccessRule, error)
-	CreateAccessRule(countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
-	UpdateAccessRule(ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
-	DeleteAccessRule(ID string) error
+	CreateAccessRule(current model.User, group string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
+	UpdateAccessRule(current model.User, group string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
+	DeleteAccessRule(current model.User, group string, ID string) error
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
@@ -568,16 +568,16 @@ func (s *administrationImpl) GetAccessRules() ([]*model.AccessRule, error) {
 	return s.app.getAccessRules()
 }
 
-func (s *administrationImpl) CreateAccessRule(countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
-	return s.app.createAccessRule(countyID, rules)
+func (s *administrationImpl) CreateAccessRule(current model.User, group string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+	return s.app.createAccessRule(current, group, countyID, rules)
 }
 
-func (s *administrationImpl) UpdateAccessRule(ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
-	return s.app.updateAccessRule(ID, countyID, rules)
+func (s *administrationImpl) UpdateAccessRule(current model.User, group string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+	return s.app.updateAccessRule(current, group, ID, countyID, rules)
 }
 
-func (s *administrationImpl) DeleteAccessRule(ID string) error {
-	return s.app.deleteAccessRule(ID)
+func (s *administrationImpl) DeleteAccessRule(current model.User, group string, ID string) error {
+	return s.app.deleteAccessRule(current, group, ID)
 }
 
 func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User, error) {

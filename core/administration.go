@@ -1324,27 +1324,43 @@ func (app *Application) getAccessRules() ([]*model.AccessRule, error) {
 	return accessRules, nil
 }
 
-func (app *Application) createAccessRule(countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+func (app *Application) createAccessRule(current model.User, group string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
 	accessRule, err := app.storage.CreateAccessRule(countyID, rules)
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "rules", Value: fmt.Sprint(rules)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "access-rule", accessRule.ID, lData)
+
 	return accessRule, nil
 }
 
-func (app *Application) updateAccessRule(ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+func (app *Application) updateAccessRule(current model.User, group string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
 	accessRule, err := app.storage.UpdateAccessRule(ID, countyID, rules)
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "rules", Value: fmt.Sprint(rules)}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "access-rule", ID, lData)
+
 	return accessRule, nil
 }
 
-func (app *Application) deleteAccessRule(ID string) error {
+func (app *Application) deleteAccessRule(current model.User, group string, ID string) error {
 	err := app.storage.DeleteAccessRule(ID)
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "access-rule", ID)
 	return nil
 }
 

@@ -3518,7 +3518,7 @@ func (h AdminApisHandler) CreateAccessRule(current model.User, group string, w h
 		}
 	}
 
-	accessRule, err := h.app.Administration.CreateAccessRule(countyID, arRules)
+	accessRule, err := h.app.Administration.CreateAccessRule(current, group, countyID, arRules)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -3659,7 +3659,7 @@ func (h AdminApisHandler) UpdateAccessRule(current model.User, group string, w h
 		}
 	}
 
-	accessRule, err := h.app.Administration.UpdateAccessRule(ID, countyID, arRules)
+	accessRule, err := h.app.Administration.UpdateAccessRule(current, group, ID, countyID, arRules)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -3704,7 +3704,7 @@ func (h AdminApisHandler) DeleteAccessRule(current model.User, group string, w h
 		http.Error(w, "Access rule id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteAccessRule(ID)
+	err := h.app.Administration.DeleteAccessRule(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

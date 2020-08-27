@@ -3064,7 +3064,7 @@ func (h AdminApisHandler) CreateSymptomRule(current model.User, group string, w 
 		}
 	}
 
-	symptomRule, err := h.app.Administration.CreateSymptomRule(countyID, gr1Count, gr2Count, rsItems)
+	symptomRule, err := h.app.Administration.CreateSymptomRule(current, group, countyID, gr1Count, gr2Count, rsItems)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -3167,7 +3167,7 @@ func (h AdminApisHandler) UpdateSymptomRule(current model.User, group string, w 
 		}
 	}
 
-	symptomRule, err := h.app.Administration.UpdateSymptomRule(ID, countyID, gr1Count, gr2Count, rsItems)
+	symptomRule, err := h.app.Administration.UpdateSymptomRule(current, group, ID, countyID, gr1Count, gr2Count, rsItems)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -3262,7 +3262,7 @@ func (h AdminApisHandler) DeleteSymptomRule(current model.User, group string, w 
 		http.Error(w, "Symptom rule id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteSymptomRule(ID)
+	err := h.app.Administration.DeleteSymptomRule(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

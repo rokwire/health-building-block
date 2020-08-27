@@ -1226,7 +1226,7 @@ func (app *Application) getSymptomRules() ([]*model.SymptomRule, error) {
 	return symptomRules, nil
 }
 
-func (app *Application) createSymptomRule(countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error) {
+func (app *Application) createSymptomRule(current model.User, group string, countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error) {
 	// validate the data
 	err := app.validateSymptomRuleData(countyID, gr1Count, gr2Count, items)
 	if err != nil {
@@ -1238,10 +1238,17 @@ func (app *Application) createSymptomRule(countyID string, gr1Count int, gr2Coun
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "gr1Count", Value: fmt.Sprint(gr1Count)},
+		{Key: "gr2Count", Value: fmt.Sprint(gr2Count)}, {Key: "items", Value: fmt.Sprint(items)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "symptom-rule", symptomRule.ID, lData)
+
 	return symptomRule, nil
 }
 
-func (app *Application) updateSymptomRule(ID string, countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error) {
+func (app *Application) updateSymptomRule(current model.User, group string, ID string, countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error) {
 	//1. find the symptom rule
 	symptomRule, err := app.storage.FindSymptomRule(ID)
 	if err != nil {
@@ -1268,6 +1275,12 @@ func (app *Application) updateSymptomRule(ID string, countyID string, gr1Count i
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "gr1Count", Value: fmt.Sprint(gr1Count)},
+		{Key: "gr2Count", Value: fmt.Sprint(gr2Count)}, {Key: "items", Value: fmt.Sprint(items)}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptom-rule", ID, lData)
 
 	return symptomRule, nil
 }
@@ -1321,11 +1334,16 @@ func (app *Application) areGr1Gr2Valid(gr1 bool, gr2 bool, items []model.Symptom
 	return false
 }
 
-func (app *Application) deleteSymptomRule(ID string) error {
+func (app *Application) deleteSymptomRule(current model.User, group string, ID string) error {
 	err := app.storage.DeleteSymptomRule(ID)
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "symptom-rule", ID)
+
 	return nil
 }
 

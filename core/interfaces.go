@@ -294,9 +294,9 @@ type Administration interface {
 	GetSymptomGroups() ([]*model.SymptomGroup, error)
 
 	GetSymptomRules() ([]*model.SymptomRule, error)
-	CreateSymptomRule(countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error)
-	UpdateSymptomRule(ID string, countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error)
-	DeleteSymptomRule(ID string) error
+	CreateSymptomRule(current model.User, group string, countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error)
+	UpdateSymptomRule(current model.User, group string, ID string, countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error)
+	DeleteSymptomRule(current model.User, group string, ID string) error
 
 	GetManualTestByCountyID(countyID string, status *string) ([]*model.EManualTest, error)
 	ProcessManualTest(ID string, status string, encryptedKey *string, encryptedBlob *string) error
@@ -540,16 +540,16 @@ func (s *administrationImpl) GetSymptomRules() ([]*model.SymptomRule, error) {
 	return s.app.getSymptomRules()
 }
 
-func (s *administrationImpl) CreateSymptomRule(countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error) {
-	return s.app.createSymptomRule(countyID, gr1Count, gr2Count, items)
+func (s *administrationImpl) CreateSymptomRule(current model.User, group string, countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error) {
+	return s.app.createSymptomRule(current, group, countyID, gr1Count, gr2Count, items)
 }
 
-func (s *administrationImpl) UpdateSymptomRule(ID string, countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error) {
-	return s.app.updateSymptomRule(ID, countyID, gr1Count, gr2Count, items)
+func (s *administrationImpl) UpdateSymptomRule(current model.User, group string, ID string, countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error) {
+	return s.app.updateSymptomRule(current, group, ID, countyID, gr1Count, gr2Count, items)
 }
 
-func (s *administrationImpl) DeleteSymptomRule(ID string) error {
-	return s.app.deleteSymptomRule(ID)
+func (s *administrationImpl) DeleteSymptomRule(current model.User, group string, ID string) error {
+	return s.app.deleteSymptomRule(current, group, ID)
 }
 
 func (s *administrationImpl) GetManualTestByCountyID(countyID string, status *string) ([]*model.EManualTest, error) {

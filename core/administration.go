@@ -481,7 +481,7 @@ func (app *Application) createGuideline(current model.User, countyID string, nam
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}, {Key: "items", Value: fmt.Sprint(items)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, app.getUsedGroup(), "guideline", county.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, app.getUsedGroup(), "guideline", guideline.ID, lData)
 
 	return guideline, nil
 }

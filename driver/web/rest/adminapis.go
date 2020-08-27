@@ -36,7 +36,7 @@ type AdminApisHandler struct {
 }
 
 //GetCovid19Config gets the covid19 config
-func (h AdminApisHandler) GetCovid19Config(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetCovid19Config(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	config, err := h.app.Administration.GetCovid19Config()
 	if err != nil {
 		log.Printf("Error on getting covid19 config - %s\n", err)
@@ -55,7 +55,7 @@ func (h AdminApisHandler) GetCovid19Config(current model.User, w http.ResponseWr
 }
 
 //UpdateCovid19Config updates the covid19 config
-func (h AdminApisHandler) UpdateCovid19Config(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateCovid19Config(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -92,7 +92,7 @@ func (h AdminApisHandler) UpdateCovid19Config(current model.User, w http.Respons
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/news [get]
-func (h AdminApisHandler) GetNews(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetNews(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	newsItems, err := h.app.Administration.GetNews()
 	if err != nil {
 		log.Println("Error on getting the news items")
@@ -128,7 +128,7 @@ type createNews struct {
 // @Success 200 {object} model.News
 // @Security AdminUserAuth
 // @Router /admin/news [post]
-func (h AdminApisHandler) CreateNews(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateNews(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a news - %s\n", err.Error())
@@ -196,7 +196,7 @@ type updateNews struct {
 // @Success 200 {object} model.News
 // @Security AppUserAuth
 // @Router /admin/news/{id} [put]
-func (h AdminApisHandler) UpdateNews(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateNews(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -247,7 +247,7 @@ func (h AdminApisHandler) UpdateNews(current model.User, w http.ResponseWriter, 
 // @Success 200 {object} string "Successfuly deleted new items"
 // @Security AdminUserAuth
 // @Router /admin/news/{id} [delete]
-func (h AdminApisHandler) DeleteNews(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteNews(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -277,7 +277,7 @@ func (h AdminApisHandler) DeleteNews(current model.User, w http.ResponseWriter, 
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/resources [get]
-func (h AdminApisHandler) GetResources(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetResources(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	resources, err := h.app.Administration.GetResources()
 	if err != nil {
 		log.Println("Error on getting the resource items")
@@ -312,7 +312,7 @@ type createResource struct {
 // @Success 200 {object} model.Resource
 // @Security AdminUserAuth
 // @Router /admin/resources [post]
-func (h AdminApisHandler) CreateResources(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateResources(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a resource - %s\n", err.Error())
@@ -378,7 +378,7 @@ type updateResource struct {
 // @Success 200 {object} model.Resource
 // @Security AppUserAuth
 // @Router /admin/resources/{id} [put]
-func (h AdminApisHandler) UpdateResource(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateResource(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -434,7 +434,7 @@ func (h AdminApisHandler) UpdateResource(current model.User, w http.ResponseWrit
 // @Success 200 {object} string "Successfuly deleted resource item"
 // @Security AdminUserAuth
 // @Router /admin/resources/{id} [delete]]
-func (h AdminApisHandler) DeleteResource(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteResource(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -467,7 +467,7 @@ type updateDisplayOrderResource struct {
 // @Success 200 {object} string "Successfully updated resource items"
 // @Security AdminUserAuth
 // @Router /admin/resources/display-order [post]
-func (h AdminApisHandler) UpdateDisplaOrderResources(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateDisplaOrderResources(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal update resources display order - %s\n", err.Error())
@@ -522,7 +522,7 @@ type createFAQQuestion struct {
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/faq [get]
-func (h AdminApisHandler) GetFAQs(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetFAQs(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	faq, err := h.app.Administration.GetFAQs()
 	if err != nil {
 		log.Println("Error on getting the faqs items")
@@ -555,7 +555,7 @@ func (h AdminApisHandler) GetFAQs(current model.User, w http.ResponseWriter, r *
 // @Success 200 {string} Successfully created
 // @Security AdminUserAuth
 // @Router /admin/faq [post]
-func (h AdminApisHandler) CreateFAQItem(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateFAQItem(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a faq item - %s\n", err.Error())
@@ -616,7 +616,7 @@ type updateFAQ struct {
 // @Success 200 {string} Successfully updated
 // @Security AppUserAuth
 // @Router /admin/faq/{id} [put]
-func (h AdminApisHandler) UpdateFAQItem(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateFAQItem(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -675,7 +675,7 @@ type updateFAQSection struct {
 // @Success 200 {string} Successfully updated
 // @Security AppUserAuth
 // @Router /admin/faq/section/{id} [put]
-func (h AdminApisHandler) UpdateFAQSection(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateFAQSection(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -727,7 +727,7 @@ func (h AdminApisHandler) UpdateFAQSection(current model.User, w http.ResponseWr
 // @Success 200 {object} string "Successfuly deleted FAQ item"
 // @Security AdminUserAuth
 // @Router /admin/faq/{id} [delete]
-func (h AdminApisHandler) DeleteFAQItem(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteFAQItem(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -755,7 +755,7 @@ func (h AdminApisHandler) DeleteFAQItem(current model.User, w http.ResponseWrite
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/faq/section/{id} [delete]
-func (h AdminApisHandler) DeleteFAQSection(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteFAQSection(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -786,7 +786,7 @@ func (h AdminApisHandler) DeleteFAQSection(current model.User, w http.ResponseWr
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/providers [get]
-func (h AdminApisHandler) GetProviders(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetProviders(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	providers, err := h.app.Administration.GetProviders()
 	if err != nil {
 		log.Println("Error on getting the providers items")
@@ -828,7 +828,7 @@ type createProviderRequest struct {
 // @Success 200 {object} providerResponse
 // @Security AdminUserAuth
 // @Router /admin/providers [post]
-func (h AdminApisHandler) CreateProvider(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateProvider(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a status - %s\n", err.Error())
@@ -898,7 +898,7 @@ type updateProviderRequest struct {
 // @Success 200 {object} providerResponse
 // @Security AppUserAuth
 // @Router /admin/providers/{id} [put]
-func (h AdminApisHandler) UpdateProvider(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateProvider(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -965,7 +965,7 @@ func (h AdminApisHandler) UpdateProvider(current model.User, w http.ResponseWrit
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/providers/{id} [delete]
-func (h AdminApisHandler) DeleteProvider(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteProvider(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1008,7 +1008,7 @@ type createCountyResponse struct {
 // @Success 200 {object} createCountyResponse
 // @Security AdminUserAuth
 // @Router /admin/counties [post]
-func (h AdminApisHandler) CreateCounty(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateCounty(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a county - %s\n", err.Error())
@@ -1080,7 +1080,7 @@ type updateCountyResponse struct {
 // @Success 200 {object} updateCountyResponse
 // @Security AppUserAuth
 // @Router /admin/counties/{id} [put]
-func (h AdminApisHandler) UpdateCounty(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateCounty(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1143,7 +1143,7 @@ func (h AdminApisHandler) UpdateCounty(current model.User, w http.ResponseWriter
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/counties/{id} [delete]
-func (h AdminApisHandler) DeleteCounty(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteCounty(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1181,7 +1181,7 @@ type getCountiesResponse struct {
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/counties [get]
-func (h AdminApisHandler) GetCounties(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetCounties(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	counties, err := h.app.Administration.FindCounties(nil)
 	if err != nil {
 		log.Println(err.Error())
@@ -1244,7 +1244,7 @@ type createGuidelineItemsResponse struct {
 // @Success 200 {object} createGuidelineResponse
 // @Security AdminUserAuth
 // @Router /admin/guidelines [post]
-func (h AdminApisHandler) CreateGuideline(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateGuideline(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a guideline - %s\n", err.Error())
@@ -1342,7 +1342,7 @@ type updateGuidelineItemsResponse struct {
 // @Success 200 {object} updateGuidelineResponse
 // @Security AppUserAuth
 // @Router /admin/guidelines/{id} [put]
-func (h AdminApisHandler) UpdateGuideline(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateGuideline(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1420,7 +1420,7 @@ func (h AdminApisHandler) UpdateGuideline(current model.User, w http.ResponseWri
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/guidelines/{id} [delete]
-func (h AdminApisHandler) DeleteGuideline(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteGuideline(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1452,7 +1452,7 @@ func (h AdminApisHandler) DeleteGuideline(current model.User, w http.ResponseWri
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/guidelines [get]
-func (h AdminApisHandler) GetGuidelinesByCountyID(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetGuidelinesByCountyID(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	keys, ok := r.URL.Query()["county-id"]
 	if !ok || len(keys[0]) < 1 {
 		log.Println("url param 'county-id' is missing")
@@ -1513,7 +1513,7 @@ type createCountyStatusResponse struct {
 // @Success 200 {object} createCountyStatusResponse
 // @Security AdminUserAuth
 // @Router /admin/county-statuses [post]
-func (h AdminApisHandler) CreateCountyStatus(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateCountyStatus(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a county status - %s\n", err.Error())
@@ -1583,7 +1583,7 @@ type updateCountyStatusResponse struct {
 // @Success 200 {object} updateCountyStatusResponse
 // @Security AppUserAuth
 // @Router /admin/county-statuses/{id} [put]
-func (h AdminApisHandler) UpdateCountyStatus(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateCountyStatus(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1648,7 +1648,7 @@ func (h AdminApisHandler) UpdateCountyStatus(current model.User, w http.Response
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/county-statuses/{id} [delete]
-func (h AdminApisHandler) DeleteCountyStatus(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteCountyStatus(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1686,7 +1686,7 @@ type getCountyStatusesResponse struct {
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/county-statuses [get]
-func (h AdminApisHandler) GetCountyStatusesByCountyID(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetCountyStatusesByCountyID(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	keys, ok := r.URL.Query()["county-id"]
 	if !ok || len(keys[0]) < 1 {
 		log.Println("url param 'county-id' is missing")
@@ -1740,7 +1740,7 @@ type createTestTypeResponse struct {
 // @Success 200 {object} createTestTypeResponse
 // @Security AdminUserAuth
 // @Router /admin/test-types [post]
-func (h AdminApisHandler) CreateTestType(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateTestType(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a test type - %s\n", err.Error())
@@ -1808,7 +1808,7 @@ type updateTestTypeResponse struct {
 // @Success 200 {object} updateTestTypeResponse
 // @Security AppUserAuth
 // @Router /admin/test-types/{id} [put]
-func (h AdminApisHandler) UpdateTestType(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateTestType(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1869,7 +1869,7 @@ func (h AdminApisHandler) UpdateTestType(current model.User, w http.ResponseWrit
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/test-types/{id} [delete]
-func (h AdminApisHandler) DeleteTestType(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteTestType(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1906,7 +1906,7 @@ type getTestTypesResponse struct {
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/test-types [get]
-func (h AdminApisHandler) GetTestTypes(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetTestTypes(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	/*if !current.IsAdmin() {
 		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 		return
@@ -1963,7 +1963,7 @@ type createTestTypeResultResponse struct {
 // @Success 200 {object} createTestTypeResultResponse
 // @Security AdminUserAuth
 // @Router /admin/test-type-results [post]
-func (h AdminApisHandler) CreateTestTypeResult(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateTestTypeResult(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a test type result - %s\n", err.Error())
@@ -2041,7 +2041,7 @@ type updateTestTypeResultResponse struct {
 // @Success 200 {object} updateTestTypeResultResponse
 // @Security AppUserAuth
 // @Router /admin/test-type-results/{id} [put]
-func (h AdminApisHandler) UpdateTestTypeResult(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateTestTypeResult(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -2109,7 +2109,7 @@ func (h AdminApisHandler) UpdateTestTypeResult(current model.User, w http.Respon
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/test-type-results/{id} [delete]
-func (h AdminApisHandler) DeleteTestTypeResult(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteTestTypeResult(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -2149,7 +2149,7 @@ type getTestTypeResultsResponse struct {
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/test-type-results [get]
-func (h AdminApisHandler) GetTestTypeResultsByTestTypeID(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetTestTypeResultsByTestTypeID(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	keys, ok := r.URL.Query()["test-type-id"]
 	if !ok || len(keys[0]) < 1 {
 		log.Println("url param 'test-type-id' is missing")
@@ -2220,7 +2220,7 @@ type createRuleResultsStatusesTypeResponse struct {
 // @Success 200 {object} createRuleResponse
 // @Security AdminUserAuth
 // @Router /admin/rules [post]
-func (h AdminApisHandler) CreateRule(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a rule - %s\n", err.Error())
@@ -2323,7 +2323,7 @@ type updateRuleResultsStatusesTypeResponse struct {
 // @Success 200 {object} updateRuleResponse
 // @Security AppUserAuth
 // @Router /admin/rules/{id} [put]
-func (h AdminApisHandler) UpdateRule(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -2403,7 +2403,7 @@ func (h AdminApisHandler) UpdateRule(current model.User, w http.ResponseWriter, 
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/rules/{id} [delete]
-func (h AdminApisHandler) DeleteRule(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -2448,7 +2448,7 @@ type getRulesResultsStatusesTypeResponse struct {
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/rules [get]
-func (h AdminApisHandler) GetRules(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	rules, err := h.app.Administration.GetRules()
 	if err != nil {
 		log.Println("Error on getting the rules items")
@@ -2519,7 +2519,7 @@ type locationOperationDayRequest struct {
 // @Success 200 {object} locationResponse
 // @Security AdminUserAuth
 // @Router /admin/locations [post]
-func (h AdminApisHandler) CreateLocation(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateLocation(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a lcoation - %s\n", err.Error())
@@ -2620,7 +2620,7 @@ type updateLocationRequest struct {
 // @Success 200 {object} locationResponse
 // @Security AppUserAuth
 // @Router /admin/locations/{id} [put]
-func (h AdminApisHandler) UpdateLocation(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateLocation(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -2708,7 +2708,7 @@ func (h AdminApisHandler) UpdateLocation(current model.User, w http.ResponseWrit
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/locations [get]
-func (h AdminApisHandler) GetLocations(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetLocations(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	locations, err := h.app.Administration.GetLocations()
 	if err != nil {
 		log.Println("Error on getting the lcoations items")
@@ -2752,7 +2752,7 @@ func (h AdminApisHandler) GetLocations(current model.User, w http.ResponseWriter
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/locations/{id} [delete]
-func (h AdminApisHandler) DeleteLocation(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteLocation(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -2787,7 +2787,7 @@ type createSymptomRequest struct {
 // @Success 200 {object} symptomResponse
 // @Security AdminUserAuth
 // @Router /admin/symptoms [post]
-func (h AdminApisHandler) CreateSymptom(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateSymptom(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a symptom - %s\n", err.Error())
@@ -2848,7 +2848,7 @@ type updateSymptomRequest struct {
 // @Success 200 {object} symptomResponse
 // @Security AppUserAuth
 // @Router /admin/symptoms/{id} [put]
-func (h AdminApisHandler) UpdateSymptom(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateSymptom(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -2911,7 +2911,7 @@ func (h AdminApisHandler) UpdateSymptom(current model.User, w http.ResponseWrite
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/symptoms/{id} [delete]
-func (h AdminApisHandler) DeleteSymptom(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteSymptom(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -2949,7 +2949,7 @@ type getSymptomGroupsResponse struct {
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/symptom-groups [get]
-func (h AdminApisHandler) GetSymptomGroups(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetSymptomGroups(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	symptomGroups, err := h.app.Administration.GetSymptomGroups()
 	if err != nil {
 		log.Println("Error on getting the symptom groups items")
@@ -3025,7 +3025,7 @@ type symptomRuleItemResponse struct {
 // @Success 200 {object} symptomRuleResponse
 // @Security AdminUserAuth
 // @Router /admin/symptom-rules [post]
-func (h AdminApisHandler) CreateSymptomRule(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateSymptomRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a symptom rule - %s\n", err.Error())
@@ -3120,7 +3120,7 @@ type updateSymptomRuleItemRequest struct {
 // @Success 200 {object} symptomRuleResponse
 // @Security AppUserAuth
 // @Router /admin/symptom-rules/{id} [put]
-func (h AdminApisHandler) UpdateSymptomRule(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateSymptomRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -3207,7 +3207,7 @@ func (h AdminApisHandler) UpdateSymptomRule(current model.User, w http.ResponseW
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/symptom-rules [get]
-func (h AdminApisHandler) GetSymptomRules(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetSymptomRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	symptomRules, err := h.app.Administration.GetSymptomRules()
 	if err != nil {
 		log.Println("Error on getting the rules items")
@@ -3254,7 +3254,7 @@ func (h AdminApisHandler) GetSymptomRules(current model.User, w http.ResponseWri
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/symptom-rules/{id} [delete]
-func (h AdminApisHandler) DeleteSymptomRule(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteSymptomRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -3285,7 +3285,7 @@ func (h AdminApisHandler) DeleteSymptomRule(current model.User, w http.ResponseW
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/manual-tests [get]
-func (h AdminApisHandler) GetManualTestsByCountyID(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetManualTestsByCountyID(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	//county id
 	countyIDKeys, ok := r.URL.Query()["county-id"]
 	if !ok || len(countyIDKeys[0]) < 1 {
@@ -3353,7 +3353,7 @@ type processManualTestRequest struct {
 // @Success 200 {string} Successfully processed
 // @Security AppUserAuth
 // @Router /admin/manual-tests/{id}/process [put]
-func (h AdminApisHandler) ProcessManualTest(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) ProcessManualTest(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -3416,7 +3416,7 @@ func (h AdminApisHandler) ProcessManualTest(current model.User, w http.ResponseW
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/manual-tests/{id}/image [get]
-func (h AdminApisHandler) GetManualTestImage(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetManualTestImage(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -3482,7 +3482,7 @@ type accessRuleItemResponse struct {
 // @Success 200 {object} accessRuleResponse
 // @Security AdminUserAuth
 // @Router /admin/access-rules [post]
-func (h AdminApisHandler) CreateAccessRule(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateAccessRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a access rule - %s\n", err.Error())
@@ -3557,7 +3557,7 @@ func (h AdminApisHandler) CreateAccessRule(current model.User, w http.ResponseWr
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/access-rules [get]
-func (h AdminApisHandler) GetAccessRules(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetAccessRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	accessRules, err := h.app.Administration.GetAccessRules()
 	if err != nil {
 		log.Println("Error on getting the access rules items")
@@ -3615,7 +3615,7 @@ type updateAccessRuleItemRequest struct {
 // @Success 200 {object} accessRuleResponse
 // @Security AppUserAuth
 // @Router /admin/access-rules/{id} [put]
-func (h AdminApisHandler) UpdateAccessRule(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) UpdateAccessRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -3696,7 +3696,7 @@ func (h AdminApisHandler) UpdateAccessRule(current model.User, w http.ResponseWr
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
 // @Router /admin/access-rules/{id} [delete]
-func (h AdminApisHandler) DeleteAccessRule(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) DeleteAccessRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -3728,7 +3728,7 @@ func (h AdminApisHandler) DeleteAccessRule(current model.User, w http.ResponseWr
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
 // @Router /admin/user [get]
-func (h AdminApisHandler) GetUserByExternalID(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) GetUserByExternalID(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	keys, ok := r.URL.Query()["external-id"]
 	if !ok || len(keys[0]) < 1 {
 		log.Println("url param 'external-id' is missing")
@@ -3779,7 +3779,7 @@ type createActionRequest struct {
 // @Success 200 {object} model.CTest
 // @Security AdminUserAuth
 // @Router /admin/actions [post]
-func (h ApisHandler) CreateAction(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) CreateAction(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create an action - %s\n", err.Error())
@@ -3828,7 +3828,7 @@ func (h ApisHandler) CreateAction(current model.User, w http.ResponseWriter, r *
 	w.Write(data)
 }
 
-func (h ApisHandler) GetAudit(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetAudit(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	items, err := h.app.Administration.GetAudit()
 	if err != nil {
 		log.Println(err.Error())

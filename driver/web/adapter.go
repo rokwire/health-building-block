@@ -271,9 +271,9 @@ func (we Adapter) authWrapFunc(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-type authFunc = func(model.User, http.ResponseWriter, *http.Request)
+type adminAuthFunc = func(model.User, string, http.ResponseWriter, *http.Request)
 
-func (we Adapter) adminAppIDTokenAuthWrapFunc(handler authFunc) http.HandlerFunc {
+func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
@@ -301,9 +301,12 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler authFunc) http.HandlerFunc
 			return
 		}
 
-		handler(*user, w, req)
+		//hard code the admin group for now as this is the only one we currently support
+		handler(*user, "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app", w, req)
 	}
 }
+
+type authFunc = func(model.User, http.ResponseWriter, *http.Request)
 
 func (we Adapter) userAuthWrapFunc(handler authFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {

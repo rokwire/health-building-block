@@ -1529,8 +1529,10 @@ func (app *Application) getAudit() ([]*AuditEntity, error) {
 
 	sort := "created_at"
 	asc := true
+	var limit int64
+	limit = 2
 
-	items, err := app.audit.Find(&sort, &asc)
+	items, err := app.audit.Find(&sort, &asc, &limit)
 	if err != nil {
 		return nil, err
 	}

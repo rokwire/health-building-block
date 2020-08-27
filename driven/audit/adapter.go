@@ -108,7 +108,7 @@ func (a *Adapter) log(entity core.AuditEntity) {
 }
 
 //Find finds items
-func (a *Adapter) Find(sortBy *string, asc *bool) ([]*core.AuditEntity, error) {
+func (a *Adapter) Find(sortBy *string, asc *bool, limit *int64) ([]*core.AuditEntity, error) {
 	options := options.Find()
 
 	//add sort
@@ -119,6 +119,14 @@ func (a *Adapter) Find(sortBy *string, asc *bool) ([]*core.AuditEntity, error) {
 		}
 		options.SetSort(bson.D{primitive.E{Key: *sortBy, Value: ascValue}})
 	}
+
+	//add limit
+	var limitValue int64
+	limitValue = 1000 //default is 1000
+	if limit != nil {
+		limitValue = *limit
+	}
+	options.SetLimit(limitValue)
 
 	var result []*core.AuditEntity
 	err := a.db.audit.Find(nil, &result, options)

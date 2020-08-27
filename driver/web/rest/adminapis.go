@@ -3830,18 +3830,56 @@ func (h ApisHandler) CreateAction(current model.User, group string, w http.Respo
 
 func (h ApisHandler) GetAudit(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 
+	//user identifier
+	var userIdentifier *string
+	userIdentifierKeys, ok := r.URL.Query()["user-identifier"]
+	if ok {
+		userIdentifier = &userIdentifierKeys[0]
+	}
+
+	//entity
+	var entity *string
+	entityKeys, ok := r.URL.Query()["entity"]
+	if ok {
+		entity = &entityKeys[0]
+	}
+
+	//entity id
+	var entityID *string
+	entityIDKeys, ok := r.URL.Query()["entity-id"]
+	if ok {
+		entityID = &entityIDKeys[0]
+	}
+
+	//operation
+	var operation *string
+	operationKeys, ok := r.URL.Query()["operation"]
+	if ok {
+		operation = &operationKeys[0]
+	}
+
+	//operation
+	var createdAt *time.Time
+	createdAtKeys, ok := r.URL.Query()["created-at"]
+	if ok {
+		createdAtValue := &createdAtKeys[0]
+		layout := "2006-01-02T15:04:05.000Z"
+		t, err := time.Parse(layout, *createdAtValue)
+		if err == nil {
+			createdAt = &t
+		} else {
+			log.Printf("error parsing date - %s\n", err)
+		}
+	}
+
 	sort := "created_at"
 	asc := true
 	var limit int64
 	limit = 900
 
-	userIdentifier := "d6930d68-a007-11ea-85a6-60f81db5ecc0"
-	entity := "county"
-	entityID := "ede698ac-e852-11ea-bd0a-60f81db5ecc0"
-	operation := "create"
-	createdAt := time.Now()
+	//   &sort, &asc, &limit
 
-	items, err := h.app.Administration.GetAudit(current, group, &userIdentifier, &entity, &entityID, &operation, &createdAt, &sort, &asc, &limit)
+	items, err := h.app.Administration.GetAudit(current, group, userIdentifier, entity, entityID, operation, createdAt, &sort, &asc, &limit)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

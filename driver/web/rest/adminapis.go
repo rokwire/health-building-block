@@ -862,7 +862,7 @@ func (h AdminApisHandler) CreateProvider(current model.User, group string, w htt
 	manualTest := requestData.ManualTest
 	mechanisms := requestData.AvailableMechanisms
 
-	provider, err := h.app.Administration.CreateProvider(providerName, *manualTest, mechanisms)
+	provider, err := h.app.Administration.CreateProvider(current, group, providerName, *manualTest, mechanisms)
 	if err != nil {
 		log.Println("Error on creating a provider")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -937,7 +937,7 @@ func (h AdminApisHandler) UpdateProvider(current model.User, group string, w htt
 		return
 	}
 
-	provider, err := h.app.Administration.UpdateProvider(ID, requestData.ProviderName, *requestData.ManualTest, requestData.AvailableMechanisms)
+	provider, err := h.app.Administration.UpdateProvider(current, group, ID, requestData.ProviderName, *requestData.ManualTest, requestData.AvailableMechanisms)
 	if err != nil {
 		log.Println("Error on updating the provider item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -973,7 +973,7 @@ func (h AdminApisHandler) DeleteProvider(current model.User, group string, w htt
 		http.Error(w, "Provider id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteProvider(ID)
+	err := h.app.Administration.DeleteProvider(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

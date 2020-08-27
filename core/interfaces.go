@@ -244,9 +244,9 @@ type Administration interface {
 	UpdateFAQSection(ID string, title string, displayOrder int) error
 
 	GetProviders() ([]*model.Provider, error)
-	CreateProvider(providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
-	UpdateProvider(ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
-	DeleteProvider(ID string) error
+	CreateProvider(current model.User, group string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
+	UpdateProvider(current model.User, group string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
+	DeleteProvider(current model.User, group string, ID string) error
 
 	FindCounties(f *utils.Filter) ([]*model.County, error)
 	CreateCounty(current model.User, group string, name string, stateProvince string, country string) (*model.County, error)
@@ -390,16 +390,16 @@ func (s *administrationImpl) GetProviders() ([]*model.Provider, error) {
 	return s.app.getProviders()
 }
 
-func (s *administrationImpl) CreateProvider(providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
-	return s.app.createProvider(providerName, manualTest, availableMechanisms)
+func (s *administrationImpl) CreateProvider(current model.User, group string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
+	return s.app.createProvider(current, group, providerName, manualTest, availableMechanisms)
 }
 
-func (s *administrationImpl) UpdateProvider(ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
-	return s.app.updateProvider(ID, providerName, manualTest, availableMechanisms)
+func (s *administrationImpl) UpdateProvider(current model.User, group string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
+	return s.app.updateProvider(current, group, ID, providerName, manualTest, availableMechanisms)
 }
 
-func (s *administrationImpl) DeleteProvider(ID string) error {
-	return s.app.deleteProvider(ID)
+func (s *administrationImpl) DeleteProvider(current model.User, group string, ID string) error {
+	return s.app.deleteProvider(current, group, ID)
 }
 
 func (s *administrationImpl) FindCounties(f *utils.Filter) ([]*model.County, error) {

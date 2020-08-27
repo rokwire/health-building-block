@@ -287,9 +287,9 @@ type Administration interface {
 		daysOfOperation []model.OperationDay, url string, notes string, availableTests []string) (*model.Location, error)
 	DeleteLocation(current model.User, group string, ID string) error
 
-	CreateSymptom(Name string, SymptomGroup string) (*model.Symptom, error)
-	UpdateSymptom(ID string, name string) (*model.Symptom, error)
-	DeleteSymptom(ID string) error
+	CreateSymptom(current model.User, group string, Name string, SymptomGroup string) (*model.Symptom, error)
+	UpdateSymptom(current model.User, group string, ID string, name string) (*model.Symptom, error)
+	DeleteSymptom(current model.User, group string, ID string) error
 
 	GetSymptomGroups() ([]*model.SymptomGroup, error)
 
@@ -520,16 +520,16 @@ func (s *administrationImpl) DeleteLocation(current model.User, group string, ID
 	return s.app.deleteLocation(current, group, ID)
 }
 
-func (s *administrationImpl) CreateSymptom(name string, symptomGroup string) (*model.Symptom, error) {
-	return s.app.createSymptom(name, symptomGroup)
+func (s *administrationImpl) CreateSymptom(current model.User, group string, name string, symptomGroup string) (*model.Symptom, error) {
+	return s.app.createSymptom(current, group, name, symptomGroup)
 }
 
-func (s *administrationImpl) UpdateSymptom(ID string, name string) (*model.Symptom, error) {
-	return s.app.updateSymptom(ID, name)
+func (s *administrationImpl) UpdateSymptom(current model.User, group string, ID string, name string) (*model.Symptom, error) {
+	return s.app.updateSymptom(current, group, ID, name)
 }
 
-func (s *administrationImpl) DeleteSymptom(ID string) error {
-	return s.app.deleteSymptom(ID)
+func (s *administrationImpl) DeleteSymptom(current model.User, group string, ID string) error {
+	return s.app.deleteSymptom(current, group, ID)
 }
 
 func (s *administrationImpl) GetSymptomGroups() ([]*model.SymptomGroup, error) {

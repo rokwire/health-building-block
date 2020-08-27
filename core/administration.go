@@ -1166,15 +1166,21 @@ func (app *Application) deleteLocation(current model.User, group string, ID stri
 	return nil
 }
 
-func (app *Application) createSymptom(name string, symptomGroup string) (*model.Symptom, error) {
+func (app *Application) createSymptom(current model.User, group string, name string, symptomGroup string) (*model.Symptom, error) {
 	symptom, err := app.storage.CreateSymptom(name, symptomGroup)
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "symptomGroup", Value: symptomGroup}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "symptom", symptom.ID, lData)
+
 	return symptom, nil
 }
 
-func (app *Application) updateSymptom(ID string, name string) (*model.Symptom, error) {
+func (app *Application) updateSymptom(current model.User, group string, ID string, name string) (*model.Symptom, error) {
 	symptom, err := app.storage.FindSymptom(ID)
 	if err != nil {
 		return nil, err
@@ -1192,14 +1198,23 @@ func (app *Application) updateSymptom(ID string, name string) (*model.Symptom, e
 		return nil, err
 	}
 
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "name", Value: name}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptom", ID, lData)
+
 	return symptom, nil
 }
 
-func (app *Application) deleteSymptom(ID string) error {
+func (app *Application) deleteSymptom(current model.User, group string, ID string) error {
 	err := app.storage.DeleteSymptom(ID)
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "symptom", ID)
 	return nil
 }
 

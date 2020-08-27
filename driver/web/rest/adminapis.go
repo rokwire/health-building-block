@@ -2814,7 +2814,7 @@ func (h AdminApisHandler) CreateSymptom(current model.User, group string, w http
 	name := requestData.Name
 	symptomGroup := requestData.SymptomGroup
 
-	symptom, err := h.app.Administration.CreateSymptom(name, symptomGroup)
+	symptom, err := h.app.Administration.CreateSymptom(current, group, name, symptomGroup)
 	if err != nil {
 		log.Printf("Error on creating a location - %s\n", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2882,7 +2882,7 @@ func (h AdminApisHandler) UpdateSymptom(current model.User, group string, w http
 	}
 
 	name := requestData.Name
-	symptom, err := h.app.Administration.UpdateSymptom(ID, name)
+	symptom, err := h.app.Administration.UpdateSymptom(current, group, ID, name)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2919,7 +2919,7 @@ func (h AdminApisHandler) DeleteSymptom(current model.User, group string, w http
 		http.Error(w, "Symptom id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteSymptom(ID)
+	err := h.app.Administration.DeleteSymptom(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

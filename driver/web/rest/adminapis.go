@@ -1542,7 +1542,7 @@ func (h AdminApisHandler) CreateCountyStatus(current model.User, group string, w
 	name := requestData.Name
 	description := requestData.Description
 
-	countyStatus, err := h.app.Administration.CreateCountyStatus(countyID, name, description)
+	countyStatus, err := h.app.Administration.CreateCountyStatus(current, group, countyID, name, description)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1619,7 +1619,7 @@ func (h AdminApisHandler) UpdateCountyStatus(current model.User, group string, w
 	name := requestData.Name
 	description := requestData.Description
 
-	countyStatus, err := h.app.Administration.UpdateCountyStatus(ID, name, description)
+	countyStatus, err := h.app.Administration.UpdateCountyStatus(current, group, ID, name, description)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1656,7 +1656,7 @@ func (h AdminApisHandler) DeleteCountyStatus(current model.User, group string, w
 		http.Error(w, "County status id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteCountyStatus(ID)
+	err := h.app.Administration.DeleteCountyStatus(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

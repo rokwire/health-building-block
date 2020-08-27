@@ -545,7 +545,7 @@ func (app *Application) getGuidelinesByCountyID(countyID string) ([]*model.Guide
 	return guidelines, nil
 }
 
-func (app *Application) createCountyStatus(countyID string, name string, description string) (*model.CountyStatus, error) {
+func (app *Application) createCountyStatus(current model.User, group string, countyID string, name string, description string) (*model.CountyStatus, error) {
 	//1. find if we have a county for the provided ID
 	county, err := app.storage.FindCounty(countyID)
 	if err != nil {
@@ -560,10 +560,16 @@ func (app *Application) createCountyStatus(countyID string, name string, descrip
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "name", Value: name}, {Key: "description", Value: description}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county-status", countyStatus.ID, lData)
+
 	return countyStatus, nil
 }
 
-func (app *Application) updateCountyStatus(ID string, name string, description string) (*model.CountyStatus, error) {
+func (app *Application) updateCountyStatus(current model.User, group string, ID string, name string, description string) (*model.CountyStatus, error) {
 	countyStatus, err := app.storage.FindCountyStatus(ID)
 	if err != nil {
 		return nil, err
@@ -582,14 +588,24 @@ func (app *Application) updateCountyStatus(ID string, name string, description s
 		return nil, err
 	}
 
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county-status", ID, lData)
+
 	return countyStatus, nil
 }
 
-func (app *Application) deleteCountyStatus(ID string) error {
+func (app *Application) deleteCountyStatus(current model.User, group string, ID string) error {
 	err := app.storage.DeleteCountyStatus(ID)
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "county-status", ID)
+
 	return nil
 }
 

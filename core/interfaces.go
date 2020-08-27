@@ -258,9 +258,9 @@ type Administration interface {
 	DeleteGuideline(current model.User, group string, ID string) error
 	GetGuidelinesByCountyID(countyID string) ([]*model.Guideline, error)
 
-	CreateCountyStatus(countyID string, name string, description string) (*model.CountyStatus, error)
-	UpdateCountyStatus(ID string, name string, description string) (*model.CountyStatus, error)
-	DeleteCountyStatus(ID string) error
+	CreateCountyStatus(current model.User, group string, countyID string, name string, description string) (*model.CountyStatus, error)
+	UpdateCountyStatus(current model.User, group string, ID string, name string, description string) (*model.CountyStatus, error)
+	DeleteCountyStatus(current model.User, group string, ID string) error
 	GetCountyStatusByCountyID(countyID string) ([]*model.CountyStatus, error)
 
 	GetTestTypes() ([]*model.TestType, error)
@@ -434,16 +434,16 @@ func (s *administrationImpl) GetGuidelinesByCountyID(countyID string) ([]*model.
 	return s.app.getGuidelinesByCountyID(countyID)
 }
 
-func (s *administrationImpl) CreateCountyStatus(countyID string, name string, description string) (*model.CountyStatus, error) {
-	return s.app.createCountyStatus(countyID, name, description)
+func (s *administrationImpl) CreateCountyStatus(current model.User, group string, countyID string, name string, description string) (*model.CountyStatus, error) {
+	return s.app.createCountyStatus(current, group, countyID, name, description)
 }
 
-func (s *administrationImpl) UpdateCountyStatus(ID string, name string, description string) (*model.CountyStatus, error) {
-	return s.app.updateCountyStatus(ID, name, description)
+func (s *administrationImpl) UpdateCountyStatus(current model.User, group string, ID string, name string, description string) (*model.CountyStatus, error) {
+	return s.app.updateCountyStatus(current, group, ID, name, description)
 }
 
-func (s *administrationImpl) DeleteCountyStatus(ID string) error {
-	return s.app.deleteCountyStatus(ID)
+func (s *administrationImpl) DeleteCountyStatus(current model.User, group string, ID string) error {
+	return s.app.deleteCountyStatus(current, group, ID)
 }
 
 func (s *administrationImpl) GetCountyStatusByCountyID(countyID string) ([]*model.CountyStatus, error) {

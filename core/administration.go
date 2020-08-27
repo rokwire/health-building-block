@@ -1525,7 +1525,12 @@ func (app *Application) createAction(providerID string, userID string, encrypted
 }
 
 func (app *Application) getAudit() ([]*AuditEntity, error) {
-	items, err := app.audit.Find()
+	//TODO
+
+	sort := "created_at"
+	asc := true
+
+	items, err := app.audit.Find(&sort, &asc)
 	if err != nil {
 		return nil, err
 	}

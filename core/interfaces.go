@@ -788,8 +788,8 @@ type Audit interface {
 	LogCreateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry)
 	LogUpdateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry)
 	LogDeleteEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string)
-	//TODO add params
-	Find() ([]*AuditEntity, error)
+
+	Find(sortBy *string, asc *bool) ([]*AuditEntity, error)
 }
 
 //AuditEntity represents audit module entity

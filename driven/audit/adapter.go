@@ -24,6 +24,10 @@ import (
 	"log"
 	"strconv"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 //Adapter implements the Audit interface
@@ -104,9 +108,20 @@ func (a *Adapter) log(entity core.AuditEntity) {
 }
 
 //Find finds items
-func (a *Adapter) Find() ([]*core.AuditEntity, error) {
+func (a *Adapter) Find(sortBy *string, asc *bool) ([]*core.AuditEntity, error) {
+	options := options.Find()
+
+	//add sort
+	if sortBy != nil && asc != nil {
+		ascValue := -1
+		if *asc {
+			ascValue = 1
+		}
+		options.SetSort(bson.D{primitive.E{Key: *sortBy, Value: ascValue}})
+	}
+
 	var result []*core.AuditEntity
-	err := a.db.audit.Find(nil, &result, nil)
+	err := a.db.audit.Find(nil, &result, options)
 	if err != nil {
 		return nil, err
 	}

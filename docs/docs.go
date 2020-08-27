@@ -228,6 +228,84 @@ var doc = `{
                 }
             }
         },
+        "/admin/audit": {
+            "get": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    }
+                ],
+                "description": "Gives the audilt/log history",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "GetAudit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User identifier",
+                        "name": "user-identifier",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Entity",
+                        "name": "entity",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Entity ID",
+                        "name": "entity-id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Operation",
+                        "name": "operation",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Created At",
+                        "name": "created-at",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort By",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ascending",
+                        "name": "asc",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/AuditEntity"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/admin/counties": {
             "get": {
                 "security": [
@@ -3970,6 +4048,35 @@ var doc = `{
                 }
             }
         },
+        "AuditEntity": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "string"
+                },
+                "entity": {
+                    "type": "string"
+                },
+                "entity_id": {
+                    "type": "string"
+                },
+                "operation": {
+                    "type": "string"
+                },
+                "used_group": {
+                    "type": "string"
+                },
+                "user_identifier": {
+                    "type": "string"
+                },
+                "user_info": {
+                    "type": "string"
+                }
+            }
+        },
         "CTest": {
             "type": "object",
             "properties": {
@@ -5615,7 +5722,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.10.1",
+	Version:     "1.11.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

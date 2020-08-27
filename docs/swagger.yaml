@@ -60,6 +60,25 @@ definitions:
       value:
         type: string
     type: object
+  AuditEntity:
+    properties:
+      created_at:
+        type: string
+      data:
+        type: string
+      entity:
+        type: string
+      entity_id:
+        type: string
+      operation:
+        type: string
+      used_group:
+        type: string
+      user_identifier:
+        type: string
+      user_info:
+        type: string
+    type: object
   CTest:
     properties:
       date_created:
@@ -1134,7 +1153,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 1.10.1
+  version: 1.11.0
 paths:
   /admin/access-rules:
     get:
@@ -1257,6 +1276,56 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/CTest'
+      security:
+      - AdminUserAuth: []
+      tags:
+      - Admin
+  /admin/audit:
+    get:
+      consumes:
+      - application/json
+      description: Gives the audilt/log history
+      operationId: GetAudit
+      parameters:
+      - description: User identifier
+        in: query
+        name: user-identifier
+        type: string
+      - description: Entity
+        in: query
+        name: entity
+        type: string
+      - description: Entity ID
+        in: query
+        name: entity-id
+        type: string
+      - description: Operation
+        in: query
+        name: operation
+        type: string
+      - description: Created At
+        in: query
+        name: created-at
+        type: string
+      - description: Sort By
+        in: query
+        name: sort
+        type: string
+      - description: Ascending
+        in: query
+        name: asc
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/AuditEntity'
+            type: array
       security:
       - AdminUserAuth: []
       tags:

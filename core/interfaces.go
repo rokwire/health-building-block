@@ -249,13 +249,13 @@ type Administration interface {
 	DeleteProvider(ID string) error
 
 	FindCounties(f *utils.Filter) ([]*model.County, error)
-	CreateCounty(current model.User, name string, stateProvince string, country string) (*model.County, error)
-	UpdateCounty(current model.User, ID string, name string, stateProvince string, country string) (*model.County, error)
-	DeleteCounty(current model.User, ID string) error
+	CreateCounty(current model.User, group string, name string, stateProvince string, country string) (*model.County, error)
+	UpdateCounty(current model.User, group string, ID string, name string, stateProvince string, country string) (*model.County, error)
+	DeleteCounty(current model.User, group string, ID string) error
 
-	CreateGuideline(current model.User, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
-	UpdateGuideline(current model.User, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
-	DeleteGuideline(current model.User, ID string) error
+	CreateGuideline(current model.User, group string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
+	UpdateGuideline(current model.User, group string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
+	DeleteGuideline(current model.User, group string, ID string) error
 	GetGuidelinesByCountyID(countyID string) ([]*model.Guideline, error)
 
 	CreateCountyStatus(countyID string, name string, description string) (*model.CountyStatus, error)
@@ -406,28 +406,28 @@ func (s *administrationImpl) FindCounties(f *utils.Filter) ([]*model.County, err
 	return s.app.findCounties(f)
 }
 
-func (s *administrationImpl) CreateCounty(current model.User, name string, stateProvince string, country string) (*model.County, error) {
-	return s.app.createCounty(current, name, stateProvince, country)
+func (s *administrationImpl) CreateCounty(current model.User, group string, name string, stateProvince string, country string) (*model.County, error) {
+	return s.app.createCounty(current, group, name, stateProvince, country)
 }
 
-func (s *administrationImpl) UpdateCounty(current model.User, ID string, name string, stateProvince string, country string) (*model.County, error) {
-	return s.app.updateCounty(current, ID, name, stateProvince, country)
+func (s *administrationImpl) UpdateCounty(current model.User, group string, ID string, name string, stateProvince string, country string) (*model.County, error) {
+	return s.app.updateCounty(current, group, ID, name, stateProvince, country)
 }
 
-func (s *administrationImpl) DeleteCounty(current model.User, ID string) error {
-	return s.app.deleteCounty(current, ID)
+func (s *administrationImpl) DeleteCounty(current model.User, group string, ID string) error {
+	return s.app.deleteCounty(current, group, ID)
 }
 
-func (s *administrationImpl) CreateGuideline(current model.User, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
-	return s.app.createGuideline(current, countyID, name, description, items)
+func (s *administrationImpl) CreateGuideline(current model.User, group string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+	return s.app.createGuideline(current, group, countyID, name, description, items)
 }
 
-func (s *administrationImpl) UpdateGuideline(current model.User, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
-	return s.app.updateGuideline(current, ID, name, description, items)
+func (s *administrationImpl) UpdateGuideline(current model.User, group string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+	return s.app.updateGuideline(current, group, ID, name, description, items)
 }
 
-func (s *administrationImpl) DeleteGuideline(current model.User, ID string) error {
-	return s.app.deleteGuideline(current, ID)
+func (s *administrationImpl) DeleteGuideline(current model.User, group string, ID string) error {
+	return s.app.deleteGuideline(current, group, ID)
 }
 
 func (s *administrationImpl) GetGuidelinesByCountyID(countyID string) ([]*model.Guideline, error) {

@@ -407,7 +407,7 @@ func (app *Application) deleteProvider(ID string) error {
 	return nil
 }
 
-func (app *Application) createCounty(current model.User, name string, stateProvince string, country string) (*model.County, error) {
+func (app *Application) createCounty(current model.User, group string, name string, stateProvince string, country string) (*model.County, error) {
 	county, err := app.storage.CreateCounty(name, stateProvince, country)
 	if err != nil {
 		return nil, err
@@ -416,12 +416,12 @@ func (app *Application) createCounty(current model.User, name string, stateProvi
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "stateProvince", Value: stateProvince}, {Key: "country", Value: country}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, app.getUsedGroup(), "county", county.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county", county.ID, lData)
 
 	return county, nil
 }
 
-func (app *Application) updateCounty(current model.User, ID string, name string, stateProvince string, country string) (*model.County, error) {
+func (app *Application) updateCounty(current model.User, group string, ID string, name string, stateProvince string, country string) (*model.County, error) {
 	county, err := app.storage.FindCounty(ID)
 	if err != nil {
 		return nil, err
@@ -444,12 +444,12 @@ func (app *Application) updateCounty(current model.User, ID string, name string,
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "stateProvince", Value: stateProvince}, {Key: "country", Value: country}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, app.getUsedGroup(), "county", county.ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county", county.ID, lData)
 
 	return county, nil
 }
 
-func (app *Application) deleteCounty(current model.User, ID string) error {
+func (app *Application) deleteCounty(current model.User, group string, ID string) error {
 	err := app.storage.DeleteCounty(ID)
 	if err != nil {
 		return err
@@ -457,12 +457,12 @@ func (app *Application) deleteCounty(current model.User, ID string) error {
 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
-	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, app.getUsedGroup(), "county", ID)
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "county", ID)
 
 	return nil
 }
 
-func (app *Application) createGuideline(current model.User, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+func (app *Application) createGuideline(current model.User, group string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
 	//1. find if we have a county for the provided ID
 	county, err := app.storage.FindCounty(countyID)
 	if err != nil {
@@ -481,12 +481,12 @@ func (app *Application) createGuideline(current model.User, countyID string, nam
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}, {Key: "items", Value: fmt.Sprint(items)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, app.getUsedGroup(), "guideline", guideline.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "guideline", guideline.ID, lData)
 
 	return guideline, nil
 }
 
-func (app *Application) updateGuideline(current model.User, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+func (app *Application) updateGuideline(current model.User, group string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
 	guideline, err := app.storage.FindGuideline(ID)
 	if err != nil {
 		return nil, err
@@ -509,12 +509,12 @@ func (app *Application) updateGuideline(current model.User, ID string, name stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}, {Key: "items", Value: fmt.Sprint(items)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, app.getUsedGroup(), "guideline", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "guideline", ID, lData)
 
 	return guideline, nil
 }
 
-func (app *Application) deleteGuideline(current model.User, ID string) error {
+func (app *Application) deleteGuideline(current model.User, group string, ID string) error {
 	err := app.storage.DeleteGuideline(ID)
 	if err != nil {
 		return err
@@ -522,7 +522,7 @@ func (app *Application) deleteGuideline(current model.User, ID string) error {
 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
-	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, app.getUsedGroup(), "guideline", ID)
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "guideline", ID)
 
 	return nil
 }
@@ -1310,10 +1310,4 @@ func (app *Application) getAudit() ([]*AuditEntity, error) {
 		return nil, err
 	}
 	return items, nil
-}
-
-func (app *Application) getUsedGroup() string {
-	//TODO - rework when the authorization is added
-	//return the admin role for now
-	return "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app"
 }

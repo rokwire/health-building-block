@@ -1036,7 +1036,7 @@ func (h AdminApisHandler) CreateCounty(current model.User, group string, w http.
 	stateProvince := requestData.StateProvince
 	country := requestData.Country
 
-	county, err := h.app.Administration.CreateCounty(current, name, stateProvince, country)
+	county, err := h.app.Administration.CreateCounty(current, group, name, stateProvince, country)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1113,7 +1113,7 @@ func (h AdminApisHandler) UpdateCounty(current model.User, group string, w http.
 		return
 	}
 
-	county, err := h.app.Administration.UpdateCounty(current, ID, requestData.Name,
+	county, err := h.app.Administration.UpdateCounty(current, group, ID, requestData.Name,
 		requestData.StateProvince, requestData.Country)
 	if err != nil {
 		log.Println(err.Error())
@@ -1151,7 +1151,7 @@ func (h AdminApisHandler) DeleteCounty(current model.User, group string, w http.
 		http.Error(w, "County id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteCounty(current, ID)
+	err := h.app.Administration.DeleteCounty(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1281,7 +1281,7 @@ func (h AdminApisHandler) CreateGuideline(current model.User, group string, w ht
 		items = append(items, r)
 	}
 
-	guideline, err := h.app.Administration.CreateGuideline(current, countyID, name, description, items)
+	guideline, err := h.app.Administration.CreateGuideline(current, group, countyID, name, description, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1386,7 +1386,7 @@ func (h AdminApisHandler) UpdateGuideline(current model.User, group string, w ht
 		items = append(items, r)
 	}
 
-	guideline, err := h.app.Administration.UpdateGuideline(current, ID, name, description, items)
+	guideline, err := h.app.Administration.UpdateGuideline(current, group, ID, name, description, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1428,7 +1428,7 @@ func (h AdminApisHandler) DeleteGuideline(current model.User, group string, w ht
 		http.Error(w, "Guideline id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteGuideline(current, ID)
+	err := h.app.Administration.DeleteGuideline(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

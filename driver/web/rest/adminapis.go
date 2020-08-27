@@ -160,7 +160,7 @@ func (h AdminApisHandler) CreateNews(current model.User, group string, w http.Re
 		return
 	}
 
-	news, err := h.app.Administration.CreateNews(date, title, description, htmlContent, nil)
+	news, err := h.app.Administration.CreateNews(current, group, date, title, description, htmlContent, nil)
 	if err != nil {
 		log.Println("Error on creating a new")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -219,7 +219,7 @@ func (h AdminApisHandler) UpdateNews(current model.User, group string, w http.Re
 		return
 	}
 
-	news, err := h.app.Administration.UpdateNews(ID, requestData.Date, requestData.Title,
+	news, err := h.app.Administration.UpdateNews(current, group, ID, requestData.Date, requestData.Title,
 		requestData.Description, requestData.HTMLContent, nil)
 	if err != nil {
 		log.Println("Error on updating the news item")
@@ -255,7 +255,7 @@ func (h AdminApisHandler) DeleteNews(current model.User, group string, w http.Re
 		http.Error(w, "News item id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteNews(ID)
+	err := h.app.Administration.DeleteNews(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

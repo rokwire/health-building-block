@@ -225,9 +225,9 @@ type Administration interface {
 	UpdateCovid19Config(config *model.COVID19Config) error
 
 	GetNews() ([]*model.News, error)
-	CreateNews(date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
-	UpdateNews(ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
-	DeleteNews(ID string) error
+	CreateNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
+	UpdateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
+	DeleteNews(current model.User, group string, ID string) error
 
 	GetResources() ([]*model.Resource, error)
 	CreateResource(title string, link string, displayOrder int) (*model.Resource, error)
@@ -330,16 +330,16 @@ func (s *administrationImpl) GetNews() ([]*model.News, error) {
 	return s.app.getAllNews()
 }
 
-func (s *administrationImpl) CreateNews(date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
-	return s.app.createNews(date, title, description, htmlContent, link)
+func (s *administrationImpl) CreateNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+	return s.app.createNews(current, group, date, title, description, htmlContent, link)
 }
 
-func (s *administrationImpl) UpdateNews(ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
-	return s.app.updateNews(ID, date, title, description, htmlContent, nil)
+func (s *administrationImpl) UpdateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+	return s.app.updateNews(current, group, ID, date, title, description, htmlContent, nil)
 }
 
-func (s *administrationImpl) DeleteNews(ID string) error {
-	return s.app.deleteNews(ID)
+func (s *administrationImpl) DeleteNews(current model.User, group string, ID string) error {
+	return s.app.deleteNews(current, group, ID)
 }
 
 func (s *administrationImpl) GetResources() ([]*model.Resource, error) {

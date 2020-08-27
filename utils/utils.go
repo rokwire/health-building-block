@@ -183,3 +183,11 @@ func GetInt(v *int) int {
 	}
 	return *v
 }
+
+//GetString gives the value which this pointer points. Gives empty string if the pointer is nil
+func GetString(v *string) string {
+	if v == nil {
+		return ""
+	}
+	return *v
+}

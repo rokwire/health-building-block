@@ -52,15 +52,22 @@ func (app *Application) getAllNews() ([]*model.News, error) {
 	return news, nil
 }
 
-func (app *Application) createNews(date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+func (app *Application) createNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
 	news, err := app.storage.CreateNews(date, title, description, htmlContent, link)
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "date", Value: fmt.Sprint(date)}, {Key: "title", Value: title}, {Key: "description", Value: description},
+		{Key: "htmlContent", Value: htmlContent}, {Key: "link", Value: utils.GetString(link)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "news", news.ID, lData)
+
 	return news, nil
 }
 
-func (app *Application) updateNews(ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+func (app *Application) updateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
 	news, err := app.storage.FindNews(ID)
 	if err != nil {
 		return nil, err
@@ -81,14 +88,24 @@ func (app *Application) updateNews(ID string, date time.Time, title string, desc
 		return nil, err
 	}
 
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "date", Value: fmt.Sprint(date)}, {Key: "title", Value: title}, {Key: "description", Value: description},
+		{Key: "htmlContent", Value: htmlContent}, {Key: "link", Value: utils.GetString(link)}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "news", ID, lData)
+
 	return news, nil
 }
 
-func (app *Application) deleteNews(ID string) error {
+func (app *Application) deleteNews(current model.User, group string, ID string) error {
 	err := app.storage.DeleteNews(ID)
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "news", ID)
 	return nil
 }
 

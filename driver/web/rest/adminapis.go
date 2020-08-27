@@ -3829,6 +3829,22 @@ func (h ApisHandler) CreateAction(current model.User, group string, w http.Respo
 	w.Write(data)
 }
 
+//GetAudit gets the audilt/log history
+// @Description Gives the audilt/log history
+// @Tags Admin
+// @ID GetAudit
+// @Accept json
+// @Param user-identifier query string false "User identifier"
+// @Param entity query string false "Entity"
+// @Param entity-id query string false "Entity ID"
+// @Param operation query string false "Operation"
+// @Param created-at query string false "Created At"
+// @Param sort query string false "Sort By"
+// @Param asc query string false "Ascending"
+// @Param limit query string false "Limit"
+// @Success 200 {array} core.AuditEntity
+// @Security AdminUserAuth
+// @Router /admin/audit [get]
 func (h ApisHandler) GetAudit(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 
 	//user identifier

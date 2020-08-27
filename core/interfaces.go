@@ -805,7 +805,7 @@ type AuditEntity struct {
 	Operation      string    `json:"operation" bson:"operation"`
 	Data           *string   `json:"data" bson:"data"`
 	CreatedAt      time.Time `json:"created_at" bson:"created_at"`
-}
+} // @name AuditEntity
 
 //AuditDataEntry represents audit data entry
 type AuditDataEntry struct {

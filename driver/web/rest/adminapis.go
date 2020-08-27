@@ -1994,7 +1994,7 @@ func (h AdminApisHandler) CreateTestTypeResult(current model.User, group string,
 	nextStepOffset := requestData.NextStepOffset
 	resultExpiresOffset := requestData.ResultExpiresOffset
 
-	testTypeResult, err := h.app.Administration.CreateTestTypeResult(testTypeID, name, nextStep, nextStepOffset, resultExpiresOffset)
+	testTypeResult, err := h.app.Administration.CreateTestTypeResult(current, group, testTypeID, name, nextStep, nextStepOffset, resultExpiresOffset)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2079,7 +2079,7 @@ func (h AdminApisHandler) UpdateTestTypeResult(current model.User, group string,
 	nextStepOffset := requestData.NextStepOffset
 	resultExpiresOffset := requestData.ResultExpiresOffset
 
-	testTypeResult, err := h.app.Administration.UpdateTestTypeResult(ID, name, nextStep, nextStepOffset, resultExpiresOffset)
+	testTypeResult, err := h.app.Administration.UpdateTestTypeResult(current, group, ID, name, nextStep, nextStepOffset, resultExpiresOffset)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2117,7 +2117,7 @@ func (h AdminApisHandler) DeleteTestTypeResult(current model.User, group string,
 		http.Error(w, "Test type result id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteTestTypeResult(ID)
+	err := h.app.Administration.DeleteTestTypeResult(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

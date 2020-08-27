@@ -1767,7 +1767,7 @@ func (h AdminApisHandler) CreateTestType(current model.User, group string, w htt
 	name := requestData.Name
 	priority := requestData.Priority
 
-	testType, err := h.app.Administration.CreateTestType(name, priority)
+	testType, err := h.app.Administration.CreateTestType(current, group, name, priority)
 	if err != nil {
 		log.Println("Error on creating a test type")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1841,7 +1841,7 @@ func (h AdminApisHandler) UpdateTestType(current model.User, group string, w htt
 		return
 	}
 
-	testType, err := h.app.Administration.UpdateTestType(ID, requestData.Name, requestData.Priority)
+	testType, err := h.app.Administration.UpdateTestType(current, group, ID, requestData.Name, requestData.Priority)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1877,7 +1877,7 @@ func (h AdminApisHandler) DeleteTestType(current model.User, group string, w htt
 		http.Error(w, "Test type id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteTestType(ID)
+	err := h.app.Administration.DeleteTestType(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

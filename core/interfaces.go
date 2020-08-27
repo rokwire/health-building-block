@@ -264,9 +264,9 @@ type Administration interface {
 	GetCountyStatusByCountyID(countyID string) ([]*model.CountyStatus, error)
 
 	GetTestTypes() ([]*model.TestType, error)
-	CreateTestType(name string, priority *int) (*model.TestType, error)
-	UpdateTestType(ID string, name string, priority *int) (*model.TestType, error)
-	DeleteTestType(ID string) error
+	CreateTestType(current model.User, group string, name string, priority *int) (*model.TestType, error)
+	UpdateTestType(current model.User, group string, ID string, name string, priority *int) (*model.TestType, error)
+	DeleteTestType(current model.User, group string, ID string) error
 
 	CreateTestTypeResult(testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error)
 	UpdateTestTypeResult(ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error)
@@ -454,16 +454,16 @@ func (s *administrationImpl) GetTestTypes() ([]*model.TestType, error) {
 	return s.app.getTestTypes()
 }
 
-func (s *administrationImpl) CreateTestType(name string, priority *int) (*model.TestType, error) {
-	return s.app.createTestType(name, priority)
+func (s *administrationImpl) CreateTestType(current model.User, group string, name string, priority *int) (*model.TestType, error) {
+	return s.app.createTestType(current, group, name, priority)
 }
 
-func (s *administrationImpl) UpdateTestType(ID string, name string, priority *int) (*model.TestType, error) {
-	return s.app.updateTestType(ID, name, priority)
+func (s *administrationImpl) UpdateTestType(current model.User, group string, ID string, name string, priority *int) (*model.TestType, error) {
+	return s.app.updateTestType(current, group, ID, name, priority)
 }
 
-func (s *administrationImpl) DeleteTestType(ID string) error {
-	return s.app.deleteTestType(ID)
+func (s *administrationImpl) DeleteTestType(current model.User, group string, ID string) error {
+	return s.app.deleteTestType(current, group, ID)
 }
 
 func (s *administrationImpl) CreateTestTypeResult(testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {

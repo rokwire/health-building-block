@@ -56,6 +56,23 @@ func (user User) IsAdmin() bool {
 	return false
 }
 
+//IsPublicHealth says if the user is public health
+func (user User) IsPublicHealth() bool {
+	if user.ShibbolethAuth == nil {
+		return false
+	}
+	isMemberOfList := user.ShibbolethAuth.IsMemberOf
+	if isMemberOfList == nil {
+		return false
+	}
+	for _, group := range *isMemberOfList {
+		if group == "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health" {
+			return true
+		}
+	}
+	return false
+}
+
 //GetLogData gives the user audit log data
 func (user User) GetLogData() (string, string) {
 	if user.ShibbolethAuth == nil {

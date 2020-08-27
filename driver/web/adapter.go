@@ -295,14 +295,20 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.Handle
 		}
 
 		//handle global access control for now
-		if !user.IsAdmin() {
+		//TODO Access control
+		if !(user.IsAdmin() || user.IsPublicHealth()) {
 			log.Println("Access control error")
 			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}
 
-		//hard code the admin group for now as this is the only one we currently support
-		handler(*user, "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app", w, req)
+		//TODO when working access control
+		//if admin, set admin group otherwise set public health
+		group := "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health"
+		if user.IsAdmin() {
+			group = "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app"
+		}
+		handler(*user, group, w, req)
 	}
 }
 

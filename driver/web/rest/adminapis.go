@@ -2258,7 +2258,7 @@ func (h AdminApisHandler) CreateRule(current model.User, group string, w http.Re
 		}
 	}
 
-	rule, err := h.app.Administration.CreateRule(countyID, testTypeID, priority, rsItems)
+	rule, err := h.app.Administration.CreateRule(current, group, countyID, testTypeID, priority, rsItems)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2367,7 +2367,7 @@ func (h AdminApisHandler) UpdateRule(current model.User, group string, w http.Re
 		}
 	}
 
-	rule, err := h.app.Administration.UpdateRule(ID, priority, rsItems)
+	rule, err := h.app.Administration.UpdateRule(current, group, ID, priority, rsItems)
 	if err != nil {
 		log.Printf("Error on updating the rule item - %s\n", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2411,7 +2411,7 @@ func (h AdminApisHandler) DeleteRule(current model.User, group string, w http.Re
 		http.Error(w, "Rule item id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteRule(ID)
+	err := h.app.Administration.DeleteRule(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

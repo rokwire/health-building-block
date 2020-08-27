@@ -274,9 +274,9 @@ type Administration interface {
 	GetTestTypeResultsByTestTypeID(testTypeID string) ([]*model.TestTypeResult, error)
 
 	GetRules() ([]*model.Rule, error)
-	CreateRule(countyID string, testTypeID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
-	UpdateRule(ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
-	DeleteRule(ID string) error
+	CreateRule(current model.User, group string, countyID string, testTypeID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
+	UpdateRule(current model.User, group string, ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
+	DeleteRule(current model.User, group string, ID string) error
 
 	GetLocations() ([]*model.Location, error)
 	CreateLocation(providerID string, countyID string, name string, address1 string, address2 string, city string,
@@ -486,16 +486,16 @@ func (s *administrationImpl) GetRules() ([]*model.Rule, error) {
 	return s.app.getRules()
 }
 
-func (s *administrationImpl) CreateRule(countyID string, testTypeID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
-	return s.app.createRule(countyID, testTypeID, priority, resultsStatuses)
+func (s *administrationImpl) CreateRule(current model.User, group string, countyID string, testTypeID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
+	return s.app.createRule(current, group, countyID, testTypeID, priority, resultsStatuses)
 }
 
-func (s *administrationImpl) UpdateRule(ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error) {
-	return s.app.updateRule(ID, priority, resultsStates)
+func (s *administrationImpl) UpdateRule(current model.User, group string, ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error) {
+	return s.app.updateRule(current, group, ID, priority, resultsStates)
 }
 
-func (s *administrationImpl) DeleteRule(ID string) error {
-	return s.app.deleteRule(ID)
+func (s *administrationImpl) DeleteRule(current model.User, group string, ID string) error {
+	return s.app.deleteRule(current, group, ID)
 }
 
 func (s *administrationImpl) GetLocations() ([]*model.Location, error) {

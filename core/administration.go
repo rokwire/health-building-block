@@ -802,7 +802,7 @@ func (app *Application) getRules() ([]*model.Rule, error) {
 	return rules, nil
 }
 
-func (app *Application) createRule(countyID string, testTypeID string, priority *int,
+func (app *Application) createRule(current model.User, group string, countyID string, testTypeID string, priority *int,
 	resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
 
 	//TODO - transactions, consistency!!!
@@ -845,14 +845,21 @@ func (app *Application) createRule(countyID string, testTypeID string, priority 
 	}
 
 	//5. Now create it
-	countyTestType, err := app.storage.CreateRule(countyID, testTypeID, priority, resultsStatuses)
+	rule, err := app.storage.CreateRule(countyID, testTypeID, priority, resultsStatuses)
 	if err != nil {
 		return nil, err
 	}
-	return countyTestType, nil
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "testTypeID", Value: testTypeID},
+		{Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}, {Key: "resultsStatuses", Value: fmt.Sprint(resultsStatuses)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "rule", rule.ID, lData)
+
+	return rule, nil
 }
 
-func (app *Application) updateRule(ID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
+func (app *Application) updateRule(current model.User, group string, ID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
 	//1. find the rule
 	rule, err := app.storage.FindRule(ID)
 	if err != nil {
@@ -880,6 +887,11 @@ func (app *Application) updateRule(ID string, priority *int, resultsStatuses []m
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}, {Key: "resultsStatuses", Value: fmt.Sprint(resultsStatuses)}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "rule", ID, lData)
 
 	return rule, nil
 }
@@ -969,11 +981,16 @@ func (app *Application) containsTestTypeResult(ID string, list []model.TestTypeR
 	return false
 }
 
-func (app *Application) deleteRule(ID string) error {
+func (app *Application) deleteRule(current model.User, group string, ID string) error {
 	err := app.storage.DeleteRule(ID)
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "rule", ID)
+
 	return nil
 }
 

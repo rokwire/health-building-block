@@ -5,6 +5,8 @@ import (
 	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -57,10 +59,34 @@ func (m *database) start() error {
 	return nil
 }
 
-func (m *database) applyAuditChecks(configs *collectionWrapper) error {
+func (m *database) applyAuditChecks(audit *collectionWrapper) error {
 	log.Println("apply audit checks.....")
 
-	//TODO
+	//add indexes
+	err := audit.AddIndex(bson.D{primitive.E{Key: "user_identifier", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+	err = audit.AddIndex(bson.D{primitive.E{Key: "used_group", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+	err = audit.AddIndex(bson.D{primitive.E{Key: "entity", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+	err = audit.AddIndex(bson.D{primitive.E{Key: "entity_id", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+	err = audit.AddIndex(bson.D{primitive.E{Key: "operation", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+	err = audit.AddIndex(bson.D{primitive.E{Key: "created_at", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
 
 	log.Println("audit checks passed")
 	return nil

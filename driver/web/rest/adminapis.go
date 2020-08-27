@@ -2562,7 +2562,7 @@ func (h AdminApisHandler) CreateLocation(current model.User, group string, w htt
 
 	availableTests := requestData.AvailableTests
 
-	location, err := h.app.Administration.CreateLocation(providerID, countyID, name, address1, address2, city,
+	location, err := h.app.Administration.CreateLocation(current, group, providerID, countyID, name, address1, address2, city,
 		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, availableTests)
 	if err != nil {
 		log.Printf("Error on creating a location - %s\n", err.Error())
@@ -2668,7 +2668,7 @@ func (h AdminApisHandler) UpdateLocation(current model.User, group string, w htt
 
 	availableTests := requestData.AvailableTests
 
-	location, err := h.app.Administration.UpdateLocation(ID, name, address1, address2, city,
+	location, err := h.app.Administration.UpdateLocation(current, group, ID, name, address1, address2, city,
 		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, availableTests)
 	if err != nil {
 		log.Printf("Error on creating a location - %s\n", err.Error())
@@ -2760,7 +2760,7 @@ func (h AdminApisHandler) DeleteLocation(current model.User, group string, w htt
 		http.Error(w, "Location id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteLocation(ID)
+	err := h.app.Administration.DeleteLocation(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -1002,7 +1002,7 @@ func (app *Application) getLocations() ([]*model.Location, error) {
 	return locations, nil
 }
 
-func (app *Application) createLocation(providerID string, countyID string, name string, address1 string, address2 string, city string,
+func (app *Application) createLocation(current model.User, group string, providerID string, countyID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
 	daysOfOperation []model.OperationDay, url string, notes string, availableTests []string) (*model.Location, error) {
 	//1. check if the location data is valid
@@ -1017,10 +1017,19 @@ func (app *Application) createLocation(providerID string, countyID string, name 
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "providerID", Value: providerID}, {Key: "countyID", Value: countyID}, {Key: "name", Value: name}, {Key: "address1", Value: address1},
+		{Key: "address2", Value: address2}, {Key: "city", Value: city}, {Key: "state", Value: state}, {Key: "zip", Value: zip}, {Key: "country", Value: country},
+		{Key: "latitude", Value: fmt.Sprint(latitude)}, {Key: "longitude", Value: fmt.Sprint(longitude)}, {Key: "contact", Value: contact},
+		{Key: "daysOfOperation", Value: fmt.Sprint(daysOfOperation)}, {Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "availableTests", Value: fmt.Sprint(availableTests)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "location", location.ID, lData)
+
 	return location, nil
 }
 
-func (app *Application) updateLocation(ID string, name string, address1 string, address2 string, city string,
+func (app *Application) updateLocation(current model.User, group string, ID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
 	daysOfOperation []model.OperationDay, url string, notes string, availableTests []string) (*model.Location, error) {
 
@@ -1070,6 +1079,14 @@ func (app *Application) updateLocation(ID string, name string, address1 string, 
 	if err != nil {
 		return nil, err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "address1", Value: address1}, {Key: "address2", Value: address2}, {Key: "city", Value: city},
+		{Key: "state", Value: state}, {Key: "zip", Value: zip}, {Key: "country", Value: country}, {Key: "latitude", Value: fmt.Sprint(latitude)},
+		{Key: "longitude", Value: fmt.Sprint(longitude)}, {Key: "contact", Value: contact}, {Key: "daysOfOperation", Value: fmt.Sprint(daysOfOperation)},
+		{Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "availableTests", Value: fmt.Sprint(availableTests)}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "location", ID, lData)
 
 	return location, nil
 }
@@ -1136,11 +1153,16 @@ func (app *Application) containsTestType(ID string, list []*model.TestType) bool
 	return false
 }
 
-func (app *Application) deleteLocation(ID string) error {
+func (app *Application) deleteLocation(current model.User, group string, ID string) error {
 	err := app.storage.DeleteLocation(ID)
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "location", ID)
+
 	return nil
 }
 

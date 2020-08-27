@@ -1530,9 +1530,16 @@ func (app *Application) getAudit() ([]*AuditEntity, error) {
 	sort := "created_at"
 	asc := true
 	var limit int64
-	limit = 2
+	limit = 900
 
-	items, err := app.audit.Find(&sort, &asc, &limit)
+	userIdentifier := "d6930d68-a007-11ea-85a6-60f81db5ecc0"
+	usedGroup := "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app"
+	entity := "county"
+	entityID := "ede698ac-e852-11ea-bd0a-60f81db5ecc0"
+	operation := "create"
+	createdAt := time.Now()
+
+	items, err := app.audit.Find(&userIdentifier, &usedGroup, &entity, &entityID, &operation, &createdAt, &sort, &asc, &limit)
 	if err != nil {
 		return nil, err
 	}

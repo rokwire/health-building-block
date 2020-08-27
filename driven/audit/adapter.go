@@ -108,7 +108,8 @@ func (a *Adapter) log(entity core.AuditEntity) {
 }
 
 //Find finds items
-func (a *Adapter) Find(sortBy *string, asc *bool, limit *int64) ([]*core.AuditEntity, error) {
+func (a *Adapter) Find(userIdentifier *string, usedGroup *string, entity *string, entityID *string, operation *string,
+	createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*core.AuditEntity, error) {
 	options := options.Find()
 
 	//add sort
@@ -128,8 +129,29 @@ func (a *Adapter) Find(sortBy *string, asc *bool, limit *int64) ([]*core.AuditEn
 	}
 	options.SetLimit(limitValue)
 
+	//add filter
+	filter := bson.D{}
+	if userIdentifier != nil {
+		filter = append(filter, bson.E{Key: "user_identifier", Value: *userIdentifier})
+	}
+	if usedGroup != nil {
+		filter = append(filter, bson.E{Key: "used_group", Value: *usedGroup})
+	}
+	if entity != nil {
+		filter = append(filter, bson.E{Key: "entity", Value: *entity})
+	}
+	if entityID != nil {
+		filter = append(filter, bson.E{Key: "entity_id", Value: *entityID})
+	}
+	if operation != nil {
+		filter = append(filter, bson.E{Key: "operation", Value: *operation})
+	}
+	if createdAt != nil {
+		filter = append(filter, bson.E{Key: "created_at", Value: bson.M{"$gte": *createdAt}})
+	}
+
 	var result []*core.AuditEntity
-	err := a.db.audit.Find(nil, &result, options)
+	err := a.db.audit.Find(filter, &result, options)
 	if err != nil {
 		return nil, err
 	}

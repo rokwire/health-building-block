@@ -3892,12 +3892,19 @@ func (h ApisHandler) GetAudit(current model.User, group string, w http.ResponseW
 		}
 	}
 
-	var limit int64
-	limit = 900
+	//limit
+	var limit *int64
+	limitKeys, ok := r.URL.Query()["limit"]
+	if ok {
+		limitValue, err := strconv.ParseInt(limitKeys[0], 10, 64)
+		if err == nil {
+			limit = &limitValue
+		} else {
+			log.Printf("error parsing limit - %s\n", err)
+		}
+	}
 
-	//  &limit
-
-	items, err := h.app.Administration.GetAudit(current, group, userIdentifier, entity, entityID, operation, createdAt, sort, asc, &limit)
+	items, err := h.app.Administration.GetAudit(current, group, userIdentifier, entity, entityID, operation, createdAt, sort, asc, limit)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

@@ -588,7 +588,7 @@ func (h AdminApisHandler) CreateFAQItem(current model.User, group string, w http
 		return
 	}
 
-	err = h.app.Administration.CreateFAQ(section, sdo, title, description, qdo)
+	err = h.app.Administration.CreateFAQ(current, group, section, sdo, title, description, qdo)
 	if err != nil {
 		log.Println("Error on creating a faq item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -648,7 +648,7 @@ func (h AdminApisHandler) UpdateFAQItem(current model.User, group string, w http
 		return
 	}
 
-	err = h.app.Administration.UpdateFAQ(ID, requestData.Title, requestData.Description, requestData.DisplayOrder)
+	err = h.app.Administration.UpdateFAQ(current, group, ID, requestData.Title, requestData.Description, requestData.DisplayOrder)
 	if err != nil {
 		log.Println("Error on updating the FAQ item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -735,7 +735,7 @@ func (h AdminApisHandler) DeleteFAQItem(current model.User, group string, w http
 		http.Error(w, "FAQ item id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteFAQ(ID)
+	err := h.app.Administration.DeleteFAQ(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

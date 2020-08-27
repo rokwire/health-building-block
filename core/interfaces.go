@@ -236,11 +236,11 @@ type Administration interface {
 	UpdateResourceDisplayOrder(IDs []string) error
 
 	GetFAQs() (*model.FAQ, error)
-	CreateFAQ(section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error
-	UpdateFAQ(ID string, title string, description string, displayOrder int) error
-	DeleteFAQ(ID string) error
-	DeleteFAQSection(ID string) error
+	CreateFAQ(current model.User, group string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error
+	UpdateFAQ(current model.User, group string, ID string, title string, description string, displayOrder int) error
+	DeleteFAQ(current model.User, group string, ID string) error
 
+	DeleteFAQSection(ID string) error
 	UpdateFAQSection(ID string, title string, displayOrder int) error
 
 	GetProviders() ([]*model.Provider, error)
@@ -366,16 +366,16 @@ func (s *administrationImpl) GetFAQs() (*model.FAQ, error) {
 	return s.app.getFAQs()
 }
 
-func (s *administrationImpl) CreateFAQ(section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
-	return s.app.createFAQ(section, sectionDisplayOrder, title, description, questionDisplayOrder)
+func (s *administrationImpl) CreateFAQ(current model.User, group string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
+	return s.app.createFAQ(current, group, section, sectionDisplayOrder, title, description, questionDisplayOrder)
 }
 
-func (s *administrationImpl) UpdateFAQ(ID string, title string, description string, displayOrder int) error {
-	return s.app.updateFAQ(ID, title, description, displayOrder)
+func (s *administrationImpl) UpdateFAQ(current model.User, group string, ID string, title string, description string, displayOrder int) error {
+	return s.app.updateFAQ(current, group, ID, title, description, displayOrder)
 }
 
-func (s *administrationImpl) DeleteFAQ(ID string) error {
-	return s.app.deleteFAQ(ID)
+func (s *administrationImpl) DeleteFAQ(current model.User, group string, ID string) error {
+	return s.app.deleteFAQ(current, group, ID)
 }
 
 func (s *administrationImpl) DeleteFAQSection(ID string) error {

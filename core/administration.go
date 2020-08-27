@@ -217,7 +217,7 @@ func (app *Application) getFAQs() (*model.FAQ, error) {
 	return faq, nil
 }
 
-func (app *Application) createFAQ(section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
+func (app *Application) createFAQ(current model.User, group string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
 	faq, err := app.storage.ReadFAQ()
 	if err != nil {
 		return err
@@ -264,6 +264,12 @@ func (app *Application) createFAQ(section string, sectionDisplayOrder int, title
 		return err
 	}
 
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "section", Value: section}, {Key: "sectionDisplayOrder", Value: fmt.Sprint(sectionDisplayOrder)}, {Key: "title", Value: title},
+		{Key: "description", Value: description}, {Key: "questionDisplayOrder", Value: fmt.Sprint(questionDisplayOrder)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-question", question.ID, lData)
+
 	return nil
 }
 
@@ -276,7 +282,7 @@ func (app *Application) findSection(title string, sections *[]*model.Section) *m
 	return nil
 }
 
-func (app *Application) updateFAQ(ID string, title string, description string, displayOrder int) error {
+func (app *Application) updateFAQ(current model.User, group string, ID string, title string, description string, displayOrder int) error {
 	faq, err := app.storage.ReadFAQ()
 	if err != nil {
 		return err
@@ -312,10 +318,18 @@ func (app *Application) updateFAQ(ID string, title string, description string, d
 	if err != nil {
 		return err
 	}
+
+	//title string, description string, displayOrder int
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "description", Value: description}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "faq-question", ID, lData)
+
 	return nil
 }
 
-func (app *Application) deleteFAQ(ID string) error {
+func (app *Application) deleteFAQ(current model.User, group string, ID string) error {
 	faq, err := app.storage.ReadFAQ()
 	if err != nil {
 		return err
@@ -354,6 +368,11 @@ func (app *Application) deleteFAQ(ID string) error {
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "faq-question", ID)
+
 	return nil
 }
 

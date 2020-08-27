@@ -235,6 +235,8 @@ func (we Adapter) Start() {
 
 	adminRestSubrouter.HandleFunc("/actions", we.adminAppIDTokenAuthWrapFunc(we.apisHandler.CreateAction)).Methods("POST")
 
+	adminRestSubrouter.HandleFunc("/audit", we.adminAppIDTokenAuthWrapFunc(we.apisHandler.GetAudit)).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(":80", router))
 }
 
@@ -269,9 +271,9 @@ func (we Adapter) authWrapFunc(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-type authFunc = func(model.User, http.ResponseWriter, *http.Request)
+type adminAuthFunc = func(model.User, string, http.ResponseWriter, *http.Request)
 
-func (we Adapter) adminAppIDTokenAuthWrapFunc(handler authFunc) http.HandlerFunc {
+func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
@@ -293,15 +295,24 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler authFunc) http.HandlerFunc
 		}
 
 		//handle global access control for now
-		if !user.IsAdmin() {
+		//TODO Access control
+		if !(user.IsAdmin() || user.IsPublicHealth()) {
 			log.Println("Access control error")
 			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}
 
-		handler(*user, w, req)
+		//TODO when working access control
+		//if admin, set admin group otherwise set public health
+		group := "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health"
+		if user.IsAdmin() {
+			group = "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app"
+		}
+		handler(*user, group, w, req)
 	}
 }
+
+type authFunc = func(model.User, http.ResponseWriter, *http.Request)
 
 func (we Adapter) userAuthWrapFunc(handler authFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {

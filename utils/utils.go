@@ -175,3 +175,19 @@ func EqualPointers(a, b *[]string) bool {
 	//both are not nil
 	return Equal(*a, *b)
 }
+
+//GetInt gives the value which this pointer points. Gives 0 if the pointer is nil
+func GetInt(v *int) int {
+	if v == nil {
+		return 0
+	}
+	return *v
+}
+
+//GetString gives the value which this pointer points. Gives empty string if the pointer is nil
+func GetString(v *string) string {
+	if v == nil {
+		return ""
+	}
+	return *v
+}

@@ -19,6 +19,7 @@ package main
 
 import (
 	"health/core"
+	audit "health/driven/audit"
 	dataprovider "health/driven/dataprovider"
 	messaging "health/driven/messaging"
 	profilebb "health/driven/profilebb"
@@ -52,6 +53,13 @@ func main() {
 		log.Fatal("Cannot start the mongoDB adapter - " + err.Error())
 	}
 
+	//audit adapter
+	auditAdapter := audit.NewAuditAdapter(mongoDBAuth, mongoDBName, mongoTimeout)
+	err = auditAdapter.Start()
+	if err != nil {
+		log.Fatal("Cannot start the audit adapter - " + err.Error())
+	}
+
 	//data provider adapter
 	newsRSSURL := getEnvKey("HEALTH_NEWS_RSS_URL", true)
 	resourcesURL := getEnvKey("HEALTH_RESOURCES_URL", true)
@@ -76,7 +84,7 @@ func main() {
 	profileBBAdapter := profilebb.NewProfileBBAdapter(profileHost, profileAPIKey)
 
 	//application
-	application := core.NewApplication(Version, Build, dataProvider, sender, messaging, profileBBAdapter, storageAdapter)
+	application := core.NewApplication(Version, Build, dataProvider, sender, messaging, profileBBAdapter, storageAdapter, auditAdapter)
 	application.Start()
 
 	//web adapter

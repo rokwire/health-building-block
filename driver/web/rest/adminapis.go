@@ -707,7 +707,7 @@ func (h AdminApisHandler) UpdateFAQSection(current model.User, group string, w h
 		return
 	}
 
-	err = h.app.Administration.UpdateFAQSection(ID, requestData.Title, requestData.DisplayOrder)
+	err = h.app.Administration.UpdateFAQSection(current, group, ID, requestData.Title, requestData.DisplayOrder)
 	if err != nil {
 		log.Println("Error on updating the FAQ section")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -763,7 +763,7 @@ func (h AdminApisHandler) DeleteFAQSection(current model.User, group string, w h
 		http.Error(w, "FAQ section id is required", http.StatusBadRequest)
 		return
 	}
-	err := h.app.Administration.DeleteFAQSection(ID)
+	err := h.app.Administration.DeleteFAQSection(current, group, ID)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

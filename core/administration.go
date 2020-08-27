@@ -376,11 +376,16 @@ func (app *Application) deleteFAQ(current model.User, group string, ID string) e
 	return nil
 }
 
-func (app *Application) deleteFAQSection(ID string) error {
+func (app *Application) deleteFAQSection(current model.User, group string, ID string) error {
 	err := app.storage.DeleteFAQSection(ID)
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "faq-section", ID)
+
 	return nil
 }
 
@@ -388,7 +393,7 @@ func remove(questions []*model.Question, s int) []*model.Question {
 	return append(questions[:s], questions[s+1:]...)
 }
 
-func (app *Application) updateFAQSection(ID string, title string, displayOrder int) error {
+func (app *Application) updateFAQSection(current model.User, group string, ID string, title string, displayOrder int) error {
 	faq, err := app.storage.ReadFAQ()
 	if err != nil {
 		return err
@@ -418,6 +423,12 @@ func (app *Application) updateFAQSection(ID string, title string, displayOrder i
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-section", ID, lData)
+
 	return nil
 }
 

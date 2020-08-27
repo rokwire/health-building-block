@@ -240,8 +240,8 @@ type Administration interface {
 	UpdateFAQ(current model.User, group string, ID string, title string, description string, displayOrder int) error
 	DeleteFAQ(current model.User, group string, ID string) error
 
-	DeleteFAQSection(ID string) error
-	UpdateFAQSection(ID string, title string, displayOrder int) error
+	DeleteFAQSection(current model.User, group string, ID string) error
+	UpdateFAQSection(current model.User, group string, ID string, title string, displayOrder int) error
 
 	GetProviders() ([]*model.Provider, error)
 	CreateProvider(current model.User, group string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
@@ -378,12 +378,12 @@ func (s *administrationImpl) DeleteFAQ(current model.User, group string, ID stri
 	return s.app.deleteFAQ(current, group, ID)
 }
 
-func (s *administrationImpl) DeleteFAQSection(ID string) error {
-	return s.app.deleteFAQSection(ID)
+func (s *administrationImpl) DeleteFAQSection(current model.User, group string, ID string) error {
+	return s.app.deleteFAQSection(current, group, ID)
 }
 
-func (s *administrationImpl) UpdateFAQSection(ID string, title string, displayOrder int) error {
-	return s.app.updateFAQSection(ID, title, displayOrder)
+func (s *administrationImpl) UpdateFAQSection(current model.User, group string, ID string, title string, displayOrder int) error {
+	return s.app.updateFAQSection(current, group, ID, title, displayOrder)
 }
 
 func (s *administrationImpl) GetProviders() ([]*model.Provider, error) {

@@ -1,8 +1,12 @@
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app, /health/admin/*, (GET)|(POST)|(PUT)|(DELETE)
-p, alice, /alice_data/*, GET
-p, alice, /alice_data/resource1, POST
 
-p, bob, /alice_data/resource2, GET
-p, bob, /bob_data/*, POST
-
-p, cathy, /cathy_data, (GET)|(POST)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/counties/*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/county-statuses/*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/test-types/*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/rules/*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/access-rules/*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/manual-tests/*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/locations/*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/symptoms/*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/symptom-groups/*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/symptom-rules/*, (GET)|(POST)|(PUT)|(DELETE)

@@ -28,6 +28,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/casbin/casbin"
 	"github.com/gorilla/mux"
 	"gopkg.in/go-playground/validator.v9"
 
@@ -77,6 +78,9 @@ func (we Adapter) Start() {
 	we.app.AddListener(&AppListener{&we})
 
 	we.auth.Start()
+
+	e := casbin.NewEnforcer("driver/web/authorization_model.conf", "driver/web/authorization_policy.csv")
+	log.Println(e)
 
 	router := mux.NewRouter().StrictSlash(true)
 

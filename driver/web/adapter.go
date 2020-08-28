@@ -300,23 +300,13 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.Handle
 			log.Println("Admin user created")
 		}
 
-		sub := "alice"                    // the user that wants to access a resource.
-		obj := "/alice_data/blabla/fsfds" // the resource that is going to be accessed.
-		act := "GET"                      // the operation that the user performs on the resource.
-
-		if res := we.authorization.Enforce(sub, obj, act); res {
-			// permit alice to read data1
-			log.Println("OK")
-		} else {
-			// deny the request, show an error
-			log.Println("DENY")
-		}
-
-		//handle global access control for now
-		//TODO Access control
-		if !(group == "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app" ||
-			group == "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health") {
-			log.Println("Access control error")
+		//authorization
+		sub := group        // the group that wants to access a resource.
+		obj := req.URL.Path // the resource that is going to be accessed.
+		act := req.Method   // the operation that the user performs on the resource.
+		acOK := we.authorization.Enforce(sub, obj, act)
+		if !acOK {
+			log.Printf("Access control error - %s is trying to apply %s operation for %s\n", sub, act, obj)
 			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}

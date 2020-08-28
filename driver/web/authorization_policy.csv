@@ -1,3 +1,4 @@
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app, /health/admin/*, (GET)|(POST)|(PUT)|(DELETE)
 p, alice, /alice_data/*, GET
 p, alice, /alice_data/resource1, POST
 

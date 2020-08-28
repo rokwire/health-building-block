@@ -72,6 +72,10 @@ type Adapter struct {
 // @in header (add Bearer prefix to the Authorization value)
 // @name Authorization
 
+// @securityDefinitions.apikey AdminGroupAuth
+// @in header
+// @name GROUP
+
 //Start starts the module
 func (we Adapter) Start() {
 

@@ -37,8 +37,9 @@ import (
 
 //Adapter entity
 type Adapter struct {
-	host string
-	auth *Auth
+	host          string
+	auth          *Auth
+	authorization *casbin.Enforcer
 
 	apisHandler      rest.ApisHandler
 	adminApisHandler rest.AdminApisHandler
@@ -78,23 +79,6 @@ func (we Adapter) Start() {
 	we.app.AddListener(&AppListener{&we})
 
 	we.auth.Start()
-
-	e := casbin.NewEnforcer("driver/web/authorization_model.conf", "driver/web/authorization_policy.csv")
-
-	sub := "alice"                    // the user that wants to access a resource.
-	obj := "/alice_data/blabla/fsfds" // the resource that is going to be accessed.
-	act := "GET"                      // the operation that the user performs on the resource.
-
-	if res := e.Enforce(sub, obj, act); res {
-		// permit alice to read data1
-		log.Println("OK")
-	} else {
-		// deny the request, show an error
-		log.Println("DENY")
-	}
-
-	roles := e.GetImplicitRolesForUser(sub)
-	log.Println(roles)
 
 	router := mux.NewRouter().StrictSlash(true)
 
@@ -312,6 +296,18 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.Handle
 			log.Println("Admin user created")
 		}
 
+		sub := "alice"                    // the user that wants to access a resource.
+		obj := "/alice_data/blabla/fsfds" // the resource that is going to be accessed.
+		act := "GET"                      // the operation that the user performs on the resource.
+
+		if res := we.authorization.Enforce(sub, obj, act); res {
+			// permit alice to read data1
+			log.Println("OK")
+		} else {
+			// deny the request, show an error
+			log.Println("DENY")
+		}
+
 		//handle global access control for now
 		//TODO Access control
 		if !(user.IsAdmin() || user.IsPublicHealth()) {
@@ -504,10 +500,11 @@ func (we Adapter) providerAuthWrapFunc(handler http.HandlerFunc) http.HandlerFun
 func NewWebAdapter(host string, app *core.Application, appKeys []string, oidcProvider string,
 	oidcAppClientID string, oidcAdminClientID string, phoneAuthSecret string, providersKeys []string) Adapter {
 	auth := NewAuth(app, appKeys, oidcProvider, oidcAppClientID, oidcAdminClientID, phoneAuthSecret, providersKeys)
+	authorization := casbin.NewEnforcer("driver/web/authorization_model.conf", "driver/web/authorization_policy.csv")
 
 	apisHandler := rest.NewApisHandler(app)
 	adminApisHandler := rest.NewAdminApisHandler(app)
-	return Adapter{host: host, auth: auth, apisHandler: apisHandler, adminApisHandler: adminApisHandler, app: app}
+	return Adapter{host: host, auth: auth, authorization: authorization, apisHandler: apisHandler, adminApisHandler: adminApisHandler, app: app}
 }
 
 //AppListener implements core.ApplicationListener interface

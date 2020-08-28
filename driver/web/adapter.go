@@ -80,7 +80,21 @@ func (we Adapter) Start() {
 	we.auth.Start()
 
 	e := casbin.NewEnforcer("driver/web/authorization_model.conf", "driver/web/authorization_policy.csv")
-	log.Println(e)
+
+	sub := "alice"                    // the user that wants to access a resource.
+	obj := "/alice_data/blabla/fsfds" // the resource that is going to be accessed.
+	act := "GET"                      // the operation that the user performs on the resource.
+
+	if res := e.Enforce(sub, obj, act); res {
+		// permit alice to read data1
+		log.Println("OK")
+	} else {
+		// deny the request, show an error
+		log.Println("DENY")
+	}
+
+	roles := e.GetImplicitRolesForUser(sub)
+	log.Println(roles)
 
 	router := mux.NewRouter().StrictSlash(true)
 

@@ -281,7 +281,7 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.Handle
 
 		var err error
 
-		ok, user, shibboAuth := we.auth.adminCheck(w, req)
+		ok, user, group, shibboAuth := we.auth.adminCheck(w, req)
 		if !ok {
 			return
 		}
@@ -310,18 +310,13 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.Handle
 
 		//handle global access control for now
 		//TODO Access control
-		if !(user.IsAdmin() || user.IsPublicHealth()) {
+		if !(group == "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app" ||
+			group == "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health") {
 			log.Println("Access control error")
 			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}
 
-		//TODO when working access control
-		//if admin, set admin group otherwise set public health
-		group := "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health"
-		if user.IsAdmin() {
-			group = "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app"
-		}
 		handler(*user, group, w, req)
 	}
 }

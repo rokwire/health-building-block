@@ -19,3 +19,4 @@ p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public he
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/symptom-rules*, (GET)|(POST)|(PUT)|(DELETE)
 
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire location admin, /health/admin/audit*, (GET)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire location admin, /health/admin/locations*, (GET)|(POST)|(PUT)|(DELETE)

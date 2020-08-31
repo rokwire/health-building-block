@@ -6,7 +6,6 @@ p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public he
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/rules/*, (GET)|(POST)|(PUT)|(DELETE)
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/access-rules/*, (GET)|(POST)|(PUT)|(DELETE)
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/manual-tests/*, (GET)|(POST)|(PUT)|(DELETE)
-p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/locations/*, (GET)|(POST)|(PUT)|(DELETE)
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/symptoms/*, (GET)|(POST)|(PUT)|(DELETE)
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/symptom-groups/*, (GET)|(POST)|(PUT)|(DELETE)
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/symptom-rules/*, (GET)|(POST)|(PUT)|(DELETE)

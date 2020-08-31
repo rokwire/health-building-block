@@ -1,6 +1,12 @@
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app, /health/admin*, (GET)|(POST)|(PUT)|(DELETE)
 
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health provider, /health/admin/audit*, (GET)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health provider, /health/admin/counties*, (GET)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health provider, /health/admin/county-statuses*, (GET)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health provider, /health/admin/test-types*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health provider, /health/admin/rules*, (GET)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health provider, /health/admin/access-rules*, (GET)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health provider, /health/admin/locations*, (GET)|(POST)|(PUT)|(DELETE)
 
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health media, /health/admin/audit*, (GET)
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health media, /health/admin/news*, (GET)|(POST)|(PUT)|(DELETE)

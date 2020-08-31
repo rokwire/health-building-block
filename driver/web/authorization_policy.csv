@@ -3,6 +3,9 @@ p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health provider, /health/admin/audit*, (GET)
 
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health media, /health/admin/audit*, (GET)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health media, /health/admin/news*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health media, /health/admin/faq*, (GET)|(POST)|(PUT)|(DELETE)
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health media, /health/admin/resources*, (GET)|(POST)|(PUT)|(DELETE)
 
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health test verify, /health/admin/audit*, (GET)
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health test verify, /health/admin/manual-tests*, (GET)|(POST)|(PUT)|(DELETE)

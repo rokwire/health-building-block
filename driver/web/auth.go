@@ -60,7 +60,7 @@ func (auth *Auth) apiKeyCheck(w http.ResponseWriter, r *http.Request) bool {
 	return auth.apiKeysAuth.check(w, r)
 }
 
-func (auth *Auth) adminCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *model.ShibbolethAuth) {
+func (auth *Auth) adminCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, string, *model.ShibbolethAuth) {
 	return auth.adminAuth.check(w, r)
 }
 
@@ -216,22 +216,28 @@ func (auth *AdminAuth) cleanCacheUser() {
 	auth.cleanCacheUser()
 }
 
-func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *model.User, *model.ShibbolethAuth) {
-	//1. Get the token from the request
+func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *model.User, string, *model.ShibbolethAuth) {
+	//1. Get the token and the group from the request
 	authorizationHeader := r.Header.Get("Authorization")
 	if len(authorizationHeader) <= 0 {
 		auth.responseBadRequest(w)
-		return false, nil, nil
+		return false, nil, "", nil
 	}
+	group := r.Header.Get("GROUP")
+	if len(group) <= 0 {
+		auth.responseBadRequest(w)
+		return false, nil, "", nil
+	}
+
 	splitAuthorization := strings.Fields(authorizationHeader)
 	if len(splitAuthorization) != 2 {
 		auth.responseBadRequest(w)
-		return false, nil, nil
+		return false, nil, "", nil
 	}
 	// expected - Bearer 1234
 	if splitAuthorization[0] != "Bearer" {
 		auth.responseBadRequest(w)
-		return false, nil, nil
+		return false, nil, "", nil
 	}
 	rawIDToken := splitAuthorization[1]
 
@@ -241,7 +247,7 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 		log.Printf("error validating token - %s\n", err)
 
 		auth.responseUnauthorized(rawIDToken, w)
-		return false, nil, nil
+		return false, nil, "", nil
 	}
 
 	//3. Get the user data from the token
@@ -250,14 +256,14 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 		log.Printf("error getting user data from token - %s\n", err)
 
 		auth.responseUnauthorized(rawIDToken, w)
-		return false, nil, nil
+		return false, nil, "", nil
 	}
 	//we must have UIuceduUIN
 	if userData.UIuceduUIN == nil {
 		log.Printf("error - missing uiuceuin data in the token - %s\n", err)
 
 		auth.responseUnauthorized(rawIDToken, w)
-		return false, nil, nil
+		return false, nil, "", nil
 	}
 
 	//4. Get the user for the provided external id.
@@ -266,7 +272,7 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 		log.Printf("error getting an user for external id - %s\n", err)
 
 		auth.responseInternalServerError(w)
-		return false, nil, nil
+		return false, nil, "", nil
 	}
 
 	shibboAuth := &model.ShibbolethAuth{Uin: *userData.UIuceduUIN, Email: *userData.Email,
@@ -275,7 +281,7 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 	//5.
 	if user == nil {
 		//we do not have a such user yet but the ID token is valid so return ok
-		return true, nil, shibboAuth
+		return true, nil, "", shibboAuth
 	}
 	//we have a such user, check if need to update the shibbo data before to return it
 	user, err = auth.updateShiboDataIfNeeded(*user, userData)
@@ -283,9 +289,16 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 		log.Printf("error updating an user for external id - %s\n", err)
 
 		auth.responseInternalServerError(w)
-		return false, nil, nil
+		return false, nil, "", nil
 	}
-	return true, user, shibboAuth
+
+	//6. Check if the user is member of the group
+	if !user.IsMemberOf(group) {
+		auth.responseForbbiden(fmt.Sprintf("Security - %s is trying to access not allowed resource", *userData.Email), w)
+		return false, nil, "", nil
+	}
+
+	return true, user, group, shibboAuth
 }
 
 func (auth *AdminAuth) createAdminAppUser(shibboAuth *model.ShibbolethAuth) (*model.User, error) {
@@ -392,6 +405,13 @@ func (auth *AdminAuth) responseUnauthorized(token string, w http.ResponseWriter)
 
 	w.WriteHeader(http.StatusUnauthorized)
 	w.Write([]byte("Unauthorized"))
+}
+
+func (auth *AdminAuth) responseForbbiden(info string, w http.ResponseWriter) {
+	log.Printf("AdminAuth -> 403 - Forbidden - %s", info)
+
+	w.WriteHeader(http.StatusForbidden)
+	w.Write([]byte("Forbidden"))
 }
 
 func (auth *AdminAuth) responseInternalServerError(w http.ResponseWriter) {

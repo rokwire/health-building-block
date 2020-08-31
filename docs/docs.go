@@ -33,6 +33,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the access rules",
@@ -77,6 +80,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates an access rule.",
@@ -115,7 +121,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates an access rule.",
@@ -160,6 +169,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes an access rule",
@@ -194,6 +206,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates an action",
@@ -233,6 +248,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the audilt/log history",
@@ -311,6 +329,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the counties list",
@@ -355,6 +376,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a county",
@@ -393,7 +417,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a county",
@@ -438,6 +465,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a county",
@@ -472,6 +502,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gets all county statuses for a county.",
@@ -525,6 +558,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a county status.",
@@ -563,7 +599,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a county status.",
@@ -608,6 +647,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a county status",
@@ -642,6 +684,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives FAQs list",
@@ -686,6 +731,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a faq item",
@@ -724,7 +772,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a faq section.",
@@ -769,6 +820,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a faq section",
@@ -802,7 +856,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a faq item.",
@@ -847,6 +904,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a faq item",
@@ -881,6 +941,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gets all guidelines for a county",
@@ -934,6 +997,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a guideline",
@@ -972,7 +1038,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a guideline.",
@@ -1017,6 +1086,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a guideline.",
@@ -1051,6 +1123,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the locations list",
@@ -1095,6 +1170,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a location.",
@@ -1133,7 +1211,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a location.",
@@ -1178,6 +1259,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a location",
@@ -1212,6 +1296,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the manual tests for a county",
@@ -1258,6 +1345,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the image for a manual test",
@@ -1309,7 +1399,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Processes manual test.",
@@ -1356,6 +1449,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives news.",
@@ -1400,6 +1496,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates news",
@@ -1438,7 +1537,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates news.",
@@ -1483,6 +1585,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes news",
@@ -1517,6 +1622,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the providers list",
@@ -1561,6 +1669,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a provider",
@@ -1599,7 +1710,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a provider.",
@@ -1644,6 +1758,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a provider",
@@ -1678,6 +1795,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the resources.",
@@ -1722,6 +1842,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a resource",
@@ -1761,6 +1884,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates the display order for all resources.",
@@ -1799,7 +1925,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a resource.",
@@ -1844,6 +1973,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a resource.",
@@ -1878,6 +2010,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the rules list",
@@ -1922,6 +2057,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a rule",
@@ -1960,7 +2098,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a rule.",
@@ -2005,6 +2146,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a rule",
@@ -2039,6 +2183,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the symptom groups",
@@ -2085,6 +2232,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the symptom rules",
@@ -2129,6 +2279,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a symptom rule.",
@@ -2167,7 +2320,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a symptom rule.",
@@ -2212,6 +2368,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a symptom rule.",
@@ -2246,6 +2405,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a symptom",
@@ -2284,7 +2446,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a symptom.",
@@ -2329,6 +2494,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a symptom",
@@ -2363,6 +2531,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gets all test type results for a test type.",
@@ -2416,6 +2587,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a test type result for a specific test type.",
@@ -2454,7 +2628,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates test type result.",
@@ -2499,6 +2676,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a test type result",
@@ -2533,6 +2713,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the test types",
@@ -2577,6 +2760,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a test type.",
@@ -2615,7 +2801,10 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a test type.",
@@ -2660,6 +2849,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a test type",
@@ -2694,6 +2886,9 @@ var doc = `{
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gets the user by external id.",
@@ -5688,6 +5883,11 @@ var doc = `{
         }
     },
     "securityDefinitions": {
+        "AdminGroupAuth": {
+            "type": "apiKey",
+            "name": "GROUP",
+            "in": "header"
+        },
         "AdminUserAuth": {
             "type": "apiKey",
             "name": "Authorization",

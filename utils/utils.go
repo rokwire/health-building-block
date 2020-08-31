@@ -128,7 +128,7 @@ func LogRequest(req *http.Request) {
 		var logValue []string
 		//do not log api keys, cookies and Authorization
 		if key == "Rokwire-Api-Key" || key == "User-Id" || key == "Cookie" ||
-			key == "Authorization" || key == "Rokwire-Hs-Api-Key" {
+			key == "Authorization" || key == "Rokwire-Hs-Api-Key" || key == "Group" {
 			logValue = append(logValue, "---")
 		} else {
 			logValue = value

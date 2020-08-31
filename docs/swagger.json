@@ -11,7 +11,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "1.11.0"
+        "version": "1.12.0"
     },
     "host": "localhost",
     "basePath": "/health",
@@ -21,6 +21,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the access rules",
@@ -65,6 +68,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates an access rule.",
@@ -103,7 +109,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates an access rule.",
@@ -148,6 +157,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes an access rule",
@@ -182,6 +194,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates an action",
@@ -221,6 +236,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the audilt/log history",
@@ -299,6 +317,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the counties list",
@@ -343,6 +364,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a county",
@@ -381,7 +405,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a county",
@@ -426,6 +453,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a county",
@@ -460,6 +490,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gets all county statuses for a county.",
@@ -513,6 +546,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a county status.",
@@ -551,7 +587,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a county status.",
@@ -596,6 +635,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a county status",
@@ -630,6 +672,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives FAQs list",
@@ -674,6 +719,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a faq item",
@@ -712,7 +760,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a faq section.",
@@ -757,6 +808,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a faq section",
@@ -790,7 +844,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a faq item.",
@@ -835,6 +892,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a faq item",
@@ -869,6 +929,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gets all guidelines for a county",
@@ -922,6 +985,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a guideline",
@@ -960,7 +1026,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a guideline.",
@@ -1005,6 +1074,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a guideline.",
@@ -1039,6 +1111,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the locations list",
@@ -1083,6 +1158,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a location.",
@@ -1121,7 +1199,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a location.",
@@ -1166,6 +1247,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a location",
@@ -1200,6 +1284,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the manual tests for a county",
@@ -1246,6 +1333,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the image for a manual test",
@@ -1297,7 +1387,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Processes manual test.",
@@ -1344,6 +1437,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives news.",
@@ -1388,6 +1484,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates news",
@@ -1426,7 +1525,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates news.",
@@ -1471,6 +1573,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes news",
@@ -1505,6 +1610,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the providers list",
@@ -1549,6 +1657,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a provider",
@@ -1587,7 +1698,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a provider.",
@@ -1632,6 +1746,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a provider",
@@ -1666,6 +1783,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the resources.",
@@ -1710,6 +1830,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a resource",
@@ -1749,6 +1872,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates the display order for all resources.",
@@ -1787,7 +1913,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a resource.",
@@ -1832,6 +1961,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a resource.",
@@ -1866,6 +1998,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the rules list",
@@ -1910,6 +2045,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a rule",
@@ -1948,7 +2086,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a rule.",
@@ -1993,6 +2134,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a rule",
@@ -2027,6 +2171,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the symptom groups",
@@ -2073,6 +2220,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the symptom rules",
@@ -2117,6 +2267,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a symptom rule.",
@@ -2155,7 +2308,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a symptom rule.",
@@ -2200,6 +2356,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a symptom rule.",
@@ -2234,6 +2393,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a symptom",
@@ -2272,7 +2434,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a symptom.",
@@ -2317,6 +2482,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a symptom",
@@ -2351,6 +2519,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gets all test type results for a test type.",
@@ -2404,6 +2575,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a test type result for a specific test type.",
@@ -2442,7 +2616,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates test type result.",
@@ -2487,6 +2664,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a test type result",
@@ -2521,6 +2701,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gives the test types",
@@ -2565,6 +2748,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Creates a test type.",
@@ -2603,7 +2789,10 @@
             "put": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Updates a test type.",
@@ -2648,6 +2837,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Deletes a test type",
@@ -2682,6 +2874,9 @@
                 "security": [
                     {
                         "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
                     }
                 ],
                 "description": "Gets the user by external id.",
@@ -5676,6 +5871,11 @@
         }
     },
     "securityDefinitions": {
+        "AdminGroupAuth": {
+            "type": "apiKey",
+            "name": "GROUP",
+            "in": "header"
+        },
         "AdminUserAuth": {
             "type": "apiKey",
             "name": "Authorization",

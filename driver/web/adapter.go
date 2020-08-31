@@ -28,6 +28,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/casbin/casbin"
 	"github.com/gorilla/mux"
 	"gopkg.in/go-playground/validator.v9"
 
@@ -36,8 +37,9 @@ import (
 
 //Adapter entity
 type Adapter struct {
-	host string
-	auth *Auth
+	host          string
+	auth          *Auth
+	authorization *casbin.Enforcer
 
 	apisHandler      rest.ApisHandler
 	adminApisHandler rest.AdminApisHandler
@@ -47,7 +49,7 @@ type Adapter struct {
 
 // @title Rokwire Health Building Block API
 // @description Rokwire Health Building Block API Documentation.
-// @version 1.11.0
+// @version 1.12.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost
@@ -69,6 +71,10 @@ type Adapter struct {
 // @securityDefinitions.apikey AdminUserAuth
 // @in header (add Bearer prefix to the Authorization value)
 // @name Authorization
+
+// @securityDefinitions.apikey AdminGroupAuth
+// @in header
+// @name GROUP
 
 //Start starts the module
 func (we Adapter) Start() {
@@ -279,7 +285,7 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.Handle
 
 		var err error
 
-		ok, user, shibboAuth := we.auth.adminCheck(w, req)
+		ok, user, group, shibboAuth := we.auth.adminCheck(w, req)
 		if !ok {
 			return
 		}
@@ -294,20 +300,17 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.Handle
 			log.Println("Admin user created")
 		}
 
-		//handle global access control for now
-		//TODO Access control
-		if !(user.IsAdmin() || user.IsPublicHealth()) {
-			log.Println("Access control error")
+		//authorization
+		sub := group        // the group that wants to access a resource.
+		obj := req.URL.Path // the resource that is going to be accessed.
+		act := req.Method   // the operation that the user performs on the resource.
+		acOK := we.authorization.Enforce(sub, obj, act)
+		if !acOK {
+			log.Printf("Access control error - %s is trying to apply %s operation for %s\n", sub, act, obj)
 			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}
 
-		//TODO when working access control
-		//if admin, set admin group otherwise set public health
-		group := "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health"
-		if user.IsAdmin() {
-			group = "urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire admin app"
-		}
 		handler(*user, group, w, req)
 	}
 }
@@ -486,10 +489,11 @@ func (we Adapter) providerAuthWrapFunc(handler http.HandlerFunc) http.HandlerFun
 func NewWebAdapter(host string, app *core.Application, appKeys []string, oidcProvider string,
 	oidcAppClientID string, oidcAdminClientID string, phoneAuthSecret string, providersKeys []string) Adapter {
 	auth := NewAuth(app, appKeys, oidcProvider, oidcAppClientID, oidcAdminClientID, phoneAuthSecret, providersKeys)
+	authorization := casbin.NewEnforcer("driver/web/authorization_model.conf", "driver/web/authorization_policy.csv")
 
 	apisHandler := rest.NewApisHandler(app)
 	adminApisHandler := rest.NewAdminApisHandler(app)
-	return Adapter{host: host, auth: auth, apisHandler: apisHandler, adminApisHandler: adminApisHandler, app: app}
+	return Adapter{host: host, auth: auth, authorization: authorization, apisHandler: apisHandler, adminApisHandler: adminApisHandler, app: app}
 }
 
 //AppListener implements core.ApplicationListener interface

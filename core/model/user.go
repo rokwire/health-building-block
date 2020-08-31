@@ -73,6 +73,23 @@ func (user User) IsPublicHealth() bool {
 	return false
 }
 
+//IsMemberOf says if the user is member of a group
+func (user User) IsMemberOf(group string) bool {
+	if user.ShibbolethAuth == nil {
+		return false
+	}
+	isMemberOfList := user.ShibbolethAuth.IsMemberOf
+	if isMemberOfList == nil {
+		return false
+	}
+	for _, current := range *isMemberOfList {
+		if current == group {
+			return true
+		}
+	}
+	return false
+}
+
 //GetLogData gives the user audit log data
 func (user User) GetLogData() (string, string) {
 	if user.ShibbolethAuth == nil {

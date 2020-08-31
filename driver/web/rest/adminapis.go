@@ -92,6 +92,7 @@ func (h AdminApisHandler) UpdateCovid19Config(current model.User, group string, 
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/news [get]
 func (h AdminApisHandler) GetNews(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	newsItems, err := h.app.Administration.GetNews()
@@ -128,6 +129,7 @@ type createNews struct {
 // @Param data body createNews true "body data"
 // @Success 200 {object} model.News
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/news [post]
 func (h AdminApisHandler) CreateNews(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -195,7 +197,8 @@ type updateNews struct {
 // @Param data body updateNews true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} model.News
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/news/{id} [put]
 func (h AdminApisHandler) UpdateNews(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -247,6 +250,7 @@ func (h AdminApisHandler) UpdateNews(current model.User, group string, w http.Re
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted new items"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/news/{id} [delete]
 func (h AdminApisHandler) DeleteNews(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -277,6 +281,7 @@ func (h AdminApisHandler) DeleteNews(current model.User, group string, w http.Re
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/resources [get]
 func (h AdminApisHandler) GetResources(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	resources, err := h.app.Administration.GetResources()
@@ -312,6 +317,7 @@ type createResource struct {
 // @Param data body createResource true "body data"
 // @Success 200 {object} model.Resource
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/resources [post]
 func (h AdminApisHandler) CreateResources(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -377,7 +383,8 @@ type updateResource struct {
 // @Param data body updateResource true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} model.Resource
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/resources/{id} [put]
 func (h AdminApisHandler) UpdateResource(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -434,6 +441,7 @@ func (h AdminApisHandler) UpdateResource(current model.User, group string, w htt
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted resource item"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/resources/{id} [delete]]
 func (h AdminApisHandler) DeleteResource(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -467,6 +475,7 @@ type updateDisplayOrderResource struct {
 // @Param data body updateDisplayOrderResource true "body data"
 // @Success 200 {object} string "Successfully updated resource items"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/resources/display-order [post]
 func (h AdminApisHandler) UpdateDisplaOrderResources(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -522,6 +531,7 @@ type createFAQQuestion struct {
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/faq [get]
 func (h AdminApisHandler) GetFAQs(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	faq, err := h.app.Administration.GetFAQs()
@@ -555,6 +565,7 @@ func (h AdminApisHandler) GetFAQs(current model.User, group string, w http.Respo
 // @Param data body createFAQ true "body data"
 // @Success 200 {string} Successfully created
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/faq [post]
 func (h AdminApisHandler) CreateFAQItem(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -615,7 +626,8 @@ type updateFAQ struct {
 // @Param data body updateFAQ true "body data"
 // @Param id path string true "ID"
 // @Success 200 {string} Successfully updated
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/faq/{id} [put]
 func (h AdminApisHandler) UpdateFAQItem(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -674,7 +686,8 @@ type updateFAQSection struct {
 // @Param data body updateFAQSection true "body data"
 // @Param id path string true "ID"
 // @Success 200 {string} Successfully updated
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/faq/section/{id} [put]
 func (h AdminApisHandler) UpdateFAQSection(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -727,6 +740,7 @@ func (h AdminApisHandler) UpdateFAQSection(current model.User, group string, w h
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted FAQ item"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/faq/{id} [delete]
 func (h AdminApisHandler) DeleteFAQItem(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -755,6 +769,7 @@ func (h AdminApisHandler) DeleteFAQItem(current model.User, group string, w http
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/faq/section/{id} [delete]
 func (h AdminApisHandler) DeleteFAQSection(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -786,6 +801,7 @@ func (h AdminApisHandler) DeleteFAQSection(current model.User, group string, w h
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/providers [get]
 func (h AdminApisHandler) GetProviders(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	providers, err := h.app.Administration.GetProviders()
@@ -828,6 +844,7 @@ type createProviderRequest struct {
 // @Param data body createProviderRequest true "body data"
 // @Success 200 {object} providerResponse
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/providers [post]
 func (h AdminApisHandler) CreateProvider(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -897,7 +914,8 @@ type updateProviderRequest struct {
 // @Param data body updateProviderRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} providerResponse
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/providers/{id} [put]
 func (h AdminApisHandler) UpdateProvider(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -965,6 +983,7 @@ func (h AdminApisHandler) UpdateProvider(current model.User, group string, w htt
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/providers/{id} [delete]
 func (h AdminApisHandler) DeleteProvider(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -1008,6 +1027,7 @@ type createCountyResponse struct {
 // @Param data body createCountyRequest true "body data"
 // @Success 200 {object} createCountyResponse
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/counties [post]
 func (h AdminApisHandler) CreateCounty(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -1079,7 +1099,8 @@ type updateCountyResponse struct {
 // @Param data body updateCountyRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} updateCountyResponse
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/counties/{id} [put]
 func (h AdminApisHandler) UpdateCounty(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -1143,6 +1164,7 @@ func (h AdminApisHandler) UpdateCounty(current model.User, group string, w http.
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/counties/{id} [delete]
 func (h AdminApisHandler) DeleteCounty(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -1181,6 +1203,7 @@ type getCountiesResponse struct {
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/counties [get]
 func (h AdminApisHandler) GetCounties(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	counties, err := h.app.Administration.FindCounties(nil)
@@ -1244,6 +1267,7 @@ type createGuidelineItemsResponse struct {
 // @Param data body createGuidelineRequest true "body data"
 // @Success 200 {object} createGuidelineResponse
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/guidelines [post]
 func (h AdminApisHandler) CreateGuideline(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -1341,7 +1365,8 @@ type updateGuidelineItemsResponse struct {
 // @Param data body updateGuidelineRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} updateGuidelineResponse
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/guidelines/{id} [put]
 func (h AdminApisHandler) UpdateGuideline(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -1420,6 +1445,7 @@ func (h AdminApisHandler) UpdateGuideline(current model.User, group string, w ht
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/guidelines/{id} [delete]
 func (h AdminApisHandler) DeleteGuideline(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -1452,6 +1478,7 @@ func (h AdminApisHandler) DeleteGuideline(current model.User, group string, w ht
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/guidelines [get]
 func (h AdminApisHandler) GetGuidelinesByCountyID(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	keys, ok := r.URL.Query()["county-id"]
@@ -1513,6 +1540,7 @@ type createCountyStatusResponse struct {
 // @Param data body createCountyStatusRequest true "body data"
 // @Success 200 {object} createCountyStatusResponse
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/county-statuses [post]
 func (h AdminApisHandler) CreateCountyStatus(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -1582,7 +1610,8 @@ type updateCountyStatusResponse struct {
 // @Param data body updateCountyStatusRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} updateCountyStatusResponse
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/county-statuses/{id} [put]
 func (h AdminApisHandler) UpdateCountyStatus(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -1648,6 +1677,7 @@ func (h AdminApisHandler) UpdateCountyStatus(current model.User, group string, w
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/county-statuses/{id} [delete]
 func (h AdminApisHandler) DeleteCountyStatus(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -1686,6 +1716,7 @@ type getCountyStatusesResponse struct {
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/county-statuses [get]
 func (h AdminApisHandler) GetCountyStatusesByCountyID(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	keys, ok := r.URL.Query()["county-id"]
@@ -1740,6 +1771,7 @@ type createTestTypeResponse struct {
 // @Param data body createTestTypeRequest true "body data"
 // @Success 200 {object} createTestTypeResponse
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/test-types [post]
 func (h AdminApisHandler) CreateTestType(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -1807,7 +1839,8 @@ type updateTestTypeResponse struct {
 // @Param data body updateTestTypeRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} updateTestTypeResponse
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/test-types/{id} [put]
 func (h AdminApisHandler) UpdateTestType(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -1869,6 +1902,7 @@ func (h AdminApisHandler) UpdateTestType(current model.User, group string, w htt
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/test-types/{id} [delete]
 func (h AdminApisHandler) DeleteTestType(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -1906,6 +1940,7 @@ type getTestTypesResponse struct {
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/test-types [get]
 func (h AdminApisHandler) GetTestTypes(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	/*if !current.IsAdmin() {
@@ -1963,6 +1998,7 @@ type createTestTypeResultResponse struct {
 // @Param data body createTestTypeResultRequest true "body data"
 // @Success 200 {object} createTestTypeResultResponse
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/test-type-results [post]
 func (h AdminApisHandler) CreateTestTypeResult(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -2040,7 +2076,8 @@ type updateTestTypeResultResponse struct {
 // @Param data body updateTestTypeResultRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} updateTestTypeResultResponse
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/test-type-results/{id} [put]
 func (h AdminApisHandler) UpdateTestTypeResult(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -2109,6 +2146,7 @@ func (h AdminApisHandler) UpdateTestTypeResult(current model.User, group string,
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/test-type-results/{id} [delete]
 func (h AdminApisHandler) DeleteTestTypeResult(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -2149,6 +2187,7 @@ type getTestTypeResultsResponse struct {
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/test-type-results [get]
 func (h AdminApisHandler) GetTestTypeResultsByTestTypeID(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	keys, ok := r.URL.Query()["test-type-id"]
@@ -2220,6 +2259,7 @@ type createRuleResultsStatusesTypeResponse struct {
 // @Param data body createRuleRequest true "body data"
 // @Success 200 {object} createRuleResponse
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/rules [post]
 func (h AdminApisHandler) CreateRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -2322,7 +2362,8 @@ type updateRuleResultsStatusesTypeResponse struct {
 // @Param data body updateRuleRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} updateRuleResponse
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/rules/{id} [put]
 func (h AdminApisHandler) UpdateRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -2403,6 +2444,7 @@ func (h AdminApisHandler) UpdateRule(current model.User, group string, w http.Re
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/rules/{id} [delete]
 func (h AdminApisHandler) DeleteRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -2448,6 +2490,7 @@ type getRulesResultsStatusesTypeResponse struct {
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/rules [get]
 func (h AdminApisHandler) GetRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	rules, err := h.app.Administration.GetRules()
@@ -2519,6 +2562,7 @@ type locationOperationDayRequest struct {
 // @Param data body createLocationRequest true "body data"
 // @Success 200 {object} locationResponse
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/locations [post]
 func (h AdminApisHandler) CreateLocation(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -2619,7 +2663,8 @@ type updateLocationRequest struct {
 // @Param data body updateLocationRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} locationResponse
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/locations/{id} [put]
 func (h AdminApisHandler) UpdateLocation(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -2708,6 +2753,7 @@ func (h AdminApisHandler) UpdateLocation(current model.User, group string, w htt
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/locations [get]
 func (h AdminApisHandler) GetLocations(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	locations, err := h.app.Administration.GetLocations()
@@ -2752,6 +2798,7 @@ func (h AdminApisHandler) GetLocations(current model.User, group string, w http.
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/locations/{id} [delete]
 func (h AdminApisHandler) DeleteLocation(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -2787,6 +2834,7 @@ type createSymptomRequest struct {
 // @Param data body createSymptomRequest true "body data"
 // @Success 200 {object} symptomResponse
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/symptoms [post]
 func (h AdminApisHandler) CreateSymptom(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -2847,7 +2895,8 @@ type updateSymptomRequest struct {
 // @Param data body updateSymptomRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} symptomResponse
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/symptoms/{id} [put]
 func (h AdminApisHandler) UpdateSymptom(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -2911,6 +2960,7 @@ func (h AdminApisHandler) UpdateSymptom(current model.User, group string, w http
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/symptoms/{id} [delete]
 func (h AdminApisHandler) DeleteSymptom(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -2949,6 +2999,7 @@ type getSymptomGroupsResponse struct {
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/symptom-groups [get]
 func (h AdminApisHandler) GetSymptomGroups(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	symptomGroups, err := h.app.Administration.GetSymptomGroups()
@@ -3025,6 +3076,7 @@ type symptomRuleItemResponse struct {
 // @Param data body createSymptomRuleRequest true "body data"
 // @Success 200 {object} symptomRuleResponse
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/symptom-rules [post]
 func (h AdminApisHandler) CreateSymptomRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -3119,7 +3171,8 @@ type updateSymptomRuleItemRequest struct {
 // @Param data body updateSymptomRuleRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} symptomRuleResponse
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/symptom-rules/{id} [put]
 func (h AdminApisHandler) UpdateSymptomRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -3207,6 +3260,7 @@ func (h AdminApisHandler) UpdateSymptomRule(current model.User, group string, w 
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/symptom-rules [get]
 func (h AdminApisHandler) GetSymptomRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	symptomRules, err := h.app.Administration.GetSymptomRules()
@@ -3254,6 +3308,7 @@ func (h AdminApisHandler) GetSymptomRules(current model.User, group string, w ht
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/symptom-rules/{id} [delete]
 func (h AdminApisHandler) DeleteSymptomRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -3285,6 +3340,7 @@ func (h AdminApisHandler) DeleteSymptomRule(current model.User, group string, w 
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/manual-tests [get]
 func (h AdminApisHandler) GetManualTestsByCountyID(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	//county id
@@ -3352,7 +3408,8 @@ type processManualTestRequest struct {
 // @Param data body processManualTestRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {string} Successfully processed
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/manual-tests/{id}/process [put]
 func (h AdminApisHandler) ProcessManualTest(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -3416,6 +3473,7 @@ func (h AdminApisHandler) ProcessManualTest(current model.User, group string, w 
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/manual-tests/{id}/image [get]
 func (h AdminApisHandler) GetManualTestImage(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -3482,6 +3540,7 @@ type accessRuleItemResponse struct {
 // @Param data body createAccessRuleRequest true "body data"
 // @Success 200 {object} accessRuleResponse
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/access-rules [post]
 func (h AdminApisHandler) CreateAccessRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -3557,6 +3616,7 @@ func (h AdminApisHandler) CreateAccessRule(current model.User, group string, w h
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/access-rules [get]
 func (h AdminApisHandler) GetAccessRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	accessRules, err := h.app.Administration.GetAccessRules()
@@ -3614,7 +3674,8 @@ type updateAccessRuleItemRequest struct {
 // @Param data body updateAccessRuleRequest true "body data"
 // @Param id path string true "ID"
 // @Success 200 {object} accessRuleResponse
-// @Security AppUserAuth
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/access-rules/{id} [put]
 func (h AdminApisHandler) UpdateAccessRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -3696,6 +3757,7 @@ func (h AdminApisHandler) UpdateAccessRule(current model.User, group string, w h
 // @Param id path string true "ID"
 // @Success 200 {object} string "Successfuly deleted"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/access-rules/{id} [delete]
 func (h AdminApisHandler) DeleteAccessRule(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -3728,6 +3790,7 @@ func (h AdminApisHandler) DeleteAccessRule(current model.User, group string, w h
 // @Failure 404 {object} string "Not Found"
 // @Failure 500 {object} string "Internal Server error"
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/user [get]
 func (h AdminApisHandler) GetUserByExternalID(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	keys, ok := r.URL.Query()["external-id"]
@@ -3779,6 +3842,7 @@ type createActionRequest struct {
 // @Param data body createActionRequest true "body data"
 // @Success 200 {object} model.CTest
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/actions [post]
 func (h ApisHandler) CreateAction(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
@@ -3844,6 +3908,7 @@ func (h ApisHandler) CreateAction(current model.User, group string, w http.Respo
 // @Param limit query string false "Limit"
 // @Success 200 {array} core.AuditEntity
 // @Security AdminUserAuth
+// @Security AdminGroupAuth
 // @Router /admin/audit [get]
 func (h ApisHandler) GetAudit(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 

@@ -8,6 +8,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
+	github.com/casbin/casbin v1.9.1
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/ansi/v3 v3.0.0 // indirect

@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.13.0] - 2020-08-31
 ### Fixed
 - Provider group fails hitting the admin APIs. [#17](https://github.com/rokwire/health-building-block/issues/17)
 
@@ -84,7 +86,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/rokwire/health-building-block/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/rokwire/health-building-block/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/rokwire/health-building-block/compare/v1.10.1...v1.11.0
 [1.10.1]: https://github.com/rokwire/health-building-block/compare/v1.10.0...v1.10.1

@@ -89,7 +89,7 @@ func NewAuth(app *core.Application, appKeys []string, oidcProvider string,
 	oidcAppClientID string, oidcAdminClientID string, phoneAuthSecret string, providersAPIKeys []string) *Auth {
 	apiKeysAuth := newAPIKeysAuth(appKeys)
 	userAuth2 := newUserAuth(app, oidcProvider, oidcAppClientID, phoneAuthSecret)
-	adminAuth := newAdminAuth(app, oidcProvider, oidcAdminClientID, phoneAuthSecret)
+	adminAuth := newAdminAuth(app, oidcProvider, oidcAdminClientID)
 	providersAuth := newProviderAuth(providersAPIKeys)
 
 	auth := Auth{apiKeysAuth: apiKeysAuth, userAuth: userAuth2, adminAuth: adminAuth, providersAuth: providersAuth}
@@ -157,7 +157,7 @@ type AdminAuth struct {
 	adminIDTokenVerifier *oidc.IDTokenVerifier
 
 	//phone
-	phoneAuthSecret string
+	//	phoneAuthSecret string
 
 	cachedUsers     *syncmap.Map //cache users while active - 5 minutes timeout
 	cachedUsersLock *sync.RWMutex
@@ -421,8 +421,7 @@ func (auth *AdminAuth) responseInternalServerError(w http.ResponseWriter) {
 	w.Write([]byte("Internal Server Error"))
 }
 
-func newAdminAuth(app *core.Application, oidcProvider string, oidcAdminClientID string,
-	phoneAuthSecret string) *AdminAuth {
+func newAdminAuth(app *core.Application, oidcProvider string, oidcAdminClientID string) *AdminAuth {
 	provider, err := oidc.NewProvider(context.Background(), oidcProvider)
 	if err != nil {
 		log.Fatalln(err)
@@ -434,7 +433,7 @@ func newAdminAuth(app *core.Application, oidcProvider string, oidcAdminClientID 
 	lock := &sync.RWMutex{}
 
 	auth := AdminAuth{app: app, adminIDTokenVerifier: adminIDTokenVerifier,
-		phoneAuthSecret: phoneAuthSecret, cachedUsers: cacheUsers, cachedUsersLock: lock}
+		cachedUsers: cacheUsers, cachedUsersLock: lock}
 	return &auth
 }
 

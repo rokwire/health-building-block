@@ -154,7 +154,9 @@ type AdminAuth struct {
 	app *core.Application
 
 	appVerifier    *oidc.IDTokenVerifier
+	appClientID    string
 	webAppVerifier *oidc.IDTokenVerifier
+	webAppClientID string
 
 	cachedUsers     *syncmap.Map //cache users while active - 5 minutes timeout
 	cachedUsersLock *sync.RWMutex
@@ -299,28 +301,31 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 }
 
 func (auth *AdminAuth) verify(rawIDToken string) (*oidc.IDToken, error) {
-	var idToken *oidc.IDToken
-	var appErr error
-	var adminAppErr error
-
-	//check appVerifier
-	idToken, appErr = auth.appVerifier.Verify(context.Background(), rawIDToken)
-	if appErr == nil {
-		return idToken, nil
+	parser := new(jwt.Parser)
+	claims := jwt.MapClaims{}
+	_, _, errr := parser.ParseUnverified(rawIDToken, claims)
+	if errr != nil {
+		return nil, errr
 	}
 
-	//check webAppVerifier
-	idToken, adminAppErr = auth.webAppVerifier.Verify(context.Background(), rawIDToken)
-	if adminAppErr == nil {
-		return idToken, nil
-	}
+	for key := range claims {
+		if key == "aud" {
+			audience := claims[key]
+			switch audience {
+			case auth.appClientID:
+				log.Println("AuthAdmin -> app client token")
+				return auth.appVerifier.Verify(context.Background(), rawIDToken)
+			case auth.webAppClientID:
+				log.Println("AuthAdmin -> web app client token")
+				return auth.webAppVerifier.Verify(context.Background(), rawIDToken)
+			default:
+				return nil, errors.New("there is an issue with the audience")
+			}
 
-	//return the correct error
-	err := appErr
-	if adminAppErr != nil {
-		err = adminAppErr
+		}
+
 	}
-	return nil, err
+	return nil, errors.New("there is an issue with the audience")
 }
 
 func (auth *AdminAuth) createAdminAppUser(shibboAuth *model.ShibbolethAuth) (*model.User, error) {
@@ -455,7 +460,8 @@ func newAdminAuth(app *core.Application, oidcProvider string, appClientID string
 	cacheUsers := &syncmap.Map{}
 	lock := &sync.RWMutex{}
 
-	auth := AdminAuth{app: app, appVerifier: appVerifier, webAppVerifier: webAppVerifier,
+	auth := AdminAuth{app: app, appVerifier: appVerifier, appClientID: appClientID,
+		webAppVerifier: webAppVerifier, webAppClientID: webAppClientID,
 		cachedUsers: cacheUsers, cachedUsersLock: lock}
 	return &auth
 }

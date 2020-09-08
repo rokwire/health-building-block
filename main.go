@@ -92,10 +92,11 @@ func main() {
 	host := getEnvKey("HEALTH_HOST", true)
 	oidcProvider := getEnvKey("HEALTH_OIDC_PROVIDER", true)
 	oidcAppClientID := getEnvKey("HEALTH_OIDC_APP_CLIENT_ID", true)
-	oidcAdminClientID := getEnvKey("HEALTH_OIDC_ADMIN_CLIENT_ID", true)
+	adminAppClientID := getEnvKey("HEALTH_OIDC_ADMIN_CLIENT_ID", true)
+	adminWebAppClientID := getEnvKey("HEALTH_OIDC_ADMIN_WEB_CLIENT_ID", true)
 	phoneSecret := getEnvKey("HEALTH_PHONE_SECRET", true)
 	providersKeys := getHSAPIKeys()
-	webAdapter := driver.NewWebAdapter(host, application, apiKeys, oidcProvider, oidcAppClientID, oidcAdminClientID, phoneSecret, providersKeys)
+	webAdapter := driver.NewWebAdapter(host, application, apiKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID, phoneSecret, providersKeys)
 
 	webAdapter.Start()
 }

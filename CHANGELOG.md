@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - Admin APIs authentication update. [#20](https://github.com/rokwire/health-building-block/issues/20)
 
+### Fixed
+- Public health group quarantine error. [#22](https://github.com/rokwire/health-building-block/issues/22)
+
 ## [1.13.0] - 2020-08-31
 ### Fixed
 - Provider group fails hitting the admin APIs. [#17](https://github.com/rokwire/health-building-block/issues/17)

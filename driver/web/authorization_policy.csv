@@ -16,6 +16,7 @@ p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health me
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health test verify, /health/admin/audit*, (GET)
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire health test verify, /health/admin/manual-tests*, (GET)|(POST)|(PUT)|(DELETE)
 
+p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/providers*, (GET)
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/audit*, (GET)
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/user*, (GET)
 p, urn:mace:uiuc.edu:urbana:authman:app-rokwire-service-policy-rokwire public health, /health/admin/actions*, (POST)

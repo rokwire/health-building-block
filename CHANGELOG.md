@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.0] - 2020-09-08
+### Security
+- Admin APIs authentication update. [#20](https://github.com/rokwire/health-building-block/issues/20)
+
+### Fixed
+- Public health group quarantine error. [#22](https://github.com/rokwire/health-building-block/issues/22)
+
 ## [1.13.0] - 2020-08-31
 ### Fixed
 - Provider group fails hitting the admin APIs. [#17](https://github.com/rokwire/health-building-block/issues/17)
@@ -86,7 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.13.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.14.0...HEAD
+[1.14.0]: https://github.com/rokwire/health-building-block/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/rokwire/health-building-block/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/rokwire/health-building-block/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/rokwire/health-building-block/compare/v1.10.1...v1.11.0

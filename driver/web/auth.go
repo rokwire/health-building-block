@@ -86,10 +86,10 @@ func (auth *Auth) createAppUser(externalID string, uuid string, publicKey string
 
 //NewAuth creates new auth handler
 func NewAuth(app *core.Application, appKeys []string, oidcProvider string,
-	oidcAppClientID string, oidcAdminClientID string, phoneAuthSecret string, providersAPIKeys []string) *Auth {
+	oidcAppClientID string, appClientID string, webAppClientID string, phoneAuthSecret string, providersAPIKeys []string) *Auth {
 	apiKeysAuth := newAPIKeysAuth(appKeys)
 	userAuth2 := newUserAuth(app, oidcProvider, oidcAppClientID, phoneAuthSecret)
-	adminAuth := newAdminAuth(app, oidcProvider, oidcAdminClientID, phoneAuthSecret)
+	adminAuth := newAdminAuth(app, oidcProvider, appClientID, webAppClientID)
 	providersAuth := newProviderAuth(providersAPIKeys)
 
 	auth := Auth{apiKeysAuth: apiKeysAuth, userAuth: userAuth2, adminAuth: adminAuth, providersAuth: providersAuth}
@@ -153,11 +153,10 @@ type userData struct {
 type AdminAuth struct {
 	app *core.Application
 
-	//shibboleth
-	adminIDTokenVerifier *oidc.IDTokenVerifier
-
-	//phone
-	phoneAuthSecret string
+	appVerifier    *oidc.IDTokenVerifier
+	appClientID    string
+	webAppVerifier *oidc.IDTokenVerifier
+	webAppClientID string
 
 	cachedUsers     *syncmap.Map //cache users while active - 5 minutes timeout
 	cachedUsersLock *sync.RWMutex
@@ -242,7 +241,7 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 	rawIDToken := splitAuthorization[1]
 
 	//2. Validate the token
-	idToken, err := auth.adminIDTokenVerifier.Verify(context.Background(), rawIDToken)
+	idToken, err := auth.verify(rawIDToken)
 	if err != nil {
 		log.Printf("error validating token - %s\n", err)
 
@@ -299,6 +298,34 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 	}
 
 	return true, user, group, shibboAuth
+}
+
+func (auth *AdminAuth) verify(rawIDToken string) (*oidc.IDToken, error) {
+	parser := new(jwt.Parser)
+	claims := jwt.MapClaims{}
+	_, _, errr := parser.ParseUnverified(rawIDToken, claims)
+	if errr != nil {
+		return nil, errr
+	}
+
+	for key := range claims {
+		if key == "aud" {
+			audience := claims[key]
+			switch audience {
+			case auth.appClientID:
+				log.Println("AuthAdmin -> app client token")
+				return auth.appVerifier.Verify(context.Background(), rawIDToken)
+			case auth.webAppClientID:
+				log.Println("AuthAdmin -> web app client token")
+				return auth.webAppVerifier.Verify(context.Background(), rawIDToken)
+			default:
+				return nil, errors.New("there is an issue with the audience")
+			}
+
+		}
+
+	}
+	return nil, errors.New("there is an issue with the audience")
 }
 
 func (auth *AdminAuth) createAdminAppUser(shibboAuth *model.ShibbolethAuth) (*model.User, error) {
@@ -421,20 +448,21 @@ func (auth *AdminAuth) responseInternalServerError(w http.ResponseWriter) {
 	w.Write([]byte("Internal Server Error"))
 }
 
-func newAdminAuth(app *core.Application, oidcProvider string, oidcAdminClientID string,
-	phoneAuthSecret string) *AdminAuth {
+func newAdminAuth(app *core.Application, oidcProvider string, appClientID string, webAppClientID string) *AdminAuth {
 	provider, err := oidc.NewProvider(context.Background(), oidcProvider)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	adminIDTokenVerifier := provider.Verifier(&oidc.Config{ClientID: oidcAdminClientID})
+	appVerifier := provider.Verifier(&oidc.Config{ClientID: appClientID})
+	webAppVerifier := provider.Verifier(&oidc.Config{ClientID: webAppClientID})
 
 	cacheUsers := &syncmap.Map{}
 	lock := &sync.RWMutex{}
 
-	auth := AdminAuth{app: app, adminIDTokenVerifier: adminIDTokenVerifier,
-		phoneAuthSecret: phoneAuthSecret, cachedUsers: cacheUsers, cachedUsersLock: lock}
+	auth := AdminAuth{app: app, appVerifier: appVerifier, appClientID: appClientID,
+		webAppVerifier: webAppVerifier, webAppClientID: webAppClientID,
+		cachedUsers: cacheUsers, cachedUsersLock: lock}
 	return &auth
 }
 

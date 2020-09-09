@@ -292,6 +292,10 @@ func (m *database) applyCTestsChecks(ctests *collectionWrapper) error {
 	if err != nil {
 		return err
 	}
+	err = ctests.AddIndex(bson.D{primitive.E{Key: "order_number", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
 
 	log.Println("ctests checks passed")
 	return nil

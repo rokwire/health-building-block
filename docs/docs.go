@@ -4290,6 +4290,9 @@ var doc = `{
                 "id": {
                     "type": "string"
                 },
+                "order_number": {
+                    "type": "string"
+                },
                 "processed": {
                     "type": "boolean"
                 },
@@ -4996,6 +4999,9 @@ var doc = `{
                     "type": "string"
                 },
                 "encrypted_key": {
+                    "type": "string"
+                },
+                "order_number": {
                     "type": "string"
                 },
                 "provider_id": {

@@ -91,6 +91,8 @@ definitions:
         type: string
       id:
         type: string
+      order_number:
+        type: string
       processed:
         type: boolean
       provider_id:
@@ -549,6 +551,8 @@ definitions:
       encrypted_blob:
         type: string
       encrypted_key:
+        type: string
+      order_number:
         type: string
       provider_id:
         type: string

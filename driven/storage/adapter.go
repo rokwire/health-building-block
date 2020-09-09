@@ -1037,7 +1037,7 @@ func (sa *Adapter) DeleteProvider(ID string) error {
 }
 
 //CreateExternalCTest creates an external ctests record
-func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, processed bool) (*model.CTest, *model.User, error) {
+func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error) {
 	var cTest model.CTest
 	var user model.User
 
@@ -1086,7 +1086,7 @@ func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedK
 		}
 		dateCreated := time.Now()
 		cTest = model.CTest{ID: id.String(), ProviderID: providerID, UserID: user.ID,
-			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Processed: processed, DateCreated: dateCreated}
+			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Processed: processed, OrderNumber: orderNumber, DateCreated: dateCreated}
 		_, err = sa.db.ctests.InsertOneWithContext(sessionContext, &cTest)
 		if err != nil {
 			abortTransaction(sessionContext)
@@ -1120,7 +1120,7 @@ func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedK
 }
 
 //CreateAdminCTest creates an admin ctests record
-func (sa *Adapter) CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool) (*model.CTest, *model.User, error) {
+func (sa *Adapter) CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error) {
 	var cTest model.CTest
 	var user model.User
 
@@ -1169,7 +1169,7 @@ func (sa *Adapter) CreateAdminCTest(providerID string, userID string, encryptedK
 		}
 		dateCreated := time.Now()
 		cTest = model.CTest{ID: id.String(), ProviderID: providerID, UserID: user.ID,
-			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Processed: processed, DateCreated: dateCreated}
+			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Processed: processed, OrderNumber: orderNumber, DateCreated: dateCreated}
 		_, err = sa.db.ctests.InsertOneWithContext(sessionContext, &cTest)
 		if err != nil {
 			abortTransaction(sessionContext)

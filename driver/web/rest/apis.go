@@ -154,10 +154,11 @@ func (h ApisHandler) GetUsersForRePost(w http.ResponseWriter, r *http.Request) {
 }
 
 type createCTestRequest struct {
-	ProviderID    string `json:"provider_id" validate:"required"`
-	UIN           string `json:"uin" validate:"required"`
-	EncryptedKey  string `json:"encrypted_key" validate:"required"`
-	EncryptedBlob string `json:"encrypted_blob" validate:"required"`
+	ProviderID    string  `json:"provider_id" validate:"required"`
+	UIN           string  `json:"uin" validate:"required"`
+	EncryptedKey  string  `json:"encrypted_key" validate:"required"`
+	EncryptedBlob string  `json:"encrypted_blob" validate:"required"`
+	OrderNumber   *string `json:"order_number"`
 } // @name createCTestRequest
 
 //CreateExternalCTest creates CTest
@@ -199,8 +200,9 @@ func (h ApisHandler) CreateExternalCTest(w http.ResponseWriter, r *http.Request)
 	uin := requestData.UIN
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
+	orderNumber := requestData.OrderNumber
 
-	err = h.app.Services.CreateExternalCTest(providerID, uin, encryptedKey, encryptedBlob)
+	err = h.app.Services.CreateExternalCTest(providerID, uin, encryptedKey, encryptedBlob, orderNumber)
 	if err != nil {
 		log.Printf("Error on creating a ctest - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

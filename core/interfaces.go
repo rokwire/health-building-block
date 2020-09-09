@@ -50,7 +50,7 @@ type Services interface {
 	UpdateEHistory(userID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error)
 
 	GetCTests(urrent model.User, processed bool) ([]*model.CTest, []*model.Provider, error)
-	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string) error
+	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error
 	DeleteCTests(userID string) (int64, error)
 	UpdateCTest(current model.User, ID string, processed bool) (*model.CTest, error)
 
@@ -147,8 +147,8 @@ func (s *servicesImpl) GetCTests(current model.User, processed bool) ([]*model.C
 	return s.app.getCTests(current, processed)
 }
 
-func (s *servicesImpl) CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string) error {
-	return s.app.createExternalCTest(providerID, uin, encryptedKey, encryptedBlob)
+func (s *servicesImpl) CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error {
+	return s.app.createExternalCTest(providerID, uin, encryptedKey, encryptedBlob, orderNumber)
 }
 
 func (s *servicesImpl) DeleteCTests(userID string) (int64, error) {
@@ -645,8 +645,8 @@ type Storage interface {
 	SaveProvider(provider *model.Provider) error
 	DeleteProvider(ID string) error
 
-	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, processed bool) (*model.CTest, *model.User, error)
-	CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool) (*model.CTest, *model.User, error)
+	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
+	CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
 	FindCTest(ID string) (*model.CTest, error)
 	FindCTests(userID string, processed bool) ([]*model.CTest, error)
 	DeleteCTests(userID string) (int64, error)

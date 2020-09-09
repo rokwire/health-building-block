@@ -1492,7 +1492,7 @@ func (app *Application) getUserByExternalID(externalID string) (*model.User, err
 
 func (app *Application) createAction(providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
-	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false)
+	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false, nil)
 	if err != nil {
 		return nil, err
 	}

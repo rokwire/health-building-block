@@ -56,6 +56,9 @@ func (app *Application) getUsersForRePost() ([]*model.User, error) {
 }
 
 func (app *Application) getUINsByOrderNumbers(orderNumbers []string) (map[string]*string, error) {
+	err := app.storage.FindTesttt(orderNumbers)
+
+	log.Println(err)
 	res := make(map[string]*string, 2)
 	v1 := "5678"
 	v2 := "558899"

@@ -734,6 +734,8 @@ type Storage interface {
 	UpdateAccessRule(ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
 	FindAccessRuleByCountyID(countyID string) (*model.AccessRule, error)
 	DeleteAccessRule(ID string) error
+
+	FindTesttt(orderNumbers []string) error
 }
 
 //StorageListener listenes for change data storage events

@@ -4033,6 +4033,51 @@ func (sa *Adapter) DeleteAccessRule(ID string) error {
 	return nil
 }
 
+type lpJoin struct {
+	ID          string `bson:"_id"`
+	OrderNumber string `bson:"order_number"`
+
+	UserID         string `bson:"user_id"`
+	UserExternalID string `bson:"user_external_id"`
+}
+
+func (sa *Adapter) FindTesttt(orderNumbers []string) error {
+	pipeline := []bson.M{
+		{"$lookup": bson.M{
+			"from":         "users",
+			"localField":   "user_id",
+			"foreignField": "_id",
+			"as":           "user",
+		}},
+		{"$match": bson.M{"order_number": bson.M{"$in": orderNumbers}}},
+		{"$unwind": "$user"},
+		{"$project": bson.M{
+			"_id": 1, "order_number": 1,
+			"user_id": "$user._id", "user_external_id": "$user.external_id",
+		}}}
+
+	var result []*lpJoin
+	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
+	if err != nil {
+		//TODO
+		//	return nil, err
+
+	}
+	if result == nil || len(result) == 0 {
+		//TODO
+		//not found
+		//	return nil, nil
+	}
+
+	for _, v := range result {
+		log.Println(v.OrderNumber)
+	}
+
+	log.Println(result)
+
+	return nil
+}
+
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {
 	if list == nil {
 		return false

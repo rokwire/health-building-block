@@ -3702,7 +3702,7 @@ var doc = `{
                         "ProvidersAuth": []
                     }
                 ],
-                "description": "Gives the items list for the provided UINs. The list must be comma separated. The response looks like {\"678028578\":[{\"order_number\":null,\"date_created\":\"2020-08-12T05:52:47.467Z”},…],”777777\":[{\"order_number\":\"9\",\"date_created\":\"2020-09-10T05:02:14.716Z\"}]}",
+                "description": "Gives the items list for the provided UINs. The list must be comma separated. The response looks like {\"”777778\":[{\"order_number\":null,\"date_created\":\"2020-08-12T05:52:47.467Z”},…],”777777\":[{\"order_number\":\"9\",\"date_created\":\"2020-09-10T05:02:14.716Z\"}]}",
                 "consumes": [
                     "application/json"
                 ],

@@ -4033,7 +4033,7 @@ func (sa *Adapter) DeleteAccessRule(ID string) error {
 	return nil
 }
 
-type lpJoin struct {
+type ctuJoin struct {
 	ID          string `bson:"_id"`
 	OrderNumber string `bson:"order_number"`
 
@@ -4041,7 +4041,8 @@ type lpJoin struct {
 	UserExternalID string `bson:"user_external_id"`
 }
 
-func (sa *Adapter) FindTesttt(orderNumbers []string) error {
+//FindExternalUserIDsByTestsOrderNumbers finds the external users ids for the tests orders numbers
+func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error) {
 	pipeline := []bson.M{
 		{"$lookup": bson.M{
 			"from":         "users",
@@ -4056,26 +4057,20 @@ func (sa *Adapter) FindTesttt(orderNumbers []string) error {
 			"user_id": "$user._id", "user_external_id": "$user.external_id",
 		}}}
 
-	var result []*lpJoin
+	var result []*ctuJoin
 	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
 	if err != nil {
-		//TODO
-		//	return nil, err
-
+		return nil, err
 	}
 	if result == nil || len(result) == 0 {
-		//TODO
 		//not found
-		//	return nil, nil
+		return nil, nil
 	}
-
+	mapData := make(map[string]*string, len(result))
 	for _, v := range result {
-		log.Println(v.OrderNumber)
+		mapData[v.OrderNumber] = &v.UserExternalID
 	}
-
-	log.Println(result)
-
-	return nil
+	return mapData, nil
 }
 
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {

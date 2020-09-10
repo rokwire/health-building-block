@@ -56,16 +56,11 @@ func (app *Application) getUsersForRePost() ([]*model.User, error) {
 }
 
 func (app *Application) getUINsByOrderNumbers(orderNumbers []string) (map[string]*string, error) {
-	err := app.storage.FindTesttt(orderNumbers)
-
-	log.Println(err)
-	res := make(map[string]*string, 2)
-	v1 := "5678"
-	v2 := "558899"
-	res["1234"] = &v1
-	res["9"] = &v2
-	res["10"] = nil
-	return res, nil
+	data, err := app.storage.FindExternalUserIDsByTestsOrderNumbers(orderNumbers)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 func (app *Application) getResources() ([]*model.Resource, error) {

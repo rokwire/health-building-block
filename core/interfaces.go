@@ -32,6 +32,7 @@ type Services interface {
 	GetUserByShibbolethUIN(shibbolethUIN string) (*model.User, error)
 	GetUsersForRePost() ([]*model.User, error)
 	GetUINsByOrderNumbers(orderNumbers []string) (map[string]*string, error)
+	GetCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error)
 
 	GetResources() ([]*model.Resource, error)
 
@@ -101,6 +102,10 @@ func (s *servicesImpl) GetUsersForRePost() ([]*model.User, error) {
 
 func (s *servicesImpl) GetUINsByOrderNumbers(orderNumbers []string) (map[string]*string, error) {
 	return s.app.getUINsByOrderNumbers(orderNumbers)
+}
+
+func (s *servicesImpl) GetCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error) {
+	return s.app.getCTestsByExternalUserIDs(externalUserIDs)
 }
 
 func (s *servicesImpl) GetResources() ([]*model.Resource, error) {
@@ -654,7 +659,7 @@ type Storage interface {
 	CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
 	FindCTest(ID string) (*model.CTest, error)
 	FindCTests(userID string, processed bool) ([]*model.CTest, error)
-	FindCTestsByExternalUserID(externalUserID string) ([]*model.CTest, error)
+	FindCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error)
 	DeleteCTests(userID string) (int64, error)
 	SaveCTest(ctest *model.CTest) error
 

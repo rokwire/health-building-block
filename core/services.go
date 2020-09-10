@@ -63,6 +63,14 @@ func (app *Application) getUINsByOrderNumbers(orderNumbers []string) (map[string
 	return data, nil
 }
 
+func (app *Application) getCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error) {
+	data, err := app.storage.FindCTestsByExternalUserIDs(externalUserIDs)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (app *Application) getResources() ([]*model.Resource, error) {
 	resources, err := app.storage.ReadAllResources()
 	if err != nil {

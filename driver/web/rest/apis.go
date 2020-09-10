@@ -271,7 +271,7 @@ func (h ApisHandler) GetUINsByOrderNumbers(w http.ResponseWriter, r *http.Reques
 	var resData gubonResponse
 	resData, err := h.app.Services.GetUINsByOrderNumbers(orderNumbers)
 	if err != nil {
-		log.Printf("Error on creating a ctest - %s\n", err)
+		log.Printf("Error on getting UINs - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -288,9 +288,37 @@ func (h ApisHandler) GetUINsByOrderNumbers(w http.ResponseWriter, r *http.Reques
 	w.Write(data)
 }
 
-//GetItemsListsByUINs TODO
+//GetItemsListsByUINs gives the tracks items list for the provided UINs
 func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request) {
-	//TODO
+	uinsKeys, ok := r.URL.Query()["uins"]
+	if !ok || len(uinsKeys[0]) < 1 {
+		log.Println("url param 'uins' is missing")
+		return
+	}
+	uinsKey := uinsKeys[0]
+	uins := strings.Split(uinsKey, ",")
+	if len(uins) == 0 {
+		http.Error(w, "uins is required", http.StatusBadRequest)
+		return
+	}
+
+	resData, err := h.app.Services.GetCTestsByExternalUserIDs(uins)
+	if err != nil {
+		log.Printf("Error on getting track items by external id - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.Marshal(resData)
+	if err != nil {
+		log.Println("Error on marshal the track items by uins")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 //GetCounty gets a county

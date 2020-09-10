@@ -1223,9 +1223,17 @@ func (sa *Adapter) FindCTests(userID string, processed bool) ([]*model.CTest, er
 	return result, nil
 }
 
-//FindCTestsByExternalUserID finds ctests for the provided external user id
-func (sa *Adapter) FindCTestsByExternalUserID(externalUserID string) ([]*model.CTest, error) {
-	return nil, nil
+//FindCTestsByExternalUserIDs finds ctests lists for the provided external user IDs
+func (sa *Adapter) FindCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error) {
+	//TODO
+
+	mapData := make(map[string][]*model.CTest, 1)
+
+	list := make([]*model.CTest, 1)
+	list[0] = &model.CTest{ID: "100"}
+
+	mapData["11"] = list
+	return mapData, nil
 }
 
 //DeleteCTests deletes all ctest for a user

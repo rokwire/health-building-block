@@ -154,10 +154,11 @@ func (h ApisHandler) GetUsersForRePost(w http.ResponseWriter, r *http.Request) {
 }
 
 type createCTestRequest struct {
-	ProviderID    string `json:"provider_id" validate:"required"`
-	UIN           string `json:"uin" validate:"required"`
-	EncryptedKey  string `json:"encrypted_key" validate:"required"`
-	EncryptedBlob string `json:"encrypted_blob" validate:"required"`
+	ProviderID    string  `json:"provider_id" validate:"required"`
+	UIN           string  `json:"uin" validate:"required"`
+	EncryptedKey  string  `json:"encrypted_key" validate:"required"`
+	EncryptedBlob string  `json:"encrypted_blob" validate:"required"`
+	OrderNumber   *string `json:"order_number"`
 } // @name createCTestRequest
 
 //CreateExternalCTest creates CTest
@@ -199,8 +200,9 @@ func (h ApisHandler) CreateExternalCTest(w http.ResponseWriter, r *http.Request)
 	uin := requestData.UIN
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
+	orderNumber := requestData.OrderNumber
 
-	err = h.app.Services.CreateExternalCTest(providerID, uin, encryptedKey, encryptedBlob)
+	err = h.app.Services.CreateExternalCTest(providerID, uin, encryptedKey, encryptedBlob, orderNumber)
 	if err != nil {
 		log.Printf("Error on creating a ctest - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -241,6 +243,114 @@ type getMCountyGuidelineItemResponse struct {
 	Description string `json:"description"`
 	Type        string `json:"type"`
 } // @name GuidelineItem
+
+type gubonResponse map[string]*string // @name gubonResponse
+
+//GetUINsByOrderNumbers gives the corresponding UINs for the provided order numbers list
+// @Description Gives the corresponding UINs for the provided order numbers list. The list must be comma separated. The response looks like {"ordernumber1":"uin 1","ordernumber2":"uin 2"}
+// @Tags Providers
+// @ID GetUINsByOrderNumbers
+// @Accept json
+// @Param order-numbers query string true "Comma separated - ordernumber1,ordernumber2"
+// @Success 200 {object} gubonResponse
+// @Security ProvidersAuth
+// @Router /covid19/track/uins [get]
+func (h ApisHandler) GetUINsByOrderNumbers(w http.ResponseWriter, r *http.Request) {
+	orderNumbersKeys, ok := r.URL.Query()["order-numbers"]
+	if !ok || len(orderNumbersKeys[0]) < 1 {
+		log.Println("url param 'order-numbers' is missing")
+		return
+	}
+	orderNumbersKey := orderNumbersKeys[0]
+	orderNumbers := strings.Split(orderNumbersKey, ",")
+	if len(orderNumbers) == 0 {
+		http.Error(w, "order-numbers is required", http.StatusBadRequest)
+		return
+	}
+
+	var resData gubonResponse
+	resData, err := h.app.Services.GetUINsByOrderNumbers(orderNumbers)
+	if err != nil {
+		log.Printf("Error on getting UINs - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.Marshal(resData)
+	if err != nil {
+		log.Println("Error on marshal the uins by order numbers")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+type ilbuResponseItem struct {
+	OrderNumber *string   `json:"order_number"`
+	DateCreated time.Time `json:"date_created"`
+} // @name ilbuResponseItem
+
+type ilbuResponse map[string][]ilbuResponseItem // @name ilbuResponse
+
+//GetItemsListsByUINs gives the tracks items list for the provided UINs
+// @Description Gives the items list for the provided UINs. The list must be comma separated. The response looks like {"”777778":[{"order_number":null,"date_created":"2020-08-12T05:52:47.467Z”},…],”777777":[{"order_number":"9","date_created":"2020-09-10T05:02:14.716Z"}]}
+// @Tags Providers
+// @ID GetItemsListsByUINs
+// @Accept json
+// @Param uins query string true "Comma separated - uin1,uin2"
+// @Success 200 {object} ilbuResponse
+// @Security ProvidersAuth
+// @Router /covid19/track/items [get]
+func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request) {
+	uinsKeys, ok := r.URL.Query()["uins"]
+	if !ok || len(uinsKeys[0]) < 1 {
+		log.Println("url param 'uins' is missing")
+		return
+	}
+	uinsKey := uinsKeys[0]
+	uins := strings.Split(uinsKey, ",")
+	if len(uins) == 0 {
+		http.Error(w, "uins is required", http.StatusBadRequest)
+		return
+	}
+
+	resData, err := h.app.Services.GetCTestsByExternalUserIDs(uins)
+	if err != nil {
+		log.Printf("Error on getting track items by external id - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	//prepare the response
+	responseData := make(ilbuResponse, len(resData))
+	for key, currentList := range resData {
+		list := resData[key]
+
+		if list == nil {
+			continue
+		}
+
+		var resList []ilbuResponseItem
+		for _, item := range currentList {
+			resList = append(resList, ilbuResponseItem{OrderNumber: item.OrderNumber, DateCreated: item.DateCreated})
+		}
+		responseData[key] = resList
+	}
+
+	data, err := json.Marshal(responseData)
+	if err != nil {
+		log.Println("Error on marshal the track items by uins")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
 
 //GetCounty gets a county
 // @Description Gets a county

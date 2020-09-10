@@ -1037,7 +1037,7 @@ func (sa *Adapter) DeleteProvider(ID string) error {
 }
 
 //CreateExternalCTest creates an external ctests record
-func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, processed bool) (*model.CTest, *model.User, error) {
+func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error) {
 	var cTest model.CTest
 	var user model.User
 
@@ -1086,7 +1086,7 @@ func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedK
 		}
 		dateCreated := time.Now()
 		cTest = model.CTest{ID: id.String(), ProviderID: providerID, UserID: user.ID,
-			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Processed: processed, DateCreated: dateCreated}
+			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Processed: processed, OrderNumber: orderNumber, DateCreated: dateCreated}
 		_, err = sa.db.ctests.InsertOneWithContext(sessionContext, &cTest)
 		if err != nil {
 			abortTransaction(sessionContext)
@@ -1120,7 +1120,7 @@ func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedK
 }
 
 //CreateAdminCTest creates an admin ctests record
-func (sa *Adapter) CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool) (*model.CTest, *model.User, error) {
+func (sa *Adapter) CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error) {
 	var cTest model.CTest
 	var user model.User
 
@@ -1169,7 +1169,7 @@ func (sa *Adapter) CreateAdminCTest(providerID string, userID string, encryptedK
 		}
 		dateCreated := time.Now()
 		cTest = model.CTest{ID: id.String(), ProviderID: providerID, UserID: user.ID,
-			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Processed: processed, DateCreated: dateCreated}
+			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Processed: processed, OrderNumber: orderNumber, DateCreated: dateCreated}
 		_, err = sa.db.ctests.InsertOneWithContext(sessionContext, &cTest)
 		if err != nil {
 			abortTransaction(sessionContext)
@@ -1221,6 +1221,64 @@ func (sa *Adapter) FindCTests(userID string, processed bool) ([]*model.CTest, er
 		return nil, err
 	}
 	return result, nil
+}
+
+type ctu2Join struct {
+	ID            string     `bson:"_id"`
+	ProviderID    string     `bson:"provider_id"`
+	OrderNumber   *string    `bson:"order_number"`
+	EncryptedKey  string     `bson:"encrypted_key"`
+	EncryptedBlob string     `bson:"encrypted_blob"`
+	Processed     bool       `bson:"processed"`
+	DateCreated   time.Time  `bson:"date_created"`
+	DateUpdated   *time.Time `bson:"date_updated"`
+
+	UserID         string `bson:"user_id"`
+	UserExternalID string `bson:"user_external_id"`
+}
+
+//FindCTestsByExternalUserIDs finds ctests lists for the provided external user IDs
+func (sa *Adapter) FindCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error) {
+	pipeline := []bson.M{
+		{"$lookup": bson.M{
+			"from":         "users",
+			"localField":   "user_id",
+			"foreignField": "_id",
+			"as":           "user",
+		}},
+		{"$match": bson.M{"user.external_id": bson.M{"$in": externalUserIDs}}},
+		{"$unwind": "$user"},
+		{"$project": bson.M{
+			"_id": 1, "provider_id": 1, "order_number": 1, "encrypted_key": 1, "encrypted_blob": 1,
+			"processed": 1, "date_created": 1, "date_updated": 1,
+			"user_id": "$user._id", "user_external_id": "$user.external_id",
+		}}}
+
+	var result []*ctu2Join
+	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil || len(result) == 0 {
+		//not found
+		return nil, nil
+	}
+
+	//construct the result
+	mapData := make(map[string][]*model.CTest, len(externalUserIDs))
+	for _, v := range result {
+		userExternalID := v.UserExternalID
+		list := mapData[userExternalID]
+		if list == nil {
+			list = []*model.CTest{}
+		}
+		list = append(list, &model.CTest{ID: v.ID, ProviderID: v.ProviderID, UserID: v.UserID,
+			EncryptedKey: v.EncryptedKey, EncryptedBlob: v.EncryptedBlob, OrderNumber: v.OrderNumber, Processed: v.Processed,
+			DateCreated: v.DateCreated, DateUpdated: v.DateUpdated})
+
+		mapData[userExternalID] = list
+	}
+	return mapData, nil
 }
 
 //DeleteCTests deletes all ctest for a user
@@ -4026,6 +4084,46 @@ func (sa *Adapter) DeleteAccessRule(ID string) error {
 		return errors.New("deleted more than one records for id " + ID)
 	}
 	return nil
+}
+
+type ctuJoin struct {
+	ID          string `bson:"_id"`
+	OrderNumber string `bson:"order_number"`
+
+	UserID         string `bson:"user_id"`
+	UserExternalID string `bson:"user_external_id"`
+}
+
+//FindExternalUserIDsByTestsOrderNumbers finds the external users ids for the tests orders numbers
+func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error) {
+	pipeline := []bson.M{
+		{"$lookup": bson.M{
+			"from":         "users",
+			"localField":   "user_id",
+			"foreignField": "_id",
+			"as":           "user",
+		}},
+		{"$match": bson.M{"order_number": bson.M{"$in": orderNumbers}}},
+		{"$unwind": "$user"},
+		{"$project": bson.M{
+			"_id": 1, "order_number": 1,
+			"user_id": "$user._id", "user_external_id": "$user.external_id",
+		}}}
+
+	var result []*ctuJoin
+	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil || len(result) == 0 {
+		//not found
+		return nil, nil
+	}
+	mapData := make(map[string]*string, len(result))
+	for _, v := range result {
+		mapData[v.OrderNumber] = &v.UserExternalID
+	}
+	return mapData, nil
 }
 
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {

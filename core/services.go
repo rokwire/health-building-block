@@ -55,6 +55,22 @@ func (app *Application) getUsersForRePost() ([]*model.User, error) {
 	return users, nil
 }
 
+func (app *Application) getUINsByOrderNumbers(orderNumbers []string) (map[string]*string, error) {
+	data, err := app.storage.FindExternalUserIDsByTestsOrderNumbers(orderNumbers)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (app *Application) getCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error) {
+	data, err := app.storage.FindCTestsByExternalUserIDs(externalUserIDs)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (app *Application) getResources() ([]*model.Resource, error) {
 	resources, err := app.storage.ReadAllResources()
 	if err != nil {
@@ -101,9 +117,9 @@ func (app *Application) getCTests(current model.User, processed bool) ([]*model.
 	return ctests, providers, nil
 }
 
-func (app *Application) createExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string) error {
+func (app *Application) createExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error {
 	//1. create a ctest
-	_, user, err := app.storage.CreateExternalCTest(providerID, uin, encryptedKey, encryptedBlob, false)
+	_, user, err := app.storage.CreateExternalCTest(providerID, uin, encryptedKey, encryptedBlob, false, orderNumber)
 	if err != nil {
 		return err
 	}

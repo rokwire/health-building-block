@@ -3695,6 +3695,74 @@ var doc = `{
                 }
             }
         },
+        "/covid19/track/items": {
+            "get": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Gives the items list for the provided UINs. The list must be comma separated. The response looks like {\"”777778\":[{\"order_number\":null,\"date_created\":\"2020-08-12T05:52:47.467Z”},…],”777777\":[{\"order_number\":\"9\",\"date_created\":\"2020-09-10T05:02:14.716Z\"}]}",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "GetItemsListsByUINs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Comma separated - uin1,uin2",
+                        "name": "uins",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ilbuResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/track/uins": {
+            "get": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Gives the corresponding UINs for the provided order numbers list. The list must be comma separated. The response looks like {\"ordernumber1\":\"uin 1\",\"ordernumber2\":\"uin 2\"}",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "GetUINsByOrderNumbers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Comma separated - ordernumber1,ordernumber2",
+                        "name": "order-numbers",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gubonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/user": {
             "get": {
                 "security": [
@@ -4288,6 +4356,9 @@ var doc = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "order_number": {
                     "type": "string"
                 },
                 "processed": {
@@ -4998,6 +5069,9 @@ var doc = `{
                 "encrypted_key": {
                     "type": "string"
                 },
+                "order_number": {
+                    "type": "string"
+                },
                 "provider_id": {
                     "type": "string"
                 },
@@ -5424,6 +5498,32 @@ var doc = `{
                     "type": "integer"
                 },
                 "test_type_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "gubonResponse": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "ilbuResponse": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/ilbuResponseItem"
+                }
+            }
+        },
+        "ilbuResponseItem": {
+            "type": "object",
+            "properties": {
+                "date_created": {
+                    "type": "string"
+                },
+                "order_number": {
                     "type": "string"
                 }
             }
@@ -5922,7 +6022,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.14.0",
+	Version:     "1.15.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

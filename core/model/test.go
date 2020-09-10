@@ -29,6 +29,8 @@ type CTest struct {
 	EncryptedKey  string `json:"encrypted_key" bson:"encrypted_key"`
 	EncryptedBlob string `json:"encrypted_blob" bson:"encrypted_blob"`
 
+	OrderNumber *string `json:"order_number" bson:"order_number"`
+
 	Processed bool `json:"processed" bson:"processed"`
 
 	DateCreated time.Time  `json:"date_created" bson:"date_created"`

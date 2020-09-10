@@ -244,13 +244,25 @@ type getMCountyGuidelineItemResponse struct {
 	Type        string `json:"type"`
 } // @name GuidelineItem
 
-//GetUINByOrderNumber TODO
-func (h ApisHandler) GetUINByOrderNumber(w http.ResponseWriter, r *http.Request) {
+//GetUINsByOrderNumbers TODO
+func (h ApisHandler) GetUINsByOrderNumbers(w http.ResponseWriter, r *http.Request) {
+	orderNumbersKeys, ok := r.URL.Query()["order-numbers"]
+	if !ok || len(orderNumbersKeys[0]) < 1 {
+		log.Println("url param 'order-numbers' is missing")
+		return
+	}
+	orderNumbersKey := orderNumbersKeys[0]
+	orderNumbers := strings.Split(orderNumbersKey, ",")
+	if len(orderNumbers) == 0 {
+		http.Error(w, "order-numbers is required", http.StatusBadRequest)
+		return
+	}
+	log.Println(orderNumbers)
 	//TODO
 }
 
-//GetItemsByUIN TODO
-func (h ApisHandler) GetItemsByUIN(w http.ResponseWriter, r *http.Request) {
+//GetItemsListsByUINs TODO
+func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request) {
 	//TODO
 }
 

@@ -848,6 +848,10 @@ definitions:
     - name
     - next_step
     type: object
+  gubonResponse:
+    additionalProperties:
+      type: string
+    type: object
   locationOperationDayRequest:
     properties:
       close_time:
@@ -3404,6 +3408,27 @@ paths:
       - RokwireAuth: []
       tags:
       - Covid19
+  /covid19/track/uins:
+    get:
+      consumes:
+      - application/json
+      description: Gives the corresponding UINs for the provided order numbers list
+      operationId: GetUINsByOrderNumbers
+      parameters:
+      - description: Comma separated orders numbers list
+        in: query
+        name: order-numbers
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gubonResponse'
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
   /covid19/user:
     get:
       consumes:

@@ -3695,6 +3695,40 @@ var doc = `{
                 }
             }
         },
+        "/covid19/track/uins": {
+            "get": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Gives the corresponding UINs for the provided order numbers list",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "GetUINsByOrderNumbers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Comma separated orders numbers list",
+                        "name": "order-numbers",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gubonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/user": {
             "get": {
                 "security": [
@@ -5432,6 +5466,12 @@ var doc = `{
                 "test_type_id": {
                     "type": "string"
                 }
+            }
+        },
+        "gubonResponse": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
             }
         },
         "locationOperationDayRequest": {

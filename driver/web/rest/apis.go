@@ -244,7 +244,17 @@ type getMCountyGuidelineItemResponse struct {
 	Type        string `json:"type"`
 } // @name GuidelineItem
 
-//GetUINsByOrderNumbers TODO
+type gubonResponse map[string]*string // @name gubonResponse
+
+//GetUINsByOrderNumbers gives the corresponding UINs for the provided order numbers list
+// @Description Gives the corresponding UINs for the provided order numbers list
+// @Tags Providers
+// @ID GetUINsByOrderNumbers
+// @Accept json
+// @Param order-numbers query string true "Comma separated orders numbers list"
+// @Success 200 {object} gubonResponse
+// @Security ProvidersAuth
+// @Router /covid19/track/uins [get]
 func (h ApisHandler) GetUINsByOrderNumbers(w http.ResponseWriter, r *http.Request) {
 	orderNumbersKeys, ok := r.URL.Query()["order-numbers"]
 	if !ok || len(orderNumbersKeys[0]) < 1 {
@@ -258,6 +268,7 @@ func (h ApisHandler) GetUINsByOrderNumbers(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	var resData gubonResponse
 	resData, err := h.app.Services.GetUINsByOrderNumbers(orderNumbers)
 	if err != nil {
 		log.Printf("Error on creating a ctest - %s\n", err)

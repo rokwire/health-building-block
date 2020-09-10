@@ -3702,7 +3702,7 @@ var doc = `{
                         "ProvidersAuth": []
                     }
                 ],
-                "description": "Gives the corresponding UINs for the provided order numbers list",
+                "description": "Gives the corresponding UINs for the provided order numbers list. The list must be comma separated. The response looks like {\"ordernumber1\":\"uin 1\",\"ordernumber2\":\"uin 2\"}",
                 "consumes": [
                     "application/json"
                 ],
@@ -3713,7 +3713,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Comma separated orders numbers list",
+                        "description": "Comma separated - ordernumber1,ordernumber2",
                         "name": "order-numbers",
                         "in": "query",
                         "required": true

@@ -247,11 +247,11 @@ type getMCountyGuidelineItemResponse struct {
 type gubonResponse map[string]*string // @name gubonResponse
 
 //GetUINsByOrderNumbers gives the corresponding UINs for the provided order numbers list
-// @Description Gives the corresponding UINs for the provided order numbers list
+// @Description Gives the corresponding UINs for the provided order numbers list. The list must be comma separated. The response looks like {"ordernumber1":"uin 1","ordernumber2":"uin 2"}
 // @Tags Providers
 // @ID GetUINsByOrderNumbers
 // @Accept json
-// @Param order-numbers query string true "Comma separated orders numbers list"
+// @Param order-numbers query string true "Comma separated - ordernumber1,ordernumber2"
 // @Success 200 {object} gubonResponse
 // @Security ProvidersAuth
 // @Router /covid19/track/uins [get]

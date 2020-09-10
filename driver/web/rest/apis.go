@@ -293,7 +293,17 @@ type ilbuResponseItem struct {
 	DateCreated time.Time `json:"date_created"`
 } // @name ilbuResponseItem
 
+type ilbuResponse map[string][]ilbuResponseItem // @name ilbuResponse
+
 //GetItemsListsByUINs gives the tracks items list for the provided UINs
+// @Description Gives the items list for the provided UINs. The list must be comma separated. The response looks like {"678028578":[{"order_number":null,"date_created":"2020-08-12T05:52:47.467Z”},…],”777777":[{"order_number":"9","date_created":"2020-09-10T05:02:14.716Z"}]}
+// @Tags Providers
+// @ID GetItemsListsByUINs
+// @Accept json
+// @Param uins query string true "Comma separated - uin1,uin2"
+// @Success 200 {object} ilbuResponse
+// @Security ProvidersAuth
+// @Router /covid19/track/items [get]
 func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request) {
 	uinsKeys, ok := r.URL.Query()["uins"]
 	if !ok || len(uinsKeys[0]) < 1 {
@@ -315,7 +325,7 @@ func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request)
 	}
 
 	//prepare the response
-	responseData := make(map[string][]ilbuResponseItem, len(resData))
+	responseData := make(ilbuResponse, len(resData))
 	for key, currentList := range resData {
 		list := resData[key]
 

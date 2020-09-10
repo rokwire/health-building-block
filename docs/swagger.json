@@ -3683,6 +3683,40 @@
                 }
             }
         },
+        "/covid19/track/items": {
+            "get": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Gives the items list for the provided UINs. The list must be comma separated. The response looks like {\"678028578\":[{\"order_number\":null,\"date_created\":\"2020-08-12T05:52:47.467Z”},…],”777777\":[{\"order_number\":\"9\",\"date_created\":\"2020-09-10T05:02:14.716Z\"}]}",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "GetItemsListsByUINs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Comma separated - uin1,uin2",
+                        "name": "uins",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ilbuResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/track/uins": {
             "get": {
                 "security": [
@@ -5460,6 +5494,26 @@
             "type": "object",
             "additionalProperties": {
                 "type": "string"
+            }
+        },
+        "ilbuResponse": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/ilbuResponseItem"
+                }
+            }
+        },
+        "ilbuResponseItem": {
+            "type": "object",
+            "properties": {
+                "date_created": {
+                    "type": "string"
+                },
+                "order_number": {
+                    "type": "string"
+                }
             }
         },
         "locationOperationDayRequest": {

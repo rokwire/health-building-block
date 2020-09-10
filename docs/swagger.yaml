@@ -852,6 +852,19 @@ definitions:
     additionalProperties:
       type: string
     type: object
+  ilbuResponse:
+    additionalProperties:
+      items:
+        $ref: '#/definitions/ilbuResponseItem'
+      type: array
+    type: object
+  ilbuResponseItem:
+    properties:
+      date_created:
+        type: string
+      order_number:
+        type: string
+    type: object
   locationOperationDayRequest:
     properties:
       close_time:
@@ -3408,6 +3421,28 @@ paths:
       - RokwireAuth: []
       tags:
       - Covid19
+  /covid19/track/items:
+    get:
+      consumes:
+      - application/json
+      description: Gives the items list for the provided UINs. The list must be comma
+        separated. The response looks like {"678028578":[{"order_number":null,"date_created":"2020-08-12T05:52:47.467Z”},…],”777777":[{"order_number":"9","date_created":"2020-09-10T05:02:14.716Z"}]}
+      operationId: GetItemsListsByUINs
+      parameters:
+      - description: Comma separated - uin1,uin2
+        in: query
+        name: uins
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ilbuResponse'
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
   /covid19/track/uins:
     get:
       consumes:

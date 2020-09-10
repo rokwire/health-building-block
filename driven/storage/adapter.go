@@ -1223,6 +1223,11 @@ func (sa *Adapter) FindCTests(userID string, processed bool) ([]*model.CTest, er
 	return result, nil
 }
 
+//FindCTestsByExternalUserID finds ctests for the provided external user id
+func (sa *Adapter) FindCTestsByExternalUserID(externalUserID string) ([]*model.CTest, error) {
+	return nil, nil
+}
+
 //DeleteCTests deletes all ctest for a user
 func (sa *Adapter) DeleteCTests(userID string) (int64, error) {
 	filter := bson.D{primitive.E{Key: "user_id", Value: userID}}

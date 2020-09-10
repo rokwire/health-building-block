@@ -120,6 +120,8 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/users/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.GetUserByShibbolethUIN)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/users/re-post", we.providerAuthWrapFunc(we.apisHandler.GetUsersForRePost)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/ctests", we.providerAuthWrapFunc(we.apisHandler.CreateExternalCTest)).Methods("POST")
+	covid19RestSubrouter.HandleFunc("/track/order-number/{order-number}", we.providerAuthWrapFunc(we.apisHandler.GetUINByOrderNumber)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/track/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.GetItemsByUIN)).Methods("GET")
 
 	// api key auth
 	covid19RestSubrouter.HandleFunc("/counties", we.authWrapFunc(we.apisHandler.GetCounties)).Methods("GET")

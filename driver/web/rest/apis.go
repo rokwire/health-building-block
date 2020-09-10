@@ -244,6 +244,16 @@ type getMCountyGuidelineItemResponse struct {
 	Type        string `json:"type"`
 } // @name GuidelineItem
 
+//GetUINByOrderNumber TODO
+func (h ApisHandler) GetUINByOrderNumber(w http.ResponseWriter, r *http.Request) {
+	//TODO
+}
+
+//GetItemsByUIN TODO
+func (h ApisHandler) GetItemsByUIN(w http.ResponseWriter, r *http.Request) {
+	//TODO
+}
+
 //GetCounty gets a county
 // @Description Gets a county
 // @Tags Covid19

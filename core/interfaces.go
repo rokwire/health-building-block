@@ -649,6 +649,7 @@ type Storage interface {
 	CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
 	FindCTest(ID string) (*model.CTest, error)
 	FindCTests(userID string, processed bool) ([]*model.CTest, error)
+	FindCTestsByExternalUserID(externalUserID string) ([]*model.CTest, error)
 	DeleteCTests(userID string) (int64, error)
 	SaveCTest(ctest *model.CTest) error
 

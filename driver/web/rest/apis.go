@@ -288,6 +288,11 @@ func (h ApisHandler) GetUINsByOrderNumbers(w http.ResponseWriter, r *http.Reques
 	w.Write(data)
 }
 
+type ilbuResponseItem struct {
+	OrderNumber *string   `json:"order_number"`
+	DateCreated time.Time `json:"date_created"`
+} // @name ilbuResponseItem
+
 //GetItemsListsByUINs gives the tracks items list for the provided UINs
 func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request) {
 	uinsKeys, ok := r.URL.Query()["uins"]
@@ -309,7 +314,23 @@ func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	data, err := json.Marshal(resData)
+	//prepare the response
+	responseData := make(map[string][]ilbuResponseItem, len(resData))
+	for key, currentList := range resData {
+		list := resData[key]
+
+		if list == nil {
+			continue
+		}
+
+		var resList []ilbuResponseItem
+		for _, item := range currentList {
+			resList = append(resList, ilbuResponseItem{OrderNumber: item.OrderNumber, DateCreated: item.DateCreated})
+		}
+		responseData[key] = resList
+	}
+
+	data, err := json.Marshal(responseData)
 	if err != nil {
 		log.Println("Error on marshal the track items by uins")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

@@ -31,6 +31,8 @@ type Services interface {
 
 	GetUserByShibbolethUIN(shibbolethUIN string) (*model.User, error)
 	GetUsersForRePost() ([]*model.User, error)
+	GetUINsByOrderNumbers(orderNumbers []string) (map[string]*string, error)
+	GetCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error)
 
 	GetResources() ([]*model.Resource, error)
 
@@ -50,7 +52,7 @@ type Services interface {
 	UpdateEHistory(userID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error)
 
 	GetCTests(urrent model.User, processed bool) ([]*model.CTest, []*model.Provider, error)
-	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string) error
+	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error
 	DeleteCTests(userID string) (int64, error)
 	UpdateCTest(current model.User, ID string, processed bool) (*model.CTest, error)
 
@@ -96,6 +98,14 @@ func (s *servicesImpl) GetUserByShibbolethUIN(shibbolethUIN string) (*model.User
 
 func (s *servicesImpl) GetUsersForRePost() ([]*model.User, error) {
 	return s.app.getUsersForRePost()
+}
+
+func (s *servicesImpl) GetUINsByOrderNumbers(orderNumbers []string) (map[string]*string, error) {
+	return s.app.getUINsByOrderNumbers(orderNumbers)
+}
+
+func (s *servicesImpl) GetCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error) {
+	return s.app.getCTestsByExternalUserIDs(externalUserIDs)
 }
 
 func (s *servicesImpl) GetResources() ([]*model.Resource, error) {
@@ -147,8 +157,8 @@ func (s *servicesImpl) GetCTests(current model.User, processed bool) ([]*model.C
 	return s.app.getCTests(current, processed)
 }
 
-func (s *servicesImpl) CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string) error {
-	return s.app.createExternalCTest(providerID, uin, encryptedKey, encryptedBlob)
+func (s *servicesImpl) CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error {
+	return s.app.createExternalCTest(providerID, uin, encryptedKey, encryptedBlob, orderNumber)
 }
 
 func (s *servicesImpl) DeleteCTests(userID string) (int64, error) {
@@ -645,10 +655,11 @@ type Storage interface {
 	SaveProvider(provider *model.Provider) error
 	DeleteProvider(ID string) error
 
-	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, processed bool) (*model.CTest, *model.User, error)
-	CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool) (*model.CTest, *model.User, error)
+	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
+	CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
 	FindCTest(ID string) (*model.CTest, error)
 	FindCTests(userID string, processed bool) ([]*model.CTest, error)
+	FindCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error)
 	DeleteCTests(userID string) (int64, error)
 	SaveCTest(ctest *model.CTest) error
 
@@ -728,6 +739,8 @@ type Storage interface {
 	UpdateAccessRule(ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
 	FindAccessRuleByCountyID(countyID string) (*model.AccessRule, error)
 	DeleteAccessRule(ID string) error
+
+	FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error)
 }
 
 //StorageListener listenes for change data storage events

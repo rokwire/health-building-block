@@ -257,8 +257,24 @@ func (h ApisHandler) GetUINsByOrderNumbers(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "order-numbers is required", http.StatusBadRequest)
 		return
 	}
-	log.Println(orderNumbers)
-	//TODO
+
+	resData, err := h.app.Services.GetUINsByOrderNumbers(orderNumbers)
+	if err != nil {
+		log.Printf("Error on creating a ctest - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.Marshal(resData)
+	if err != nil {
+		log.Println("Error on marshal the uins by order numbers")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 //GetItemsListsByUINs TODO

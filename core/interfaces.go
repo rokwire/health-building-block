@@ -31,6 +31,7 @@ type Services interface {
 
 	GetUserByShibbolethUIN(shibbolethUIN string) (*model.User, error)
 	GetUsersForRePost() ([]*model.User, error)
+	GetUINsByOrderNumbers(orderNumbers []string) (map[string]*string, error)
 
 	GetResources() ([]*model.Resource, error)
 
@@ -96,6 +97,10 @@ func (s *servicesImpl) GetUserByShibbolethUIN(shibbolethUIN string) (*model.User
 
 func (s *servicesImpl) GetUsersForRePost() ([]*model.User, error) {
 	return s.app.getUsersForRePost()
+}
+
+func (s *servicesImpl) GetUINsByOrderNumbers(orderNumbers []string) (map[string]*string, error) {
+	return s.app.getUINsByOrderNumbers(orderNumbers)
 }
 
 func (s *servicesImpl) GetResources() ([]*model.Resource, error) {

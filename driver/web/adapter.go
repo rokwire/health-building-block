@@ -272,16 +272,18 @@ func (we Adapter) wrapFunc(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (we Adapter) authWrapFunc(handler http.HandlerFunc) http.HandlerFunc {
+type apiKeysAuthFunc = func(*string, http.ResponseWriter, *http.Request)
+
+func (we Adapter) authWrapFunc(handler apiKeysAuthFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
-		authenticated := we.auth.apiKeyCheck(w, req)
+		authenticated, appVersion := we.auth.apiKeyCheck(w, req)
 		if !authenticated {
 			return
 		}
 
-		handler(w, req)
+		handler(appVersion, w, req)
 	}
 }
 

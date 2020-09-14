@@ -361,7 +361,7 @@ func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request)
 // @Success 200 {object} getMCountyResponse
 // @Security RokwireAuth
 // @Router /covid19/counties/{id} [get]
-func (h ApisHandler) GetCounty(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetCounty(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -464,7 +464,7 @@ type getMCountiesGuidelineItemResponse struct {
 // @Success 200 {array} getMCountyResponse
 // @Security RokwireAuth
 // @Router /covid19/counties [get]
-func (h ApisHandler) GetCounties(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetCounties(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	filter := utils.ConstructFilter(r)
 	counties, err := h.app.Services.FindCounties(filter)
 	if err != nil {
@@ -679,7 +679,7 @@ func (h ApisHandler) DeleteCTests(current model.User, w http.ResponseWriter, r *
 // @Success 200 {array} model.Resource
 // @Security RokwireAuth
 // @Router /covid19/resources [get]
-func (h ApisHandler) GetResources(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetResources(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	resources, err := h.app.Services.GetResources()
 	if err != nil {
 		log.Printf("Error on getting resources %s", err)
@@ -712,7 +712,7 @@ func (h ApisHandler) GetResources(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} model.FAQ
 // @Security RokwireAuth
 // @Router /covid19/faq [get]
-func (h ApisHandler) GetFAQ(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetFAQ(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	faq, err := h.app.Services.GetFAQ()
 	if err != nil {
 		log.Printf("Error on getting faq %s", err)
@@ -743,7 +743,7 @@ func (h ApisHandler) GetFAQ(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} model.News
 // @Security RokwireAuth
 // @Router /covid19/news [get]
-func (h ApisHandler) GetNews(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetNews(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	var limit int64
 	var err error
 
@@ -1216,7 +1216,7 @@ func (h ApisHandler) DeleteHistoriesV2(current model.User, w http.ResponseWriter
 // @Success 200 {array} rest.providerResponse
 // @Security RokwireAuth
 // @Router /covid19/providers [get]
-func (h ApisHandler) GetProviders(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetProviders(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	providers, err := h.app.Services.GetProviders()
 	if err != nil {
 		log.Println("Error on getting the providers items")
@@ -1251,7 +1251,7 @@ func (h ApisHandler) GetProviders(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} rest.providerResponse
 // @Security RokwireAuth
 // @Router /covid19/providers/county/{id} [get]
-func (h ApisHandler) GetProvidersByCounty(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetProvidersByCounty(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	countyID := params["county-id"]
 	if len(countyID) <= 0 {
@@ -1290,7 +1290,7 @@ func (h ApisHandler) GetProvidersByCounty(w http.ResponseWriter, r *http.Request
 // TODO Success 200 {map} rest.providerResponse
 // Security RokwireAuth
 // Router /covid19/providers [get]
-func (h ApisHandler) GetProvidersByCounties(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetProvidersByCounties(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	countyIDsKeys, ok := r.URL.Query()["county-ids"]
 	if !ok || len(countyIDsKeys[0]) < 1 {
 		log.Println("url param 'county-ids' is missing")
@@ -1389,7 +1389,7 @@ type getRulesByCountyResultResponse struct {
 // @Success 200 {array} getRulesByCountyResponse
 // @Security RokwireAuth
 // @Router /covid19/rules/county/{id} [get]
-func (h ApisHandler) GetRulesByCounty(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetRulesByCounty(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	countyID := params["county-id"]
 	if len(countyID) <= 0 {
@@ -1497,7 +1497,7 @@ func (h ApisHandler) findLocation(ID string, list []*model.Location) *model.Loca
 // @Success 200 {array} locationResponse
 // @Security RokwireAuth
 // @Router /covid19/locations [get]
-func (h ApisHandler) GetLocationsByCountyIDProviderID(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetLocationsByCountyIDProviderID(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	countyKeys, ok := r.URL.Query()["county-id"]
 	if !ok || len(countyKeys[0]) < 1 {
 		log.Println("url param 'county-id' is missing")
@@ -1550,7 +1550,7 @@ func (h ApisHandler) GetLocationsByCountyIDProviderID(w http.ResponseWriter, r *
 }
 
 //GetLocationsByCountyID gets the locations for a specific county
-func (h ApisHandler) GetLocationsByCountyID(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetLocationsByCountyID(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	countyKeys, ok := r.URL.Query()["county-id"]
 	if !ok || len(countyKeys[0]) < 1 {
 		log.Println("url param 'county-id' is missing")
@@ -1605,7 +1605,7 @@ func (h ApisHandler) GetLocationsByCountyID(w http.ResponseWriter, r *http.Reque
 // @Success 200 {object} locationResponse
 // @Security RokwireAuth
 // @Router /covid19/locations/{id} [get]
-func (h ApisHandler) GetLocation(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetLocation(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1664,7 +1664,7 @@ type getMTestTypesResultResponse struct {
 } // @name TestTypeResult
 
 //GetTestTypesByIDs gets the test types for the provided IDs
-func (h ApisHandler) GetTestTypesByIDs(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetTestTypesByIDs(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	idsKeys, ok := r.URL.Query()["ids"]
 	if !ok || len(idsKeys[0]) < 1 {
 		log.Println("url param 'ids' is missing")
@@ -1719,7 +1719,7 @@ func (h ApisHandler) GetTestTypesByIDs(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} getMTestTypesResponse
 // @Security RokwireAuth
 // @Router /covid19/test-types [get]
-func (h ApisHandler) GetTestTypes(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetTestTypes(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	testTypes, err := h.app.Services.GetAllTestTypes()
 	if err != nil {
 		log.Println("Error on getting the test types")
@@ -1778,7 +1778,7 @@ type mSymptomResponse struct {
 // @Success 200 {array} getMSymptomGroupsResponse
 // @Security RokwireAuth
 // @Router /covid19/symptom-groups [get]
-func (h ApisHandler) GetSymptomGroups(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetSymptomGroups(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	symptomGroups, err := h.app.Services.GetSymptomGroups()
 	if err != nil {
 		log.Println("Error on getting the symptom groups items")
@@ -1811,8 +1811,8 @@ func (h ApisHandler) GetSymptomGroups(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-func (h ApisHandler) GetSymptoms(w http.ResponseWriter, r *http.Request) {
-	symptoms, err := h.app.Services.GetSymptoms()
+func (h ApisHandler) GetSymptoms(appVersion *string, w http.ResponseWriter, r *http.Request) {
+	symptoms, err := h.app.Services.GetSymptoms(appVersion)
 	if err != nil {
 		log.Printf("Error on getting the symptoms - %s", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1853,7 +1853,7 @@ type mSymptomRuleItemResponse struct {
 // @Success 200 {array} mSymptomRuleResponse
 // @Security RokwireAuth
 // @Router /covid19/symptom-rules/county/{id} [get]
-func (h ApisHandler) GetSymptomRuleByCounty(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetSymptomRuleByCounty(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	countyID := params["county-id"]
 	if len(countyID) <= 0 {
@@ -1905,7 +1905,7 @@ func (h ApisHandler) GetSymptomRuleByCounty(w http.ResponseWriter, r *http.Reque
 // @Success 200 {object} string "TODO"
 // @Security RokwireAuth
 // @Router /covid19/access-rules/county/{id} [get]
-func (h ApisHandler) GetAccessRuleByCounty(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetAccessRuleByCounty(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	countyID := params["county-id"]
 	if len(countyID) <= 0 {
@@ -1963,7 +1963,7 @@ type addTraceReportRequest []struct {
 // @Success 200 {object} string "Successfully added [n] items"
 // @Security RokwireAuth
 // @Router /covid19/trace/report [post]
-func (h ApisHandler) AddTraceReport(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) AddTraceReport(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a trace report - %s\n", err.Error())
@@ -2019,7 +2019,7 @@ func (h ApisHandler) AddTraceReport(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} model.TraceExposure
 // @Security RokwireAuth
 // @Router /covid19/trace/exposures [get]
-func (h ApisHandler) GetExposures(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetExposures(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	var timestamp *int64
 	timestampKeys, ок := r.URL.Query()["timestamp"]
 	if ок && len(timestampKeys[0]) > 0 {

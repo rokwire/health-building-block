@@ -418,7 +418,8 @@ func (app *Application) getSymptomGroups() ([]*model.SymptomGroup, error) {
 	return symptomGroups, nil
 }
 
-func (app *Application) getSymptoms() (*model.Symptoms, error) {
+func (app *Application) getSymptoms(appVersion *string) (*model.Symptoms, error) {
+	//TODO
 	symptoms, err := app.storage.ReadSymptoms("2.6")
 	if err != nil {
 		return nil, err

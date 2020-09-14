@@ -720,6 +720,8 @@ type Storage interface {
 
 	ReadAllSymptomGroups() ([]*model.SymptomGroup, error)
 
+	ReadSymptoms(appVersion string) (*model.Symptoms, error)
+
 	ReadAllSymptomRules() ([]*model.SymptomRule, error)
 	CreateSymptomRule(countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error)
 	FindSymptomRule(ID string) (*model.SymptomRule, error)

@@ -3339,6 +3339,17 @@ func (sa *Adapter) ReadAllSymptomGroups() ([]*model.SymptomGroup, error) {
 	return resultList, nil
 }
 
+//ReadSymptoms reads all the symptoms
+func (sa *Adapter) ReadSymptoms(appVersion string) (*model.Symptoms, error) {
+	filter := bson.D{primitive.E{Key: "app_version", Value: appVersion}}
+	var symptoms *model.Symptoms
+	err := sa.db.symptoms.FindOne(filter, &symptoms, nil)
+	if err != nil {
+		return nil, err
+	}
+	return symptoms, nil
+}
+
 //ReadAllSymptomRules reads all the symptom rules
 func (sa *Adapter) ReadAllSymptomRules() ([]*model.SymptomRule, error) {
 	filter := bson.D{}

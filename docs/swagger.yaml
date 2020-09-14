@@ -2488,6 +2488,7 @@ paths:
     get:
       consumes:
       - application/json
+      deprecated: true
       description: Gives the symptom groups
       operationId: getSymptomGroups
       responses:
@@ -2518,6 +2519,7 @@ paths:
     get:
       consumes:
       - application/json
+      deprecated: true
       description: Gives the symptom rules
       operationId: getSymptomRules
       responses:
@@ -2547,6 +2549,7 @@ paths:
     post:
       consumes:
       - application/json
+      deprecated: true
       description: Creates a symptom rule.
       operationId: CreateSymptomRule
       parameters:
@@ -2572,6 +2575,7 @@ paths:
     delete:
       consumes:
       - text/plain
+      deprecated: true
       description: Deletes a symptom rule.
       operationId: deleteSymptomRule
       parameters:
@@ -2593,6 +2597,7 @@ paths:
     put:
       consumes:
       - application/json
+      deprecated: true
       description: Updates a symptom rule.
       operationId: UpdateSymptomRule
       parameters:
@@ -3310,6 +3315,7 @@ paths:
     get:
       consumes:
       - application/json
+      deprecated: true
       description: Gives the symptom groups
       operationId: getSymptomGroups
       responses:
@@ -3327,6 +3333,7 @@ paths:
     get:
       consumes:
       - application/json
+      deprecated: true
       description: Gives the symptom rule for a county.
       operationId: getSymptomRuleByCounty
       parameters:

@@ -1770,6 +1770,7 @@ type mSymptomResponse struct {
 } // @name Symptom
 
 //GetSymptomGroups gets the symptom groups
+// @Deprecated
 // @Description Gives the symptom groups
 // @Tags Covid19
 // @ID getSymptomGroups
@@ -1828,6 +1829,7 @@ type mSymptomRuleItemResponse struct {
 } // @name SymptomRuleItem
 
 //GetSymptomRuleByCounty give the symptom rule for a county
+// @Deprecated
 // @Description Gives the symptom rule for a county.
 // @Tags Covid19
 // @ID getSymptomRuleByCounty

@@ -2184,6 +2184,7 @@
                     "Admin"
                 ],
                 "operationId": "getSymptomGroups",
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2233,6 +2234,7 @@
                     "Admin"
                 ],
                 "operationId": "getSymptomRules",
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2283,6 +2285,7 @@
                     "Admin"
                 ],
                 "operationId": "CreateSymptomRule",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "body data",
@@ -2325,6 +2328,7 @@
                     "Admin"
                 ],
                 "operationId": "UpdateSymptomRule",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "body data",
@@ -2369,6 +2373,7 @@
                     "Admin"
                 ],
                 "operationId": "deleteSymptomRule",
+                "deprecated": true,
                 "parameters": [
                     {
                         "type": "string",
@@ -3516,6 +3521,7 @@
                     "Covid19"
                 ],
                 "operationId": "getSymptomGroups",
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3544,6 +3550,7 @@
                     "Covid19"
                 ],
                 "operationId": "getSymptomRuleByCounty",
+                "deprecated": true,
                 "parameters": [
                     {
                         "type": "string",

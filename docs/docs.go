@@ -2196,6 +2196,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "getSymptomGroups",
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2245,6 +2246,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "getSymptomRules",
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2295,6 +2297,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "CreateSymptomRule",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "body data",
@@ -2337,6 +2340,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "UpdateSymptomRule",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "body data",
@@ -2381,6 +2385,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "deleteSymptomRule",
+                "deprecated": true,
                 "parameters": [
                     {
                         "type": "string",
@@ -3528,6 +3533,7 @@ var doc = `{
                     "Covid19"
                 ],
                 "operationId": "getSymptomGroups",
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3556,6 +3562,7 @@ var doc = `{
                     "Covid19"
                 ],
                 "operationId": "getSymptomRuleByCounty",
+                "deprecated": true,
                 "parameters": [
                     {
                         "type": "string",

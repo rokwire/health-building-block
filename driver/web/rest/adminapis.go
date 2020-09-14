@@ -2990,6 +2990,7 @@ type getSymptomGroupsResponse struct {
 } // @name SymptomGroup
 
 //GetSymptomGroups gets the symptom groups
+// @Deprecated
 // @Description Gives the symptom groups
 // @Tags Admin
 // @ID getSymptomGroups
@@ -3068,6 +3069,7 @@ type symptomRuleItemResponse struct {
 } // @name SymptomRuleItem
 
 //CreateSymptomRule creates a symptom rule
+// @Deprecated
 // @Description Creates a symptom rule.
 // @Tags Admin
 // @ID CreateSymptomRule
@@ -3163,6 +3165,7 @@ type updateSymptomRuleItemRequest struct {
 } //@name updateSymptomRuleItemRequest
 
 //UpdateSymptomRule updates a symptom rule
+// @Deprecated
 // @Description Updates a symptom rule.
 // @Tags Admin
 // @ID UpdateSymptomRule
@@ -3251,6 +3254,7 @@ func (h AdminApisHandler) UpdateSymptomRule(current model.User, group string, w 
 }
 
 //GetSymptomRules gets the symptom rules
+// @Deprecated
 // @Description Gives the symptom rules
 // @Tags Admin
 // @ID getSymptomRules
@@ -3301,6 +3305,7 @@ func (h AdminApisHandler) GetSymptomRules(current model.User, group string, w ht
 }
 
 //DeleteSymptomRule deletes a symptom rule
+// @Deprecated
 // @Description Deletes a symptom rule.
 // @Tags Admin
 // @ID deleteSymptomRule

@@ -151,6 +151,7 @@ func (we Adapter) Start() {
 
 	//deprecated
 	covid19RestSubrouter.HandleFunc("/symptom-groups", we.authWrapFunc(we.apisHandler.GetSymptomGroups)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/symptoms", we.authWrapFunc(we.apisHandler.GetSymptoms)).Methods("GET")
 
 	covid19RestSubrouter.HandleFunc("/trace/report", we.authWrapFunc(we.apisHandler.AddTraceReport)).Methods("POST")
 	covid19RestSubrouter.HandleFunc("/trace/exposures", we.authWrapFunc(we.apisHandler.GetExposures)).Methods("GET")

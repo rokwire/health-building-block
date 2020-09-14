@@ -72,6 +72,7 @@ type Services interface {
 	GetTestTypesByIDs(ids []string) ([]*model.TestType, error)
 
 	GetSymptomGroups() ([]*model.SymptomGroup, error)
+	GetSymptoms() (*model.Symptoms, error)
 
 	GetSymptomRuleByCounty(countyID string) (*model.SymptomRule, []*model.CountyStatus, error)
 	GetAccessRuleByCounty(countyID string) (*model.AccessRule, []*model.CountyStatus, error)
@@ -211,6 +212,10 @@ func (s *servicesImpl) GetTestTypesByIDs(ids []string) ([]*model.TestType, error
 
 func (s *servicesImpl) GetSymptomGroups() ([]*model.SymptomGroup, error) {
 	return s.app.getSymptomGroups()
+}
+
+func (s *servicesImpl) GetSymptoms() (*model.Symptoms, error) {
+	return s.app.getSymptoms()
 }
 
 func (s *servicesImpl) GetSymptomRuleByCounty(countyID string) (*model.SymptomRule, []*model.CountyStatus, error) {

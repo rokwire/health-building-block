@@ -1811,6 +1811,21 @@ func (h ApisHandler) GetSymptomGroups(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
+func (h ApisHandler) GetSymptoms(w http.ResponseWriter, r *http.Request) {
+	symptoms, err := h.app.Services.GetSymptoms()
+	if err != nil {
+		log.Printf("Error on getting the symptoms - %s", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	data := []byte(symptoms.Items)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 type mSymptomRuleResponse struct {
 	ID string `json:"id"`
 

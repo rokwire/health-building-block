@@ -58,6 +58,7 @@ type database struct {
 	symptomgroups  *collectionWrapper //old
 	symptomrules   *collectionWrapper //old
 	symptoms       *collectionWrapper
+	symptomsrules  *collectionWrapper
 	traceexposures *collectionWrapper
 	accessrules    *collectionWrapper
 
@@ -186,6 +187,11 @@ func (m *database) start() error {
 	if err != nil {
 		return err
 	}
+	symptomsrules := &collectionWrapper{database: m, coll: db.Collection("symptomsrules")}
+	err = m.applySymptomsRulesChecks(symptomsrules, counties)
+	if err != nil {
+		return err
+	}
 	traceexposures := &collectionWrapper{database: m, coll: db.Collection("traceexposures")}
 	err = m.applyTraceExposuresChecks(traceexposures)
 	if err != nil {
@@ -218,6 +224,7 @@ func (m *database) start() error {
 	m.symptomgroups = symptomgroups
 	m.symptomrules = symptomrules
 	m.symptoms = symptoms
+	m.symptomsrules = symptomsrules
 	m.traceexposures = traceexposures
 	m.accessrules = accessrules
 
@@ -622,6 +629,59 @@ func (m *database) applySymptomsChecks(symptoms *collectionWrapper) error {
 	}
 
 	log.Println("symptoms checks passed")
+	return nil
+}
+
+func (m *database) applySymptomsRulesChecks(symptomsRules *collectionWrapper, counties *collectionWrapper) error {
+	log.Println("apply symptomsRules checks.....")
+
+	//add indexes
+	err := symptomsRules.AddIndex(bson.D{primitive.E{Key: "app_version", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	err = symptomsRules.AddIndex(bson.D{primitive.E{Key: "county_id", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	//add initial data for version 2.6 and Champaign county if not added
+	//first find the county id
+	chFilter := bson.D{primitive.E{Key: "name", Value: "Champaign"}}
+	var champaignCounty *county
+	err = counties.FindOne(chFilter, &champaignCounty, nil)
+	if err != nil {
+		return err
+	}
+	if champaignCounty == nil {
+		return errors.New("there is no a Champaign county")
+	}
+
+	//check if added
+	filter := bson.D{primitive.E{Key: "app_version", Value: "2.6"}, primitive.E{Key: "county_id", Value: champaignCounty.ID}}
+	var items []*model.SymptomsRules
+	err = symptomsRules.Find(filter, &items, nil)
+	if err != nil {
+		return err
+	}
+	if len(items) <= 0 {
+		log.Println("there are no symptoms rules for version 2.6 and Champaign county, so we need to add initial data")
+
+		data, err := ioutil.ReadFile("./driven/storage/rules_2.6.json")
+		if err != nil {
+			return err
+		}
+		d := model.SymptomsRules{AppVersion: "2.6", CountyID: champaignCounty.ID, Data: string(data)}
+		_, err = symptomsRules.InsertOne(&d)
+		if err != nil {
+			return err
+		}
+	} else {
+		log.Println("there are symptoms rules for version 2.6 and Champaign county, so nothing to do")
+	}
+
+	log.Println("symptomsRules checks passed")
 	return nil
 }
 

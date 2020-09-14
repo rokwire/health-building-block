@@ -44,6 +44,13 @@ type SymptomRule struct {
 	Items []SymptomRuleItem
 }
 
+//SymptomsRules represents a raw symptoms rules entity
+type SymptomsRules struct {
+	AppVersion string `json:"app_version" bson:"app_version"`
+	CountyID   string `json:"county_id" bson:"county_id"`
+	Data       string `json:"data" bson:"data"`
+}
+
 //SymptomRuleItem represents a symptom rule item entity
 type SymptomRuleItem struct {
 	Gr1          bool

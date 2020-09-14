@@ -75,6 +75,7 @@ type Services interface {
 	GetSymptoms(appVersion *string) (*model.Symptoms, error)
 
 	GetSymptomRuleByCounty(countyID string) (*model.SymptomRule, []*model.CountyStatus, error)
+	GetSymptomsRulesByCounty(appVersion *string, countyID string) (*model.SymptomsRules, error)
 	GetAccessRuleByCounty(countyID string) (*model.AccessRule, []*model.CountyStatus, error)
 
 	AddTraceReport(items []model.TraceExposure) (int, error)
@@ -220,6 +221,10 @@ func (s *servicesImpl) GetSymptoms(appVersion *string) (*model.Symptoms, error) 
 
 func (s *servicesImpl) GetSymptomRuleByCounty(countyID string) (*model.SymptomRule, []*model.CountyStatus, error) {
 	return s.app.getSymptomRuleByCounty(countyID)
+}
+
+func (s *servicesImpl) GetSymptomsRulesByCounty(appVersion *string, countyID string) (*model.SymptomsRules, error) {
+	return s.app.getSymptomsRulesByCounty(appVersion, countyID)
 }
 
 func (s *servicesImpl) GetAccessRuleByCounty(countyID string) (*model.AccessRule, []*model.CountyStatus, error) {
@@ -733,6 +738,8 @@ type Storage interface {
 	FindSymptomRuleByCountyID(countyID string) (*model.SymptomRule, error)
 	SaveSymptomRule(symptomRule *model.SymptomRule) error
 	DeleteSymptomRule(ID string) error
+
+	FindSymptomsRulesByCountyID(appVersion string, countyID string) (*model.SymptomsRules, error)
 
 	CreateTraceReports(items []model.TraceExposure) (int, error)
 	ReadTraceExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)

@@ -1827,7 +1827,10 @@ func (h ApisHandler) GetSymptoms(appVersion *string, w http.ResponseWriter, r *h
 		return
 	}
 
-	data := []byte(symptoms.Items)
+	var data []byte
+	if symptoms != nil {
+		data = []byte(symptoms.Items)
+	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -1897,6 +1900,32 @@ func (h ApisHandler) GetSymptomRuleByCounty(appVersion *string, w http.ResponseW
 		log.Println("Error on marshal a symptom rule")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+func (h ApisHandler) GetSymptomsRulesByCounty(appVersion *string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	countyID := params["county-id"]
+	if len(countyID) <= 0 {
+		log.Println("county id is required")
+		http.Error(w, "county id is required", http.StatusBadRequest)
+		return
+	}
+
+	symptomsRules, err := h.app.Services.GetSymptomsRulesByCounty(appVersion, countyID)
+	if err != nil {
+		log.Printf("Error on getting the symptoms - %s", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	var data []byte
+	if symptomsRules != nil {
+		data = []byte(symptomsRules.Data)
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")

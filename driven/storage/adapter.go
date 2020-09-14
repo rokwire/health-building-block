@@ -3621,6 +3621,18 @@ func (sa *Adapter) DeleteSymptomRule(ID string) error {
 	return nil
 }
 
+//FindSymptomsRulesByCountyID finds the symptoms rules for county
+func (sa *Adapter) FindSymptomsRulesByCountyID(appVersion string, countyID string) (*model.SymptomsRules, error) {
+	filter := bson.D{primitive.E{Key: "app_version", Value: appVersion},
+		primitive.E{Key: "county_id", Value: countyID}}
+	var symptomsRules *model.SymptomsRules
+	err := sa.db.symptomsrules.FindOne(filter, &symptomsRules, nil)
+	if err != nil {
+		return nil, err
+	}
+	return symptomsRules, nil
+}
+
 //CreateTraceReports creates trace reports items
 func (sa *Adapter) CreateTraceReports(items []model.TraceExposure) (int, error) {
 

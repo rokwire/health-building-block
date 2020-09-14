@@ -1907,6 +1907,15 @@ func (h ApisHandler) GetSymptomRuleByCounty(appVersion *string, w http.ResponseW
 	w.Write(data)
 }
 
+//GetSymptomsRulesByCounty give the symptoms rules for a county
+// @Description Gives the symptoms rules for a county.
+// @Tags Covid19
+// @ID GetSymptomsRulesByCounty
+// @Accept json
+// @Param id path string true "County ID"
+// @Success 200 {object} string
+// @Security RokwireAuth
+// @Router /covid19/v2/symptom-rules/county/{id} [get]
 func (h ApisHandler) GetSymptomsRulesByCounty(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	countyID := params["county-id"]

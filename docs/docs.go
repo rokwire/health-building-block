@@ -4247,6 +4247,40 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/covid19/v2/symptom-rules/county/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "RokwireAuth": []
+                    }
+                ],
+                "description": "Gives the symptoms rules for a county.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetSymptomsRulesByCounty",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "County ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

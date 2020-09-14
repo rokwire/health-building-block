@@ -2426,6 +2426,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "CreateSymptom",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "body data",
@@ -2468,6 +2469,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "UpdateSymptom",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "body data",
@@ -2512,6 +2514,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "deleteSymptom",
+                "deprecated": true,
                 "parameters": [
                     {
                         "type": "string",

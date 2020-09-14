@@ -223,6 +223,7 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/locations/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateLocation)).Methods("PUT")
 	adminRestSubrouter.HandleFunc("/locations/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteLocation)).Methods("DELETE")
 
+	//deprecated
 	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateSymptom)).Methods("POST")
 	adminRestSubrouter.HandleFunc("/symptoms/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateSymptom)).Methods("PUT")
 	adminRestSubrouter.HandleFunc("/symptoms/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteSymptom)).Methods("DELETE")

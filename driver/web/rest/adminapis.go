@@ -2826,6 +2826,7 @@ type createSymptomRequest struct {
 } //@name createSymptomRequest
 
 //CreateSymptom creates a symptom
+// @Deprecated
 // @Description Creates a symptom
 // @Tags Admin
 // @ID CreateSymptom
@@ -2887,6 +2888,7 @@ type updateSymptomRequest struct {
 } //@name updateSymptomRequest
 
 //UpdateSymptom updates a symptom
+// @Deprecated
 // @Description Updates a symptom.
 // @Tags Admin
 // @ID UpdateSymptom
@@ -2953,6 +2955,7 @@ func (h AdminApisHandler) UpdateSymptom(current model.User, group string, w http
 }
 
 //DeleteSymptom deletes a symptom
+// @Deprecated
 // @Description Deletes a symptom
 // @Tags Admin
 // @ID deleteSymptom

@@ -3573,6 +3573,31 @@
                 }
             }
         },
+        "/covid19/symptoms": {
+            "get": {
+                "security": [
+                    {
+                        "RokwireAuth": []
+                    }
+                ],
+                "description": "Gives the symptoms",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetSymptoms",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/test-types": {
             "get": {
                 "security": [

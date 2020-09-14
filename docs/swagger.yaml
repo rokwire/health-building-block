@@ -3353,6 +3353,21 @@ paths:
       - RokwireAuth: []
       tags:
       - Covid19
+  /covid19/symptoms:
+    get:
+      consumes:
+      - application/json
+      description: Gives the symptoms
+      operationId: GetSymptoms
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
   /covid19/test-types:
     get:
       consumes:

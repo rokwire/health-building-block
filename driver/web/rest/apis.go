@@ -1811,6 +1811,14 @@ func (h ApisHandler) GetSymptomGroups(appVersion *string, w http.ResponseWriter,
 	w.Write(data)
 }
 
+//GetSymptoms gets the symptoms
+// @Description Gives the symptoms
+// @Tags Covid19
+// @ID GetSymptoms
+// @Accept json
+// @Success 200 {object} string
+// @Security RokwireAuth
+// @Router /covid19/symptoms [get]
 func (h ApisHandler) GetSymptoms(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	symptoms, err := h.app.Services.GetSymptoms(appVersion)
 	if err != nil {

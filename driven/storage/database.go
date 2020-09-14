@@ -53,8 +53,9 @@ type database struct {
 	counties       *collectionWrapper
 	testtypes      *collectionWrapper
 	rules          *collectionWrapper
-	symptomgroups  *collectionWrapper
-	symptomrules   *collectionWrapper
+	symptomgroups  *collectionWrapper //old
+	symptomrules   *collectionWrapper //old
+	symptoms       *collectionWrapper
 	traceexposures *collectionWrapper
 	accessrules    *collectionWrapper
 
@@ -178,6 +179,11 @@ func (m *database) start() error {
 	if err != nil {
 		return err
 	}
+	symptoms := &collectionWrapper{database: m, coll: db.Collection("symptoms")}
+	err = m.applySymptomsChecks(symptoms)
+	if err != nil {
+		return err
+	}
 	traceexposures := &collectionWrapper{database: m, coll: db.Collection("traceexposures")}
 	err = m.applyTraceExposuresChecks(traceexposures)
 	if err != nil {
@@ -209,6 +215,7 @@ func (m *database) start() error {
 	m.rules = rules
 	m.symptomgroups = symptomgroups
 	m.symptomrules = symptomrules
+	m.symptoms = symptoms
 	m.traceexposures = traceexposures
 	m.accessrules = accessrules
 
@@ -577,6 +584,19 @@ func (m *database) applySymptomRulesChecks(symptomRules *collectionWrapper) erro
 	}
 
 	log.Println("symptomRules checks passed")
+	return nil
+}
+
+func (m *database) applySymptomsChecks(symptoms *collectionWrapper) error {
+	log.Println("apply symptoms checks.....")
+
+	//add index
+	err := symptoms.AddIndex(bson.D{primitive.E{Key: "app_version", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	log.Println("symptoms checks passed")
 	return nil
 }
 

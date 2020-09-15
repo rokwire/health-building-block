@@ -719,6 +719,46 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Updates the rules.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "UpdateCRules",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/updateCRulesRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/admin/faq": {
@@ -5749,6 +5789,25 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/updateAccessRuleItemRequest"
                     }
+                }
+            }
+        },
+        "updateCRulesRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "county_id",
+                "data"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "county_id": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "string"
                 }
             }
         },

@@ -3837,6 +3837,17 @@ type updateCRulesRequest struct {
 	Data       string `json:"data" validate:"required"`
 } //@name updateCRulesRequest
 
+//UpdateCRules updates the rules
+// @Description Updates the rules.
+// @Tags Admin
+// @ID UpdateCRules
+// @Accept json
+// @Produce json
+// @Param data body updateCRulesRequest true "body data"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/crules [put]
 func (h AdminApisHandler) UpdateCRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	bodyData, err := ioutil.ReadAll(r.Body)
 	if err != nil {

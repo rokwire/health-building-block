@@ -929,6 +929,19 @@ definitions:
     - county_id
     - rules
     type: object
+  updateCRulesRequest:
+    properties:
+      app_version:
+        type: string
+      county_id:
+        type: string
+      data:
+        type: string
+    required:
+    - app_version
+    - county_id
+    - data
+    type: object
   updateCTestRequest:
     properties:
       processed:
@@ -1588,6 +1601,30 @@ paths:
         in: query
         name: app-version
         type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates the rules.
+      operationId: UpdateCRules
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateCRulesRequest'
+      produces:
+      - application/json
       responses:
         "200":
           description: OK

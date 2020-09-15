@@ -58,7 +58,7 @@ type database struct {
 	symptomgroups  *collectionWrapper //old
 	symptomrules   *collectionWrapper //old
 	symptoms       *collectionWrapper
-	symptomsrules  *collectionWrapper
+	crules         *collectionWrapper
 	traceexposures *collectionWrapper
 	accessrules    *collectionWrapper
 
@@ -187,8 +187,8 @@ func (m *database) start() error {
 	if err != nil {
 		return err
 	}
-	symptomsrules := &collectionWrapper{database: m, coll: db.Collection("symptomsrules")}
-	err = m.applySymptomsRulesChecks(symptomsrules, counties)
+	crules := &collectionWrapper{database: m, coll: db.Collection("crules")}
+	err = m.applyCRulesChecks(crules, counties)
 	if err != nil {
 		return err
 	}
@@ -224,7 +224,7 @@ func (m *database) start() error {
 	m.symptomgroups = symptomgroups
 	m.symptomrules = symptomrules
 	m.symptoms = symptoms
-	m.symptomsrules = symptomsrules
+	m.crules = crules
 	m.traceexposures = traceexposures
 	m.accessrules = accessrules
 
@@ -632,16 +632,16 @@ func (m *database) applySymptomsChecks(symptoms *collectionWrapper) error {
 	return nil
 }
 
-func (m *database) applySymptomsRulesChecks(symptomsRules *collectionWrapper, counties *collectionWrapper) error {
-	log.Println("apply symptomsRules checks.....")
+func (m *database) applyCRulesChecks(cRules *collectionWrapper, counties *collectionWrapper) error {
+	log.Println("apply CRules checks.....")
 
 	//add indexes
-	err := symptomsRules.AddIndex(bson.D{primitive.E{Key: "app_version", Value: 1}}, false)
+	err := cRules.AddIndex(bson.D{primitive.E{Key: "app_version", Value: 1}}, false)
 	if err != nil {
 		return err
 	}
 
-	err = symptomsRules.AddIndex(bson.D{primitive.E{Key: "county_id", Value: 1}}, false)
+	err = cRules.AddIndex(bson.D{primitive.E{Key: "county_id", Value: 1}}, false)
 	if err != nil {
 		return err
 	}
@@ -660,8 +660,8 @@ func (m *database) applySymptomsRulesChecks(symptomsRules *collectionWrapper, co
 
 	//check if added
 	filter := bson.D{primitive.E{Key: "app_version", Value: "2.6"}, primitive.E{Key: "county_id", Value: champaignCounty.ID}}
-	var items []*model.SymptomsRules
-	err = symptomsRules.Find(filter, &items, nil)
+	var items []*model.CRules
+	err = cRules.Find(filter, &items, nil)
 	if err != nil {
 		return err
 	}
@@ -672,8 +672,8 @@ func (m *database) applySymptomsRulesChecks(symptomsRules *collectionWrapper, co
 		if err != nil {
 			return err
 		}
-		d := model.SymptomsRules{AppVersion: "2.6", CountyID: champaignCounty.ID, Data: string(data)}
-		_, err = symptomsRules.InsertOne(&d)
+		d := model.CRules{AppVersion: "2.6", CountyID: champaignCounty.ID, Data: string(data)}
+		_, err = cRules.InsertOne(&d)
 		if err != nil {
 			return err
 		}
@@ -681,7 +681,7 @@ func (m *database) applySymptomsRulesChecks(symptomsRules *collectionWrapper, co
 		log.Println("there are symptoms rules for version 2.6 and Champaign county, so nothing to do")
 	}
 
-	log.Println("symptomsRules checks passed")
+	log.Println("CRules checks passed")
 	return nil
 }
 

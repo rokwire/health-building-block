@@ -3026,6 +3026,27 @@ paths:
       - RokwireAuth: []
       tags:
       - Covid19
+  /covid19/crules/county/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gives the rules for a county.
+      operationId: GetCRulesByCounty
+      parameters:
+      - description: County ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
   /covid19/ctests:
     delete:
       consumes:
@@ -3774,27 +3795,6 @@ paths:
             $ref: '#/definitions/Status'
       security:
       - AppUserAuth: []
-      tags:
-      - Covid19
-  /covid19/v2/symptom-rules/county/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Gives the symptoms rules for a county.
-      operationId: GetSymptomsRulesByCounty
-      parameters:
-      - description: County ID
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-      security:
-      - RokwireAuth: []
       tags:
       - Covid19
   /version:

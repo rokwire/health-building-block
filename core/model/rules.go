@@ -44,8 +44,8 @@ type SymptomRule struct {
 	Items []SymptomRuleItem
 }
 
-//SymptomsRules represents a raw symptoms rules entity
-type SymptomsRules struct {
+//CRules represents all rules in a raw format
+type CRules struct {
 	AppVersion string `json:"app_version" bson:"app_version"`
 	CountyID   string `json:"county_id" bson:"county_id"`
 	Data       string `json:"data" bson:"data"`

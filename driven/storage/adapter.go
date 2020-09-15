@@ -3621,12 +3621,12 @@ func (sa *Adapter) DeleteSymptomRule(ID string) error {
 	return nil
 }
 
-//FindSymptomsRulesByCountyID finds the symptoms rules for county
-func (sa *Adapter) FindSymptomsRulesByCountyID(appVersion string, countyID string) (*model.SymptomsRules, error) {
+//FindCRulesByCountyID finds the rules for county
+func (sa *Adapter) FindCRulesByCountyID(appVersion string, countyID string) (*model.CRules, error) {
 	filter := bson.D{primitive.E{Key: "app_version", Value: appVersion},
 		primitive.E{Key: "county_id", Value: countyID}}
-	var symptomsRules *model.SymptomsRules
-	err := sa.db.symptomsrules.FindOne(filter, &symptomsRules, nil)
+	var symptomsRules *model.CRules
+	err := sa.db.crules.FindOne(filter, &symptomsRules, nil)
 	if err != nil {
 		return nil, err
 	}

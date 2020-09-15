@@ -130,8 +130,8 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/rules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetRulesByCounty)).Methods("GET")
 	//deprecated
 	covid19RestSubrouter.HandleFunc("/symptom-rules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetSymptomRuleByCounty)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/v2/symptom-rules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetSymptomsRulesByCounty)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/access-rules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetAccessRuleByCounty)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/crules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetCRulesByCounty)).Methods("GET")
 
 	covid19RestSubrouter.HandleFunc("/resources", we.authWrapFunc(we.apisHandler.GetResources)).Methods("GET")
 

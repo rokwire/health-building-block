@@ -1912,16 +1912,16 @@ func (h ApisHandler) GetSymptomRuleByCounty(appVersion *string, w http.ResponseW
 	w.Write(data)
 }
 
-//GetSymptomsRulesByCounty give the symptoms rules for a county
-// @Description Gives the symptoms rules for a county.
+//GetCRulesByCounty give the rules for a county
+// @Description Gives the rules for a county.
 // @Tags Covid19
-// @ID GetSymptomsRulesByCounty
+// @ID GetCRulesByCounty
 // @Accept json
 // @Param id path string true "County ID"
 // @Success 200 {object} string
 // @Security RokwireAuth
-// @Router /covid19/v2/symptom-rules/county/{id} [get]
-func (h ApisHandler) GetSymptomsRulesByCounty(appVersion *string, w http.ResponseWriter, r *http.Request) {
+// @Router /covid19/crules/county/{id} [get]
+func (h ApisHandler) GetCRulesByCounty(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	countyID := params["county-id"]
 	if len(countyID) <= 0 {
@@ -1930,7 +1930,7 @@ func (h ApisHandler) GetSymptomsRulesByCounty(appVersion *string, w http.Respons
 		return
 	}
 
-	symptomsRules, err := h.app.Services.GetSymptomsRulesByCounty(appVersion, countyID)
+	symptomsRules, err := h.app.Services.GetCRulesByCounty(appVersion, countyID)
 	if err != nil {
 		log.Printf("Error on getting the symptoms - %s", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

@@ -333,17 +333,17 @@ func (app *Application) getSymptomRuleByCounty(countyID string) (*model.SymptomR
 	return symptomRule, countyStatuses, nil
 }
 
-func (app *Application) getSymptomsRulesByCounty(appVersion *string, countyID string) (*model.SymptomsRules, error) {
+func (app *Application) getCRulesByCounty(appVersion *string, countyID string) (*model.CRules, error) {
 	v, err := app.checkAppVersion(appVersion)
 	if err != nil {
 		return nil, err
 	}
 
-	symptomsRules, err := app.storage.FindSymptomsRulesByCountyID(*v, countyID)
+	rules, err := app.storage.FindCRulesByCountyID(*v, countyID)
 	if err != nil {
 		return nil, err
 	}
-	return symptomsRules, nil
+	return rules, nil
 }
 
 func (app *Application) getAccessRuleByCounty(countyID string) (*model.AccessRule, []*model.CountyStatus, error) {

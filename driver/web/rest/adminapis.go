@@ -3787,6 +3787,39 @@ func (h AdminApisHandler) DeleteAccessRule(current model.User, group string, w h
 	w.Write([]byte("Successfully deleted"))
 }
 
+func (h AdminApisHandler) GetCRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	countyKeys, ok := r.URL.Query()["county-id"]
+	if !ok || len(countyKeys[0]) < 1 {
+		log.Println("url param 'county-id' is missing")
+		return
+	}
+	appVersionKeys, ok := r.URL.Query()["app-version"]
+	if !ok || len(appVersionKeys[0]) < 1 {
+		log.Println("url param 'app-version' is missing")
+		return
+	}
+	countyID := countyKeys[0]
+	appVersion := appVersionKeys[0]
+
+	cRules, err := h.app.Administration.GetCRules(countyID, appVersion)
+	if err != nil {
+		log.Printf("Error on getting crules - %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if cRules == nil {
+		//not found
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	data := []byte(cRules.Data)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //GetUserByExternalID gets the user by external id
 // @Description Gets the user by external id.
 // @Tags Admin

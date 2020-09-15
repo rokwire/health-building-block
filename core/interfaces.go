@@ -327,6 +327,8 @@ type Administration interface {
 	UpdateAccessRule(current model.User, group string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
 	DeleteAccessRule(current model.User, group string, ID string) error
 
+	GetCRules(countyID string, appVersion string) (*model.CRules, error)
+
 	GetUserByExternalID(externalID string) (*model.User, error)
 
 	CreateAction(providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
@@ -599,6 +601,10 @@ func (s *administrationImpl) UpdateAccessRule(current model.User, group string, 
 
 func (s *administrationImpl) DeleteAccessRule(current model.User, group string, ID string) error {
 	return s.app.deleteAccessRule(current, group, ID)
+}
+
+func (s *administrationImpl) GetCRules(countyID string, appVersion string) (*model.CRules, error) {
+	return s.app.getCRules(countyID, appVersion)
 }
 
 func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User, error) {

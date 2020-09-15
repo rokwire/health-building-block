@@ -1482,6 +1482,18 @@ func (app *Application) deleteAccessRule(current model.User, group string, ID st
 	return nil
 }
 
+func (app *Application) getCRules(countyID string, appVersion string) (*model.CRules, error) {
+	if !app.isVersionSupported(appVersion) {
+		return nil, errors.New("app version is not supported")
+	}
+
+	cRules, err := app.storage.FindCRulesByCountyID(appVersion, countyID)
+	if err != nil {
+		return nil, err
+	}
+	return cRules, nil
+}
+
 func (app *Application) getUserByExternalID(externalID string) (*model.User, error) {
 	user, err := app.storage.FindUserByExternalID(externalID)
 	if err != nil {

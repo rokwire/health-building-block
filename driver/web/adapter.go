@@ -247,6 +247,8 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/access-rules/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateAccessRule)).Methods("PUT")
 	adminRestSubrouter.HandleFunc("/access-rules/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteAccessRule)).Methods("DELETE")
 
+	adminRestSubrouter.HandleFunc("/crules", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetCRules)).Methods("GET").Queries("county-id", "", "app-version", "")
+
 	adminRestSubrouter.HandleFunc("/user", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUserByExternalID)).Methods("GET").Queries("external-id", "")
 
 	adminRestSubrouter.HandleFunc("/actions", we.adminAppIDTokenAuthWrapFunc(we.apisHandler.CreateAction)).Methods("POST")

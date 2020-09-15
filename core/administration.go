@@ -865,6 +865,20 @@ func (app *Application) getRules() ([]*model.Rule, error) {
 	return rules, nil
 }
 
+func (app *Application) updateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error) {
+	cRules, err := app.storage.UpdateCRules(appVersion, countyID, data)
+	if err != nil {
+		return nil, err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "appVersion", Value: appVersion}, {Key: "data", Value: data}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "crules", "", lData)
+
+	return cRules, nil
+}
+
 func (app *Application) createRule(current model.User, group string, countyID string, testTypeID string, priority *int,
 	resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
 

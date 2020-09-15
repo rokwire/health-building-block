@@ -3633,6 +3633,60 @@ func (sa *Adapter) FindCRulesByCountyID(appVersion string, countyID string) (*mo
 	return symptomsRules, nil
 }
 
+//UpdateCRules updates crules
+func (sa *Adapter) UpdateCRules(appVersion string, countyID string, data string) (*model.CRules, error) {
+	var resultItem *model.CRules
+
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			log.Printf("error starting a transaction - %s", err)
+			return err
+		}
+
+		//1. find the crule item
+		crFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}, primitive.E{Key: "county_id", Value: countyID}}
+		var crResult []*model.CRules
+		err = sa.db.crules.FindWithContext(sessionContext, crFilter, &crResult, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if crResult == nil || len(crResult) == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is no crules for the provided app version and county")
+		}
+		cRules := crResult[0]
+
+		//2. update the crules
+		cRules.Data = data
+
+		//3. save the crules
+		saveFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}, primitive.E{Key: "county_id", Value: countyID}}
+		err = sa.db.crules.ReplaceOneWithContext(sessionContext, saveFilter, &cRules, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		resultItem = cRules
+
+		//commit the transaction
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resultItem, nil
+}
+
 //CreateTraceReports creates trace reports items
 func (sa *Adapter) CreateTraceReports(items []model.TraceExposure) (int, error) {
 

@@ -328,6 +328,7 @@ type Administration interface {
 	DeleteAccessRule(current model.User, group string, ID string) error
 
 	GetCRules(countyID string, appVersion string) (*model.CRules, error)
+	UpdateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error)
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
@@ -507,6 +508,10 @@ func (s *administrationImpl) GetTestTypeResultsByTestTypeID(testTypeID string) (
 
 func (s *administrationImpl) GetRules() ([]*model.Rule, error) {
 	return s.app.getRules()
+}
+
+func (s *administrationImpl) UpdateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error) {
+	return s.app.updateCRules(current, group, countyID, appVersion, data)
 }
 
 func (s *administrationImpl) CreateRule(current model.User, group string, countyID string, testTypeID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
@@ -746,6 +751,7 @@ type Storage interface {
 	DeleteSymptomRule(ID string) error
 
 	FindCRulesByCountyID(appVersion string, countyID string) (*model.CRules, error)
+	UpdateCRules(appVersion string, countyID string, data string) (*model.CRules, error)
 
 	CreateTraceReports(items []model.TraceExposure) (int, error)
 	ReadTraceExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)

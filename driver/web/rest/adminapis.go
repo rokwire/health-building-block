@@ -3831,6 +3831,55 @@ func (h AdminApisHandler) GetCRules(current model.User, group string, w http.Res
 	w.Write(data)
 }
 
+type updateCRulesRequest struct {
+	AppVersion string `json:"app_version" validate:"required"`
+	CountyID   string `json:"county_id" validate:"required"`
+	Data       string `json:"data" validate:"required"`
+} //@name updateCRulesRequest
+
+func (h AdminApisHandler) UpdateCRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	bodyData, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update crules items  - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateCRulesRequest
+	err = json.Unmarshal(bodyData, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update crules items request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update crules data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	appVersion := requestData.AppVersion
+	countyID := requestData.CountyID
+	data := requestData.Data
+
+	cRules, err := h.app.Administration.UpdateCRules(current, group, countyID, appVersion, data)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	resData := []byte(cRules.Data)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(resData)
+}
+
 //GetUserByExternalID gets the user by external id
 // @Description Gets the user by external id.
 // @Tags Admin

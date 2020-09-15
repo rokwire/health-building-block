@@ -1573,6 +1573,31 @@ paths:
       - AdminGroupAuth: []
       tags:
       - Admin
+  /admin/crules:
+    get:
+      consumes:
+      - application/json
+      description: Gives the rules
+      operationId: GetCRules
+      parameters:
+      - description: County ID
+        in: query
+        name: county-id
+        type: string
+      - description: App version
+        in: query
+        name: app-version
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
   /admin/faq:
     get:
       consumes:

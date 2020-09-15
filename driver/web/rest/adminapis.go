@@ -3787,6 +3787,17 @@ func (h AdminApisHandler) DeleteAccessRule(current model.User, group string, w h
 	w.Write([]byte("Successfully deleted"))
 }
 
+//GetCRules gets the rules
+// @Description Gives the rules
+// @Tags Admin
+// @ID GetCRules
+// @Accept json
+// @Param county-id query string false "County ID"
+// @Param app-version query string false "App version"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/crules [get]
 func (h AdminApisHandler) GetCRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	countyKeys, ok := r.URL.Query()["county-id"]
 	if !ok || len(countyKeys[0]) < 1 {

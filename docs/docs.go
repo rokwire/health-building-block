@@ -679,6 +679,48 @@ var doc = `{
                 }
             }
         },
+        "/admin/crules": {
+            "get": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Gives the rules",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "GetCRules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "County ID",
+                        "name": "county-id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "App version",
+                        "name": "app-version",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/faq": {
             "get": {
                 "security": [

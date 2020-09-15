@@ -4284,6 +4284,23 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/version": {
+            "get": {
+                "description": "Gives the service version.",
+                "produces": [
+                    "text/plain"
+                ],
+                "operationId": "Version",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

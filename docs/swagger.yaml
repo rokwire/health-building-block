@@ -3797,6 +3797,17 @@ paths:
       - RokwireAuth: []
       tags:
       - Covid19
+  /version:
+    get:
+      description: Gives the service version.
+      operationId: Version
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
 schemes:
 - https
 securityDefinitions:

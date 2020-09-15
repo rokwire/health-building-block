@@ -1156,6 +1156,16 @@ definitions:
     - gr2_count
     - items
     type: object
+  updateSymptomsRequest:
+    properties:
+      app_version:
+        type: string
+      items:
+        type: string
+    required:
+    - app_version
+    - items
+    type: object
   updateTestTypeRequest:
     properties:
       name:
@@ -2727,6 +2737,30 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Symptom'
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates the symptoms.
+      operationId: UpdateASymptoms
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateSymptomsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []

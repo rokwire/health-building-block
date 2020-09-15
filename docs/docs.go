@@ -2522,6 +2522,46 @@ var doc = `{
                     }
                 }
             },
+            "put": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Updates the symptoms.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "UpdateASymptoms",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/updateSymptomsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -6164,6 +6204,21 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/updateSymptomRuleItemRequest"
                     }
+                }
+            }
+        },
+        "updateSymptomsRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "items"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "string"
                 }
             }
         },

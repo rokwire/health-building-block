@@ -3928,6 +3928,64 @@ func (h AdminApisHandler) GetSymptoms(current model.User, group string, w http.R
 	w.Write(data)
 }
 
+type updateSymptomsRequest struct {
+	AppVersion string `json:"app_version" validate:"required"`
+	Items      string `json:"items" validate:"required"`
+} //@name updateSymptomsRequest
+
+//UpdateSymptoms updates the symptoms
+// @Description Updates the symptoms.
+// @Tags Admin
+// @ID UpdateASymptoms
+// @Accept json
+// @Produce json
+// @Param data body updateSymptomsRequest true "body data"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/symptoms [put]
+func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	bodyData, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update symptoms items  - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateSymptomsRequest
+	err = json.Unmarshal(bodyData, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update symptoms items request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update symptoms data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	appVersion := requestData.AppVersion
+	items := requestData.Items
+
+	symptoms, err := h.app.Administration.UpdateSymptoms(current, group, appVersion, items)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	resData := []byte(symptoms.Items)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(resData)
+}
+
 //GetUserByExternalID gets the user by external id
 // @Description Gets the user by external id.
 // @Tags Admin

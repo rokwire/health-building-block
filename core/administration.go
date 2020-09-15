@@ -903,6 +903,20 @@ func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error)
 	return symptoms, nil
 }
 
+func (app *Application) updateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error) {
+	symptoms, err := app.storage.UpdateSymptoms(appVersion, items)
+	if err != nil {
+		return nil, err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "appVersion", Value: appVersion}, {Key: "items", Value: items}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData)
+
+	return symptoms, nil
+}
+
 func (app *Application) createRule(current model.User, group string, countyID string, testTypeID string, priority *int,
 	resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
 

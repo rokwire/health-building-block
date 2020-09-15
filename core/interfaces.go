@@ -330,6 +330,8 @@ type Administration interface {
 	GetCRules(countyID string, appVersion string) (*model.CRules, error)
 	UpdateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error)
 
+	GetSymptoms(appVersion string) (*model.Symptoms, error)
+
 	GetUserByExternalID(externalID string) (*model.User, error)
 
 	CreateAction(providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
@@ -510,10 +512,6 @@ func (s *administrationImpl) GetRules() ([]*model.Rule, error) {
 	return s.app.getRules()
 }
 
-func (s *administrationImpl) UpdateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error) {
-	return s.app.updateCRules(current, group, countyID, appVersion, data)
-}
-
 func (s *administrationImpl) CreateRule(current model.User, group string, countyID string, testTypeID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
 	return s.app.createRule(current, group, countyID, testTypeID, priority, resultsStatuses)
 }
@@ -610,6 +608,14 @@ func (s *administrationImpl) DeleteAccessRule(current model.User, group string, 
 
 func (s *administrationImpl) GetCRules(countyID string, appVersion string) (*model.CRules, error) {
 	return s.app.getCRules(countyID, appVersion)
+}
+
+func (s *administrationImpl) UpdateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error) {
+	return s.app.updateCRules(current, group, countyID, appVersion, data)
+}
+
+func (s *administrationImpl) GetSymptoms(appVersion string) (*model.Symptoms, error) {
+	return s.app.getASymptoms(appVersion)
 }
 
 func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User, error) {

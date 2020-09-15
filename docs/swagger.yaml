@@ -2687,6 +2687,26 @@ paths:
       tags:
       - Admin
   /admin/symptoms:
+    get:
+      consumes:
+      - application/json
+      description: Gives the symptoms
+      operationId: GetASymptoms
+      parameters:
+      - description: App version
+        in: query
+        name: app-version
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
     post:
       consumes:
       - application/json

@@ -3891,6 +3891,43 @@ func (h AdminApisHandler) UpdateCRules(current model.User, group string, w http.
 	w.Write(resData)
 }
 
+//GetSymptoms gets the symptoms
+// @Description Gives the symptoms
+// @Tags Admin
+// @ID GetASymptoms
+// @Accept json
+// @Param app-version query string false "App version"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/symptoms [get]
+func (h AdminApisHandler) GetSymptoms(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	appVersionKeys, ok := r.URL.Query()["app-version"]
+	if !ok || len(appVersionKeys[0]) < 1 {
+		log.Println("url param 'app-version' is missing")
+		return
+	}
+	appVersion := appVersionKeys[0]
+
+	symptoms, err := h.app.Administration.GetSymptoms(appVersion)
+	if err != nil {
+		log.Printf("Error on getting symptoms - %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if symptoms == nil {
+		//not found
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	data := []byte(symptoms.Items)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //GetUserByExternalID gets the user by external id
 // @Description Gets the user by external id.
 // @Tags Admin

@@ -865,6 +865,18 @@ func (app *Application) getRules() ([]*model.Rule, error) {
 	return rules, nil
 }
 
+func (app *Application) getCRules(countyID string, appVersion string) (*model.CRules, error) {
+	if !app.isVersionSupported(appVersion) {
+		return nil, errors.New("app version is not supported")
+	}
+
+	cRules, err := app.storage.FindCRulesByCountyID(appVersion, countyID)
+	if err != nil {
+		return nil, err
+	}
+	return cRules, nil
+}
+
 func (app *Application) updateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error) {
 	cRules, err := app.storage.UpdateCRules(appVersion, countyID, data)
 	if err != nil {
@@ -877,6 +889,18 @@ func (app *Application) updateCRules(current model.User, group string, countyID 
 	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "crules", "", lData)
 
 	return cRules, nil
+}
+
+func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error) {
+	if !app.isVersionSupported(appVersion) {
+		return nil, errors.New("app version is not supported")
+	}
+
+	symptoms, err := app.storage.ReadSymptoms(appVersion)
+	if err != nil {
+		return nil, err
+	}
+	return symptoms, nil
 }
 
 func (app *Application) createRule(current model.User, group string, countyID string, testTypeID string, priority *int,
@@ -1494,18 +1518,6 @@ func (app *Application) deleteAccessRule(current model.User, group string, ID st
 	userIdentifier, userInfo := current.GetLogData()
 	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "access-rule", ID)
 	return nil
-}
-
-func (app *Application) getCRules(countyID string, appVersion string) (*model.CRules, error) {
-	if !app.isVersionSupported(appVersion) {
-		return nil, errors.New("app version is not supported")
-	}
-
-	cRules, err := app.storage.FindCRulesByCountyID(appVersion, countyID)
-	if err != nil {
-		return nil, err
-	}
-	return cRules, nil
 }
 
 func (app *Application) getUserByExternalID(externalID string) (*model.User, error) {

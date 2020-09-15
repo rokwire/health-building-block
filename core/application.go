@@ -451,19 +451,6 @@ func (app *Application) getSymptomGroups() ([]*model.SymptomGroup, error) {
 	return symptomGroups, nil
 }
 
-func (app *Application) getSymptoms(appVersion *string) (*model.Symptoms, error) {
-	v, err := app.checkAppVersion(appVersion)
-	if err != nil {
-		return nil, err
-	}
-
-	symptoms, err := app.storage.ReadSymptoms(*v)
-	if err != nil {
-		return nil, err
-	}
-	return symptoms, nil
-}
-
 //NewApplication creates new Application
 func NewApplication(version string, build string, dataProvider DataProvider, sender Sender, messaging Messaging, profileBB ProfileBuildingBlock, storage Storage, audit Audit) *Application {
 	cvLock := &sync.RWMutex{}

@@ -82,6 +82,25 @@ func (h AdminApisHandler) UpdateCovid19Config(current model.User, group string, 
 	w.Write([]byte("Successfully updated"))
 }
 
+func (h AdminApisHandler) GetAppVersions(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	appVersions, err := h.app.Administration.GetAppVersions()
+	if err != nil {
+		log.Println("Error on getting the app versions")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	data, err := json.Marshal(appVersions)
+	if err != nil {
+		log.Println("Error on marshal the app versions")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //GetNews gets news
 // @Description Gives news.
 // @Tags Admin

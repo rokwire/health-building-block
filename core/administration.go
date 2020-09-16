@@ -44,6 +44,10 @@ func (app *Application) updateCovid19Config(config *model.COVID19Config) error {
 	return nil
 }
 
+func (app *Application) getAppVersions() ([]string, error) {
+	return app.supportedVersions, nil
+}
+
 func (app *Application) getAllNews() ([]*model.News, error) {
 	news, err := app.storage.ReadNews(0)
 	if err != nil {

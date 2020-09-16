@@ -164,6 +164,8 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/covid19-config", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetCovid19Config)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/covid19-config", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateCovid19Config)).Methods("PUT")
 
+	adminRestSubrouter.HandleFunc("/app-versions", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetAppVersions)).Methods("GET")
+
 	adminRestSubrouter.HandleFunc("/news", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetNews)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/news", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateNews)).Methods("POST")
 	adminRestSubrouter.HandleFunc("/news/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateNews)).Methods("PUT")

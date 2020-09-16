@@ -244,6 +244,8 @@ type Administration interface {
 	GetCovid19Config() (*model.COVID19Config, error)
 	UpdateCovid19Config(config *model.COVID19Config) error
 
+	GetAppVersions() ([]string, error)
+
 	GetNews() ([]*model.News, error)
 	CreateNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
 	UpdateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
@@ -355,6 +357,10 @@ func (s *administrationImpl) UpdateCovid19Config(config *model.COVID19Config) er
 
 func (s *administrationImpl) GetNews() ([]*model.News, error) {
 	return s.app.getAllNews()
+}
+
+func (s *administrationImpl) GetAppVersions() ([]string, error) {
+	return s.app.getAppVersions()
 }
 
 func (s *administrationImpl) CreateNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {

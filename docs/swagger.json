@@ -5157,15 +5157,6 @@
                 },
                 "name": {
                     "type": "string"
-                },
-                "next_step": {
-                    "type": "string"
-                },
-                "next_step_offset": {
-                    "type": "integer"
-                },
-                "result_expires_offset": {
-                    "type": "integer"
                 }
             }
         },
@@ -5742,21 +5733,11 @@
         "createTestTypeResultRequest": {
             "type": "object",
             "required": [
-                "name",
-                "next_step"
+                "name"
             ],
             "properties": {
                 "name": {
                     "type": "string"
-                },
-                "next_step": {
-                    "type": "string"
-                },
-                "next_step_offset": {
-                    "type": "integer"
-                },
-                "result_expires_offset": {
-                    "type": "integer"
                 },
                 "test_type_id": {
                     "type": "string"
@@ -6258,21 +6239,11 @@
         "updateTestTypeResultRequest": {
             "type": "object",
             "required": [
-                "name",
-                "next_step"
+                "name"
             ],
             "properties": {
                 "name": {
                     "type": "string"
-                },
-                "next_step": {
-                    "type": "string"
-                },
-                "next_step_offset": {
-                    "type": "integer"
-                },
-                "result_expires_offset": {
-                    "type": "integer"
                 }
             }
         }

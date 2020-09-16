@@ -5169,15 +5169,6 @@ var doc = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "next_step": {
-                    "type": "string"
-                },
-                "next_step_offset": {
-                    "type": "integer"
-                },
-                "result_expires_offset": {
-                    "type": "integer"
                 }
             }
         },
@@ -5754,21 +5745,11 @@ var doc = `{
         "createTestTypeResultRequest": {
             "type": "object",
             "required": [
-                "name",
-                "next_step"
+                "name"
             ],
             "properties": {
                 "name": {
                     "type": "string"
-                },
-                "next_step": {
-                    "type": "string"
-                },
-                "next_step_offset": {
-                    "type": "integer"
-                },
-                "result_expires_offset": {
-                    "type": "integer"
                 },
                 "test_type_id": {
                     "type": "string"
@@ -6270,21 +6251,11 @@ var doc = `{
         "updateTestTypeResultRequest": {
             "type": "object",
             "required": [
-                "name",
-                "next_step"
+                "name"
             ],
             "properties": {
                 "name": {
                     "type": "string"
-                },
-                "next_step": {
-                    "type": "string"
-                },
-                "next_step_offset": {
-                    "type": "integer"
-                },
-                "result_expires_offset": {
-                    "type": "integer"
                 }
             }
         }

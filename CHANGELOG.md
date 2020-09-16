@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Expose Rules APIs. [#28](https://github.com/rokwire/health-building-block/issues/28)
 
+### Fixed
+- Audit for "action" entity. [#30](https://github.com/rokwire/health-building-block/issues/30)
+
 ## [1.15.0] - 2020-09-10
 ### Added
 - Add order number for the providers tests. [#25](https://github.com/rokwire/health-building-block/issues/25)

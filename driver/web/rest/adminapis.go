@@ -2004,7 +2004,7 @@ func (h AdminApisHandler) GetTestTypes(current model.User, group string, w http.
 type createTestTypeResultRequest struct {
 	TestTypeID          string `json:"test_type_id" validate:"uuid"`
 	Name                string `json:"name" validate:"required"`
-	NextStep            string `json:"next_step" validate:"required"`
+	NextStep            string `json:"next_step"`
 	NextStepOffset      *int   `json:"next_step_offset"`
 	ResultExpiresOffset *int   `json:"result_expires_offset"`
 } //@name createTestTypeResultRequest

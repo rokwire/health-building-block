@@ -337,7 +337,7 @@ type Administration interface {
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
-	CreateAction(providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
+	CreateAction(current model.User, group string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
 
 	GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,
 		createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error)
@@ -633,8 +633,8 @@ func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User
 	return s.app.getUserByExternalID(externalID)
 }
 
-func (s *administrationImpl) CreateAction(providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
-	return s.app.createAction(providerID, userID, encryptedKey, encryptedBlob)
+func (s *administrationImpl) CreateAction(current model.User, group string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
+	return s.app.createAction(current, group, providerID, userID, encryptedKey, encryptedBlob)
 }
 
 func (s *administrationImpl) GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,

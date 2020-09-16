@@ -4109,7 +4109,7 @@ func (h ApisHandler) CreateAction(current model.User, group string, w http.Respo
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
 
-	item, err := h.app.Administration.CreateAction(providerID, userID, encryptedKey, encryptedBlob)
+	item, err := h.app.Administration.CreateAction(current, group, providerID, userID, encryptedKey, encryptedBlob)
 	if err != nil {
 		log.Printf("Error on creating an action - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

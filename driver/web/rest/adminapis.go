@@ -2010,11 +2010,8 @@ type createTestTypeResultRequest struct {
 } //@name createTestTypeResultRequest
 
 type createTestTypeResultResponse struct {
-	ID                  string `json:"id"`
-	Name                string `json:"name"`
-	NextStep            string `json:"next_step"`
-	NextStepOffset      *int   `json:"next_step_offset"`
-	ResultExpiresOffset *int   `json:"result_expires_offset"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
 } //@name TestTypeResult
 
 //CreateTestTypeResult creates a test type result for a specific test type
@@ -2066,8 +2063,7 @@ func (h AdminApisHandler) CreateTestTypeResult(current model.User, group string,
 		return
 	}
 
-	resultItem := createTestTypeResultResponse{ID: testTypeResult.ID, Name: testTypeResult.Name, NextStep: testTypeResult.NextStep,
-		NextStepOffset: testTypeResult.NextStepOffset, ResultExpiresOffset: testTypeResult.ResultExpiresOffset}
+	resultItem := createTestTypeResultResponse{ID: testTypeResult.ID, Name: testTypeResult.Name}
 	data, err = json.Marshal(resultItem)
 	if err != nil {
 		log.Println("Error on marshal a test type result")

@@ -44,6 +44,10 @@ func (app *Application) updateCovid19Config(config *model.COVID19Config) error {
 	return nil
 }
 
+func (app *Application) getAppVersions() ([]string, error) {
+	return app.supportedVersions, nil
+}
+
 func (app *Application) getAllNews() ([]*model.News, error) {
 	news, err := app.storage.ReadNews(0)
 	if err != nil {
@@ -865,6 +869,58 @@ func (app *Application) getRules() ([]*model.Rule, error) {
 	return rules, nil
 }
 
+func (app *Application) getCRules(countyID string, appVersion string) (*model.CRules, error) {
+	if !app.isVersionSupported(appVersion) {
+		return nil, errors.New("app version is not supported")
+	}
+
+	cRules, err := app.storage.FindCRulesByCountyID(appVersion, countyID)
+	if err != nil {
+		return nil, err
+	}
+	return cRules, nil
+}
+
+func (app *Application) updateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error) {
+	cRules, err := app.storage.UpdateCRules(appVersion, countyID, data)
+	if err != nil {
+		return nil, err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "appVersion", Value: appVersion}, {Key: "data", Value: data}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "crules", "", lData)
+
+	return cRules, nil
+}
+
+func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error) {
+	if !app.isVersionSupported(appVersion) {
+		return nil, errors.New("app version is not supported")
+	}
+
+	symptoms, err := app.storage.ReadSymptoms(appVersion)
+	if err != nil {
+		return nil, err
+	}
+	return symptoms, nil
+}
+
+func (app *Application) updateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error) {
+	symptoms, err := app.storage.UpdateSymptoms(appVersion, items)
+	if err != nil {
+		return nil, err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "appVersion", Value: appVersion}, {Key: "items", Value: items}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData)
+
+	return symptoms, nil
+}
+
 func (app *Application) createRule(current model.User, group string, countyID string, testTypeID string, priority *int,
 	resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
 
@@ -1490,7 +1546,7 @@ func (app *Application) getUserByExternalID(externalID string) (*model.User, err
 	return user, nil
 }
 
-func (app *Application) createAction(providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
+func (app *Application) createAction(current model.User, group string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false, nil)
 	if err != nil {
@@ -1520,6 +1576,12 @@ func (app *Application) createAction(providerID string, userID string, encrypted
 		data["click_action"] = "FLUTTER_NOTIFICATION_CLICK"
 		app.messaging.SendNotificationMessage(userData.FCMTokens, "COVID-19", "You have received a COVID-19 update", data)
 	}(user.UUID)
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "providerID", Value: providerID}, {Key: "userID", Value: userID},
+		{Key: "encryptedKey", Value: encryptedKey}, {Key: "encryptedBlob", Value: encryptedBlob}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "action", item.ID, lData)
 
 	return item, nil
 }

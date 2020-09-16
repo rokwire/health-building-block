@@ -243,6 +243,37 @@ var doc = `{
                 }
             }
         },
+        "/admin/app-versions": {
+            "get": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Gives the supported app versions",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "GetAppVersions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/admin/audit": {
             "get": {
                 "security": [
@@ -672,6 +703,88 @@ var doc = `{
                 "responses": {
                     "200": {
                         "description": "Successfuly deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/crules": {
+            "get": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Gives the rules",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "GetCRules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "County ID",
+                        "name": "county-id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "App version",
+                        "name": "app-version",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Updates the rules.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "UpdateCRules",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/updateCRulesRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "type": "string"
                         }
@@ -2196,6 +2309,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "getSymptomGroups",
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2245,6 +2359,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "getSymptomRules",
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2295,6 +2410,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "CreateSymptomRule",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "body data",
@@ -2337,6 +2453,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "UpdateSymptomRule",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "body data",
@@ -2381,6 +2498,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "deleteSymptomRule",
+                "deprecated": true,
                 "parameters": [
                     {
                         "type": "string",
@@ -2401,6 +2519,80 @@ var doc = `{
             }
         },
         "/admin/symptoms": {
+            "get": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Gives the symptoms",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "GetASymptoms",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "App version",
+                        "name": "app-version",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Updates the symptoms.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "UpdateASymptoms",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/updateSymptomsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -2421,6 +2613,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "CreateSymptom",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "body data",
@@ -2463,6 +2656,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "UpdateSymptom",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "body data",
@@ -2507,6 +2701,7 @@ var doc = `{
                     "Admin"
                 ],
                 "operationId": "deleteSymptom",
+                "deprecated": true,
                 "parameters": [
                     {
                         "type": "string",
@@ -3052,6 +3247,40 @@ var doc = `{
                 }
             }
         },
+        "/covid19/crules/county/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "RokwireAuth": []
+                    }
+                ],
+                "description": "Gives the rules for a county.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetCRulesByCounty",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "County ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/ctests": {
             "get": {
                 "security": [
@@ -3528,6 +3757,7 @@ var doc = `{
                     "Covid19"
                 ],
                 "operationId": "getSymptomGroups",
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3556,6 +3786,7 @@ var doc = `{
                     "Covid19"
                 ],
                 "operationId": "getSymptomRuleByCounty",
+                "deprecated": true,
                 "parameters": [
                     {
                         "type": "string",
@@ -3573,6 +3804,31 @@ var doc = `{
                             "items": {
                                 "$ref": "#/definitions/SymptomRule"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/symptoms": {
+            "get": {
+                "security": [
+                    {
+                        "RokwireAuth": []
+                    }
+                ],
+                "description": "Gives the symptoms",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetSymptoms",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -4209,6 +4465,23 @@ var doc = `{
                 "responses": {
                     "200": {
                         "description": "Successfully deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/version": {
+            "get": {
+                "description": "Gives the service version.",
+                "produces": [
+                    "text/plain"
+                ],
+                "operationId": "Version",
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "type": "string"
                         }
@@ -4896,15 +5169,6 @@ var doc = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "next_step": {
-                    "type": "string"
-                },
-                "next_step_offset": {
-                    "type": "integer"
-                },
-                "result_expires_offset": {
-                    "type": "integer"
                 }
             }
         },
@@ -5481,21 +5745,11 @@ var doc = `{
         "createTestTypeResultRequest": {
             "type": "object",
             "required": [
-                "name",
-                "next_step"
+                "name"
             ],
             "properties": {
                 "name": {
                     "type": "string"
-                },
-                "next_step": {
-                    "type": "string"
-                },
-                "next_step_offset": {
-                    "type": "integer"
-                },
-                "result_expires_offset": {
-                    "type": "integer"
                 },
                 "test_type_id": {
                     "type": "string"
@@ -5621,6 +5875,25 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/updateAccessRuleItemRequest"
                     }
+                }
+            }
+        },
+        "updateCRulesRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "county_id",
+                "data"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "county_id": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "string"
                 }
             }
         },
@@ -5946,6 +6219,21 @@ var doc = `{
                 }
             }
         },
+        "updateSymptomsRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "items"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
         "updateTestTypeRequest": {
             "type": "object",
             "required": [
@@ -5963,21 +6251,11 @@ var doc = `{
         "updateTestTypeResultRequest": {
             "type": "object",
             "required": [
-                "name",
-                "next_step"
+                "name"
             ],
             "properties": {
                 "name": {
                     "type": "string"
-                },
-                "next_step": {
-                    "type": "string"
-                },
-                "next_step_offset": {
-                    "type": "integer"
-                },
-                "result_expires_offset": {
-                    "type": "integer"
                 }
             }
         }
@@ -6022,7 +6300,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.15.0",
+	Version:     "1.16.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

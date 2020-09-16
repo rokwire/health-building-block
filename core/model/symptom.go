@@ -32,3 +32,9 @@ type SymptomGroup struct {
 
 	Symptoms []Symptom
 }
+
+//Symptoms represents raw symptoms entity for e specific app version
+type Symptoms struct {
+	AppVersion string `json:"app_version" bson:"app_version"`
+	Items      string `json:"items" bson:"items"`
+}

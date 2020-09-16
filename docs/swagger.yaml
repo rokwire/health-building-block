@@ -442,12 +442,6 @@ definitions:
         type: string
       name:
         type: string
-      next_step:
-        type: string
-      next_step_offset:
-        type: integer
-      result_expires_offset:
-        type: integer
     type: object
   TestTypeResultCountyStatus:
     properties:
@@ -836,17 +830,10 @@ definitions:
     properties:
       name:
         type: string
-      next_step:
-        type: string
-      next_step_offset:
-        type: integer
-      result_expires_offset:
-        type: integer
       test_type_id:
         type: string
     required:
     - name
-    - next_step
     type: object
   gubonResponse:
     additionalProperties:
@@ -928,6 +915,19 @@ definitions:
     required:
     - county_id
     - rules
+    type: object
+  updateCRulesRequest:
+    properties:
+      app_version:
+        type: string
+      county_id:
+        type: string
+      data:
+        type: string
+    required:
+    - app_version
+    - county_id
+    - data
     type: object
   updateCTestRequest:
     properties:
@@ -1143,6 +1143,16 @@ definitions:
     - gr2_count
     - items
     type: object
+  updateSymptomsRequest:
+    properties:
+      app_version:
+        type: string
+      items:
+        type: string
+    required:
+    - app_version
+    - items
+    type: object
   updateTestTypeRequest:
     properties:
       name:
@@ -1156,15 +1166,8 @@ definitions:
     properties:
       name:
         type: string
-      next_step:
-        type: string
-      next_step_offset:
-        type: integer
-      result_expires_offset:
-        type: integer
     required:
     - name
-    - next_step
     type: object
 host: localhost
 info:
@@ -1174,7 +1177,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 1.15.0
+  version: 1.16.0
 paths:
   /admin/access-rules:
     get:
@@ -1301,6 +1304,24 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/CTest'
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/app-versions:
+    get:
+      consumes:
+      - application/json
+      description: Gives the supported app versions
+      operationId: GetAppVersions
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -1568,6 +1589,55 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/CountyStatus'
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/crules:
+    get:
+      consumes:
+      - application/json
+      description: Gives the rules
+      operationId: GetCRules
+      parameters:
+      - description: County ID
+        in: query
+        name: county-id
+        type: string
+      - description: App version
+        in: query
+        name: app-version
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates the rules.
+      operationId: UpdateCRules
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateCRulesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -2488,6 +2558,7 @@ paths:
     get:
       consumes:
       - application/json
+      deprecated: true
       description: Gives the symptom groups
       operationId: getSymptomGroups
       responses:
@@ -2518,6 +2589,7 @@ paths:
     get:
       consumes:
       - application/json
+      deprecated: true
       description: Gives the symptom rules
       operationId: getSymptomRules
       responses:
@@ -2547,6 +2619,7 @@ paths:
     post:
       consumes:
       - application/json
+      deprecated: true
       description: Creates a symptom rule.
       operationId: CreateSymptomRule
       parameters:
@@ -2572,6 +2645,7 @@ paths:
     delete:
       consumes:
       - text/plain
+      deprecated: true
       description: Deletes a symptom rule.
       operationId: deleteSymptomRule
       parameters:
@@ -2593,6 +2667,7 @@ paths:
     put:
       consumes:
       - application/json
+      deprecated: true
       description: Updates a symptom rule.
       operationId: UpdateSymptomRule
       parameters:
@@ -2620,9 +2695,30 @@ paths:
       tags:
       - Admin
   /admin/symptoms:
+    get:
+      consumes:
+      - application/json
+      description: Gives the symptoms
+      operationId: GetASymptoms
+      parameters:
+      - description: App version
+        in: query
+        name: app-version
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
     post:
       consumes:
       - application/json
+      deprecated: true
       description: Creates a symptom
       operationId: CreateSymptom
       parameters:
@@ -2644,10 +2740,35 @@ paths:
       - AdminGroupAuth: []
       tags:
       - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates the symptoms.
+      operationId: UpdateASymptoms
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateSymptomsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
   /admin/symptoms/{id}:
     delete:
       consumes:
       - text/plain
+      deprecated: true
       description: Deletes a symptom
       operationId: deleteSymptom
       parameters:
@@ -2669,6 +2790,7 @@ paths:
     put:
       consumes:
       - application/json
+      deprecated: true
       description: Updates a symptom.
       operationId: UpdateSymptom
       parameters:
@@ -3018,6 +3140,27 @@ paths:
       - RokwireAuth: []
       tags:
       - Covid19
+  /covid19/crules/county/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gives the rules for a county.
+      operationId: GetCRulesByCounty
+      parameters:
+      - description: County ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
   /covid19/ctests:
     delete:
       consumes:
@@ -3310,6 +3453,7 @@ paths:
     get:
       consumes:
       - application/json
+      deprecated: true
       description: Gives the symptom groups
       operationId: getSymptomGroups
       responses:
@@ -3327,6 +3471,7 @@ paths:
     get:
       consumes:
       - application/json
+      deprecated: true
       description: Gives the symptom rule for a county.
       operationId: getSymptomRuleByCounty
       parameters:
@@ -3342,6 +3487,21 @@ paths:
             items:
               $ref: '#/definitions/SymptomRule'
             type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/symptoms:
+    get:
+      consumes:
+      - application/json
+      description: Gives the symptoms
+      operationId: GetSymptoms
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
       security:
       - RokwireAuth: []
       tags:
@@ -3751,6 +3911,17 @@ paths:
       - AppUserAuth: []
       tags:
       - Covid19
+  /version:
+    get:
+      description: Gives the service version.
+      operationId: Version
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
 schemes:
 - https
 securityDefinitions:

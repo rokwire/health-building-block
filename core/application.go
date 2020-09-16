@@ -18,6 +18,7 @@
 package core
 
 import (
+	"errors"
 	"health/core/model"
 	"health/utils"
 	"log"
@@ -46,6 +47,8 @@ type Application struct {
 	cachedCovid19Config *model.COVID19Config
 
 	listeners []ApplicationListener
+
+	supportedVersions []string
 }
 
 //Start starts the core part of the application
@@ -79,6 +82,36 @@ func (app *Application) notifyListeners(message string, data interface{}) {
 			}
 		}
 	}()
+}
+
+func (app *Application) checkAppVersion(v *string) (*string, error) {
+	if v == nil {
+		//use the latest version if not provided
+		latest := app.getLatestVersion()
+		return &latest, nil
+	}
+
+	//check if supported
+	supported := app.isVersionSupported(*v)
+	if !supported {
+		return nil, errors.New("the provided version is not supported")
+	}
+
+	//the version is ok
+	return v, nil
+}
+
+func (app *Application) getLatestVersion() string {
+	return "2.6"
+}
+
+func (app *Application) isVersionSupported(v string) bool {
+	for _, current := range app.supportedVersions {
+		if current == v {
+			return true
+		}
+	}
+	return false
 }
 
 func (app *Application) loadCovid19Config() {
@@ -423,8 +456,10 @@ func NewApplication(version string, build string, dataProvider DataProvider, sen
 	cvLock := &sync.RWMutex{}
 	listeners := []ApplicationListener{}
 
+	supportedVersion := []string{"2.6"}
+
 	application := Application{version: version, build: build, dataProvider: dataProvider, sender: sender, messaging: messaging,
-		profileBB: profileBB, storage: storage, audit: audit, cvLock: cvLock, listeners: listeners}
+		profileBB: profileBB, storage: storage, audit: audit, cvLock: cvLock, listeners: listeners, supportedVersions: supportedVersion}
 
 	//add the drivers ports/interfaces
 	application.Services = &servicesImpl{app: &application}

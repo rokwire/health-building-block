@@ -82,6 +82,34 @@ func (h AdminApisHandler) UpdateCovid19Config(current model.User, group string, 
 	w.Write([]byte("Successfully updated"))
 }
 
+//GetAppVersions gives the supported app versions
+// @Description Gives the supported app versions
+// @Tags Admin
+// @ID GetAppVersions
+// @Accept  json
+// @Success 200 {array} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/app-versions [get]
+func (h AdminApisHandler) GetAppVersions(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	appVersions, err := h.app.Administration.GetAppVersions()
+	if err != nil {
+		log.Println("Error on getting the app versions")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	data, err := json.Marshal(appVersions)
+	if err != nil {
+		log.Println("Error on marshal the app versions")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //GetNews gets news
 // @Description Gives news.
 // @Tags Admin
@@ -2826,6 +2854,7 @@ type createSymptomRequest struct {
 } //@name createSymptomRequest
 
 //CreateSymptom creates a symptom
+// @Deprecated
 // @Description Creates a symptom
 // @Tags Admin
 // @ID CreateSymptom
@@ -2887,6 +2916,7 @@ type updateSymptomRequest struct {
 } //@name updateSymptomRequest
 
 //UpdateSymptom updates a symptom
+// @Deprecated
 // @Description Updates a symptom.
 // @Tags Admin
 // @ID UpdateSymptom
@@ -2953,6 +2983,7 @@ func (h AdminApisHandler) UpdateSymptom(current model.User, group string, w http
 }
 
 //DeleteSymptom deletes a symptom
+// @Deprecated
 // @Description Deletes a symptom
 // @Tags Admin
 // @ID deleteSymptom
@@ -2990,6 +3021,7 @@ type getSymptomGroupsResponse struct {
 } // @name SymptomGroup
 
 //GetSymptomGroups gets the symptom groups
+// @Deprecated
 // @Description Gives the symptom groups
 // @Tags Admin
 // @ID getSymptomGroups
@@ -3068,6 +3100,7 @@ type symptomRuleItemResponse struct {
 } // @name SymptomRuleItem
 
 //CreateSymptomRule creates a symptom rule
+// @Deprecated
 // @Description Creates a symptom rule.
 // @Tags Admin
 // @ID CreateSymptomRule
@@ -3163,6 +3196,7 @@ type updateSymptomRuleItemRequest struct {
 } //@name updateSymptomRuleItemRequest
 
 //UpdateSymptomRule updates a symptom rule
+// @Deprecated
 // @Description Updates a symptom rule.
 // @Tags Admin
 // @ID UpdateSymptomRule
@@ -3251,6 +3285,7 @@ func (h AdminApisHandler) UpdateSymptomRule(current model.User, group string, w 
 }
 
 //GetSymptomRules gets the symptom rules
+// @Deprecated
 // @Description Gives the symptom rules
 // @Tags Admin
 // @ID getSymptomRules
@@ -3301,6 +3336,7 @@ func (h AdminApisHandler) GetSymptomRules(current model.User, group string, w ht
 }
 
 //DeleteSymptomRule deletes a symptom rule
+// @Deprecated
 // @Description Deletes a symptom rule.
 // @Tags Admin
 // @ID deleteSymptomRule
@@ -3777,6 +3813,205 @@ func (h AdminApisHandler) DeleteAccessRule(current model.User, group string, w h
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Successfully deleted"))
+}
+
+//GetCRules gets the rules
+// @Description Gives the rules
+// @Tags Admin
+// @ID GetCRules
+// @Accept json
+// @Param county-id query string false "County ID"
+// @Param app-version query string false "App version"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/crules [get]
+func (h AdminApisHandler) GetCRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	countyKeys, ok := r.URL.Query()["county-id"]
+	if !ok || len(countyKeys[0]) < 1 {
+		log.Println("url param 'county-id' is missing")
+		return
+	}
+	appVersionKeys, ok := r.URL.Query()["app-version"]
+	if !ok || len(appVersionKeys[0]) < 1 {
+		log.Println("url param 'app-version' is missing")
+		return
+	}
+	countyID := countyKeys[0]
+	appVersion := appVersionKeys[0]
+
+	cRules, err := h.app.Administration.GetCRules(countyID, appVersion)
+	if err != nil {
+		log.Printf("Error on getting crules - %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if cRules == nil {
+		//not found
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	data := []byte(cRules.Data)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+type updateCRulesRequest struct {
+	AppVersion string `json:"app_version" validate:"required"`
+	CountyID   string `json:"county_id" validate:"required"`
+	Data       string `json:"data" validate:"required"`
+} //@name updateCRulesRequest
+
+//UpdateCRules updates the rules
+// @Description Updates the rules.
+// @Tags Admin
+// @ID UpdateCRules
+// @Accept json
+// @Produce json
+// @Param data body updateCRulesRequest true "body data"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/crules [put]
+func (h AdminApisHandler) UpdateCRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	bodyData, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update crules items  - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateCRulesRequest
+	err = json.Unmarshal(bodyData, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update crules items request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update crules data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	appVersion := requestData.AppVersion
+	countyID := requestData.CountyID
+	data := requestData.Data
+
+	cRules, err := h.app.Administration.UpdateCRules(current, group, countyID, appVersion, data)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	resData := []byte(cRules.Data)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(resData)
+}
+
+//GetSymptoms gets the symptoms
+// @Description Gives the symptoms
+// @Tags Admin
+// @ID GetASymptoms
+// @Accept json
+// @Param app-version query string false "App version"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/symptoms [get]
+func (h AdminApisHandler) GetSymptoms(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	appVersionKeys, ok := r.URL.Query()["app-version"]
+	if !ok || len(appVersionKeys[0]) < 1 {
+		log.Println("url param 'app-version' is missing")
+		return
+	}
+	appVersion := appVersionKeys[0]
+
+	symptoms, err := h.app.Administration.GetSymptoms(appVersion)
+	if err != nil {
+		log.Printf("Error on getting symptoms - %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if symptoms == nil {
+		//not found
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	data := []byte(symptoms.Items)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+type updateSymptomsRequest struct {
+	AppVersion string `json:"app_version" validate:"required"`
+	Items      string `json:"items" validate:"required"`
+} //@name updateSymptomsRequest
+
+//UpdateSymptoms updates the symptoms
+// @Description Updates the symptoms.
+// @Tags Admin
+// @ID UpdateASymptoms
+// @Accept json
+// @Produce json
+// @Param data body updateSymptomsRequest true "body data"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/symptoms [put]
+func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	bodyData, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update symptoms items  - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateSymptomsRequest
+	err = json.Unmarshal(bodyData, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update symptoms items request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update symptoms data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	appVersion := requestData.AppVersion
+	items := requestData.Items
+
+	symptoms, err := h.app.Administration.UpdateSymptoms(current, group, appVersion, items)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	resData := []byte(symptoms.Items)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(resData)
 }
 
 //GetUserByExternalID gets the user by external id

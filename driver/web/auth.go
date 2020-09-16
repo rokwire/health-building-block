@@ -56,7 +56,7 @@ func (auth *Auth) Start() error {
 	return nil
 }
 
-func (auth *Auth) apiKeyCheck(w http.ResponseWriter, r *http.Request) bool {
+func (auth *Auth) apiKeyCheck(w http.ResponseWriter, r *http.Request) (bool, *string) {
 	return auth.apiKeysAuth.check(w, r)
 }
 
@@ -103,7 +103,13 @@ type APIKeysAuth struct {
 	appKeys []string
 }
 
-func (auth *APIKeysAuth) check(w http.ResponseWriter, r *http.Request) bool {
+func (auth *APIKeysAuth) check(w http.ResponseWriter, r *http.Request) (bool, *string) {
+	vHeader := r.Header.Get("v")
+	var appVersion *string
+	if len(vHeader) > 0 {
+		appVersion = &vHeader
+	}
+
 	apiKey := r.Header.Get("ROKWIRE-API-KEY")
 	//check if there is api key in the header
 	if len(apiKey) == 0 {
@@ -112,7 +118,7 @@ func (auth *APIKeysAuth) check(w http.ResponseWriter, r *http.Request) bool {
 
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad Request"))
-		return false
+		return false, nil
 	}
 
 	//check if the api key is one of the listed
@@ -130,9 +136,9 @@ func (auth *APIKeysAuth) check(w http.ResponseWriter, r *http.Request) bool {
 
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Unauthorized"))
-		return false
+		return false, nil
 	}
-	return true
+	return true, appVersion
 }
 
 func newAPIKeysAuth(appKeys []string) *APIKeysAuth {

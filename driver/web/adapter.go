@@ -128,8 +128,10 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/counties/{id}", we.authWrapFunc(we.apisHandler.GetCounty)).Methods("GET")
 
 	covid19RestSubrouter.HandleFunc("/rules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetRulesByCounty)).Methods("GET")
+	//deprecated
 	covid19RestSubrouter.HandleFunc("/symptom-rules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetSymptomRuleByCounty)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/access-rules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetAccessRuleByCounty)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/crules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetCRulesByCounty)).Methods("GET")
 
 	covid19RestSubrouter.HandleFunc("/resources", we.authWrapFunc(we.apisHandler.GetResources)).Methods("GET")
 
@@ -148,7 +150,9 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/test-types", we.authWrapFunc(we.apisHandler.GetTestTypesByIDs)).Methods("GET").Queries("ids", "")
 	covid19RestSubrouter.HandleFunc("/test-types", we.authWrapFunc(we.apisHandler.GetTestTypes)).Methods("GET")
 
+	//deprecated
 	covid19RestSubrouter.HandleFunc("/symptom-groups", we.authWrapFunc(we.apisHandler.GetSymptomGroups)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/symptoms", we.authWrapFunc(we.apisHandler.GetSymptoms)).Methods("GET")
 
 	covid19RestSubrouter.HandleFunc("/trace/report", we.authWrapFunc(we.apisHandler.AddTraceReport)).Methods("POST")
 	covid19RestSubrouter.HandleFunc("/trace/exposures", we.authWrapFunc(we.apisHandler.GetExposures)).Methods("GET")
@@ -159,6 +163,8 @@ func (we Adapter) Start() {
 	//admin app id token auth
 	adminRestSubrouter.HandleFunc("/covid19-config", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetCovid19Config)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/covid19-config", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateCovid19Config)).Methods("PUT")
+
+	adminRestSubrouter.HandleFunc("/app-versions", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetAppVersions)).Methods("GET")
 
 	adminRestSubrouter.HandleFunc("/news", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetNews)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/news", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateNews)).Methods("POST")
@@ -219,16 +225,20 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/locations/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateLocation)).Methods("PUT")
 	adminRestSubrouter.HandleFunc("/locations/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteLocation)).Methods("DELETE")
 
+	//deprecated
 	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateSymptom)).Methods("POST")
 	adminRestSubrouter.HandleFunc("/symptoms/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateSymptom)).Methods("PUT")
 	adminRestSubrouter.HandleFunc("/symptoms/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteSymptom)).Methods("DELETE")
 
+	//deprecated
 	adminRestSubrouter.HandleFunc("/symptom-groups", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetSymptomGroups)).Methods("GET")
 
+	//deprecated
 	adminRestSubrouter.HandleFunc("/symptom-rules", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetSymptomRules)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/symptom-rules", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateSymptomRule)).Methods("POST")
 	adminRestSubrouter.HandleFunc("/symptom-rules/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateSymptomRule)).Methods("PUT")
 	adminRestSubrouter.HandleFunc("/symptom-rules/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteSymptomRule)).Methods("DELETE")
+	/////
 
 	adminRestSubrouter.HandleFunc("/manual-tests", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetManualTestsByCountyID)).Methods("GET").Queries("county-id", "")
 	adminRestSubrouter.HandleFunc("/manual-tests/{id}/process", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.ProcessManualTest)).Methods("PUT")
@@ -238,6 +248,12 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/access-rules", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateAccessRule)).Methods("POST")
 	adminRestSubrouter.HandleFunc("/access-rules/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateAccessRule)).Methods("PUT")
 	adminRestSubrouter.HandleFunc("/access-rules/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteAccessRule)).Methods("DELETE")
+
+	adminRestSubrouter.HandleFunc("/crules", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetCRules)).Methods("GET").Queries("county-id", "", "app-version", "")
+	adminRestSubrouter.HandleFunc("/crules", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateCRules)).Methods("PUT")
+
+	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetSymptoms)).Methods("GET").Queries("app-version", "")
+	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateSymptoms)).Methods("PUT")
 
 	adminRestSubrouter.HandleFunc("/user", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUserByExternalID)).Methods("GET").Queries("external-id", "")
 
@@ -266,16 +282,18 @@ func (we Adapter) wrapFunc(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (we Adapter) authWrapFunc(handler http.HandlerFunc) http.HandlerFunc {
+type apiKeysAuthFunc = func(*string, http.ResponseWriter, *http.Request)
+
+func (we Adapter) authWrapFunc(handler apiKeysAuthFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
-		authenticated := we.auth.apiKeyCheck(w, req)
+		authenticated, appVersion := we.auth.apiKeyCheck(w, req)
 		if !authenticated {
 			return
 		}
 
-		handler(w, req)
+		handler(appVersion, w, req)
 	}
 }
 

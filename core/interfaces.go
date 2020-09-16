@@ -72,8 +72,10 @@ type Services interface {
 	GetTestTypesByIDs(ids []string) ([]*model.TestType, error)
 
 	GetSymptomGroups() ([]*model.SymptomGroup, error)
+	GetSymptoms(appVersion *string) (*model.Symptoms, error)
 
 	GetSymptomRuleByCounty(countyID string) (*model.SymptomRule, []*model.CountyStatus, error)
+	GetCRulesByCounty(appVersion *string, countyID string) (*model.CRules, error)
 	GetAccessRuleByCounty(countyID string) (*model.AccessRule, []*model.CountyStatus, error)
 
 	AddTraceReport(items []model.TraceExposure) (int, error)
@@ -213,8 +215,16 @@ func (s *servicesImpl) GetSymptomGroups() ([]*model.SymptomGroup, error) {
 	return s.app.getSymptomGroups()
 }
 
+func (s *servicesImpl) GetSymptoms(appVersion *string) (*model.Symptoms, error) {
+	return s.app.getSymptoms(appVersion)
+}
+
 func (s *servicesImpl) GetSymptomRuleByCounty(countyID string) (*model.SymptomRule, []*model.CountyStatus, error) {
 	return s.app.getSymptomRuleByCounty(countyID)
+}
+
+func (s *servicesImpl) GetCRulesByCounty(appVersion *string, countyID string) (*model.CRules, error) {
+	return s.app.getCRulesByCounty(appVersion, countyID)
 }
 
 func (s *servicesImpl) GetAccessRuleByCounty(countyID string) (*model.AccessRule, []*model.CountyStatus, error) {
@@ -233,6 +243,8 @@ func (s *servicesImpl) GetExposures(timestamp *int64, dateAdded *int64) ([]model
 type Administration interface {
 	GetCovid19Config() (*model.COVID19Config, error)
 	UpdateCovid19Config(config *model.COVID19Config) error
+
+	GetAppVersions() ([]string, error)
 
 	GetNews() ([]*model.News, error)
 	CreateNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
@@ -317,6 +329,12 @@ type Administration interface {
 	UpdateAccessRule(current model.User, group string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
 	DeleteAccessRule(current model.User, group string, ID string) error
 
+	GetCRules(countyID string, appVersion string) (*model.CRules, error)
+	UpdateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error)
+
+	GetSymptoms(appVersion string) (*model.Symptoms, error)
+	UpdateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error)
+
 	GetUserByExternalID(externalID string) (*model.User, error)
 
 	CreateAction(providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
@@ -339,6 +357,10 @@ func (s *administrationImpl) UpdateCovid19Config(config *model.COVID19Config) er
 
 func (s *administrationImpl) GetNews() ([]*model.News, error) {
 	return s.app.getAllNews()
+}
+
+func (s *administrationImpl) GetAppVersions() ([]string, error) {
+	return s.app.getAppVersions()
 }
 
 func (s *administrationImpl) CreateNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
@@ -591,6 +613,22 @@ func (s *administrationImpl) DeleteAccessRule(current model.User, group string, 
 	return s.app.deleteAccessRule(current, group, ID)
 }
 
+func (s *administrationImpl) GetCRules(countyID string, appVersion string) (*model.CRules, error) {
+	return s.app.getCRules(countyID, appVersion)
+}
+
+func (s *administrationImpl) UpdateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error) {
+	return s.app.updateCRules(current, group, countyID, appVersion, data)
+}
+
+func (s *administrationImpl) GetSymptoms(appVersion string) (*model.Symptoms, error) {
+	return s.app.getASymptoms(appVersion)
+}
+
+func (s *administrationImpl) UpdateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error) {
+	return s.app.updateSymptoms(current, group, appVersion, items)
+}
+
 func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User, error) {
 	return s.app.getUserByExternalID(externalID)
 }
@@ -720,12 +758,18 @@ type Storage interface {
 
 	ReadAllSymptomGroups() ([]*model.SymptomGroup, error)
 
+	ReadSymptoms(appVersion string) (*model.Symptoms, error)
+	UpdateSymptoms(appVersion string, items string) (*model.Symptoms, error)
+
 	ReadAllSymptomRules() ([]*model.SymptomRule, error)
 	CreateSymptomRule(countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error)
 	FindSymptomRule(ID string) (*model.SymptomRule, error)
 	FindSymptomRuleByCountyID(countyID string) (*model.SymptomRule, error)
 	SaveSymptomRule(symptomRule *model.SymptomRule) error
 	DeleteSymptomRule(ID string) error
+
+	FindCRulesByCountyID(appVersion string, countyID string) (*model.CRules, error)
+	UpdateCRules(appVersion string, countyID string, data string) (*model.CRules, error)
 
 	CreateTraceReports(items []model.TraceExposure) (int, error)
 	ReadTraceExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)

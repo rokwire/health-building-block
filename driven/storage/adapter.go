@@ -3339,6 +3339,71 @@ func (sa *Adapter) ReadAllSymptomGroups() ([]*model.SymptomGroup, error) {
 	return resultList, nil
 }
 
+//ReadSymptoms reads all the symptoms
+func (sa *Adapter) ReadSymptoms(appVersion string) (*model.Symptoms, error) {
+	filter := bson.D{primitive.E{Key: "app_version", Value: appVersion}}
+	var symptoms *model.Symptoms
+	err := sa.db.symptoms.FindOne(filter, &symptoms, nil)
+	if err != nil {
+		return nil, err
+	}
+	return symptoms, nil
+}
+
+//UpdateSymptoms updates teh symptoms
+func (sa *Adapter) UpdateSymptoms(appVersion string, items string) (*model.Symptoms, error) {
+	var resultItem *model.Symptoms
+
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			log.Printf("error starting a transaction - %s", err)
+			return err
+		}
+
+		//1. find the symptoms
+		sFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}}
+		var sResult []*model.Symptoms
+		err = sa.db.symptoms.FindWithContext(sessionContext, sFilter, &sResult, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if sResult == nil || len(sResult) == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is no symptoms for the provided app version")
+		}
+		symptoms := sResult[0]
+
+		//2. update the symptoms
+		symptoms.Items = items
+
+		//3. save the symptoms
+		saveFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}}
+		err = sa.db.symptoms.ReplaceOneWithContext(sessionContext, saveFilter, &symptoms, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		resultItem = symptoms
+
+		//commit the transaction
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resultItem, nil
+}
+
 //ReadAllSymptomRules reads all the symptom rules
 func (sa *Adapter) ReadAllSymptomRules() ([]*model.SymptomRule, error) {
 	filter := bson.D{}
@@ -3608,6 +3673,72 @@ func (sa *Adapter) DeleteSymptomRule(ID string) error {
 	}
 
 	return nil
+}
+
+//FindCRulesByCountyID finds the rules for county
+func (sa *Adapter) FindCRulesByCountyID(appVersion string, countyID string) (*model.CRules, error) {
+	filter := bson.D{primitive.E{Key: "app_version", Value: appVersion},
+		primitive.E{Key: "county_id", Value: countyID}}
+	var symptomsRules *model.CRules
+	err := sa.db.crules.FindOne(filter, &symptomsRules, nil)
+	if err != nil {
+		return nil, err
+	}
+	return symptomsRules, nil
+}
+
+//UpdateCRules updates crules
+func (sa *Adapter) UpdateCRules(appVersion string, countyID string, data string) (*model.CRules, error) {
+	var resultItem *model.CRules
+
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			log.Printf("error starting a transaction - %s", err)
+			return err
+		}
+
+		//1. find the crule item
+		crFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}, primitive.E{Key: "county_id", Value: countyID}}
+		var crResult []*model.CRules
+		err = sa.db.crules.FindWithContext(sessionContext, crFilter, &crResult, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if crResult == nil || len(crResult) == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is no crules for the provided app version and county")
+		}
+		cRules := crResult[0]
+
+		//2. update the crules
+		cRules.Data = data
+
+		//3. save the crules
+		saveFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}, primitive.E{Key: "county_id", Value: countyID}}
+		err = sa.db.crules.ReplaceOneWithContext(sessionContext, saveFilter, &cRules, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		resultItem = cRules
+
+		//commit the transaction
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resultItem, nil
 }
 
 //CreateTraceReports creates trace reports items

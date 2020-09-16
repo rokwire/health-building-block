@@ -82,6 +82,15 @@ func (h AdminApisHandler) UpdateCovid19Config(current model.User, group string, 
 	w.Write([]byte("Successfully updated"))
 }
 
+//GetAppVersions gives the supported app versions
+// @Description Gives the supported app versions
+// @Tags Admin
+// @ID GetAppVersions
+// @Accept  json
+// @Success 200 {array} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/app-versions [get]
 func (h AdminApisHandler) GetAppVersions(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	appVersions, err := h.app.Administration.GetAppVersions()
 	if err != nil {

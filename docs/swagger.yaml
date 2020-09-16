@@ -1329,6 +1329,24 @@ paths:
       - AdminGroupAuth: []
       tags:
       - Admin
+  /admin/app-versions:
+    get:
+      consumes:
+      - application/json
+      description: Gives the supported app versions
+      operationId: GetAppVersions
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
   /admin/audit:
     get:
       consumes:

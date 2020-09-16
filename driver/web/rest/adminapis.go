@@ -2002,19 +2002,13 @@ func (h AdminApisHandler) GetTestTypes(current model.User, group string, w http.
 }
 
 type createTestTypeResultRequest struct {
-	TestTypeID          string `json:"test_type_id" validate:"uuid"`
-	Name                string `json:"name" validate:"required"`
-	NextStep            string `json:"next_step" validate:"required"`
-	NextStepOffset      *int   `json:"next_step_offset"`
-	ResultExpiresOffset *int   `json:"result_expires_offset"`
+	TestTypeID string `json:"test_type_id" validate:"uuid"`
+	Name       string `json:"name" validate:"required"`
 } //@name createTestTypeResultRequest
 
 type createTestTypeResultResponse struct {
-	ID                  string `json:"id"`
-	Name                string `json:"name"`
-	NextStep            string `json:"next_step"`
-	NextStepOffset      *int   `json:"next_step_offset"`
-	ResultExpiresOffset *int   `json:"result_expires_offset"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
 } //@name TestTypeResult
 
 //CreateTestTypeResult creates a test type result for a specific test type
@@ -2055,19 +2049,15 @@ func (h AdminApisHandler) CreateTestTypeResult(current model.User, group string,
 
 	testTypeID := requestData.TestTypeID
 	name := requestData.Name
-	nextStep := requestData.NextStep
-	nextStepOffset := requestData.NextStepOffset
-	resultExpiresOffset := requestData.ResultExpiresOffset
 
-	testTypeResult, err := h.app.Administration.CreateTestTypeResult(current, group, testTypeID, name, nextStep, nextStepOffset, resultExpiresOffset)
+	testTypeResult, err := h.app.Administration.CreateTestTypeResult(current, group, testTypeID, name, "", nil, nil)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	resultItem := createTestTypeResultResponse{ID: testTypeResult.ID, Name: testTypeResult.Name, NextStep: testTypeResult.NextStep,
-		NextStepOffset: testTypeResult.NextStepOffset, ResultExpiresOffset: testTypeResult.ResultExpiresOffset}
+	resultItem := createTestTypeResultResponse{ID: testTypeResult.ID, Name: testTypeResult.Name}
 	data, err = json.Marshal(resultItem)
 	if err != nil {
 		log.Println("Error on marshal a test type result")
@@ -2081,18 +2071,12 @@ func (h AdminApisHandler) CreateTestTypeResult(current model.User, group string,
 }
 
 type updateTestTypeResultRequest struct {
-	Name                string `json:"name" validate:"required"`
-	NextStep            string `json:"next_step" validate:"required"`
-	NextStepOffset      *int   `json:"next_step_offset"`
-	ResultExpiresOffset *int   `json:"result_expires_offset"`
+	Name string `json:"name" validate:"required"`
 } // @name updateTestTypeResultRequest
 
 type updateTestTypeResultResponse struct {
-	ID                  string `json:"id"`
-	Name                string `json:"name"`
-	NextStep            string `json:"next_step"`
-	NextStepOffset      *int   `json:"next_step_offset"`
-	ResultExpiresOffset *int   `json:"result_expires_offset"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
 } // @name TestTypeResult
 
 //UpdateTestTypeResult updates test type result
@@ -2141,19 +2125,15 @@ func (h AdminApisHandler) UpdateTestTypeResult(current model.User, group string,
 	}
 
 	name := requestData.Name
-	nextStep := requestData.NextStep
-	nextStepOffset := requestData.NextStepOffset
-	resultExpiresOffset := requestData.ResultExpiresOffset
 
-	testTypeResult, err := h.app.Administration.UpdateTestTypeResult(current, group, ID, name, nextStep, nextStepOffset, resultExpiresOffset)
+	testTypeResult, err := h.app.Administration.UpdateTestTypeResult(current, group, ID, name, "", nil, nil)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	resultItem := updateTestTypeResultResponse{ID: testTypeResult.ID, Name: testTypeResult.Name,
-		NextStep: testTypeResult.NextStep, NextStepOffset: testTypeResult.NextStepOffset, ResultExpiresOffset: testTypeResult.ResultExpiresOffset}
+	resultItem := updateTestTypeResultResponse{ID: testTypeResult.ID, Name: testTypeResult.Name}
 	data, err = json.Marshal(resultItem)
 	if err != nil {
 		log.Println("Error on marshal a test type result")
@@ -2197,11 +2177,8 @@ func (h AdminApisHandler) DeleteTestTypeResult(current model.User, group string,
 }
 
 type getTestTypeResultsResponse struct {
-	ID                  string `json:"id"`
-	Name                string `json:"name"`
-	NextStep            string `json:"next_step"`
-	NextStepOffset      *int   `json:"next_step_offset"`
-	ResultExpiresOffset *int   `json:"result_expires_offset"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
 } // @name TestTypeResult
 
 //GetTestTypeResultsByTestTypeID gets all test type results for a test type
@@ -2234,8 +2211,7 @@ func (h AdminApisHandler) GetTestTypeResultsByTestTypeID(current model.User, gro
 	var resultList []getTestTypeResultsResponse
 	if testTypeResults != nil {
 		for _, item := range testTypeResults {
-			r := getTestTypeResultsResponse{ID: item.ID, Name: item.Name, NextStep: item.NextStep,
-				NextStepOffset: item.NextStepOffset, ResultExpiresOffset: item.ResultExpiresOffset}
+			r := getTestTypeResultsResponse{ID: item.ID, Name: item.Name}
 			resultList = append(resultList, r)
 		}
 	}

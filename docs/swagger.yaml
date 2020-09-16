@@ -442,12 +442,6 @@ definitions:
         type: string
       name:
         type: string
-      next_step:
-        type: string
-      next_step_offset:
-        type: integer
-      result_expires_offset:
-        type: integer
     type: object
   TestTypeResultCountyStatus:
     properties:
@@ -836,17 +830,10 @@ definitions:
     properties:
       name:
         type: string
-      next_step:
-        type: string
-      next_step_offset:
-        type: integer
-      result_expires_offset:
-        type: integer
       test_type_id:
         type: string
     required:
     - name
-    - next_step
     type: object
   gubonResponse:
     additionalProperties:
@@ -1179,15 +1166,8 @@ definitions:
     properties:
       name:
         type: string
-      next_step:
-        type: string
-      next_step_offset:
-        type: integer
-      result_expires_offset:
-        type: integer
     required:
     - name
-    - next_step
     type: object
 host: localhost
 info:

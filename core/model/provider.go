@@ -44,6 +44,7 @@ type Location struct {
 	DaysOfOperation []OperationDay
 	URL             string
 	Notes           string
+	WaitTimeColor   *string
 
 	Provider Provider
 	County   County

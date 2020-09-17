@@ -743,7 +743,7 @@ type Storage interface {
 	ReadAllLocations() ([]*model.Location, error)
 	CreateLocation(providerID string, countyID string, name string, address1 string, address2 string, city string,
 		state string, zip string, country string, latitude float64, longitude float64, contact string,
-		daysOfOperation []model.OperationDay, url string, notes string, availableTests []string) (*model.Location, error)
+		daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error)
 	FindLocationsByProviderIDCountyID(providerID string, countyID string) ([]*model.Location, error)
 	FindLocationsByCountyIDDeep(countyID string) ([]*model.Location, error)
 	FindLocationsByCountiesDeep(countyIDs []string) ([]*model.Location, error)

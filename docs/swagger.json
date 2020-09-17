@@ -4875,6 +4875,9 @@
                 "url": {
                     "type": "string"
                 },
+                "wait_time_color": {
+                    "type": "string"
+                },
                 "zip": {
                     "type": "string"
                 }
@@ -5537,6 +5540,9 @@
                 "url": {
                     "type": "string"
                 },
+                "wait_time_color": {
+                    "type": "string"
+                },
                 "zip": {
                     "type": "string"
                 }
@@ -6071,6 +6077,9 @@
                     "type": "string"
                 },
                 "url": {
+                    "type": "string"
+                },
+                "wait_time_color": {
                     "type": "string"
                 },
                 "zip": {

@@ -258,6 +258,8 @@ definitions:
         type: string
       url:
         type: string
+      wait_time_color:
+        type: string
       zip:
         type: string
     type: object
@@ -690,6 +692,8 @@ definitions:
         type: string
       url:
         type: string
+      wait_time_color:
+        type: string
       zip:
         type: string
     required:
@@ -1048,6 +1052,8 @@ definitions:
       state:
         type: string
       url:
+        type: string
+      wait_time_color:
         type: string
       zip:
         type: string

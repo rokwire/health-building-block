@@ -100,6 +100,7 @@ type locationResponse struct {
 	DaysOfOperation []locationOperationDayResponse `json:"days_of_operation"`
 	URL             string                         `json:"url"`
 	Notes           string                         `json:"notes"`
+	WaitTimeColor   *string                        `json:"wait_time_color"`
 
 	ProviderID string `json:"provider_id"`
 	CountyID   string `json:"county_id"`

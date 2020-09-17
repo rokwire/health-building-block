@@ -4887,6 +4887,9 @@ var doc = `{
                 "url": {
                     "type": "string"
                 },
+                "wait_time_color": {
+                    "type": "string"
+                },
                 "zip": {
                     "type": "string"
                 }
@@ -5549,6 +5552,9 @@ var doc = `{
                 "url": {
                     "type": "string"
                 },
+                "wait_time_color": {
+                    "type": "string"
+                },
                 "zip": {
                     "type": "string"
                 }
@@ -6083,6 +6089,9 @@ var doc = `{
                     "type": "string"
                 },
                 "url": {
+                    "type": "string"
+                },
+                "wait_time_color": {
                     "type": "string"
                 },
                 "zip": {

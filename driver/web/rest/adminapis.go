@@ -2544,6 +2544,7 @@ type createLocationRequest struct {
 	DaysOfOperation []locationOperationDayRequest `json:"days_of_operation"`
 	URL             string                        `json:"url"`
 	Notes           string                        `json:"notes"`
+	WaitTimeColor   *string                       `json:"wait_time_color"`
 
 	ProviderID string `json:"provider_id" validate:"required"`
 	CountyID   string `json:"county_id" validate:"required"`
@@ -2605,6 +2606,7 @@ func (h AdminApisHandler) CreateLocation(current model.User, group string, w htt
 	daysOfOperation := convertToDaysOfOperations(requestData.DaysOfOperation)
 	url := requestData.URL
 	notes := requestData.Notes
+	waitTimeColor := requestData.WaitTimeColor
 
 	providerID := requestData.ProviderID
 	countyID := requestData.CountyID
@@ -2612,7 +2614,7 @@ func (h AdminApisHandler) CreateLocation(current model.User, group string, w htt
 	availableTests := requestData.AvailableTests
 
 	location, err := h.app.Administration.CreateLocation(current, group, providerID, countyID, name, address1, address2, city,
-		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, availableTests)
+		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 	if err != nil {
 		log.Printf("Error on creating a location - %s\n", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2627,7 +2629,8 @@ func (h AdminApisHandler) CreateLocation(current model.User, group string, w htt
 	response := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 		City: location.City, State: location.State, ZIP: location.ZIP, Latitude: location.Latitude, Longitude: location.Longitude,
 		Country: location.Country, Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
-		URL: location.URL, Notes: location.Notes, ProviderID: location.Provider.ID, CountyID: location.County.ID, AvailableTests: availableTestsRes}
+		URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
+		CountyID: location.County.ID, AvailableTests: availableTestsRes}
 	data, err = json.Marshal(response)
 	if err != nil {
 		log.Println("Error on marshal a location")
@@ -2654,6 +2657,7 @@ type updateLocationRequest struct {
 	DaysOfOperation []locationOperationDayRequest `json:"days_of_operation"`
 	URL             string                        `json:"url"`
 	Notes           string                        `json:"notes"`
+	WaitTimeColor   *string                       `json:"wait_time_color"`
 
 	AvailableTests []string `json:"available_tests" validate:"required"`
 } //@name updateLocationRequest
@@ -2715,11 +2719,12 @@ func (h AdminApisHandler) UpdateLocation(current model.User, group string, w htt
 	daysOfOperation := convertToDaysOfOperations(requestData.DaysOfOperation)
 	url := requestData.URL
 	notes := requestData.Notes
+	waitTimeColor := requestData.WaitTimeColor
 
 	availableTests := requestData.AvailableTests
 
 	location, err := h.app.Administration.UpdateLocation(current, group, ID, name, address1, address2, city,
-		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, availableTests)
+		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 	if err != nil {
 		log.Printf("Error on creating a location - %s\n", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2734,7 +2739,8 @@ func (h AdminApisHandler) UpdateLocation(current model.User, group string, w htt
 	response := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 		City: location.City, State: location.State, ZIP: location.ZIP, Latitude: location.Latitude, Longitude: location.Longitude,
 		Country: location.Country, Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
-		URL: location.URL, Notes: location.Notes, ProviderID: location.Provider.ID, CountyID: location.County.ID, AvailableTests: availableTestsRes}
+		URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
+		CountyID: location.County.ID, AvailableTests: availableTestsRes}
 	data, err = json.Marshal(response)
 	if err != nil {
 		log.Println("Error on marshal a location")
@@ -2778,7 +2784,8 @@ func (h AdminApisHandler) GetLocations(current model.User, group string, w http.
 			loc := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 				City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude,
 				Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
-				URL: location.URL, Notes: location.Notes, ProviderID: location.Provider.ID, CountyID: location.County.ID, AvailableTests: availableTestsRes}
+				URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
+				CountyID: location.County.ID, AvailableTests: availableTestsRes}
 			responseList = append(responseList, loc)
 		}
 	}

@@ -118,6 +118,7 @@ type location struct {
 	DaysOfOperation []operationDay `bson:"days_of_operation"`
 	URL             string         `bson:"url"`
 	Notes           string         `bson:"notes"`
+	WaitTimeColor   *string        `bson:"wait_time_color"`
 
 	ProviderID string `bson:"provider_id"`
 	CountyID   string `bson:"county_id"`
@@ -2831,7 +2832,7 @@ func (sa *Adapter) ReadAllLocations() ([]*model.Location, error) {
 			daysOfOperation := convertToDaysOfOperation(location.DaysOfOperation)
 			locationEntity := &model.Location{ID: location.ID, Name: location.Name, Address1: location.Address1,
 				Address2: location.Address2, City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude, Contact: location.Contact,
-				DaysOfOperation: daysOfOperation, URL: location.URL, Notes: location.Notes, Provider: provider, County: county, AvailableTests: avTests}
+				DaysOfOperation: daysOfOperation, URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, Provider: provider, County: county, AvailableTests: avTests}
 			resultList = append(resultList, locationEntity)
 		}
 	}
@@ -2841,7 +2842,7 @@ func (sa *Adapter) ReadAllLocations() ([]*model.Location, error) {
 //CreateLocation creates a location
 func (sa *Adapter) CreateLocation(providerID string, countyID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string, daysOfOperation []model.OperationDay,
-	url string, notes string, availableTests []string) (*model.Location, error) {
+	url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
 
 	id, err := uuid.NewUUID()
 	if err != nil {
@@ -2853,7 +2854,7 @@ func (sa *Adapter) CreateLocation(providerID string, countyID string, name strin
 	doo := convertFromDaysOfOperation(daysOfOperation)
 	location := location{ID: id.String(), Name: name, Address1: address1, Address2: address2, City: city,
 		State: state, ZIP: zip, Country: country, Latitude: latitude, Longitude: longitude, Contact: contact,
-		DaysOfOperation: doo, URL: url, Notes: notes, ProviderID: providerID, CountyID: countyID,
+		DaysOfOperation: doo, URL: url, Notes: notes, WaitTimeColor: waitTimeColor, ProviderID: providerID, CountyID: countyID,
 		AvailableTests: availableTests, DateCreated: dateCreated}
 	_, err = sa.db.locations.InsertOne(&location)
 	if err != nil {
@@ -2872,7 +2873,7 @@ func (sa *Adapter) CreateLocation(providerID string, countyID string, name strin
 	}
 	result := &model.Location{ID: id.String(), Name: name, Address1: address1, Address2: address2, City: city,
 		State: state, ZIP: zip, Country: country, Latitude: latitude, Longitude: longitude, Contact: contact,
-		DaysOfOperation: daysOfOperation, URL: url, Notes: notes, Provider: provider, County: county, AvailableTests: avTests}
+		DaysOfOperation: daysOfOperation, URL: url, Notes: notes, WaitTimeColor: waitTimeColor, Provider: provider, County: county, AvailableTests: avTests}
 	return result, nil
 }
 
@@ -2905,7 +2906,8 @@ func (sa *Adapter) FindLocationsByProviderIDCountyID(providerID string, countyID
 		locationEntity := &model.Location{ID: location.ID, Name: location.Name, Address1: location.Address1,
 			Address2: location.Address2, City: location.City, State: location.State, ZIP: location.ZIP,
 			Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude, Contact: location.Contact,
-			DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes, Provider: provider, County: county, AvailableTests: avTests}
+			DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor,
+			Provider: provider, County: county, AvailableTests: avTests}
 		resultList = append(resultList, locationEntity)
 	}
 	return resultList, nil
@@ -2926,6 +2928,7 @@ type locationProviderJoin struct {
 	DaysOfOperation []operationDay `bson:"days_of_operation"`
 	URL             string         `bson:"url"`
 	Notes           string         `bson:"notes"`
+	WaitTimeColor   *string        `bson:"wait_time_color"`
 	AvailableTests  []string       `bson:"available_tests"`
 	CountyID        string         `bson:"county_id"`
 
@@ -2947,7 +2950,7 @@ func (sa *Adapter) FindLocationsByCountyIDDeep(countyID string) ([]*model.Locati
 		{"$unwind": "$provider"},
 		{"$project": bson.M{
 			"_id": 1, "name": 1, "address_1": 1, "address_2": 1, "city": 1, "state": 1, "zip": 1, "country": 1, "latitude": 1, "longitude": 1,
-			"contact": 1, "days_of_operation": 1, "url": 1, "notes": 1, "available_tests": 1, "county_id": 1,
+			"contact": 1, "days_of_operation": 1, "url": 1, "notes": 1, "wait_time_color": 1, "available_tests": 1, "county_id": 1,
 			"provider_id": "$provider._id", "provider_name": "$provider.provider_name", "provider_available_mechanisms": "$provider.available_mechanisms",
 		}}}
 
@@ -2978,7 +2981,7 @@ func (sa *Adapter) FindLocationsByCountyIDDeep(countyID string) ([]*model.Locati
 		locationEntity := &model.Location{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 			City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude,
 			Longitude: location.Longitude, Contact: location.Contact, DaysOfOperation: daysOfOperations, URL: location.URL,
-			Notes: location.Notes, Provider: provider, County: county, AvailableTests: avTests}
+			Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, Provider: provider, County: county, AvailableTests: avTests}
 		resultList = append(resultList, locationEntity)
 	}
 	return resultList, nil
@@ -2997,7 +3000,7 @@ func (sa *Adapter) FindLocationsByCountiesDeep(countyIDs []string) ([]*model.Loc
 		{"$unwind": "$provider"},
 		{"$project": bson.M{
 			"_id": 1, "name": 1, "address_1": 1, "address_2": 1, "city": 1, "state": 1, "zip": 1, "country": 1, "latitude": 1, "longitude": 1,
-			"contact": 1, "days_of_operation": 1, "url": 1, "notes": 1, "available_tests": 1, "county_id": 1,
+			"contact": 1, "days_of_operation": 1, "url": 1, "notes": 1, "wait_time_color": 1, "available_tests": 1, "county_id": 1,
 			"provider_id": "$provider._id", "provider_name": "$provider.provider_name", "provider_available_mechanisms": "$provider.available_mechanisms",
 		}}}
 
@@ -3028,7 +3031,8 @@ func (sa *Adapter) FindLocationsByCountiesDeep(countyIDs []string) ([]*model.Loc
 		locationEntity := &model.Location{ID: location.ID, Name: location.Name, Address1: location.Address1,
 			Address2: location.Address2, City: location.City, State: location.State, ZIP: location.ZIP,
 			Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude, Contact: location.Contact,
-			DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes, Provider: provider, County: county, AvailableTests: avTests}
+			DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor,
+			Provider: provider, County: county, AvailableTests: avTests}
 		resultList = append(resultList, locationEntity)
 	}
 	return resultList, nil
@@ -3061,7 +3065,8 @@ func (sa *Adapter) FindLocation(ID string) (*model.Location, error) {
 	resultEntity := &model.Location{ID: location.ID, Name: location.Name, Address1: location.Address1,
 		Address2: location.Address2, City: location.City, State: location.State, ZIP: location.ZIP,
 		Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude, Contact: location.Contact,
-		DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes, Provider: provider, County: county, AvailableTests: avTests}
+		DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor,
+		Provider: provider, County: county, AvailableTests: avTests}
 	return resultEntity, nil
 }
 
@@ -3093,6 +3098,7 @@ func (sa *Adapter) SaveLocation(entity *model.Location) error {
 	location.DaysOfOperation = convertFromDaysOfOperation(entity.DaysOfOperation)
 	location.URL = entity.URL
 	location.Notes = entity.Notes
+	location.WaitTimeColor = entity.WaitTimeColor
 	var avTR []string
 	if entity.AvailableTests != nil {
 		for _, testType := range entity.AvailableTests {

@@ -4887,6 +4887,9 @@ var doc = `{
                 "url": {
                     "type": "string"
                 },
+                "wait_time_color": {
+                    "type": "string"
+                },
                 "zip": {
                     "type": "string"
                 }
@@ -5549,6 +5552,9 @@ var doc = `{
                 "url": {
                     "type": "string"
                 },
+                "wait_time_color": {
+                    "type": "string"
+                },
                 "zip": {
                     "type": "string"
                 }
@@ -6085,6 +6091,9 @@ var doc = `{
                 "url": {
                     "type": "string"
                 },
+                "wait_time_color": {
+                    "type": "string"
+                },
                 "zip": {
                     "type": "string"
                 }
@@ -6300,7 +6309,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.16.0",
+	Version:     "1.17.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

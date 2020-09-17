@@ -1534,7 +1534,8 @@ func (h ApisHandler) GetLocationsByCountyIDProviderID(appVersion *string, w http
 			locItem := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 				City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude,
 				Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
-				URL: location.URL, Notes: location.Notes, ProviderID: location.Provider.ID, CountyID: location.County.ID, AvailableTests: availableTestsRes}
+				URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
+				CountyID: location.County.ID, AvailableTests: availableTestsRes}
 
 			response = append(response, locItem)
 		}
@@ -1581,7 +1582,8 @@ func (h ApisHandler) GetLocationsByCountyID(appVersion *string, w http.ResponseW
 			locItem := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 				City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude,
 				Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
-				URL: location.URL, Notes: location.Notes, ProviderID: location.Provider.ID, CountyID: location.County.ID, AvailableTests: availableTestsRes}
+				URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
+				CountyID: location.County.ID, AvailableTests: availableTestsRes}
 
 			response = append(response, locItem)
 		}
@@ -1639,7 +1641,8 @@ func (h ApisHandler) GetLocation(appVersion *string, w http.ResponseWriter, r *h
 	locItem := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 		City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude,
 		Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
-		URL: location.URL, Notes: location.Notes, ProviderID: location.Provider.ID, CountyID: location.County.ID, AvailableTests: availableTestsRes}
+		URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
+		CountyID: location.County.ID, AvailableTests: availableTestsRes}
 	data, err := json.Marshal(locItem)
 	if err != nil {
 		log.Println("Error on marshal a location")

@@ -1123,7 +1123,7 @@ func (app *Application) getLocations() ([]*model.Location, error) {
 
 func (app *Application) createLocation(current model.User, group string, providerID string, countyID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
-	daysOfOperation []model.OperationDay, url string, notes string, availableTests []string) (*model.Location, error) {
+	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
 	//1. check if the location data is valid
 	err := app.isLocationDataValid(providerID, countyID, availableTests)
 	if err != nil {
@@ -1132,7 +1132,7 @@ func (app *Application) createLocation(current model.User, group string, provide
 
 	//2. create the entity
 	location, err := app.storage.CreateLocation(providerID, countyID, name, address1, address2, city,
-		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, availableTests)
+		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 	if err != nil {
 		return nil, err
 	}
@@ -1142,7 +1142,8 @@ func (app *Application) createLocation(current model.User, group string, provide
 	lData := []AuditDataEntry{{Key: "providerID", Value: providerID}, {Key: "countyID", Value: countyID}, {Key: "name", Value: name}, {Key: "address1", Value: address1},
 		{Key: "address2", Value: address2}, {Key: "city", Value: city}, {Key: "state", Value: state}, {Key: "zip", Value: zip}, {Key: "country", Value: country},
 		{Key: "latitude", Value: fmt.Sprint(latitude)}, {Key: "longitude", Value: fmt.Sprint(longitude)}, {Key: "contact", Value: contact},
-		{Key: "daysOfOperation", Value: fmt.Sprint(daysOfOperation)}, {Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "availableTests", Value: fmt.Sprint(availableTests)}}
+		{Key: "daysOfOperation", Value: fmt.Sprint(daysOfOperation)}, {Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "waitTimeColor", Value: utils.GetString(waitTimeColor)},
+		{Key: "availableTests", Value: fmt.Sprint(availableTests)}}
 	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "location", location.ID, lData)
 
 	return location, nil
@@ -1150,7 +1151,7 @@ func (app *Application) createLocation(current model.User, group string, provide
 
 func (app *Application) updateLocation(current model.User, group string, ID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
-	daysOfOperation []model.OperationDay, url string, notes string, availableTests []string) (*model.Location, error) {
+	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
 
 	// find if we have a location for the provided id
 	location, err := app.storage.FindLocation(ID)
@@ -1184,6 +1185,7 @@ func (app *Application) updateLocation(current model.User, group string, ID stri
 	location.DaysOfOperation = daysOfOperation
 	location.URL = url
 	location.Notes = notes
+	location.WaitTimeColor = waitTimeColor
 	var avTR []model.TestType
 	if availableTests != nil {
 		for _, id := range availableTests {
@@ -1204,7 +1206,8 @@ func (app *Application) updateLocation(current model.User, group string, ID stri
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "address1", Value: address1}, {Key: "address2", Value: address2}, {Key: "city", Value: city},
 		{Key: "state", Value: state}, {Key: "zip", Value: zip}, {Key: "country", Value: country}, {Key: "latitude", Value: fmt.Sprint(latitude)},
 		{Key: "longitude", Value: fmt.Sprint(longitude)}, {Key: "contact", Value: contact}, {Key: "daysOfOperation", Value: fmt.Sprint(daysOfOperation)},
-		{Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "availableTests", Value: fmt.Sprint(availableTests)}}
+		{Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "waitTimeColor", Value: utils.GetString(waitTimeColor)},
+		{Key: "availableTests", Value: fmt.Sprint(availableTests)}}
 	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "location", ID, lData)
 
 	return location, nil

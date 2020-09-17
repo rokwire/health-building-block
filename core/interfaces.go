@@ -303,10 +303,10 @@ type Administration interface {
 	GetLocations() ([]*model.Location, error)
 	CreateLocation(current model.User, group string, providerID string, countyID string, name string, address1 string, address2 string, city string,
 		state string, zip string, country string, latitude float64, longitude float64, contact string,
-		daysOfOperation []model.OperationDay, url string, notes string, availableTests []string) (*model.Location, error)
+		daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error)
 	UpdateLocation(current model.User, group string, ID string, name string, address1 string, address2 string, city string,
 		state string, zip string, country string, latitude float64, longitude float64, contact string,
-		daysOfOperation []model.OperationDay, url string, notes string, availableTests []string) (*model.Location, error)
+		daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error)
 	DeleteLocation(current model.User, group string, ID string) error
 
 	CreateSymptom(current model.User, group string, Name string, SymptomGroup string) (*model.Symptom, error)
@@ -537,16 +537,16 @@ func (s *administrationImpl) GetLocations() ([]*model.Location, error) {
 
 func (s *administrationImpl) CreateLocation(current model.User, group string, providerID string, countyID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
-	daysOfOperation []model.OperationDay, url string, notes string, availableTests []string) (*model.Location, error) {
+	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
 	return s.app.createLocation(current, group, providerID, countyID, name, address1, address2, city, state, zip, country,
-		latitude, longitude, contact, daysOfOperation, url, notes, availableTests)
+		latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 }
 
 func (s *administrationImpl) UpdateLocation(current model.User, group string, ID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
-	daysOfOperation []model.OperationDay, url string, notes string, availableTests []string) (*model.Location, error) {
+	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
 	return s.app.updateLocation(current, group, ID, name, address1, address2, city, state, zip, country,
-		latitude, longitude, contact, daysOfOperation, url, notes, availableTests)
+		latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 }
 
 func (s *administrationImpl) DeleteLocation(current model.User, group string, ID string) error {
@@ -743,7 +743,7 @@ type Storage interface {
 	ReadAllLocations() ([]*model.Location, error)
 	CreateLocation(providerID string, countyID string, name string, address1 string, address2 string, city string,
 		state string, zip string, country string, latitude float64, longitude float64, contact string,
-		daysOfOperation []model.OperationDay, url string, notes string, availableTests []string) (*model.Location, error)
+		daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error)
 	FindLocationsByProviderIDCountyID(providerID string, countyID string) ([]*model.Location, error)
 	FindLocationsByCountyIDDeep(countyID string) ([]*model.Location, error)
 	FindLocationsByCountiesDeep(countyIDs []string) ([]*model.Location, error)

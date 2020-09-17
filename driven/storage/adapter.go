@@ -2873,7 +2873,7 @@ func (sa *Adapter) CreateLocation(providerID string, countyID string, name strin
 	}
 	result := &model.Location{ID: id.String(), Name: name, Address1: address1, Address2: address2, City: city,
 		State: state, ZIP: zip, Country: country, Latitude: latitude, Longitude: longitude, Contact: contact,
-		DaysOfOperation: daysOfOperation, URL: url, Notes: notes, Provider: provider, County: county, AvailableTests: avTests}
+		DaysOfOperation: daysOfOperation, URL: url, Notes: notes, WaitTimeColor: waitTimeColor, Provider: provider, County: county, AvailableTests: avTests}
 	return result, nil
 }
 

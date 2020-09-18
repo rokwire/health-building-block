@@ -844,8 +844,8 @@ type ProfileUserData struct {
 
 //Audit is used by core to log history
 type Audit interface {
-	LogCreateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry)
-	LogUpdateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry)
+	LogCreateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry, clientData *string)
+	LogUpdateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry, clientData *string)
 	LogDeleteEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string)
 
 	Find(userIdentifier *string, usedGroup *string, entity *string, entityID *string, operation *string,

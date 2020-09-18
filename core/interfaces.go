@@ -861,6 +861,7 @@ type AuditEntity struct {
 	EntityID       string    `json:"entity_id" bson:"entity_id"`
 	Operation      string    `json:"operation" bson:"operation"`
 	Data           *string   `json:"data" bson:"data"`
+	ClientData     *string   `json:"client_data" bson:"client_data"`
 	CreatedAt      time.Time `json:"created_at" bson:"created_at"`
 } // @name AuditEntity
 

@@ -1549,7 +1549,7 @@ func (app *Application) getUserByExternalID(externalID string) (*model.User, err
 	return user, nil
 }
 
-func (app *Application) createAction(current model.User, group string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
+func (app *Application) createAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false, nil)
 	if err != nil {
@@ -1584,7 +1584,7 @@ func (app *Application) createAction(current model.User, group string, providerI
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "providerID", Value: providerID}, {Key: "userID", Value: userID},
 		{Key: "encryptedKey", Value: encryptedKey}, {Key: "encryptedBlob", Value: encryptedBlob}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "action", item.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "action", item.ID, lData, audit)
 
 	return item, nil
 }

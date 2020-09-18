@@ -4587,6 +4587,9 @@ var doc = `{
         "AuditEntity": {
             "type": "object",
             "properties": {
+                "client_data": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -5307,6 +5310,9 @@ var doc = `{
                 "user_id"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "encrypted_blob": {
                     "type": "string"
                 },

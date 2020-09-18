@@ -66,7 +66,7 @@ func (app *Application) createNews(current model.User, group string, date time.T
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "date", Value: fmt.Sprint(date)}, {Key: "title", Value: title}, {Key: "description", Value: description},
 		{Key: "htmlContent", Value: htmlContent}, {Key: "link", Value: utils.GetString(link)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "news", news.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "news", news.ID, lData, nil)
 
 	return news, nil
 }
@@ -96,7 +96,7 @@ func (app *Application) updateNews(current model.User, group string, ID string, 
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "date", Value: fmt.Sprint(date)}, {Key: "title", Value: title}, {Key: "description", Value: description},
 		{Key: "htmlContent", Value: htmlContent}, {Key: "link", Value: utils.GetString(link)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "news", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "news", ID, lData, nil)
 
 	return news, nil
 }
@@ -130,7 +130,7 @@ func (app *Application) createResource(current model.User, group string, title s
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "link", Value: link}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "resource", resource.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "resource", resource.ID, lData, nil)
 
 	return resource, nil
 }
@@ -158,7 +158,7 @@ func (app *Application) updateResource(current model.User, group string, ID stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "link", Value: link}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "resource", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "resource", ID, lData, nil)
 
 	return resource, nil
 }
@@ -272,7 +272,7 @@ func (app *Application) createFAQ(current model.User, group string, section stri
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "section", Value: section}, {Key: "sectionDisplayOrder", Value: fmt.Sprint(sectionDisplayOrder)}, {Key: "title", Value: title},
 		{Key: "description", Value: description}, {Key: "questionDisplayOrder", Value: fmt.Sprint(questionDisplayOrder)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-question", question.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-question", question.ID, lData, nil)
 
 	return nil
 }
@@ -328,7 +328,7 @@ func (app *Application) updateFAQ(current model.User, group string, ID string, t
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "description", Value: description}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "faq-question", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "faq-question", ID, lData, nil)
 
 	return nil
 }
@@ -431,7 +431,7 @@ func (app *Application) updateFAQSection(current model.User, group string, ID st
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-section", ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-section", ID, lData, nil)
 
 	return nil
 }
@@ -444,7 +444,7 @@ func (app *Application) createProvider(current model.User, group string, provide
 
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "providerName", Value: providerName}, {Key: "manualTest", Value: fmt.Sprint(manualTest)}, {Key: "availableMechanisms", Value: fmt.Sprint(availableMechanisms)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "provider", provider.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "provider", provider.ID, lData, nil)
 
 	return provider, nil
 }
@@ -472,7 +472,7 @@ func (app *Application) updateProvider(current model.User, group string, ID stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "providerName", Value: providerName}, {Key: "manualTest", Value: fmt.Sprint(manualTest)}, {Key: "availableMechanisms", Value: fmt.Sprint(availableMechanisms)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "provider", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "provider", ID, lData, nil)
 
 	return provider, nil
 }
@@ -499,7 +499,7 @@ func (app *Application) createCounty(current model.User, group string, name stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "stateProvince", Value: stateProvince}, {Key: "country", Value: country}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county", county.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county", county.ID, lData, nil)
 
 	return county, nil
 }
@@ -527,7 +527,7 @@ func (app *Application) updateCounty(current model.User, group string, ID string
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "stateProvince", Value: stateProvince}, {Key: "country", Value: country}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county", county.ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county", county.ID, lData, nil)
 
 	return county, nil
 }
@@ -564,7 +564,7 @@ func (app *Application) createGuideline(current model.User, group string, county
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}, {Key: "items", Value: fmt.Sprint(items)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "guideline", guideline.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "guideline", guideline.ID, lData, nil)
 
 	return guideline, nil
 }
@@ -592,7 +592,7 @@ func (app *Application) updateGuideline(current model.User, group string, ID str
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}, {Key: "items", Value: fmt.Sprint(items)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "guideline", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "guideline", ID, lData, nil)
 
 	return guideline, nil
 }
@@ -647,7 +647,7 @@ func (app *Application) createCountyStatus(current model.User, group string, cou
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "name", Value: name}, {Key: "description", Value: description}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county-status", countyStatus.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county-status", countyStatus.ID, lData, nil)
 
 	return countyStatus, nil
 }
@@ -674,7 +674,7 @@ func (app *Application) updateCountyStatus(current model.User, group string, ID 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county-status", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county-status", ID, lData, nil)
 
 	return countyStatus, nil
 }
@@ -730,7 +730,7 @@ func (app *Application) createTestType(current model.User, group string, name st
 
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type", testType.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type", testType.ID, lData, nil)
 
 	return testType, nil
 }
@@ -757,7 +757,7 @@ func (app *Application) updateTestType(current model.User, group string, ID stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type", ID, lData, nil)
 
 	return testType, nil
 }
@@ -795,7 +795,7 @@ func (app *Application) createTestTypeResult(current model.User, group string, t
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "testTypeID", Value: testTypeID}, {Key: "name", Value: name}, {Key: "nextStep", Value: nextStep},
 		{Key: "nextStepOffset", Value: fmt.Sprint(utils.GetInt(nextStepOffset))}, {Key: "resultExpiresOffset", Value: fmt.Sprint(utils.GetInt(resultExpiresOffset))}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type-result", testTypeResult.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type-result", testTypeResult.ID, lData, nil)
 
 	return testTypeResult, nil
 }
@@ -825,7 +825,7 @@ func (app *Application) updateTestTypeResult(current model.User, group string, I
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "nextStep", Value: nextStep},
 		{Key: "nextStepOffset", Value: fmt.Sprint(utils.GetInt(nextStepOffset))}, {Key: "resultExpiresOffset", Value: fmt.Sprint(utils.GetInt(resultExpiresOffset))}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type-result", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type-result", ID, lData, nil)
 
 	return testTypeResult, nil
 }
@@ -890,7 +890,7 @@ func (app *Application) updateCRules(current model.User, group string, countyID 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "appVersion", Value: appVersion}, {Key: "data", Value: data}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "crules", "", lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "crules", "", lData, nil)
 
 	return cRules, nil
 }
@@ -916,7 +916,7 @@ func (app *Application) updateSymptoms(current model.User, group string, appVers
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "appVersion", Value: appVersion}, {Key: "items", Value: items}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, nil)
 
 	return symptoms, nil
 }
@@ -973,7 +973,7 @@ func (app *Application) createRule(current model.User, group string, countyID st
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "testTypeID", Value: testTypeID},
 		{Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}, {Key: "resultsStatuses", Value: fmt.Sprint(resultsStatuses)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "rule", rule.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "rule", rule.ID, lData, nil)
 
 	return rule, nil
 }
@@ -1010,7 +1010,7 @@ func (app *Application) updateRule(current model.User, group string, ID string, 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}, {Key: "resultsStatuses", Value: fmt.Sprint(resultsStatuses)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "rule", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "rule", ID, lData, nil)
 
 	return rule, nil
 }
@@ -1144,7 +1144,7 @@ func (app *Application) createLocation(current model.User, group string, provide
 		{Key: "latitude", Value: fmt.Sprint(latitude)}, {Key: "longitude", Value: fmt.Sprint(longitude)}, {Key: "contact", Value: contact},
 		{Key: "daysOfOperation", Value: fmt.Sprint(daysOfOperation)}, {Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "waitTimeColor", Value: utils.GetString(waitTimeColor)},
 		{Key: "availableTests", Value: fmt.Sprint(availableTests)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "location", location.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "location", location.ID, lData, nil)
 
 	return location, nil
 }
@@ -1208,7 +1208,7 @@ func (app *Application) updateLocation(current model.User, group string, ID stri
 		{Key: "longitude", Value: fmt.Sprint(longitude)}, {Key: "contact", Value: contact}, {Key: "daysOfOperation", Value: fmt.Sprint(daysOfOperation)},
 		{Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "waitTimeColor", Value: utils.GetString(waitTimeColor)},
 		{Key: "availableTests", Value: fmt.Sprint(availableTests)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "location", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "location", ID, lData, nil)
 
 	return location, nil
 }
@@ -1297,7 +1297,7 @@ func (app *Application) createSymptom(current model.User, group string, name str
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "symptomGroup", Value: symptomGroup}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "symptom", symptom.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "symptom", symptom.ID, lData, nil)
 
 	return symptom, nil
 }
@@ -1323,7 +1323,7 @@ func (app *Application) updateSymptom(current model.User, group string, ID strin
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptom", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptom", ID, lData, nil)
 
 	return symptom, nil
 }
@@ -1365,7 +1365,7 @@ func (app *Application) createSymptomRule(current model.User, group string, coun
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "gr1Count", Value: fmt.Sprint(gr1Count)},
 		{Key: "gr2Count", Value: fmt.Sprint(gr2Count)}, {Key: "items", Value: fmt.Sprint(items)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "symptom-rule", symptomRule.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "symptom-rule", symptomRule.ID, lData, nil)
 
 	return symptomRule, nil
 }
@@ -1402,7 +1402,7 @@ func (app *Application) updateSymptomRule(current model.User, group string, ID s
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "gr1Count", Value: fmt.Sprint(gr1Count)},
 		{Key: "gr2Count", Value: fmt.Sprint(gr2Count)}, {Key: "items", Value: fmt.Sprint(items)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptom-rule", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptom-rule", ID, lData, nil)
 
 	return symptomRule, nil
 }
@@ -1510,7 +1510,7 @@ func (app *Application) createAccessRule(current model.User, group string, count
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "rules", Value: fmt.Sprint(rules)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "access-rule", accessRule.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "access-rule", accessRule.ID, lData, nil)
 
 	return accessRule, nil
 }
@@ -1524,7 +1524,7 @@ func (app *Application) updateAccessRule(current model.User, group string, ID st
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "rules", Value: fmt.Sprint(rules)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "access-rule", ID, lData)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "access-rule", ID, lData, nil)
 
 	return accessRule, nil
 }
@@ -1549,7 +1549,7 @@ func (app *Application) getUserByExternalID(externalID string) (*model.User, err
 	return user, nil
 }
 
-func (app *Application) createAction(current model.User, group string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
+func (app *Application) createAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false, nil)
 	if err != nil {
@@ -1584,7 +1584,7 @@ func (app *Application) createAction(current model.User, group string, providerI
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "providerID", Value: providerID}, {Key: "userID", Value: userID},
 		{Key: "encryptedKey", Value: encryptedKey}, {Key: "encryptedBlob", Value: encryptedBlob}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "action", item.ID, lData)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "action", item.ID, lData, audit)
 
 	return item, nil
 }

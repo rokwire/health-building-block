@@ -337,7 +337,7 @@ type Administration interface {
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
-	CreateAction(current model.User, group string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
+	CreateAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
 
 	GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,
 		createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error)
@@ -633,8 +633,8 @@ func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User
 	return s.app.getUserByExternalID(externalID)
 }
 
-func (s *administrationImpl) CreateAction(current model.User, group string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
-	return s.app.createAction(current, group, providerID, userID, encryptedKey, encryptedBlob)
+func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
+	return s.app.createAction(current, group, audit, providerID, userID, encryptedKey, encryptedBlob)
 }
 
 func (s *administrationImpl) GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,
@@ -844,8 +844,8 @@ type ProfileUserData struct {
 
 //Audit is used by core to log history
 type Audit interface {
-	LogCreateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry)
-	LogUpdateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry)
+	LogCreateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry, clientData *string)
+	LogUpdateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []AuditDataEntry, clientData *string)
 	LogDeleteEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string)
 
 	Find(userIdentifier *string, usedGroup *string, entity *string, entityID *string, operation *string,
@@ -861,6 +861,7 @@ type AuditEntity struct {
 	EntityID       string    `json:"entity_id" bson:"entity_id"`
 	Operation      string    `json:"operation" bson:"operation"`
 	Data           *string   `json:"data" bson:"data"`
+	ClientData     *string   `json:"client_data" bson:"client_data"`
 	CreatedAt      time.Time `json:"created_at" bson:"created_at"`
 } // @name AuditEntity
 

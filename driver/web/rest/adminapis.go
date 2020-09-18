@@ -4045,10 +4045,11 @@ func (h AdminApisHandler) GetUserByExternalID(current model.User, group string, 
 }
 
 type createActionRequest struct {
-	ProviderID    string `json:"provider_id" validate:"required"`
-	UserID        string `json:"user_id" validate:"required"`
-	EncryptedKey  string `json:"encrypted_key" validate:"required"`
-	EncryptedBlob string `json:"encrypted_blob" validate:"required"`
+	Audit         *string `json:"audit"`
+	ProviderID    string  `json:"provider_id" validate:"required"`
+	UserID        string  `json:"user_id" validate:"required"`
+	EncryptedKey  string  `json:"encrypted_key" validate:"required"`
+	EncryptedBlob string  `json:"encrypted_blob" validate:"required"`
 } // @name createActionRequest
 
 //CreateAction creates an action
@@ -4087,12 +4088,13 @@ func (h ApisHandler) CreateAction(current model.User, group string, w http.Respo
 		return
 	}
 
+	audit := requestData.Audit
 	providerID := requestData.ProviderID
 	userID := requestData.UserID
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
 
-	item, err := h.app.Administration.CreateAction(current, group, providerID, userID, encryptedKey, encryptedBlob)
+	item, err := h.app.Administration.CreateAction(current, group, audit, providerID, userID, encryptedKey, encryptedBlob)
 	if err != nil {
 		log.Printf("Error on creating an action - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

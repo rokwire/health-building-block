@@ -42,12 +42,13 @@ func (a *Adapter) Start() error {
 }
 
 //LogCreateEvent logs a create event item
-func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []core.AuditDataEntry) {
+func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string,
+	data []core.AuditDataEntry, clientData *string) {
 	go func(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string) {
 		dataFormatted := a.prepareData(data)
 		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
 			UsedGroup: usedGroup, Entity: entity, EntityID: entityID,
-			Operation: "create", Data: dataFormatted, CreatedAt: time.Now()}
+			Operation: "create", Data: dataFormatted, ClientData: clientData, CreatedAt: time.Now()}
 
 		a.log(auditEntity)
 
@@ -55,12 +56,13 @@ func (a *Adapter) LogCreateEvent(userIdentifier string, userInfo string, usedGro
 }
 
 //LogUpdateEvent logs an update event item
-func (a *Adapter) LogUpdateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string, data []core.AuditDataEntry) {
+func (a *Adapter) LogUpdateEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string,
+	data []core.AuditDataEntry, clientData *string) {
 	go func(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string) {
 		dataFormatted := a.prepareData(data)
 		auditEntity := core.AuditEntity{UserIdentifier: userIdentifier, UserInfo: userInfo,
 			UsedGroup: usedGroup, Entity: entity, EntityID: entityID,
-			Operation: "update", Data: dataFormatted, CreatedAt: time.Now()}
+			Operation: "update", Data: dataFormatted, ClientData: clientData, CreatedAt: time.Now()}
 
 		a.log(auditEntity)
 

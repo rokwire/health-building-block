@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.18.0] - 2020-09-18
+### Added
+- Audit trail client data. [#38](https://github.com/rokwire/health-building-block/issues/38)
+
 ## [1.17.0] - 2020-09-17
 ### Added
 - Test location wait time. [#35](https://github.com/rokwire/health-building-block/issues/35)
@@ -111,7 +115,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.17.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.18.0...HEAD
+[1.18.0]: https://github.com/rokwire/health-building-block/compare/v1.17.0...v1.18.0
 [1.17.0]: https://github.com/rokwire/health-building-block/compare/v1.16.0...v1.17.0
 [1.16.0]: https://github.com/rokwire/health-building-block/compare/v1.15.0...v1.16.0
 [1.15.0]: https://github.com/rokwire/health-building-block/compare/v1.14.0...v1.15.0

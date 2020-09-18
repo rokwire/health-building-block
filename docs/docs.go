@@ -4587,6 +4587,9 @@ var doc = `{
         "AuditEntity": {
             "type": "object",
             "properties": {
+                "client_data": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -5307,6 +5310,9 @@ var doc = `{
                 "user_id"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "encrypted_blob": {
                     "type": "string"
                 },
@@ -6309,7 +6315,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.17.0",
+	Version:     "1.18.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

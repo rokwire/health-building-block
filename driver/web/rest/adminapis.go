@@ -212,6 +212,7 @@ func (h AdminApisHandler) CreateNews(current model.User, group string, w http.Re
 }
 
 type updateNews struct {
+	Audit       *string   `json:"audit"`
 	Date        time.Time `json:"date"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
@@ -253,7 +254,8 @@ func (h AdminApisHandler) UpdateNews(current model.User, group string, w http.Re
 		return
 	}
 
-	news, err := h.app.Administration.UpdateNews(current, group, ID, requestData.Date, requestData.Title,
+	audit := requestData.Audit
+	news, err := h.app.Administration.UpdateNews(current, group, audit, ID, requestData.Date, requestData.Title,
 		requestData.Description, requestData.HTMLContent, nil)
 	if err != nil {
 		log.Println("Error on updating the news item")

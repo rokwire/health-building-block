@@ -71,7 +71,7 @@ func (app *Application) createNews(current model.User, group string, audit *stri
 	return news, nil
 }
 
-func (app *Application) updateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+func (app *Application) updateNews(current model.User, group string, audit *string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
 	news, err := app.storage.FindNews(ID)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func (app *Application) updateNews(current model.User, group string, ID string, 
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "date", Value: fmt.Sprint(date)}, {Key: "title", Value: title}, {Key: "description", Value: description},
 		{Key: "htmlContent", Value: htmlContent}, {Key: "link", Value: utils.GetString(link)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "news", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "news", ID, lData, audit)
 
 	return news, nil
 }

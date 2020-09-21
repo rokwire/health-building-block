@@ -248,7 +248,7 @@ type Administration interface {
 
 	GetNews() ([]*model.News, error)
 	CreateNews(current model.User, group string, audit *string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
-	UpdateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
+	UpdateNews(current model.User, group string, audit *string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
 	DeleteNews(current model.User, group string, ID string) error
 
 	GetResources() ([]*model.Resource, error)
@@ -367,8 +367,8 @@ func (s *administrationImpl) CreateNews(current model.User, group string, audit 
 	return s.app.createNews(current, group, audit, date, title, description, htmlContent, link)
 }
 
-func (s *administrationImpl) UpdateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
-	return s.app.updateNews(current, group, ID, date, title, description, htmlContent, nil)
+func (s *administrationImpl) UpdateNews(current model.User, group string, audit *string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+	return s.app.updateNews(current, group, audit, ID, date, title, description, htmlContent, nil)
 }
 
 func (s *administrationImpl) DeleteNews(current model.User, group string, ID string) error {

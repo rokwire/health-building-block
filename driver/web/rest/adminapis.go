@@ -142,6 +142,7 @@ func (h AdminApisHandler) GetNews(current model.User, group string, w http.Respo
 }
 
 type createNews struct {
+	Audit       *string   `json:"audit"`
 	Date        time.Time `json:"date"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
@@ -174,6 +175,7 @@ func (h AdminApisHandler) CreateNews(current model.User, group string, w http.Re
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	date := requestData.Date
 	title := requestData.Title
 	description := requestData.Description
@@ -191,7 +193,7 @@ func (h AdminApisHandler) CreateNews(current model.User, group string, w http.Re
 		return
 	}
 
-	news, err := h.app.Administration.CreateNews(current, group, date, title, description, htmlContent, nil)
+	news, err := h.app.Administration.CreateNews(current, group, audit, date, title, description, htmlContent, nil)
 	if err != nil {
 		log.Println("Error on creating a new")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

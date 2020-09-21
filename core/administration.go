@@ -56,7 +56,7 @@ func (app *Application) getAllNews() ([]*model.News, error) {
 	return news, nil
 }
 
-func (app *Application) createNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+func (app *Application) createNews(current model.User, group string, audit *string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
 	news, err := app.storage.CreateNews(date, title, description, htmlContent, link)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (app *Application) createNews(current model.User, group string, date time.T
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "date", Value: fmt.Sprint(date)}, {Key: "title", Value: title}, {Key: "description", Value: description},
 		{Key: "htmlContent", Value: htmlContent}, {Key: "link", Value: utils.GetString(link)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "news", news.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "news", news.ID, lData, audit)
 
 	return news, nil
 }

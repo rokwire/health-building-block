@@ -247,7 +247,7 @@ type Administration interface {
 	GetAppVersions() ([]string, error)
 
 	GetNews() ([]*model.News, error)
-	CreateNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
+	CreateNews(current model.User, group string, audit *string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
 	UpdateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
 	DeleteNews(current model.User, group string, ID string) error
 
@@ -363,8 +363,8 @@ func (s *administrationImpl) GetAppVersions() ([]string, error) {
 	return s.app.getAppVersions()
 }
 
-func (s *administrationImpl) CreateNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
-	return s.app.createNews(current, group, date, title, description, htmlContent, link)
+func (s *administrationImpl) CreateNews(current model.User, group string, audit *string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+	return s.app.createNews(current, group, audit, date, title, description, htmlContent, link)
 }
 
 func (s *administrationImpl) UpdateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {

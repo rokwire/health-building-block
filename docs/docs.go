@@ -6111,6 +6111,9 @@ var doc = `{
         "updateNewsRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },

@@ -1071,6 +1071,8 @@ definitions:
     type: object
   updateNewsRequest:
     properties:
+      audit:
+        type: string
       date:
         type: string
       description:

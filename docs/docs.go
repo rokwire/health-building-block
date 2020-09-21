@@ -5569,6 +5569,9 @@ var doc = `{
         "createNewsRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },

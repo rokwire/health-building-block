@@ -710,6 +710,8 @@ definitions:
     type: object
   createNewsRequest:
     properties:
+      audit:
+        type: string
       date:
         type: string
       description:

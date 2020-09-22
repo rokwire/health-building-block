@@ -599,6 +599,8 @@ definitions:
     type: object
   createFAQRequest:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       question:
@@ -979,6 +981,8 @@ definitions:
     type: object
   updateFAQRequest:
     properties:
+      audit:
+        type: string
       description:
         type: string
       display_order:
@@ -988,6 +992,8 @@ definitions:
     type: object
   updateFAQSection:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       title:

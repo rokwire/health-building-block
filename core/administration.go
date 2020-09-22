@@ -221,7 +221,7 @@ func (app *Application) getFAQs() (*model.FAQ, error) {
 	return faq, nil
 }
 
-func (app *Application) createFAQ(current model.User, group string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
+func (app *Application) createFAQ(current model.User, group string, audit *string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
 	faq, err := app.storage.ReadFAQ()
 	if err != nil {
 		return err
@@ -272,7 +272,7 @@ func (app *Application) createFAQ(current model.User, group string, section stri
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "section", Value: section}, {Key: "sectionDisplayOrder", Value: fmt.Sprint(sectionDisplayOrder)}, {Key: "title", Value: title},
 		{Key: "description", Value: description}, {Key: "questionDisplayOrder", Value: fmt.Sprint(questionDisplayOrder)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-question", question.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-question", question.ID, lData, audit)
 
 	return nil
 }
@@ -286,7 +286,7 @@ func (app *Application) findSection(title string, sections *[]*model.Section) *m
 	return nil
 }
 
-func (app *Application) updateFAQ(current model.User, group string, ID string, title string, description string, displayOrder int) error {
+func (app *Application) updateFAQ(current model.User, group string, audit *string, ID string, title string, description string, displayOrder int) error {
 	faq, err := app.storage.ReadFAQ()
 	if err != nil {
 		return err
@@ -328,7 +328,7 @@ func (app *Application) updateFAQ(current model.User, group string, ID string, t
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "description", Value: description}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "faq-question", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "faq-question", ID, lData, audit)
 
 	return nil
 }
@@ -397,7 +397,7 @@ func remove(questions []*model.Question, s int) []*model.Question {
 	return append(questions[:s], questions[s+1:]...)
 }
 
-func (app *Application) updateFAQSection(current model.User, group string, ID string, title string, displayOrder int) error {
+func (app *Application) updateFAQSection(current model.User, group string, audit *string, ID string, title string, displayOrder int) error {
 	faq, err := app.storage.ReadFAQ()
 	if err != nil {
 		return err
@@ -431,7 +431,7 @@ func (app *Application) updateFAQSection(current model.User, group string, ID st
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-section", ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-section", ID, lData, audit)
 
 	return nil
 }

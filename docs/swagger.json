@@ -5394,6 +5394,9 @@
         "createFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -5961,6 +5964,9 @@
         "updateFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -5975,6 +5981,9 @@
         "updateFAQSection": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },

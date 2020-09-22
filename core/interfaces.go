@@ -258,12 +258,12 @@ type Administration interface {
 	UpdateResourceDisplayOrder(IDs []string) error
 
 	GetFAQs() (*model.FAQ, error)
-	CreateFAQ(current model.User, group string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error
-	UpdateFAQ(current model.User, group string, ID string, title string, description string, displayOrder int) error
+	CreateFAQ(current model.User, group string, audit *string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error
+	UpdateFAQ(current model.User, group string, audit *string, ID string, title string, description string, displayOrder int) error
 	DeleteFAQ(current model.User, group string, ID string) error
 
 	DeleteFAQSection(current model.User, group string, ID string) error
-	UpdateFAQSection(current model.User, group string, ID string, title string, displayOrder int) error
+	UpdateFAQSection(current model.User, group string, audit *string, ID string, title string, displayOrder int) error
 
 	GetProviders() ([]*model.Provider, error)
 	CreateProvider(current model.User, group string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
@@ -399,12 +399,12 @@ func (s *administrationImpl) GetFAQs() (*model.FAQ, error) {
 	return s.app.getFAQs()
 }
 
-func (s *administrationImpl) CreateFAQ(current model.User, group string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
-	return s.app.createFAQ(current, group, section, sectionDisplayOrder, title, description, questionDisplayOrder)
+func (s *administrationImpl) CreateFAQ(current model.User, group string, audit *string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
+	return s.app.createFAQ(current, group, audit, section, sectionDisplayOrder, title, description, questionDisplayOrder)
 }
 
-func (s *administrationImpl) UpdateFAQ(current model.User, group string, ID string, title string, description string, displayOrder int) error {
-	return s.app.updateFAQ(current, group, ID, title, description, displayOrder)
+func (s *administrationImpl) UpdateFAQ(current model.User, group string, audit *string, ID string, title string, description string, displayOrder int) error {
+	return s.app.updateFAQ(current, group, audit, ID, title, description, displayOrder)
 }
 
 func (s *administrationImpl) DeleteFAQ(current model.User, group string, ID string) error {
@@ -415,8 +415,8 @@ func (s *administrationImpl) DeleteFAQSection(current model.User, group string, 
 	return s.app.deleteFAQSection(current, group, ID)
 }
 
-func (s *administrationImpl) UpdateFAQSection(current model.User, group string, ID string, title string, displayOrder int) error {
-	return s.app.updateFAQSection(current, group, ID, title, displayOrder)
+func (s *administrationImpl) UpdateFAQSection(current model.User, group string, audit *string, ID string, title string, displayOrder int) error {
+	return s.app.updateFAQSection(current, group, audit, ID, title, displayOrder)
 }
 
 func (s *administrationImpl) GetProviders() ([]*model.Provider, error) {

@@ -546,6 +546,7 @@ func (h AdminApisHandler) UpdateDisplaOrderResources(current model.User, group s
 }
 
 type createFAQ struct {
+	Audit        *string           `json:"audit"`
 	Section      string            `json:"section"`
 	DisplayOrder int               `json:"display_order"`
 	Question     createFAQQuestion `json:"question"`
@@ -618,6 +619,7 @@ func (h AdminApisHandler) CreateFAQItem(current model.User, group string, w http
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	section := requestData.Section
 	sdo := requestData.DisplayOrder
 	title := requestData.Question.Title
@@ -636,7 +638,7 @@ func (h AdminApisHandler) CreateFAQItem(current model.User, group string, w http
 		return
 	}
 
-	err = h.app.Administration.CreateFAQ(current, group, section, sdo, title, description, qdo)
+	err = h.app.Administration.CreateFAQ(current, group, audit, section, sdo, title, description, qdo)
 	if err != nil {
 		log.Println("Error on creating a faq item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -648,9 +650,10 @@ func (h AdminApisHandler) CreateFAQItem(current model.User, group string, w http
 }
 
 type updateFAQ struct {
-	Title        string `json:"title"`
-	Description  string `json:"description"`
-	DisplayOrder int    `json:"display_order"`
+	Audit        *string `json:"audit"`
+	Title        string  `json:"title"`
+	Description  string  `json:"description"`
+	DisplayOrder int     `json:"display_order"`
 } // @name updateFAQRequest
 
 //UpdateFAQItem updates a faq item
@@ -697,7 +700,8 @@ func (h AdminApisHandler) UpdateFAQItem(current model.User, group string, w http
 		return
 	}
 
-	err = h.app.Administration.UpdateFAQ(current, group, ID, requestData.Title, requestData.Description, requestData.DisplayOrder)
+	audit := requestData.Audit
+	err = h.app.Administration.UpdateFAQ(current, group, audit, ID, requestData.Title, requestData.Description, requestData.DisplayOrder)
 	if err != nil {
 		log.Println("Error on updating the FAQ item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -709,8 +713,9 @@ func (h AdminApisHandler) UpdateFAQItem(current model.User, group string, w http
 }
 
 type updateFAQSection struct {
-	Title        string `json:"title"`
-	DisplayOrder int    `json:"display_order"`
+	Audit        *string `json:"audit"`
+	Title        string  `json:"title"`
+	DisplayOrder int     `json:"display_order"`
 } // @name updateFAQSection
 
 //UpdateFAQSection updates a faq section
@@ -746,6 +751,7 @@ func (h AdminApisHandler) UpdateFAQSection(current model.User, group string, w h
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	title := requestData.Title
 	displayOrder := requestData.DisplayOrder
 	if len(title) <= 0 {
@@ -757,7 +763,7 @@ func (h AdminApisHandler) UpdateFAQSection(current model.User, group string, w h
 		return
 	}
 
-	err = h.app.Administration.UpdateFAQSection(current, group, ID, requestData.Title, requestData.DisplayOrder)
+	err = h.app.Administration.UpdateFAQSection(current, group, audit, ID, requestData.Title, requestData.DisplayOrder)
 	if err != nil {
 		log.Println("Error on updating the FAQ section")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

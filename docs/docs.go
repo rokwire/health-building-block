@@ -5406,6 +5406,9 @@ var doc = `{
         "createFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -5973,6 +5976,9 @@ var doc = `{
         "updateFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -5987,6 +5993,9 @@ var doc = `{
         "updateFAQSection": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },

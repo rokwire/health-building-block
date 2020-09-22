@@ -5438,6 +5438,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -6033,6 +6036,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },

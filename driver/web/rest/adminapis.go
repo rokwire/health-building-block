@@ -1283,6 +1283,7 @@ func (h AdminApisHandler) GetCounties(current model.User, group string, w http.R
 }
 
 type createGuidelineRequest struct {
+	Audit       *string                       `json:"audit"`
 	CountyID    string                        `json:"county_id" validate:"uuid"`
 	Name        string                        `json:"name" validate:"required"`
 	Description string                        `json:"description"`
@@ -1344,6 +1345,7 @@ func (h AdminApisHandler) CreateGuideline(current model.User, group string, w ht
 		return
 	}
 
+	audit := requestData.Audit
 	countyID := requestData.CountyID
 	name := requestData.Name
 	description := requestData.Description
@@ -1356,7 +1358,7 @@ func (h AdminApisHandler) CreateGuideline(current model.User, group string, w ht
 		items = append(items, r)
 	}
 
-	guideline, err := h.app.Administration.CreateGuideline(current, group, countyID, name, description, items)
+	guideline, err := h.app.Administration.CreateGuideline(current, group, audit, countyID, name, description, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1382,6 +1384,7 @@ func (h AdminApisHandler) CreateGuideline(current model.User, group string, w ht
 }
 
 type updateGuidelineRequest struct {
+	Audit       *string                       `json:"audit"`
 	Name        string                        `json:"name" validate:"required"`
 	Description string                        `json:"description"`
 	Items       []updateGuidelineItemsRequest `json:"items" validate:"required,dive"`
@@ -1451,6 +1454,7 @@ func (h AdminApisHandler) UpdateGuideline(current model.User, group string, w ht
 		return
 	}
 
+	audit := requestData.Audit
 	name := requestData.Name
 	description := requestData.Description
 	reqItems := requestData.Items
@@ -1462,7 +1466,7 @@ func (h AdminApisHandler) UpdateGuideline(current model.User, group string, w ht
 		items = append(items, r)
 	}
 
-	guideline, err := h.app.Administration.UpdateGuideline(current, group, ID, name, description, items)
+	guideline, err := h.app.Administration.UpdateGuideline(current, group, audit, ID, name, description, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -626,6 +626,8 @@ definitions:
     type: object
   createGuidelineRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       description:
@@ -1024,6 +1026,8 @@ definitions:
     type: object
   updateGuidelineRequest:
     properties:
+      audit:
+        type: string
       description:
         type: string
       items:

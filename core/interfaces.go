@@ -275,8 +275,8 @@ type Administration interface {
 	UpdateCounty(current model.User, group string, audit *string, ID string, name string, stateProvince string, country string) (*model.County, error)
 	DeleteCounty(current model.User, group string, ID string) error
 
-	CreateGuideline(current model.User, group string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
-	UpdateGuideline(current model.User, group string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
+	CreateGuideline(current model.User, group string, audit *string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
+	UpdateGuideline(current model.User, group string, audit *string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
 	DeleteGuideline(current model.User, group string, ID string) error
 	GetGuidelinesByCountyID(countyID string) ([]*model.Guideline, error)
 
@@ -451,12 +451,12 @@ func (s *administrationImpl) DeleteCounty(current model.User, group string, ID s
 	return s.app.deleteCounty(current, group, ID)
 }
 
-func (s *administrationImpl) CreateGuideline(current model.User, group string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
-	return s.app.createGuideline(current, group, countyID, name, description, items)
+func (s *administrationImpl) CreateGuideline(current model.User, group string, audit *string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+	return s.app.createGuideline(current, group, audit, countyID, name, description, items)
 }
 
-func (s *administrationImpl) UpdateGuideline(current model.User, group string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
-	return s.app.updateGuideline(current, group, ID, name, description, items)
+func (s *administrationImpl) UpdateGuideline(current model.User, group string, audit *string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+	return s.app.updateGuideline(current, group, audit, ID, name, description, items)
 }
 
 func (s *administrationImpl) DeleteGuideline(current model.User, group string, ID string) error {

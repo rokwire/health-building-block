@@ -5450,6 +5450,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -6045,6 +6048,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },

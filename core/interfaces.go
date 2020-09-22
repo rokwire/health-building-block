@@ -290,8 +290,8 @@ type Administration interface {
 	UpdateTestType(current model.User, group string, audit *string, ID string, name string, priority *int) (*model.TestType, error)
 	DeleteTestType(current model.User, group string, ID string) error
 
-	CreateTestTypeResult(current model.User, group string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error)
-	UpdateTestTypeResult(current model.User, group string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error)
+	CreateTestTypeResult(current model.User, group string, audit *string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error)
+	UpdateTestTypeResult(current model.User, group string, audit *string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error)
 	DeleteTestTypeResult(current model.User, group string, ID string) error
 	GetTestTypeResultsByTestTypeID(testTypeID string) ([]*model.TestTypeResult, error)
 
@@ -499,12 +499,12 @@ func (s *administrationImpl) DeleteTestType(current model.User, group string, ID
 	return s.app.deleteTestType(current, group, ID)
 }
 
-func (s *administrationImpl) CreateTestTypeResult(current model.User, group string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
-	return s.app.createTestTypeResult(current, group, testTypeID, name, nextStep, nextStepOffset, resultExpiresOffset)
+func (s *administrationImpl) CreateTestTypeResult(current model.User, group string, audit *string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
+	return s.app.createTestTypeResult(current, group, audit, testTypeID, name, nextStep, nextStepOffset, resultExpiresOffset)
 }
 
-func (s *administrationImpl) UpdateTestTypeResult(current model.User, group string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
-	return s.app.updateTestTypeResult(current, group, ID, name, nextStep, nextStepOffset, resultExpiresOffset)
+func (s *administrationImpl) UpdateTestTypeResult(current model.User, group string, audit *string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
+	return s.app.updateTestTypeResult(current, group, audit, ID, name, nextStep, nextStepOffset, resultExpiresOffset)
 }
 
 func (s *administrationImpl) DeleteTestTypeResult(current model.User, group string, ID string) error {

@@ -846,6 +846,8 @@ definitions:
     type: object
   createTestTypeResultRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
       test_type_id:
@@ -1196,6 +1198,8 @@ definitions:
     type: object
   updateTestTypeResultRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
     required:

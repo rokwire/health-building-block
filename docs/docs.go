@@ -5775,6 +5775,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6302,6 +6305,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 }

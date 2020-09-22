@@ -2024,8 +2024,9 @@ func (h AdminApisHandler) GetTestTypes(current model.User, group string, w http.
 }
 
 type createTestTypeResultRequest struct {
-	TestTypeID string `json:"test_type_id" validate:"uuid"`
-	Name       string `json:"name" validate:"required"`
+	Audit      *string `json:"audit"`
+	TestTypeID string  `json:"test_type_id" validate:"uuid"`
+	Name       string  `json:"name" validate:"required"`
 } //@name createTestTypeResultRequest
 
 type createTestTypeResultResponse struct {
@@ -2069,10 +2070,11 @@ func (h AdminApisHandler) CreateTestTypeResult(current model.User, group string,
 		return
 	}
 
+	audit := requestData.Audit
 	testTypeID := requestData.TestTypeID
 	name := requestData.Name
 
-	testTypeResult, err := h.app.Administration.CreateTestTypeResult(current, group, testTypeID, name, "", nil, nil)
+	testTypeResult, err := h.app.Administration.CreateTestTypeResult(current, group, audit, testTypeID, name, "", nil, nil)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2093,7 +2095,8 @@ func (h AdminApisHandler) CreateTestTypeResult(current model.User, group string,
 }
 
 type updateTestTypeResultRequest struct {
-	Name string `json:"name" validate:"required"`
+	Audit *string `json:"audit"`
+	Name  string  `json:"name" validate:"required"`
 } // @name updateTestTypeResultRequest
 
 type updateTestTypeResultResponse struct {
@@ -2146,9 +2149,10 @@ func (h AdminApisHandler) UpdateTestTypeResult(current model.User, group string,
 		return
 	}
 
+	audit := requestData.Audit
 	name := requestData.Name
 
-	testTypeResult, err := h.app.Administration.UpdateTestTypeResult(current, group, ID, name, "", nil, nil)
+	testTypeResult, err := h.app.Administration.UpdateTestTypeResult(current, group, audit, ID, name, "", nil, nil)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -775,7 +775,7 @@ func (app *Application) deleteTestType(current model.User, group string, ID stri
 	return nil
 }
 
-func (app *Application) createTestTypeResult(current model.User, group string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
+func (app *Application) createTestTypeResult(current model.User, group string, audit *string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
 	//1. find if we have a test type for the provided ID
 	testType, err := app.storage.FindTestType(testTypeID)
 	if err != nil {
@@ -795,12 +795,12 @@ func (app *Application) createTestTypeResult(current model.User, group string, t
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "testTypeID", Value: testTypeID}, {Key: "name", Value: name}, {Key: "nextStep", Value: nextStep},
 		{Key: "nextStepOffset", Value: fmt.Sprint(utils.GetInt(nextStepOffset))}, {Key: "resultExpiresOffset", Value: fmt.Sprint(utils.GetInt(resultExpiresOffset))}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type-result", testTypeResult.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type-result", testTypeResult.ID, lData, audit)
 
 	return testTypeResult, nil
 }
 
-func (app *Application) updateTestTypeResult(current model.User, group string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
+func (app *Application) updateTestTypeResult(current model.User, group string, audit *string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
 	testTypeResult, err := app.storage.FindTestTypeResult(ID)
 	if err != nil {
 		return nil, err
@@ -825,7 +825,7 @@ func (app *Application) updateTestTypeResult(current model.User, group string, I
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "nextStep", Value: nextStep},
 		{Key: "nextStepOffset", Value: fmt.Sprint(utils.GetInt(nextStepOffset))}, {Key: "resultExpiresOffset", Value: fmt.Sprint(utils.GetInt(resultExpiresOffset))}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type-result", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type-result", ID, lData, audit)
 
 	return testTypeResult, nil
 }

@@ -628,7 +628,7 @@ func (app *Application) getGuidelinesByCountyID(countyID string) ([]*model.Guide
 	return guidelines, nil
 }
 
-func (app *Application) createCountyStatus(current model.User, group string, countyID string, name string, description string) (*model.CountyStatus, error) {
+func (app *Application) createCountyStatus(current model.User, group string, audit *string, countyID string, name string, description string) (*model.CountyStatus, error) {
 	//1. find if we have a county for the provided ID
 	county, err := app.storage.FindCounty(countyID)
 	if err != nil {
@@ -647,12 +647,12 @@ func (app *Application) createCountyStatus(current model.User, group string, cou
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "name", Value: name}, {Key: "description", Value: description}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county-status", countyStatus.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county-status", countyStatus.ID, lData, audit)
 
 	return countyStatus, nil
 }
 
-func (app *Application) updateCountyStatus(current model.User, group string, ID string, name string, description string) (*model.CountyStatus, error) {
+func (app *Application) updateCountyStatus(current model.User, group string, audit *string, ID string, name string, description string) (*model.CountyStatus, error) {
 	countyStatus, err := app.storage.FindCountyStatus(ID)
 	if err != nil {
 		return nil, err
@@ -674,7 +674,7 @@ func (app *Application) updateCountyStatus(current model.User, group string, ID 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county-status", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county-status", ID, lData, audit)
 
 	return countyStatus, nil
 }

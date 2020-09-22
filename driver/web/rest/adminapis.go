@@ -1574,9 +1574,10 @@ func (h AdminApisHandler) GetGuidelinesByCountyID(current model.User, group stri
 }
 
 type createCountyStatusRequest struct {
-	CountyID    string `json:"county_id" validate:"uuid"`
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description"`
+	Audit       *string `json:"audit"`
+	CountyID    string  `json:"county_id" validate:"uuid"`
+	Name        string  `json:"name" validate:"required"`
+	Description string  `json:"description"`
 } //@name createCountyStatusRequest
 
 type createCountyStatusResponse struct {
@@ -1621,11 +1622,12 @@ func (h AdminApisHandler) CreateCountyStatus(current model.User, group string, w
 		return
 	}
 
+	audit := requestData.Audit
 	countyID := requestData.CountyID
 	name := requestData.Name
 	description := requestData.Description
 
-	countyStatus, err := h.app.Administration.CreateCountyStatus(current, group, countyID, name, description)
+	countyStatus, err := h.app.Administration.CreateCountyStatus(current, group, audit, countyID, name, description)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1645,8 +1647,9 @@ func (h AdminApisHandler) CreateCountyStatus(current model.User, group string, w
 }
 
 type updateCountyStatusRequest struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description"`
+	Audit       *string `json:"audit"`
+	Name        string  `json:"name" validate:"required"`
+	Description string  `json:"description"`
 } // @name updateCountyStatusRequest
 
 type updateCountyStatusResponse struct {
@@ -1700,10 +1703,11 @@ func (h AdminApisHandler) UpdateCountyStatus(current model.User, group string, w
 		return
 	}
 
+	audit := requestData.Audit
 	name := requestData.Name
 	description := requestData.Description
 
-	countyStatus, err := h.app.Administration.UpdateCountyStatus(current, group, ID, name, description)
+	countyStatus, err := h.app.Administration.UpdateCountyStatus(current, group, audit, ID, name, description)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

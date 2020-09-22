@@ -2573,6 +2573,7 @@ func (h AdminApisHandler) GetRules(current model.User, group string, w http.Resp
 }
 
 type createLocationRequest struct {
+	Audit           *string                       `json:"audit"`
 	Name            string                        `json:"name" validate:"required"`
 	Address1        string                        `json:"address_1"`
 	Address2        string                        `json:"address_2"`
@@ -2635,6 +2636,7 @@ func (h AdminApisHandler) CreateLocation(current model.User, group string, w htt
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	name := requestData.Name
 	address1 := requestData.Address1
 	address2 := requestData.Address2
@@ -2655,7 +2657,7 @@ func (h AdminApisHandler) CreateLocation(current model.User, group string, w htt
 
 	availableTests := requestData.AvailableTests
 
-	location, err := h.app.Administration.CreateLocation(current, group, providerID, countyID, name, address1, address2, city,
+	location, err := h.app.Administration.CreateLocation(current, group, audit, providerID, countyID, name, address1, address2, city,
 		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 	if err != nil {
 		log.Printf("Error on creating a location - %s\n", err.Error())
@@ -2686,6 +2688,7 @@ func (h AdminApisHandler) CreateLocation(current model.User, group string, w htt
 }
 
 type updateLocationRequest struct {
+	Audit           *string                       `json:"audit"`
 	Name            string                        `json:"name" validate:"required"`
 	Address1        string                        `json:"address_1"`
 	Address2        string                        `json:"address_2"`
@@ -2748,6 +2751,7 @@ func (h AdminApisHandler) UpdateLocation(current model.User, group string, w htt
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	name := requestData.Name
 	address1 := requestData.Address1
 	address2 := requestData.Address2
@@ -2765,7 +2769,7 @@ func (h AdminApisHandler) UpdateLocation(current model.User, group string, w htt
 
 	availableTests := requestData.AvailableTests
 
-	location, err := h.app.Administration.UpdateLocation(current, group, ID, name, address1, address2, city,
+	location, err := h.app.Administration.UpdateLocation(current, group, audit, ID, name, address1, address2, city,
 		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 	if err != nil {
 		log.Printf("Error on creating a location - %s\n", err.Error())

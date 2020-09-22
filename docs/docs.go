@@ -5525,6 +5525,9 @@ var doc = `{
                 "address_2": {
                     "type": "string"
                 },
+                "audit": {
+                    "type": "string"
+                },
                 "available_tests": {
                     "type": "array",
                     "items": {
@@ -6101,6 +6104,9 @@ var doc = `{
                     "type": "string"
                 },
                 "address_2": {
+                    "type": "string"
+                },
+                "audit": {
                     "type": "string"
                 },
                 "available_tests": {

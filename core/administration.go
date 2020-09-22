@@ -1121,7 +1121,7 @@ func (app *Application) getLocations() ([]*model.Location, error) {
 	return locations, nil
 }
 
-func (app *Application) createLocation(current model.User, group string, providerID string, countyID string, name string, address1 string, address2 string, city string,
+func (app *Application) createLocation(current model.User, group string, audit *string, providerID string, countyID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
 	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
 	//1. check if the location data is valid
@@ -1144,12 +1144,12 @@ func (app *Application) createLocation(current model.User, group string, provide
 		{Key: "latitude", Value: fmt.Sprint(latitude)}, {Key: "longitude", Value: fmt.Sprint(longitude)}, {Key: "contact", Value: contact},
 		{Key: "daysOfOperation", Value: fmt.Sprint(daysOfOperation)}, {Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "waitTimeColor", Value: utils.GetString(waitTimeColor)},
 		{Key: "availableTests", Value: fmt.Sprint(availableTests)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "location", location.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "location", location.ID, lData, audit)
 
 	return location, nil
 }
 
-func (app *Application) updateLocation(current model.User, group string, ID string, name string, address1 string, address2 string, city string,
+func (app *Application) updateLocation(current model.User, group string, audit *string, ID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
 	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
 
@@ -1208,7 +1208,7 @@ func (app *Application) updateLocation(current model.User, group string, ID stri
 		{Key: "longitude", Value: fmt.Sprint(longitude)}, {Key: "contact", Value: contact}, {Key: "daysOfOperation", Value: fmt.Sprint(daysOfOperation)},
 		{Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "waitTimeColor", Value: utils.GetString(waitTimeColor)},
 		{Key: "availableTests", Value: fmt.Sprint(availableTests)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "location", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "location", ID, lData, audit)
 
 	return location, nil
 }

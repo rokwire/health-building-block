@@ -301,10 +301,10 @@ type Administration interface {
 	DeleteRule(current model.User, group string, ID string) error
 
 	GetLocations() ([]*model.Location, error)
-	CreateLocation(current model.User, group string, providerID string, countyID string, name string, address1 string, address2 string, city string,
+	CreateLocation(current model.User, group string, audit *string, providerID string, countyID string, name string, address1 string, address2 string, city string,
 		state string, zip string, country string, latitude float64, longitude float64, contact string,
 		daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error)
-	UpdateLocation(current model.User, group string, ID string, name string, address1 string, address2 string, city string,
+	UpdateLocation(current model.User, group string, audit *string, ID string, name string, address1 string, address2 string, city string,
 		state string, zip string, country string, latitude float64, longitude float64, contact string,
 		daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error)
 	DeleteLocation(current model.User, group string, ID string) error
@@ -535,17 +535,17 @@ func (s *administrationImpl) GetLocations() ([]*model.Location, error) {
 	return s.app.getLocations()
 }
 
-func (s *administrationImpl) CreateLocation(current model.User, group string, providerID string, countyID string, name string, address1 string, address2 string, city string,
+func (s *administrationImpl) CreateLocation(current model.User, group string, audit *string, providerID string, countyID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
 	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
-	return s.app.createLocation(current, group, providerID, countyID, name, address1, address2, city, state, zip, country,
+	return s.app.createLocation(current, group, audit, providerID, countyID, name, address1, address2, city, state, zip, country,
 		latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 }
 
-func (s *administrationImpl) UpdateLocation(current model.User, group string, ID string, name string, address1 string, address2 string, city string,
+func (s *administrationImpl) UpdateLocation(current model.User, group string, audit *string, ID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
 	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
-	return s.app.updateLocation(current, group, ID, name, address1, address2, city, state, zip, country,
+	return s.app.updateLocation(current, group, audit, ID, name, address1, address2, city, state, zip, country,
 		latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 }
 

@@ -5513,6 +5513,9 @@
                 "address_2": {
                     "type": "string"
                 },
+                "audit": {
+                    "type": "string"
+                },
                 "available_tests": {
                     "type": "array",
                     "items": {
@@ -6089,6 +6092,9 @@
                     "type": "string"
                 },
                 "address_2": {
+                    "type": "string"
+                },
+                "audit": {
                     "type": "string"
                 },
                 "available_tests": {

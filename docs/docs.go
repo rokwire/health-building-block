@@ -5628,6 +5628,9 @@ var doc = `{
         "createResourceRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -6152,6 +6155,9 @@ var doc = `{
         "updateResourceRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },

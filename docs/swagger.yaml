@@ -749,6 +749,8 @@ definitions:
     type: object
   createResourceRequest:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       link:
@@ -1098,6 +1100,8 @@ definitions:
     type: object
   updateResourceRequest:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       link:

@@ -921,7 +921,7 @@ func (app *Application) updateSymptoms(current model.User, group string, appVers
 	return symptoms, nil
 }
 
-func (app *Application) createRule(current model.User, group string, countyID string, testTypeID string, priority *int,
+func (app *Application) createRule(current model.User, group string, audit *string, countyID string, testTypeID string, priority *int,
 	resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
 
 	//TODO - transactions, consistency!!!
@@ -973,12 +973,12 @@ func (app *Application) createRule(current model.User, group string, countyID st
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "testTypeID", Value: testTypeID},
 		{Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}, {Key: "resultsStatuses", Value: fmt.Sprint(resultsStatuses)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "rule", rule.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "rule", rule.ID, lData, audit)
 
 	return rule, nil
 }
 
-func (app *Application) updateRule(current model.User, group string, ID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
+func (app *Application) updateRule(current model.User, group string, audit *string, ID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
 	//1. find the rule
 	rule, err := app.storage.FindRule(ID)
 	if err != nil {
@@ -1010,7 +1010,7 @@ func (app *Application) updateRule(current model.User, group string, ID string, 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}, {Key: "resultsStatuses", Value: fmt.Sprint(resultsStatuses)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "rule", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "rule", ID, lData, audit)
 
 	return rule, nil
 }

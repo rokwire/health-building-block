@@ -5653,6 +5653,9 @@
                 "test_type_id"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -6202,6 +6205,9 @@
                 "results_statuses"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "priority": {
                     "type": "integer"
                 },

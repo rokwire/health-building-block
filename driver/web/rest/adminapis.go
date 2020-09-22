@@ -2266,9 +2266,10 @@ func (h AdminApisHandler) GetTestTypeResultsByTestTypeID(current model.User, gro
 }
 
 type createRuleRequest struct {
-	CountyID   string `json:"county_id" validate:"required,uuid"`
-	TestTypeID string `json:"test_type_id" validate:"required,uuid"`
-	Priority   *int   `json:"priority"`
+	Audit      *string `json:"audit"`
+	CountyID   string  `json:"county_id" validate:"required,uuid"`
+	TestTypeID string  `json:"test_type_id" validate:"required,uuid"`
+	Priority   *int    `json:"priority"`
 
 	ResultsStatuses []createRuleResultsStatusesTypeRequest `json:"results_statuses" validate:"required,dive"`
 } //@name createRuleRequest
@@ -2328,6 +2329,7 @@ func (h AdminApisHandler) CreateRule(current model.User, group string, w http.Re
 		return
 	}
 
+	audit := requestData.Audit
 	countyID := requestData.CountyID
 	testTypeID := requestData.TestTypeID
 	priority := requestData.Priority
@@ -2341,7 +2343,7 @@ func (h AdminApisHandler) CreateRule(current model.User, group string, w http.Re
 		}
 	}
 
-	rule, err := h.app.Administration.CreateRule(current, group, countyID, testTypeID, priority, rsItems)
+	rule, err := h.app.Administration.CreateRule(current, group, audit, countyID, testTypeID, priority, rsItems)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2371,7 +2373,8 @@ func (h AdminApisHandler) CreateRule(current model.User, group string, w http.Re
 }
 
 type updateRuleRequest struct {
-	Priority *int `json:"priority"`
+	Audit    *string `json:"audit"`
+	Priority *int    `json:"priority"`
 
 	ResultsStatuses []createRuleResultsStatusesTypeRequest `json:"results_statuses" validate:"required,dive"`
 } //@name updateRuleRequest
@@ -2440,6 +2443,7 @@ func (h AdminApisHandler) UpdateRule(current model.User, group string, w http.Re
 		return
 	}
 
+	audit := requestData.Audit
 	priority := requestData.Priority
 	resultsStatuses := requestData.ResultsStatuses
 
@@ -2451,7 +2455,7 @@ func (h AdminApisHandler) UpdateRule(current model.User, group string, w http.Re
 		}
 	}
 
-	rule, err := h.app.Administration.UpdateRule(current, group, ID, priority, rsItems)
+	rule, err := h.app.Administration.UpdateRule(current, group, audit, ID, priority, rsItems)
 	if err != nil {
 		log.Printf("Error on updating the rule item - %s\n", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

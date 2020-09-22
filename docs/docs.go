@@ -5665,6 +5665,9 @@ var doc = `{
                 "test_type_id"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -6214,6 +6217,9 @@ var doc = `{
                 "results_statuses"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "priority": {
                     "type": "integer"
                 },

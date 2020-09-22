@@ -296,8 +296,8 @@ type Administration interface {
 	GetTestTypeResultsByTestTypeID(testTypeID string) ([]*model.TestTypeResult, error)
 
 	GetRules() ([]*model.Rule, error)
-	CreateRule(current model.User, group string, countyID string, testTypeID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
-	UpdateRule(current model.User, group string, ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
+	CreateRule(current model.User, group string, audit *string, countyID string, testTypeID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
+	UpdateRule(current model.User, group string, audit *string, ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
 	DeleteRule(current model.User, group string, ID string) error
 
 	GetLocations() ([]*model.Location, error)
@@ -519,12 +519,12 @@ func (s *administrationImpl) GetRules() ([]*model.Rule, error) {
 	return s.app.getRules()
 }
 
-func (s *administrationImpl) CreateRule(current model.User, group string, countyID string, testTypeID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
-	return s.app.createRule(current, group, countyID, testTypeID, priority, resultsStatuses)
+func (s *administrationImpl) CreateRule(current model.User, group string, audit *string, countyID string, testTypeID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
+	return s.app.createRule(current, group, audit, countyID, testTypeID, priority, resultsStatuses)
 }
 
-func (s *administrationImpl) UpdateRule(current model.User, group string, ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error) {
-	return s.app.updateRule(current, group, ID, priority, resultsStates)
+func (s *administrationImpl) UpdateRule(current model.User, group string, audit *string, ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error) {
+	return s.app.updateRule(current, group, audit, ID, priority, resultsStates)
 }
 
 func (s *administrationImpl) DeleteRule(current model.User, group string, ID string) error {

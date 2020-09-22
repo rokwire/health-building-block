@@ -271,8 +271,8 @@ type Administration interface {
 	DeleteProvider(current model.User, group string, ID string) error
 
 	FindCounties(f *utils.Filter) ([]*model.County, error)
-	CreateCounty(current model.User, group string, name string, stateProvince string, country string) (*model.County, error)
-	UpdateCounty(current model.User, group string, ID string, name string, stateProvince string, country string) (*model.County, error)
+	CreateCounty(current model.User, group string, audit *string, name string, stateProvince string, country string) (*model.County, error)
+	UpdateCounty(current model.User, group string, audit *string, ID string, name string, stateProvince string, country string) (*model.County, error)
 	DeleteCounty(current model.User, group string, ID string) error
 
 	CreateGuideline(current model.User, group string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
@@ -439,12 +439,12 @@ func (s *administrationImpl) FindCounties(f *utils.Filter) ([]*model.County, err
 	return s.app.findCounties(f)
 }
 
-func (s *administrationImpl) CreateCounty(current model.User, group string, name string, stateProvince string, country string) (*model.County, error) {
-	return s.app.createCounty(current, group, name, stateProvince, country)
+func (s *administrationImpl) CreateCounty(current model.User, group string, audit *string, name string, stateProvince string, country string) (*model.County, error) {
+	return s.app.createCounty(current, group, audit, name, stateProvince, country)
 }
 
-func (s *administrationImpl) UpdateCounty(current model.User, group string, ID string, name string, stateProvince string, country string) (*model.County, error) {
-	return s.app.updateCounty(current, group, ID, name, stateProvince, country)
+func (s *administrationImpl) UpdateCounty(current model.User, group string, audit *string, ID string, name string, stateProvince string, country string) (*model.County, error) {
+	return s.app.updateCounty(current, group, audit, ID, name, stateProvince, country)
 }
 
 func (s *administrationImpl) DeleteCounty(current model.User, group string, ID string) error {

@@ -566,6 +566,8 @@ definitions:
     type: object
   createCountyRequest:
     properties:
+      audit:
+        type: string
       country:
         type: string
       name:
@@ -958,6 +960,8 @@ definitions:
     type: object
   updateCountyRequest:
     properties:
+      audit:
+        type: string
       country:
         type: string
       name:

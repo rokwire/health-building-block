@@ -1052,9 +1052,10 @@ func (h AdminApisHandler) DeleteProvider(current model.User, group string, w htt
 }
 
 type createCountyRequest struct {
-	Name          string `json:"name" validate:"required"`
-	StateProvince string `json:"state_province" validate:"required"`
-	Country       string `json:"country" validate:"required"`
+	Audit         *string `json:"audit"`
+	Name          string  `json:"name" validate:"required"`
+	StateProvince string  `json:"state_province" validate:"required"`
+	Country       string  `json:"country" validate:"required"`
 } //@name createCountyRequest
 
 type createCountyResponse struct {
@@ -1099,11 +1100,12 @@ func (h AdminApisHandler) CreateCounty(current model.User, group string, w http.
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	name := requestData.Name
 	stateProvince := requestData.StateProvince
 	country := requestData.Country
 
-	county, err := h.app.Administration.CreateCounty(current, group, name, stateProvince, country)
+	county, err := h.app.Administration.CreateCounty(current, group, audit, name, stateProvince, country)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1124,9 +1126,10 @@ func (h AdminApisHandler) CreateCounty(current model.User, group string, w http.
 }
 
 type updateCountyRequest struct {
-	Name          string `json:"name" validate:"required"`
-	StateProvince string `json:"state_province" validate:"required"`
-	Country       string `json:"country" validate:"required"`
+	Audit         *string `json:"audit"`
+	Name          string  `json:"name" validate:"required"`
+	StateProvince string  `json:"state_province" validate:"required"`
+	Country       string  `json:"country" validate:"required"`
 } // @name updateCountyRequest
 
 type updateCountyResponse struct {
@@ -1181,7 +1184,8 @@ func (h AdminApisHandler) UpdateCounty(current model.User, group string, w http.
 		return
 	}
 
-	county, err := h.app.Administration.UpdateCounty(current, group, ID, requestData.Name,
+	audit := requestData.Audit
+	county, err := h.app.Administration.UpdateCounty(current, group, audit, ID, requestData.Name,
 		requestData.StateProvince, requestData.Country)
 	if err != nil {
 		log.Println(err.Error())

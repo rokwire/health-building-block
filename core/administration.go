@@ -490,7 +490,7 @@ func (app *Application) deleteProvider(current model.User, group string, ID stri
 	return nil
 }
 
-func (app *Application) createCounty(current model.User, group string, name string, stateProvince string, country string) (*model.County, error) {
+func (app *Application) createCounty(current model.User, group string, audit *string, name string, stateProvince string, country string) (*model.County, error) {
 	county, err := app.storage.CreateCounty(name, stateProvince, country)
 	if err != nil {
 		return nil, err
@@ -499,12 +499,12 @@ func (app *Application) createCounty(current model.User, group string, name stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "stateProvince", Value: stateProvince}, {Key: "country", Value: country}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county", county.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county", county.ID, lData, audit)
 
 	return county, nil
 }
 
-func (app *Application) updateCounty(current model.User, group string, ID string, name string, stateProvince string, country string) (*model.County, error) {
+func (app *Application) updateCounty(current model.User, group string, audit *string, ID string, name string, stateProvince string, country string) (*model.County, error) {
 	county, err := app.storage.FindCounty(ID)
 	if err != nil {
 		return nil, err
@@ -527,7 +527,7 @@ func (app *Application) updateCounty(current model.User, group string, ID string
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "stateProvince", Value: stateProvince}, {Key: "country", Value: country}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county", county.ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county", county.ID, lData, audit)
 
 	return county, nil
 }

@@ -5349,6 +5349,9 @@
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },
@@ -5934,6 +5937,9 @@
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },

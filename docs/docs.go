@@ -5361,6 +5361,9 @@ var doc = `{
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },
@@ -5946,6 +5949,9 @@ var doc = `{
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },

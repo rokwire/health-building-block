@@ -335,9 +335,10 @@ func (h AdminApisHandler) GetResources(current model.User, group string, w http.
 }
 
 type createResource struct {
-	Title        string `json:"title"`
-	Link         string `json:"link"`
-	DisplayOrder int    `json:"display_order"`
+	Audit        *string `json:"audit"`
+	Title        string  `json:"title"`
+	Link         string  `json:"link"`
+	DisplayOrder int     `json:"display_order"`
 } // @name createResourceRequest
 
 //CreateResources creates a new resource
@@ -366,6 +367,7 @@ func (h AdminApisHandler) CreateResources(current model.User, group string, w ht
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	title := requestData.Title
 	link := requestData.Link
 	displayOrder := requestData.DisplayOrder
@@ -382,7 +384,7 @@ func (h AdminApisHandler) CreateResources(current model.User, group string, w ht
 		return
 	}
 
-	resource, err := h.app.Administration.CreateResource(current, group, title, link, displayOrder)
+	resource, err := h.app.Administration.CreateResource(current, group, audit, title, link, displayOrder)
 	if err != nil {
 		log.Println("Error on creating a resource")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -401,9 +403,10 @@ func (h AdminApisHandler) CreateResources(current model.User, group string, w ht
 }
 
 type updateResource struct {
-	Title        string `json:"title"`
-	Link         string `json:"link"`
-	DisplayOrder int    `json:"display_order"`
+	Audit        *string `json:"audit"`
+	Title        string  `json:"title"`
+	Link         string  `json:"link"`
+	DisplayOrder int     `json:"display_order"`
 } // @name updateResourceRequest
 
 //UpdateResource updates a resource
@@ -447,7 +450,8 @@ func (h AdminApisHandler) UpdateResource(current model.User, group string, w htt
 		return
 	}
 
-	resource, err := h.app.Administration.UpdateResource(current, group, ID, requestData.Title, requestData.Link, displayOrder)
+	audit := requestData.Audit
+	resource, err := h.app.Administration.UpdateResource(current, group, audit, ID, requestData.Title, requestData.Link, displayOrder)
 	if err != nil {
 		log.Println("Error on updating the resource item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

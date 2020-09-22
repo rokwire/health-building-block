@@ -252,8 +252,8 @@ type Administration interface {
 	DeleteNews(current model.User, group string, ID string) error
 
 	GetResources() ([]*model.Resource, error)
-	CreateResource(current model.User, group string, title string, link string, displayOrder int) (*model.Resource, error)
-	UpdateResource(current model.User, group string, ID string, title string, link string, displayOrder int) (*model.Resource, error)
+	CreateResource(current model.User, group string, audit *string, title string, link string, displayOrder int) (*model.Resource, error)
+	UpdateResource(current model.User, group string, audit *string, ID string, title string, link string, displayOrder int) (*model.Resource, error)
 	DeleteResource(current model.User, group string, ID string) error
 	UpdateResourceDisplayOrder(IDs []string) error
 
@@ -379,12 +379,12 @@ func (s *administrationImpl) GetResources() ([]*model.Resource, error) {
 	return s.app.getAllResources()
 }
 
-func (s *administrationImpl) CreateResource(current model.User, group string, title string, link string, displayOrder int) (*model.Resource, error) {
-	return s.app.createResource(current, group, title, link, displayOrder)
+func (s *administrationImpl) CreateResource(current model.User, group string, audit *string, title string, link string, displayOrder int) (*model.Resource, error) {
+	return s.app.createResource(current, group, audit, title, link, displayOrder)
 }
 
-func (s *administrationImpl) UpdateResource(current model.User, group string, ID string, title string, link string, displayOrder int) (*model.Resource, error) {
-	return s.app.updateResource(current, group, ID, title, link, displayOrder)
+func (s *administrationImpl) UpdateResource(current model.User, group string, audit *string, ID string, title string, link string, displayOrder int) (*model.Resource, error) {
+	return s.app.updateResource(current, group, audit, ID, title, link, displayOrder)
 }
 
 func (s *administrationImpl) DeleteResource(current model.User, group string, ID string) error {

@@ -835,6 +835,8 @@ definitions:
     type: object
   createTestTypeRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
       priority:
@@ -1183,6 +1185,8 @@ definitions:
     type: object
   updateTestTypeRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
       priority:

@@ -718,7 +718,7 @@ func (app *Application) getTestTypes() ([]*model.TestType, error) {
 	return testTypes, nil
 }
 
-func (app *Application) createTestType(current model.User, group string, name string, priority *int) (*model.TestType, error) {
+func (app *Application) createTestType(current model.User, group string, audit *string, name string, priority *int) (*model.TestType, error) {
 	testType, err := app.storage.CreateTestType(name, priority)
 	if err != nil {
 		return nil, err
@@ -730,12 +730,12 @@ func (app *Application) createTestType(current model.User, group string, name st
 
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type", testType.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type", testType.ID, lData, audit)
 
 	return testType, nil
 }
 
-func (app *Application) updateTestType(current model.User, group string, ID string, name string, priority *int) (*model.TestType, error) {
+func (app *Application) updateTestType(current model.User, group string, audit *string, ID string, name string, priority *int) (*model.TestType, error) {
 	testType, err := app.storage.FindTestType(ID)
 	if err != nil {
 		return nil, err
@@ -757,7 +757,7 @@ func (app *Application) updateTestType(current model.User, group string, ID stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type", ID, lData, audit)
 
 	return testType, nil
 }

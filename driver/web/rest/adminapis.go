@@ -1798,8 +1798,9 @@ func (h AdminApisHandler) GetCountyStatusesByCountyID(current model.User, group 
 }
 
 type createTestTypeRequest struct {
-	Name     string `json:"name" validate:"required"`
-	Priority *int   `json:"priority"`
+	Audit    *string `json:"audit"`
+	Name     string  `json:"name" validate:"required"`
+	Priority *int    `json:"priority"`
 } //@name createTestTypeRequest
 
 type createTestTypeResponse struct {
@@ -1843,10 +1844,11 @@ func (h AdminApisHandler) CreateTestType(current model.User, group string, w htt
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	name := requestData.Name
 	priority := requestData.Priority
 
-	testType, err := h.app.Administration.CreateTestType(current, group, name, priority)
+	testType, err := h.app.Administration.CreateTestType(current, group, audit, name, priority)
 	if err != nil {
 		log.Println("Error on creating a test type")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1866,8 +1868,9 @@ func (h AdminApisHandler) CreateTestType(current model.User, group string, w htt
 }
 
 type updateTestTypeRequest struct {
-	Name     string `json:"name" validate:"required"`
-	Priority *int   `json:"priority"`
+	Audit    *string `json:"audit"`
+	Name     string  `json:"name" validate:"required"`
+	Priority *int    `json:"priority"`
 } // @name updateTestTypeRequest
 
 type updateTestTypeResponse struct {
@@ -1921,7 +1924,8 @@ func (h AdminApisHandler) UpdateTestType(current model.User, group string, w htt
 		return
 	}
 
-	testType, err := h.app.Administration.UpdateTestType(current, group, ID, requestData.Name, requestData.Priority)
+	audit := requestData.Audit
+	testType, err := h.app.Administration.UpdateTestType(current, group, audit, ID, requestData.Name, requestData.Priority)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

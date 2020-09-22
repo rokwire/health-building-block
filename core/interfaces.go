@@ -286,8 +286,8 @@ type Administration interface {
 	GetCountyStatusByCountyID(countyID string) ([]*model.CountyStatus, error)
 
 	GetTestTypes() ([]*model.TestType, error)
-	CreateTestType(current model.User, group string, name string, priority *int) (*model.TestType, error)
-	UpdateTestType(current model.User, group string, ID string, name string, priority *int) (*model.TestType, error)
+	CreateTestType(current model.User, group string, audit *string, name string, priority *int) (*model.TestType, error)
+	UpdateTestType(current model.User, group string, audit *string, ID string, name string, priority *int) (*model.TestType, error)
 	DeleteTestType(current model.User, group string, ID string) error
 
 	CreateTestTypeResult(current model.User, group string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error)
@@ -487,12 +487,12 @@ func (s *administrationImpl) GetTestTypes() ([]*model.TestType, error) {
 	return s.app.getTestTypes()
 }
 
-func (s *administrationImpl) CreateTestType(current model.User, group string, name string, priority *int) (*model.TestType, error) {
-	return s.app.createTestType(current, group, name, priority)
+func (s *administrationImpl) CreateTestType(current model.User, group string, audit *string, name string, priority *int) (*model.TestType, error) {
+	return s.app.createTestType(current, group, audit, name, priority)
 }
 
-func (s *administrationImpl) UpdateTestType(current model.User, group string, ID string, name string, priority *int) (*model.TestType, error) {
-	return s.app.updateTestType(current, group, ID, name, priority)
+func (s *administrationImpl) UpdateTestType(current model.User, group string, audit *string, ID string, name string, priority *int) (*model.TestType, error) {
+	return s.app.updateTestType(current, group, audit, ID, name, priority)
 }
 
 func (s *administrationImpl) DeleteTestType(current model.User, group string, ID string) error {

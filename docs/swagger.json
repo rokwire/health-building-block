@@ -5746,6 +5746,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6270,6 +6273,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },

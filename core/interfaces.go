@@ -266,8 +266,8 @@ type Administration interface {
 	UpdateFAQSection(current model.User, group string, audit *string, ID string, title string, displayOrder int) error
 
 	GetProviders() ([]*model.Provider, error)
-	CreateProvider(current model.User, group string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
-	UpdateProvider(current model.User, group string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
+	CreateProvider(current model.User, group string, audit *string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
+	UpdateProvider(current model.User, group string, audit *string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
 	DeleteProvider(current model.User, group string, ID string) error
 
 	FindCounties(f *utils.Filter) ([]*model.County, error)
@@ -423,12 +423,12 @@ func (s *administrationImpl) GetProviders() ([]*model.Provider, error) {
 	return s.app.getProviders()
 }
 
-func (s *administrationImpl) CreateProvider(current model.User, group string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
-	return s.app.createProvider(current, group, providerName, manualTest, availableMechanisms)
+func (s *administrationImpl) CreateProvider(current model.User, group string, audit *string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
+	return s.app.createProvider(current, group, audit, providerName, manualTest, availableMechanisms)
 }
 
-func (s *administrationImpl) UpdateProvider(current model.User, group string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
-	return s.app.updateProvider(current, group, ID, providerName, manualTest, availableMechanisms)
+func (s *administrationImpl) UpdateProvider(current model.User, group string, audit *string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
+	return s.app.updateProvider(current, group, audit, ID, providerName, manualTest, availableMechanisms)
 }
 
 func (s *administrationImpl) DeleteProvider(current model.User, group string, ID string) error {

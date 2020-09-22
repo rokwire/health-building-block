@@ -5614,6 +5614,9 @@ var doc = `{
                 "provider_name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "available_mechanisms": {
                     "type": "array",
                     "items": {
@@ -6147,6 +6150,9 @@ var doc = `{
                 "provider_name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "available_mechanisms": {
                     "type": "array",
                     "items": {

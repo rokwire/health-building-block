@@ -872,6 +872,7 @@ func (h AdminApisHandler) GetProviders(current model.User, group string, w http.
 }
 
 type createProviderRequest struct {
+	Audit               *string  `json:"audit"`
 	ProviderName        string   `json:"provider_name" validate:"required"`
 	ManualTest          *bool    `json:"manual_test" validate:"required"`
 	AvailableMechanisms []string `json:"available_mechanisms"`
@@ -918,11 +919,12 @@ func (h AdminApisHandler) CreateProvider(current model.User, group string, w htt
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	providerName := requestData.ProviderName
 	manualTest := requestData.ManualTest
 	mechanisms := requestData.AvailableMechanisms
 
-	provider, err := h.app.Administration.CreateProvider(current, group, providerName, *manualTest, mechanisms)
+	provider, err := h.app.Administration.CreateProvider(current, group, audit, providerName, *manualTest, mechanisms)
 	if err != nil {
 		log.Println("Error on creating a provider")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -942,6 +944,7 @@ func (h AdminApisHandler) CreateProvider(current model.User, group string, w htt
 }
 
 type updateProviderRequest struct {
+	Audit               *string  `json:"audit"`
 	ProviderName        string   `json:"provider_name" validate:"required"`
 	ManualTest          *bool    `json:"manual_test" validate:"required"`
 	AvailableMechanisms []string `json:"available_mechanisms"`
@@ -998,7 +1001,8 @@ func (h AdminApisHandler) UpdateProvider(current model.User, group string, w htt
 		return
 	}
 
-	provider, err := h.app.Administration.UpdateProvider(current, group, ID, requestData.ProviderName, *requestData.ManualTest, requestData.AvailableMechanisms)
+	audit := requestData.Audit
+	provider, err := h.app.Administration.UpdateProvider(current, group, audit, ID, requestData.ProviderName, *requestData.ManualTest, requestData.AvailableMechanisms)
 	if err != nil {
 		log.Println("Error on updating the provider item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

@@ -737,6 +737,8 @@ definitions:
     type: object
   createProviderRequest:
     properties:
+      audit:
+        type: string
       available_mechanisms:
         items:
           type: string
@@ -1092,6 +1094,8 @@ definitions:
     type: object
   updateProviderRequest:
     properties:
+      audit:
+        type: string
       available_mechanisms:
         items:
           type: string

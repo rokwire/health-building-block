@@ -436,7 +436,7 @@ func (app *Application) updateFAQSection(current model.User, group string, audit
 	return nil
 }
 
-func (app *Application) createProvider(current model.User, group string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
+func (app *Application) createProvider(current model.User, group string, audit *string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
 	provider, err := app.storage.CreateProvider(providerName, manualTest, availableMechanisms)
 	if err != nil {
 		return nil, err
@@ -444,12 +444,12 @@ func (app *Application) createProvider(current model.User, group string, provide
 
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "providerName", Value: providerName}, {Key: "manualTest", Value: fmt.Sprint(manualTest)}, {Key: "availableMechanisms", Value: fmt.Sprint(availableMechanisms)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "provider", provider.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "provider", provider.ID, lData, audit)
 
 	return provider, nil
 }
 
-func (app *Application) updateProvider(current model.User, group string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
+func (app *Application) updateProvider(current model.User, group string, audit *string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
 	provider, err := app.storage.FindProvider(ID)
 	if err != nil {
 		return nil, err
@@ -472,7 +472,7 @@ func (app *Application) updateProvider(current model.User, group string, ID stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "providerName", Value: providerName}, {Key: "manualTest", Value: fmt.Sprint(manualTest)}, {Key: "availableMechanisms", Value: fmt.Sprint(availableMechanisms)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "provider", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "provider", ID, lData, audit)
 
 	return provider, nil
 }

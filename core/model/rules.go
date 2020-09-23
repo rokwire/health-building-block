@@ -71,3 +71,10 @@ type AccessRuleCountyStatus struct {
 	CountyStatusID string
 	Value          string //granted or denied
 }
+
+//UINOverride represents uin rules exceptions
+type UINOverride struct {
+	UIN      string  `json:"uin" bson:"uin"`
+	Interval int     `json:"interval" bson:"interval"`
+	Category *string `json:"category" bson:"category"`
+}

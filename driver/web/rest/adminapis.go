@@ -4052,7 +4052,7 @@ type createUINOverrideRequest struct {
 	Category *string `json:"category"`
 } // @name createUINOverrideRequest
 
-//CreaCreateUINOverrideteAccessRule creates an uin override
+//CreateUINOverride creates an uin override
 // @Description Creates an uin override.
 // @Tags Admin
 // @ID CreateUINOverride
@@ -4118,6 +4118,7 @@ type updateUINOverrideRequest struct {
 	Category *string `json:"category"`
 } // @name updateUINOverrideRequest
 
+//UpdateUINOverride updates uin override
 func (h AdminApisHandler) UpdateUINOverride(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uin := params["uin"]

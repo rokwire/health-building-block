@@ -3112,7 +3112,52 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.UINOverride"
+                            "$ref": "#/definitions/UINOverride"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/uin-overrides": {
+            "get": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Gives uin override items",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "GetUINOverrides",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by uin or category",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/UINOverride"
+                            }
                         }
                     }
                 }
@@ -5260,6 +5305,20 @@ var doc = `{
                 }
             }
         },
+        "UINOverride": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "integer"
+                },
+                "uin": {
+                    "type": "string"
+                }
+            }
+        },
         "User": {
             "type": "object",
             "properties": {
@@ -5899,20 +5958,6 @@ var doc = `{
                     "type": "boolean"
                 },
                 "uuid": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.UINOverride": {
-            "type": "object",
-            "properties": {
-                "category": {
-                    "type": "string"
-                },
-                "interval": {
-                    "type": "integer"
-                },
-                "uin": {
                     "type": "string"
                 }
             }

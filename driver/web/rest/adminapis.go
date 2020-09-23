@@ -3997,6 +3997,17 @@ func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w htt
 	w.Write(resData)
 }
 
+//GetUINOverrides gives uin override items
+// @Description Gives uin override items
+// @Tags Admin
+// @ID GetUINOverrides
+// @Accept json
+// @Param uin query string false "UIN"
+// @Param sort query string false "Sort by uin or category"
+// @Success 200 {array} model.UINOverride
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/uin-overrides [get]
 func (h AdminApisHandler) GetUINOverrides(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	//uin
 	var uin *string

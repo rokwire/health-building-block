@@ -473,6 +473,15 @@ definitions:
       timestamp:
         type: integer
     type: object
+  UINOverride:
+    properties:
+      category:
+        type: string
+      interval:
+        type: integer
+      uin:
+        type: string
+    type: object
   User:
     properties:
       consent:
@@ -904,15 +913,6 @@ definitions:
     - exposure_notification
     - public_key
     - uuid
-    type: object
-  model.UINOverride:
-    properties:
-      category:
-        type: string
-      interval:
-        type: integer
-      uin:
-        type: string
     type: object
   processManualTestRequest:
     properties:
@@ -3085,7 +3085,34 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.UINOverride'
+            $ref: '#/definitions/UINOverride'
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/uin-overrides:
+    get:
+      consumes:
+      - application/json
+      description: Gives uin override items
+      operationId: GetUINOverrides
+      parameters:
+      - description: UIN
+        in: query
+        name: uin
+        type: string
+      - description: Sort by uin or category
+        in: query
+        name: sort
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/UINOverride'
+            type: array
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []

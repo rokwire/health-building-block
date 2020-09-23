@@ -335,7 +335,7 @@ type Administration interface {
 	GetSymptoms(appVersion string) (*model.Symptoms, error)
 	UpdateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error)
 
-	GetUINOverrides(uin *string) ([]*model.UINOverride, error)
+	GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
 
 	GetUserByExternalID(externalID string) (*model.User, error)
@@ -632,8 +632,8 @@ func (s *administrationImpl) UpdateSymptoms(current model.User, group string, ap
 	return s.app.updateSymptoms(current, group, appVersion, items)
 }
 
-func (s *administrationImpl) GetUINOverrides(uin *string) ([]*model.UINOverride, error) {
-	return s.app.getUINOverrides(uin)
+func (s *administrationImpl) GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
+	return s.app.getUINOverrides(uin, sort)
 }
 
 func (s *administrationImpl) CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {
@@ -797,7 +797,7 @@ type Storage interface {
 
 	FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error)
 
-	FindUINOverrides(uin *string) ([]*model.UINOverride, error)
+	FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateUINOverride(uin string, interval int, category *string) (*model.UINOverride, error)
 	SaveUINOverride(uinOverride *model.UINOverride) error
 	DeleteUINOverride(uin string) error

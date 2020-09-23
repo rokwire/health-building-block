@@ -3998,13 +3998,21 @@ func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w htt
 }
 
 func (h AdminApisHandler) GetUINOverrides(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	//uin
 	var uin *string
-	keys, ok := r.URL.Query()["uin"]
-	if ok && len(keys[0]) > 0 {
-		uin = &keys[0]
+	uinKeys, ok := r.URL.Query()["uin"]
+	if ok && len(uinKeys[0]) > 0 {
+		uin = &uinKeys[0]
 	}
 
-	uinOverrides, err := h.app.Administration.GetUINOverrides(uin)
+	//sort by
+	var sort *string
+	sortByKeys, ok := r.URL.Query()["sort"]
+	if ok {
+		sort = &sortByKeys[0]
+	}
+
+	uinOverrides, err := h.app.Administration.GetUINOverrides(uin, sort)
 	if err != nil {
 		log.Println("Error on getting the uin overrides items")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

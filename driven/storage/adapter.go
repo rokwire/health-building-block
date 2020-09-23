@@ -4264,15 +4264,22 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 }
 
 //FindUINOverrides finds the uin override for the provided uin. If uin is nil then it gives all
-func (sa *Adapter) FindUINOverrides(uin *string) ([]*model.UINOverride, error) {
+func (sa *Adapter) FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
 	//filter by uin if provided
 	filter := bson.D{}
 	if uin != nil {
 		filter = bson.D{primitive.E{Key: "uin", Value: *uin}}
 	}
 
+	// sort by if provided
+	var opt *options.FindOptions
+	if sort != nil {
+		opt = options.Find()
+		opt.SetSort(bson.D{primitive.E{Key: *sort, Value: 1}})
+	}
+
 	var result []*model.UINOverride
-	err := sa.db.uinoverrides.Find(filter, &result, nil)
+	err := sa.db.uinoverrides.Find(filter, &result, opt)
 	if err != nil {
 		return nil, err
 	}

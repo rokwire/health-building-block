@@ -4301,17 +4301,18 @@ func (sa *Adapter) CreateUINOverride(uin string, interval int, category *string)
 func (sa *Adapter) UpdateUINOverride(uin string, interval int, category *string) (*string, error) {
 	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
 	update := bson.D{
-		{"$set", bson.D{
-			{"interval", interval},
-			{"category", category},
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "interval", Value: interval},
+			primitive.E{Key: "category", Value: category},
 		}},
 	}
+
 	result, err := sa.db.uinoverrides.UpdateOne(filter, update, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	res := fmt.Sprintf("%d modified", result.ModifiedCount)
+	res := fmt.Sprintf("%d matched, %d modified", result.MatchedCount, result.ModifiedCount)
 	return &res, nil
 }
 

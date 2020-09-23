@@ -4004,6 +4004,17 @@ type createUINOverrideRequest struct {
 	Category *string `json:"category"`
 } // @name createUINOverrideRequest
 
+//CreaCreateUINOverrideteAccessRule creates an uin override
+// @Description Creates an uin override.
+// @Tags Admin
+// @ID CreateUINOverride
+// @Accept json
+// @Produce json
+// @Param data body createUINOverrideRequest true "body data"
+// @Success 200 {object} model.UINOverride
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/uin-override [post]
 func (h AdminApisHandler) CreateUINOverride(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {

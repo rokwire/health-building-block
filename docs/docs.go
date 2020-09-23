@@ -3076,6 +3076,48 @@ var doc = `{
                 }
             }
         },
+        "/admin/uin-override": {
+            "post": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Creates an uin override.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "CreateUINOverride",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createUINOverrideRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.UINOverride"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/user": {
             "get": {
                 "security": [
@@ -5768,6 +5810,27 @@ var doc = `{
                 }
             }
         },
+        "createUINOverrideRequest": {
+            "type": "object",
+            "required": [
+                "interval",
+                "uin"
+            ],
+            "properties": {
+                "audit": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "integer"
+                },
+                "uin": {
+                    "type": "string"
+                }
+            }
+        },
         "gubonResponse": {
             "type": "object",
             "additionalProperties": {
@@ -5836,6 +5899,20 @@ var doc = `{
                     "type": "boolean"
                 },
                 "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UINOverride": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "integer"
+                },
+                "uin": {
                     "type": "string"
                 }
             }

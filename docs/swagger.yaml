@@ -843,6 +843,20 @@ definitions:
     required:
     - name
     type: object
+  createUINOverrideRequest:
+    properties:
+      audit:
+        type: string
+      category:
+        type: string
+      interval:
+        type: integer
+      uin:
+        type: string
+    required:
+    - interval
+    - uin
+    type: object
   gubonResponse:
     additionalProperties:
       type: string
@@ -890,6 +904,15 @@ definitions:
     - exposure_notification
     - public_key
     - uuid
+    type: object
+  model.UINOverride:
+    properties:
+      category:
+        type: string
+      interval:
+        type: integer
+      uin:
+        type: string
     type: object
   processManualTestRequest:
     properties:
@@ -3038,6 +3061,31 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/ATestType'
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/uin-override:
+    post:
+      consumes:
+      - application/json
+      description: Creates an uin override.
+      operationId: CreateUINOverride
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createUINOverrideRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UINOverride'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []

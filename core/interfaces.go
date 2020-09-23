@@ -335,6 +335,7 @@ type Administration interface {
 	GetSymptoms(appVersion string) (*model.Symptoms, error)
 	UpdateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error)
 
+	GetUINOverrides(uin *string) ([]*model.UINOverride, error)
 	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
 
 	GetUserByExternalID(externalID string) (*model.User, error)
@@ -629,6 +630,10 @@ func (s *administrationImpl) GetSymptoms(appVersion string) (*model.Symptoms, er
 
 func (s *administrationImpl) UpdateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error) {
 	return s.app.updateSymptoms(current, group, appVersion, items)
+}
+
+func (s *administrationImpl) GetUINOverrides(uin *string) ([]*model.UINOverride, error) {
+	return s.app.getUINOverrides(uin)
 }
 
 func (s *administrationImpl) CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {

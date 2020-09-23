@@ -921,6 +921,14 @@ func (app *Application) updateSymptoms(current model.User, group string, appVers
 	return symptoms, nil
 }
 
+func (app *Application) getUINOverrides(uin *string) ([]*model.UINOverride, error) {
+	uinOverrides, err := app.storage.FindUINOverrides(uin)
+	if err != nil {
+		return nil, err
+	}
+	return uinOverrides, nil
+}
+
 func (app *Application) createUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {
 	uinOverride, err := app.storage.CreateUINOverride(uin, interval, category)
 	if err != nil {

@@ -3997,6 +3997,35 @@ func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w htt
 	w.Write(resData)
 }
 
+func (h AdminApisHandler) GetUINOverrides(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	var uin *string
+	keys, ok := r.URL.Query()["uin"]
+	if ok && len(keys[0]) > 0 {
+		uin = &keys[0]
+	}
+
+	uinOverrides, err := h.app.Administration.GetUINOverrides(uin)
+	if err != nil {
+		log.Println("Error on getting the uin overrides items")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if len(uinOverrides) == 0 {
+		uinOverrides = make([]*model.UINOverride, 0)
+	}
+	data, err := json.Marshal(uinOverrides)
+	if err != nil {
+		log.Println("Error on marshal the uin overrides items")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 type createUINOverrideRequest struct {
 	Audit    *string `json:"audit"`
 	UIN      string  `json:"uin" validate:"required"`

@@ -4265,8 +4265,18 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 
 //FindUINOverrides finds the uin override for the provided uin. If uin is nil then it gives all
 func (sa *Adapter) FindUINOverrides(uin *string) ([]*model.UINOverride, error) {
-	//TODO
-	return nil, nil
+	//filter by uin if provided
+	filter := bson.D{}
+	if uin != nil {
+		filter = bson.D{primitive.E{Key: "uin", Value: *uin}}
+	}
+
+	var result []*model.UINOverride
+	err := sa.db.uinoverrides.Find(filter, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 //CreateUINOverride creates a new uin override entity

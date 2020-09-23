@@ -4112,6 +4112,68 @@ func (h AdminApisHandler) CreateUINOverride(current model.User, group string, w 
 	w.Write(data)
 }
 
+type updateUINOverrideRequest struct {
+	Audit    *string `json:"audit"`
+	Interval int     `json:"interval" validate:"required"`
+	Category *string `json:"category"`
+} // @name updateUINOverrideRequest
+
+func (h AdminApisHandler) UpdateUINOverride(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update uin override item - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateUINOverrideRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update uin override item request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update an uin override data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	interval := requestData.Interval
+	category := requestData.Category
+
+	uinOverride, err := h.app.Administration.UpdateUINOverride(current, group, audit, uin, interval, category)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err = json.Marshal(uinOverride)
+	if err != nil {
+		log.Println("Error on marshal an uin override")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //GetUserByExternalID gets the user by external id
 // @Description Gets the user by external id.
 // @Tags Admin

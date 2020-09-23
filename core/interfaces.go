@@ -337,6 +337,7 @@ type Administration interface {
 
 	GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
+	UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
@@ -638,6 +639,10 @@ func (s *administrationImpl) GetUINOverrides(uin *string, sort *string) ([]*mode
 
 func (s *administrationImpl) CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {
 	return s.app.createUINOverride(current, group, audit, uin, interval, category)
+}
+
+func (s *administrationImpl) UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {
+	return s.app.updateUINOverride(current, group, audit, uin, interval, category)
 }
 
 func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User, error) {

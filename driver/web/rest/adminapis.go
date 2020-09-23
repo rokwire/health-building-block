@@ -3997,6 +3997,62 @@ func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w htt
 	w.Write(resData)
 }
 
+type createUINOverrideRequest struct {
+	Audit    *string `json:"audit"`
+	UIN      string  `json:"uin" validate:"required"`
+	Interval int     `json:"interval" validate:"required"`
+	Category *string `json:"category"`
+} // @name createUINOverrideRequest
+
+func (h AdminApisHandler) CreateUINOverride(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create uin override - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createUINOverrideRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create an uin override request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create an uin override data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	uin := requestData.UIN
+	interval := requestData.Interval
+	category := requestData.Category
+
+	uinOverride, err := h.app.Administration.CreateUINOverride(current, group, audit, uin, interval, category)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err = json.Marshal(uinOverride)
+	if err != nil {
+		log.Println("Error on marshal an uin override")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //GetUserByExternalID gets the user by external id
 // @Description Gets the user by external id.
 // @Tags Admin

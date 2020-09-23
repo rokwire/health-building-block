@@ -632,8 +632,7 @@ func (s *administrationImpl) UpdateSymptoms(current model.User, group string, ap
 }
 
 func (s *administrationImpl) CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {
-	//TODO
-	return nil, nil
+	return s.app.createUINOverride(current, group, audit, uin, interval, category)
 }
 
 func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User, error) {
@@ -794,7 +793,7 @@ type Storage interface {
 	FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error)
 
 	FindUINOverrides(uin *string) ([]*model.UINOverride, error)
-	CreateUINOverride(uin string, interval bool, category *string) (*model.UINOverride, error)
+	CreateUINOverride(uin string, interval int, category *string) (*model.UINOverride, error)
 	SaveUINOverride(uinOverride *model.UINOverride) error
 	DeleteUINOverride(uin string) error
 }

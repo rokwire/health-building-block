@@ -4270,9 +4270,14 @@ func (sa *Adapter) FindUINOverrides(uin *string) ([]*model.UINOverride, error) {
 }
 
 //CreateUINOverride creates a new uin override entity
-func (sa *Adapter) CreateUINOverride(uin string, interval bool, category *string) (*model.UINOverride, error) {
-	//TODO
-	return nil, nil
+func (sa *Adapter) CreateUINOverride(uin string, interval int, category *string) (*model.UINOverride, error) {
+	uinOverride := model.UINOverride{UIN: uin, Interval: interval, Category: category}
+	_, err := sa.db.uinoverrides.InsertOne(&uinOverride)
+	if err != nil {
+		return nil, err
+	}
+
+	return &uinOverride, nil
 }
 
 //SaveUINOverride saves uin override entity

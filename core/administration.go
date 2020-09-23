@@ -921,6 +921,17 @@ func (app *Application) updateSymptoms(current model.User, group string, appVers
 	return symptoms, nil
 }
 
+func (app *Application) createUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {
+	uinOverride, err := app.storage.CreateUINOverride(uin, interval, category)
+	if err != nil {
+		return nil, err
+	}
+
+	//TODO audit
+
+	return uinOverride, nil
+}
+
 func (app *Application) createRule(current model.User, group string, countyID string, testTypeID string, priority *int,
 	resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
 

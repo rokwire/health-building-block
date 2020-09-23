@@ -927,7 +927,10 @@ func (app *Application) createUINOverride(current model.User, group string, audi
 		return nil, err
 	}
 
-	//TODO audit
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "uin", Value: uin}, {Key: "interval", Value: fmt.Sprint(interval)}, {Key: "category", Value: utils.GetString(category)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "uin-override", "", lData, nil)
 
 	return uinOverride, nil
 }

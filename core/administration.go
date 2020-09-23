@@ -943,9 +943,14 @@ func (app *Application) createUINOverride(current model.User, group string, audi
 	return uinOverride, nil
 }
 
-func (app *Application) updateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {
-	//TODO
-	return nil, nil
+func (app *Application) updateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*string, error) {
+	result, err := app.storage.UpdateUINOverride(uin, interval, category)
+	if err != nil {
+		return nil, err
+	}
+	//TODO audit
+
+	return result, nil
 }
 
 func (app *Application) createRule(current model.User, group string, countyID string, testTypeID string, priority *int,

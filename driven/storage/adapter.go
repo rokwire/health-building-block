@@ -4297,10 +4297,22 @@ func (sa *Adapter) CreateUINOverride(uin string, interval int, category *string)
 	return &uinOverride, nil
 }
 
-//SaveUINOverride saves uin override entity
-func (sa *Adapter) SaveUINOverride(uinOverride *model.UINOverride) error {
-	//TODO
-	return nil
+//UpdateUINOverride updates uin override entity
+func (sa *Adapter) UpdateUINOverride(uin string, interval int, category *string) (*string, error) {
+	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
+	update := bson.D{
+		{"$set", bson.D{
+			{"interval", interval},
+			{"category", category},
+		}},
+	}
+	result, err := sa.db.uinoverrides.UpdateOne(filter, update, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res := fmt.Sprintf("%d modified", result.ModifiedCount)
+	return &res, nil
 }
 
 //DeleteUINOverride deletes uin override entity

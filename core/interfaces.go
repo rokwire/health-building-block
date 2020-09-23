@@ -337,7 +337,7 @@ type Administration interface {
 
 	GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
-	UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
+	UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*string, error)
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
@@ -641,7 +641,7 @@ func (s *administrationImpl) CreateUINOverride(current model.User, group string,
 	return s.app.createUINOverride(current, group, audit, uin, interval, category)
 }
 
-func (s *administrationImpl) UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {
+func (s *administrationImpl) UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*string, error) {
 	return s.app.updateUINOverride(current, group, audit, uin, interval, category)
 }
 
@@ -804,7 +804,7 @@ type Storage interface {
 
 	FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateUINOverride(uin string, interval int, category *string) (*model.UINOverride, error)
-	SaveUINOverride(uinOverride *model.UINOverride) error
+	UpdateUINOverride(uin string, interval int, category *string) (*string, error)
 	DeleteUINOverride(uin string) error
 }
 

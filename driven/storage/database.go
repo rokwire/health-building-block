@@ -61,6 +61,7 @@ type database struct {
 	crules         *collectionWrapper
 	traceexposures *collectionWrapper
 	accessrules    *collectionWrapper
+	uinoverrides   *collectionWrapper
 
 	listener core.StorageListener
 }
@@ -202,6 +203,11 @@ func (m *database) start() error {
 	if err != nil {
 		return err
 	}
+	uinoverrides := &collectionWrapper{database: m, coll: db.Collection("uinoverrides")}
+	err = m.applyUINOverridesChecks(uinoverrides)
+	if err != nil {
+		return err
+	}
 
 	//asign the db, db client and the collections
 	m.db = db
@@ -227,6 +233,7 @@ func (m *database) start() error {
 	m.crules = crules
 	m.traceexposures = traceexposures
 	m.accessrules = accessrules
+	m.uinoverrides = uinoverrides
 
 	//watch for config changes
 	go m.configs.Watch(nil)
@@ -714,6 +721,25 @@ func (m *database) applyAccessRulesChecks(accessRules *collectionWrapper) error 
 	}
 
 	log.Println("accessRules checks passed")
+	return nil
+}
+
+func (m *database) applyUINOverridesChecks(uinoverrides *collectionWrapper) error {
+	log.Println("apply uinOverrides checks.....")
+
+	//add index
+	err := uinoverrides.AddIndex(bson.D{primitive.E{Key: "uin", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	//add index
+	err = uinoverrides.AddIndex(bson.D{primitive.E{Key: "category", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	log.Println("uinOverrides checks passed")
 	return nil
 }
 

@@ -785,6 +785,11 @@ type Storage interface {
 	DeleteAccessRule(ID string) error
 
 	FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error)
+
+	FindUINOverrides(uin *string) ([]*model.UINOverride, error)
+	CreateUINOverride(uin string, interval bool, category *string) (*model.UINOverride, error)
+	SaveUINOverride(uinOverride *model.UINOverride) error
+	DeleteUINOverride(uin string) error
 }
 
 //StorageListener listenes for change data storage events

@@ -4263,6 +4263,30 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 	return mapData, nil
 }
 
+//FindUINOverrides finds the uin override for the provided uin. If uin is nil then it gives all
+func (sa *Adapter) FindUINOverrides(uin *string) ([]*model.UINOverride, error) {
+	//TODO
+	return nil, nil
+}
+
+//CreateUINOverride creates a new uin override entity
+func (sa *Adapter) CreateUINOverride(uin string, interval bool, category *string) (*model.UINOverride, error) {
+	//TODO
+	return nil, nil
+}
+
+//SaveUINOverride saves uin override entity
+func (sa *Adapter) SaveUINOverride(uinOverride *model.UINOverride) error {
+	//TODO
+	return nil
+}
+
+//DeleteUINOverride deletes uin override entity
+func (sa *Adapter) DeleteUINOverride(uin string) error {
+	//TODO
+	return nil
+}
+
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {
 	if list == nil {
 		return false

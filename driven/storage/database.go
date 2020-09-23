@@ -727,8 +727,8 @@ func (m *database) applyAccessRulesChecks(accessRules *collectionWrapper) error 
 func (m *database) applyUINOverridesChecks(uinoverrides *collectionWrapper) error {
 	log.Println("apply uinOverrides checks.....")
 
-	//add index
-	err := uinoverrides.AddIndex(bson.D{primitive.E{Key: "uin", Value: 1}}, false)
+	//add index - unique
+	err := uinoverrides.AddIndex(bson.D{primitive.E{Key: "uin", Value: 1}}, true)
 	if err != nil {
 		return err
 	}

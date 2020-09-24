@@ -1221,7 +1221,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 1.18.0
+  version: 1.19.0
 paths:
   /admin/access-rules:
     get:

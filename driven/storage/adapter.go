@@ -4263,6 +4263,81 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 	return mapData, nil
 }
 
+//FindUINOverrides finds the uin override for the provided uin. If uin is nil then it gives all
+func (sa *Adapter) FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
+	//filter by uin if provided
+	filter := bson.D{}
+	if uin != nil {
+		filter = bson.D{primitive.E{Key: "uin", Value: *uin}}
+	}
+
+	// sort by if provided
+	var opt *options.FindOptions
+	if sort != nil {
+		opt = options.Find()
+		opt.SetSort(bson.D{primitive.E{Key: *sort, Value: 1}})
+	}
+
+	var result []*model.UINOverride
+	err := sa.db.uinoverrides.Find(filter, &result, opt)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+//CreateUINOverride creates a new uin override entity
+func (sa *Adapter) CreateUINOverride(uin string, interval int, category *string) (*model.UINOverride, error) {
+	uinOverride := model.UINOverride{UIN: uin, Interval: interval, Category: category}
+	_, err := sa.db.uinoverrides.InsertOne(&uinOverride)
+	if err != nil {
+		return nil, err
+	}
+
+	return &uinOverride, nil
+}
+
+//UpdateUINOverride updates uin override entity
+func (sa *Adapter) UpdateUINOverride(uin string, interval int, category *string) (*string, error) {
+	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "interval", Value: interval},
+			primitive.E{Key: "category", Value: category},
+		}},
+	}
+
+	result, err := sa.db.uinoverrides.UpdateOne(filter, update, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res := fmt.Sprintf("%d matched, %d modified", result.MatchedCount, result.ModifiedCount)
+	return &res, nil
+}
+
+//DeleteUINOverride deletes uin override entity
+func (sa *Adapter) DeleteUINOverride(uin string) error {
+	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
+	result, err := sa.db.uinoverrides.DeleteOne(filter, nil)
+	if err != nil {
+		return err
+	}
+	if result == nil {
+		return errors.New("result is nil for uin override item with uin " + uin)
+	}
+	deletedCount := result.DeletedCount
+	if deletedCount == 0 {
+		return errors.New("there is no a uin override for uin " + uin)
+	}
+	if deletedCount > 1 {
+		return errors.New("deleted more than one records for uin " + uin)
+	}
+
+	//success - count = 1
+	return nil
+}
+
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {
 	if list == nil {
 		return false

@@ -80,6 +80,8 @@ type Services interface {
 
 	AddTraceReport(items []model.TraceExposure) (int, error)
 	GetExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)
+
+	GetUINOverride(current model.User) (*model.UINOverride, error)
 }
 
 type servicesImpl struct {
@@ -239,6 +241,10 @@ func (s *servicesImpl) GetExposures(timestamp *int64, dateAdded *int64) ([]model
 	return s.app.getExposures(timestamp, dateAdded)
 }
 
+func (s *servicesImpl) GetUINOverride(current model.User) (*model.UINOverride, error) {
+	return s.app.getUINOverride(current)
+}
+
 //Administration exposes administration APIs for the driver adapters
 type Administration interface {
 	GetCovid19Config() (*model.COVID19Config, error)
@@ -334,6 +340,11 @@ type Administration interface {
 
 	GetSymptoms(appVersion string) (*model.Symptoms, error)
 	UpdateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error)
+
+	GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
+	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
+	UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*string, error)
+	DeleteUINOverride(current model.User, group string, uin string) error
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
@@ -629,6 +640,22 @@ func (s *administrationImpl) UpdateSymptoms(current model.User, group string, ap
 	return s.app.updateSymptoms(current, group, appVersion, items)
 }
 
+func (s *administrationImpl) GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
+	return s.app.getUINOverrides(uin, sort)
+}
+
+func (s *administrationImpl) CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {
+	return s.app.createUINOverride(current, group, audit, uin, interval, category)
+}
+
+func (s *administrationImpl) UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*string, error) {
+	return s.app.updateUINOverride(current, group, audit, uin, interval, category)
+}
+
+func (s *administrationImpl) DeleteUINOverride(current model.User, group string, uin string) error {
+	return s.app.deleteUINOverride(current, group, uin)
+}
+
 func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User, error) {
 	return s.app.getUserByExternalID(externalID)
 }
@@ -785,6 +812,11 @@ type Storage interface {
 	DeleteAccessRule(ID string) error
 
 	FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error)
+
+	FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
+	CreateUINOverride(uin string, interval int, category *string) (*model.UINOverride, error)
+	UpdateUINOverride(uin string, interval int, category *string) (*string, error)
+	DeleteUINOverride(uin string) error
 }
 
 //StorageListener listenes for change data storage events

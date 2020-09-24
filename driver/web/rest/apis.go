@@ -1213,6 +1213,34 @@ func (h ApisHandler) DeleteHistoriesV2(current model.User, w http.ResponseWriter
 	w.Write([]byte(result))
 }
 
+//GetUINOverride gives the uin override for the user
+// @Description Gives the uin override for the user
+// @Tags Covid19
+// @ID GetUINOverride
+// @Accept json
+// @Success 200 {object} model.UINOverride
+// @Security AppUserAuth
+// @Router /covid19/uin-override [get]
+func (h ApisHandler) GetUINOverride(current model.User, w http.ResponseWriter, r *http.Request) {
+	uinOverride, err := h.app.Services.GetUINOverride(current)
+	if err != nil {
+		log.Printf("Error on getting the uin override item - %s\n", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.Marshal(uinOverride)
+	if err != nil {
+		log.Println("Error on marshal the uin override item")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //GetProviders gets the providers
 // @Description Gives all the providers
 // @Tags Covid19

@@ -3076,48 +3076,6 @@ var doc = `{
                 }
             }
         },
-        "/admin/uin-override": {
-            "post": {
-                "security": [
-                    {
-                        "AdminUserAuth": []
-                    },
-                    {
-                        "AdminGroupAuth": []
-                    }
-                ],
-                "description": "Creates an uin override.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "operationId": "CreateUINOverride",
-                "parameters": [
-                    {
-                        "description": "body data",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/createUINOverrideRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/UINOverride"
-                        }
-                    }
-                }
-            }
-        },
         "/admin/uin-overrides": {
             "get": {
                 "security": [
@@ -3158,6 +3116,46 @@ var doc = `{
                             "items": {
                                 "$ref": "#/definitions/UINOverride"
                             }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Creates an uin override.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "CreateUINOverride",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createUINOverrideRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UINOverride"
                         }
                     }
                 }
@@ -4185,6 +4183,31 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/gubonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/uin-override": {
+            "get": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    }
+                ],
+                "description": "Gives the uin override for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetUINOverride",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UINOverride"
                         }
                     }
                 }

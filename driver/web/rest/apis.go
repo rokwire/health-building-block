@@ -1214,6 +1214,13 @@ func (h ApisHandler) DeleteHistoriesV2(current model.User, w http.ResponseWriter
 }
 
 //GetUINOverride gives the uin override for the user
+// @Description Gives the uin override for the user
+// @Tags Covid19
+// @ID GetUINOverride
+// @Accept json
+// @Success 200 {object} model.UINOverride
+// @Security AppUserAuth
+// @Router /covid19/uin-override [get]
 func (h ApisHandler) GetUINOverride(current model.User, w http.ResponseWriter, r *http.Request) {
 	uinOverride, err := h.app.Services.GetUINOverride(current)
 	if err != nil {

@@ -3077,31 +3077,6 @@ paths:
       - AdminGroupAuth: []
       tags:
       - Admin
-  /admin/uin-override:
-    post:
-      consumes:
-      - application/json
-      description: Creates an uin override.
-      operationId: CreateUINOverride
-      parameters:
-      - description: body data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/createUINOverrideRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/UINOverride'
-      security:
-      - AdminUserAuth: []
-      - AdminGroupAuth: []
-      tags:
-      - Admin
   /admin/uin-overrides:
     get:
       consumes:
@@ -3124,6 +3099,30 @@ paths:
             items:
               $ref: '#/definitions/UINOverride'
             type: array
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates an uin override.
+      operationId: CreateUINOverride
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createUINOverrideRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UINOverride'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -3773,6 +3772,21 @@ paths:
       - ProvidersAuth: []
       tags:
       - Providers
+  /covid19/uin-override:
+    get:
+      consumes:
+      - application/json
+      description: Gives the uin override for the user
+      operationId: GetUINOverride
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UINOverride'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
   /covid19/user:
     get:
       consumes:

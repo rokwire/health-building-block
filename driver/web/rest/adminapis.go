@@ -4062,7 +4062,7 @@ type createUINOverrideRequest struct {
 // @Success 200 {object} model.UINOverride
 // @Security AdminUserAuth
 // @Security AdminGroupAuth
-// @Router /admin/uin-override [post]
+// @Router /admin/uin-overrides [post]
 func (h AdminApisHandler) CreateUINOverride(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {

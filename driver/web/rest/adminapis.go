@@ -4186,6 +4186,26 @@ func (h AdminApisHandler) UpdateUINOverride(current model.User, group string, w 
 	w.Write(data)
 }
 
+func (h AdminApisHandler) DeleteUINOverride(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+	err := h.app.Administration.DeleteUINOverride(current, group, uin)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully deleted"))
+}
+
 //GetUserByExternalID gets the user by external id
 // @Description Gets the user by external id.
 // @Tags Admin

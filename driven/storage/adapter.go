@@ -4318,7 +4318,23 @@ func (sa *Adapter) UpdateUINOverride(uin string, interval int, category *string)
 
 //DeleteUINOverride deletes uin override entity
 func (sa *Adapter) DeleteUINOverride(uin string) error {
-	//TODO
+	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
+	result, err := sa.db.uinoverrides.DeleteOne(filter, nil)
+	if err != nil {
+		return err
+	}
+	if result == nil {
+		return errors.New("result is nil for uin override item with uin " + uin)
+	}
+	deletedCount := result.DeletedCount
+	if deletedCount == 0 {
+		return errors.New("there is no a uin override for uin " + uin)
+	}
+	if deletedCount > 1 {
+		return errors.New("deleted more than one records for uin " + uin)
+	}
+
+	//success - count = 1
 	return nil
 }
 

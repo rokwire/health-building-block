@@ -4186,6 +4186,16 @@ func (h AdminApisHandler) UpdateUINOverride(current model.User, group string, w 
 	w.Write(data)
 }
 
+//DeleteUINOverride deletes an uin override
+// @Description Deletes an uin override
+// @Tags Admin
+// @ID DeleteUINOverride
+// @Accept plain
+// @Param uin path string true "UIN"
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/uin-overrides/uin/{uin} [delete]
 func (h AdminApisHandler) DeleteUINOverride(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uin := params["uin"]

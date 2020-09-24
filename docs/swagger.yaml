@@ -3130,6 +3130,27 @@ paths:
       tags:
       - Admin
   /admin/uin-overrides/uin/{uin}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes an uin override
+      operationId: DeleteUINOverride
+      parameters:
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
     put:
       consumes:
       - application/json

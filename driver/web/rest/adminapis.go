@@ -4119,6 +4119,17 @@ type updateUINOverrideRequest struct {
 } // @name updateUINOverrideRequest
 
 //UpdateUINOverride updates uin override
+// @Description Updates uin override.
+// @Tags Admin
+// @ID UpdateUINOverride
+// @Accept json
+// @Produce json
+// @Param data body updateUINOverrideRequest true "body data"
+// @Param uin path string true "UIN"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/uin-overrides/uin/{uin} [put]
 func (h AdminApisHandler) UpdateUINOverride(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uin := params["uin"]

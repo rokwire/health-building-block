@@ -3163,6 +3163,55 @@ var doc = `{
                 }
             }
         },
+        "/admin/uin-overrides/uin/{uin}": {
+            "put": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Updates uin override.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "UpdateUINOverride",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/updateUINOverrideRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/user": {
             "get": {
                 "security": [
@@ -6393,6 +6442,23 @@ var doc = `{
             "properties": {
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "updateUINOverrideRequest": {
+            "type": "object",
+            "required": [
+                "interval"
+            ],
+            "properties": {
+                "audit": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "integer"
                 }
             }
         }

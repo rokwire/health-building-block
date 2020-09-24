@@ -1202,6 +1202,17 @@ definitions:
     required:
     - name
     type: object
+  updateUINOverrideRequest:
+    properties:
+      audit:
+        type: string
+      category:
+        type: string
+      interval:
+        type: integer
+    required:
+    - interval
+    type: object
 host: localhost
 info:
   contact: {}
@@ -3113,6 +3124,36 @@ paths:
             items:
               $ref: '#/definitions/UINOverride'
             type: array
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/uin-overrides/uin/{uin}:
+    put:
+      consumes:
+      - application/json
+      description: Updates uin override.
+      operationId: UpdateUINOverride
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateUINOverrideRequest'
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []

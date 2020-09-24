@@ -3076,6 +3076,175 @@ var doc = `{
                 }
             }
         },
+        "/admin/uin-overrides": {
+            "get": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Gives uin override items",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "GetUINOverrides",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by uin or category",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/UINOverride"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Creates an uin override.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "CreateUINOverride",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createUINOverrideRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UINOverride"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/uin-overrides/uin/{uin}": {
+            "put": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Updates uin override.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "UpdateUINOverride",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/updateUINOverrideRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Deletes an uin override",
+                "consumes": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "DeleteUINOverride",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfuly deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/user": {
             "get": {
                 "security": [
@@ -4014,6 +4183,31 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/gubonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/uin-override": {
+            "get": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    }
+                ],
+                "description": "Gives the uin override for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetUINOverride",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UINOverride"
                         }
                     }
                 }
@@ -5218,6 +5412,20 @@ var doc = `{
                 }
             }
         },
+        "UINOverride": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "integer"
+                },
+                "uin": {
+                    "type": "string"
+                }
+            }
+        },
         "User": {
             "type": "object",
             "properties": {
@@ -5768,6 +5976,27 @@ var doc = `{
                 }
             }
         },
+        "createUINOverrideRequest": {
+            "type": "object",
+            "required": [
+                "interval",
+                "uin"
+            ],
+            "properties": {
+                "audit": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "integer"
+                },
+                "uin": {
+                    "type": "string"
+                }
+            }
+        },
         "gubonResponse": {
             "type": "object",
             "additionalProperties": {
@@ -6273,6 +6502,23 @@ var doc = `{
                     "type": "string"
                 }
             }
+        },
+        "updateUINOverrideRequest": {
+            "type": "object",
+            "required": [
+                "interval"
+            ],
+            "properties": {
+                "audit": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "integer"
+                }
+            }
         }
     },
     "securityDefinitions": {
@@ -6315,7 +6561,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.18.0",
+	Version:     "1.19.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

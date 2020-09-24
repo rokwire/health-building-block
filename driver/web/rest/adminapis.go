@@ -3997,6 +3997,225 @@ func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w htt
 	w.Write(resData)
 }
 
+//GetUINOverrides gives uin override items
+// @Description Gives uin override items
+// @Tags Admin
+// @ID GetUINOverrides
+// @Accept json
+// @Param uin query string false "UIN"
+// @Param sort query string false "Sort by uin or category"
+// @Success 200 {array} model.UINOverride
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/uin-overrides [get]
+func (h AdminApisHandler) GetUINOverrides(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	//uin
+	var uin *string
+	uinKeys, ok := r.URL.Query()["uin"]
+	if ok && len(uinKeys[0]) > 0 {
+		uin = &uinKeys[0]
+	}
+
+	//sort by
+	var sort *string
+	sortByKeys, ok := r.URL.Query()["sort"]
+	if ok {
+		sort = &sortByKeys[0]
+	}
+
+	uinOverrides, err := h.app.Administration.GetUINOverrides(uin, sort)
+	if err != nil {
+		log.Println("Error on getting the uin overrides items")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if len(uinOverrides) == 0 {
+		uinOverrides = make([]*model.UINOverride, 0)
+	}
+	data, err := json.Marshal(uinOverrides)
+	if err != nil {
+		log.Println("Error on marshal the uin overrides items")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+type createUINOverrideRequest struct {
+	Audit    *string `json:"audit"`
+	UIN      string  `json:"uin" validate:"required"`
+	Interval int     `json:"interval" validate:"required"`
+	Category *string `json:"category"`
+} // @name createUINOverrideRequest
+
+//CreateUINOverride creates an uin override
+// @Description Creates an uin override.
+// @Tags Admin
+// @ID CreateUINOverride
+// @Accept json
+// @Produce json
+// @Param data body createUINOverrideRequest true "body data"
+// @Success 200 {object} model.UINOverride
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/uin-overrides [post]
+func (h AdminApisHandler) CreateUINOverride(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create uin override - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createUINOverrideRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create an uin override request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create an uin override data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	uin := requestData.UIN
+	interval := requestData.Interval
+	category := requestData.Category
+
+	uinOverride, err := h.app.Administration.CreateUINOverride(current, group, audit, uin, interval, category)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err = json.Marshal(uinOverride)
+	if err != nil {
+		log.Println("Error on marshal an uin override")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+type updateUINOverrideRequest struct {
+	Audit    *string `json:"audit"`
+	Interval int     `json:"interval" validate:"required"`
+	Category *string `json:"category"`
+} // @name updateUINOverrideRequest
+
+//UpdateUINOverride updates uin override
+// @Description Updates uin override.
+// @Tags Admin
+// @ID UpdateUINOverride
+// @Accept json
+// @Produce json
+// @Param data body updateUINOverrideRequest true "body data"
+// @Param uin path string true "UIN"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/uin-overrides/uin/{uin} [put]
+func (h AdminApisHandler) UpdateUINOverride(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update uin override item - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateUINOverrideRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update uin override item request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update an uin override data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	interval := requestData.Interval
+	category := requestData.Category
+
+	uinOverride, err := h.app.Administration.UpdateUINOverride(current, group, audit, uin, interval, category)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err = json.Marshal(uinOverride)
+	if err != nil {
+		log.Println("Error on marshal an uin override")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+//DeleteUINOverride deletes an uin override
+// @Description Deletes an uin override
+// @Tags Admin
+// @ID DeleteUINOverride
+// @Accept plain
+// @Param uin path string true "UIN"
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/uin-overrides/uin/{uin} [delete]
+func (h AdminApisHandler) DeleteUINOverride(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+	err := h.app.Administration.DeleteUINOverride(current, group, uin)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully deleted"))
+}
+
 //GetUserByExternalID gets the user by external id
 // @Description Gets the user by external id.
 // @Tags Admin

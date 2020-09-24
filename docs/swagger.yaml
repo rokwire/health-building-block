@@ -473,6 +473,15 @@ definitions:
       timestamp:
         type: integer
     type: object
+  UINOverride:
+    properties:
+      category:
+        type: string
+      interval:
+        type: integer
+      uin:
+        type: string
+    type: object
   User:
     properties:
       consent:
@@ -843,6 +852,20 @@ definitions:
     required:
     - name
     type: object
+  createUINOverrideRequest:
+    properties:
+      audit:
+        type: string
+      category:
+        type: string
+      interval:
+        type: integer
+      uin:
+        type: string
+    required:
+    - interval
+    - uin
+    type: object
   gubonResponse:
     additionalProperties:
       type: string
@@ -1179,6 +1202,17 @@ definitions:
     required:
     - name
     type: object
+  updateUINOverrideRequest:
+    properties:
+      audit:
+        type: string
+      category:
+        type: string
+      interval:
+        type: integer
+    required:
+    - interval
+    type: object
 host: localhost
 info:
   contact: {}
@@ -1187,7 +1221,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 1.18.0
+  version: 1.19.0
 paths:
   /admin/access-rules:
     get:
@@ -3043,6 +3077,108 @@ paths:
       - AdminGroupAuth: []
       tags:
       - Admin
+  /admin/uin-overrides:
+    get:
+      consumes:
+      - application/json
+      description: Gives uin override items
+      operationId: GetUINOverrides
+      parameters:
+      - description: UIN
+        in: query
+        name: uin
+        type: string
+      - description: Sort by uin or category
+        in: query
+        name: sort
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/UINOverride'
+            type: array
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates an uin override.
+      operationId: CreateUINOverride
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createUINOverrideRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UINOverride'
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/uin-overrides/uin/{uin}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes an uin override
+      operationId: DeleteUINOverride
+      parameters:
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Updates uin override.
+      operationId: UpdateUINOverride
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateUINOverrideRequest'
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
   /admin/user:
     get:
       consumes:
@@ -3636,6 +3772,21 @@ paths:
       - ProvidersAuth: []
       tags:
       - Providers
+  /covid19/uin-override:
+    get:
+      consumes:
+      - application/json
+      description: Gives the uin override for the user
+      operationId: GetUINOverride
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UINOverride'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
   /covid19/user:
     get:
       consumes:

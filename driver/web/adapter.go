@@ -49,7 +49,7 @@ type Adapter struct {
 
 // @title Rokwire Health Building Block API
 // @description Rokwire Health Building Block API Documentation.
-// @version 1.18.0
+// @version 1.19.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost
@@ -115,6 +115,8 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAuthWrapFunc(we.apisHandler.CreateHistoryV2)).Methods("POST")
 	covid19RestSubrouter.HandleFunc("/v2/histories/{id}", we.userAuthWrapFunc(we.apisHandler.UpdateHistoryV2)).Methods("PUT")
 	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAuthWrapFunc(we.apisHandler.DeleteHistoriesV2)).Methods("DELETE")
+
+	covid19RestSubrouter.HandleFunc("/uin-override", we.userAuthWrapFunc(we.apisHandler.GetUINOverride)).Methods("GET")
 
 	//provider auth
 	covid19RestSubrouter.HandleFunc("/users/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.GetUserByShibbolethUIN)).Methods("GET")
@@ -254,6 +256,11 @@ func (we Adapter) Start() {
 
 	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetSymptoms)).Methods("GET").Queries("app-version", "")
 	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateSymptoms)).Methods("PUT")
+
+	adminRestSubrouter.HandleFunc("/uin-overrides", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUINOverrides)).Methods("GET")
+	adminRestSubrouter.HandleFunc("/uin-overrides", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateUINOverride)).Methods("POST")
+	adminRestSubrouter.HandleFunc("/uin-overrides/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateUINOverride)).Methods("PUT")
+	adminRestSubrouter.HandleFunc("/uin-overrides/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteUINOverride)).Methods("DELETE")
 
 	adminRestSubrouter.HandleFunc("/user", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUserByExternalID)).Methods("GET").Queries("external-id", "")
 

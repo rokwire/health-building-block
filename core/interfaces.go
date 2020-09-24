@@ -80,6 +80,8 @@ type Services interface {
 
 	AddTraceReport(items []model.TraceExposure) (int, error)
 	GetExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)
+
+	GetUINOverride(current model.User) (*model.UINOverride, error)
 }
 
 type servicesImpl struct {
@@ -237,6 +239,10 @@ func (s *servicesImpl) AddTraceReport(items []model.TraceExposure) (int, error) 
 
 func (s *servicesImpl) GetExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error) {
 	return s.app.getExposures(timestamp, dateAdded)
+}
+
+func (s *servicesImpl) GetUINOverride(current model.User) (*model.UINOverride, error) {
+	return s.app.getUINOverride(current)
 }
 
 //Administration exposes administration APIs for the driver adapters

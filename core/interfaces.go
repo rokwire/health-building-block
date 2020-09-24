@@ -82,6 +82,8 @@ type Services interface {
 	GetExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)
 
 	GetUINOverride(current model.User) (*model.UINOverride, error)
+
+	GetExternalUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 }
 
 type servicesImpl struct {
@@ -243,6 +245,10 @@ func (s *servicesImpl) GetExposures(timestamp *int64, dateAdded *int64) ([]model
 
 func (s *servicesImpl) GetUINOverride(current model.User) (*model.UINOverride, error) {
 	return s.app.getUINOverride(current)
+}
+
+func (s *servicesImpl) GetExternalUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
+	return s.app.getExternalUINOverrides(uin, sort)
 }
 
 //Administration exposes administration APIs for the driver adapters

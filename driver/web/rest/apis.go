@@ -357,6 +357,43 @@ func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request)
 	w.Write(data)
 }
 
+func (h ApisHandler) GetExternalUINOverrides(w http.ResponseWriter, r *http.Request) {
+	//uin
+	var uin *string
+	uinKeys, ok := r.URL.Query()["uin"]
+	if ok && len(uinKeys[0]) > 0 {
+		uin = &uinKeys[0]
+	}
+
+	//sort by
+	var sort *string
+	sortByKeys, ok := r.URL.Query()["sort"]
+	if ok {
+		sort = &sortByKeys[0]
+	}
+
+	uinOverrides, err := h.app.Services.GetExternalUINOverrides(uin, sort)
+	if err != nil {
+		log.Println("Error on getting the external uin overrides items")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if len(uinOverrides) == 0 {
+		uinOverrides = make([]*model.UINOverride, 0)
+	}
+	data, err := json.Marshal(uinOverrides)
+	if err != nil {
+		log.Println("Error on marshal the external uin overrides items")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //GetCounty gets a county
 // @Description Gets a county
 // @Tags Covid19

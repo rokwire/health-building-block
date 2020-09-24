@@ -398,6 +398,14 @@ func (app *Application) getUINOverride(current model.User) (*model.UINOverride, 
 	return uinOverrides[0], nil
 }
 
+func (app *Application) getExternalUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
+	uinOverrides, err := app.storage.FindUINOverrides(uin, sort)
+	if err != nil {
+		return nil, err
+	}
+	return uinOverrides, nil
+}
+
 func (app *Application) deleteEHitories(userID string) (int64, error) {
 	deletedCount, err := app.storage.DeleteEHistories(userID)
 	if err != nil {

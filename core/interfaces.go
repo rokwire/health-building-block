@@ -83,7 +83,7 @@ type Services interface {
 
 	GetUINOverride(current model.User) (*model.UINOverride, error)
 
-	SetUINBuildingAccess(current model.User, lastStatusCheck time.Time, access string) error
+	SetUINBuildingAccess(current model.User, date time.Time, access string) error
 
 	GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
 }
@@ -249,8 +249,8 @@ func (s *servicesImpl) GetUINOverride(current model.User) (*model.UINOverride, e
 	return s.app.getUINOverride(current)
 }
 
-func (s *servicesImpl) SetUINBuildingAccess(current model.User, lastStatusCheck time.Time, access string) error {
-	return s.app.setUINBuildingAccess(current, lastStatusCheck, access)
+func (s *servicesImpl) SetUINBuildingAccess(current model.User, date time.Time, access string) error {
+	return s.app.setUINBuildingAccess(current, date, access)
 }
 
 func (s *servicesImpl) GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error) {
@@ -831,7 +831,7 @@ type Storage interface {
 	DeleteUINOverride(uin string) error
 
 	FindUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
-	CreateOrUpdateUINBuildingAccess(uin string, lastStatusCheck time.Time, access string) error
+	CreateOrUpdateUINBuildingAccess(uin string, date time.Time, access string) error
 }
 
 //StorageListener listenes for change data storage events

@@ -4350,11 +4350,11 @@ func (sa *Adapter) FindUINBuildingAccess(uin string) (*model.UINBuildingAccess, 
 }
 
 //CreateOrUpdateUINBuildingAccess creates UIN building access or update it if already created
-func (sa *Adapter) CreateOrUpdateUINBuildingAccess(uin string, lastStatusCheck time.Time, access string) error {
+func (sa *Adapter) CreateOrUpdateUINBuildingAccess(uin string, date time.Time, access string) error {
 	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
 	update := bson.D{
 		primitive.E{Key: "$set", Value: bson.D{
-			primitive.E{Key: "last_status_check", Value: lastStatusCheck},
+			primitive.E{Key: "date", Value: date},
 			primitive.E{Key: "access", Value: access},
 		}},
 	}

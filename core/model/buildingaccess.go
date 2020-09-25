@@ -21,7 +21,7 @@ import "time"
 
 //UINBuildingAccess represents uin building access entity
 type UINBuildingAccess struct {
-	UIN             string    `json:"uin" bson:"uin"`
-	LastStatusCheck time.Time `json:"last_status_check" bson:"last_status_check"`
-	Access          string    `json:"access" bson:"access"`
+	UIN    string    `json:"uin" bson:"uin"`
+	Date   time.Time `json:"date" bson:"date"`
+	Access string    `json:"access" bson:"access"`
 } // @name UINBuildingAccess

@@ -1268,8 +1268,8 @@ func (h ApisHandler) GetUINOverride(current model.User, w http.ResponseWriter, r
 }
 
 type setBuildingAccessRequest struct {
-	LastStatusCheck time.Time `json:"last_status_check" validate:"required"`
-	Access          string    `json:"access" validate:"required"`
+	Date   time.Time `json:"date" validate:"required"`
+	Access string    `json:"access" validate:"required"`
 } //@name setBuildingAccessRequest
 
 func (h ApisHandler) SetUINBuildingAccess(current model.User, w http.ResponseWriter, r *http.Request) {
@@ -1297,10 +1297,10 @@ func (h ApisHandler) SetUINBuildingAccess(current model.User, w http.ResponseWri
 		return
 	}
 
-	lastStatusCheck := requestData.LastStatusCheck
+	date := requestData.Date
 	access := requestData.Access
 
-	err = h.app.Services.SetUINBuildingAccess(current, lastStatusCheck, access)
+	err = h.app.Services.SetUINBuildingAccess(current, date, access)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

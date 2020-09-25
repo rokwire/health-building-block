@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.20.0] - 2020-09-25
+### Added
+- Building access APIs. [#48](https://github.com/rokwire/health-building-block/issues/48)
+
 ## [1.19.0] - 2020-09-24
 ### Added
 - UIN overrides. [#44](https://github.com/rokwire/health-building-block/issues/44)
@@ -122,7 +126,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.19.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.20.0...HEAD
+[1.20.0]: https://github.com/rokwire/health-building-block/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/rokwire/health-building-block/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/rokwire/health-building-block/compare/v1.17.0...v1.18.0
 [1.17.0]: https://github.com/rokwire/health-building-block/compare/v1.16.0...v1.17.0

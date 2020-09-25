@@ -3334,6 +3334,39 @@ var doc = `{
                 }
             }
         },
+        "/covid19/building-access": {
+            "put": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    }
+                ],
+                "description": "grant/deny building access",
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "SetUINBuildingAccess",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/setBuildingAccessRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/counties": {
             "get": {
                 "security": [
@@ -3587,6 +3620,40 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/CTest"
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/ext/building-access": {
+            "get": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Gives the building access for the provided UIN",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "GetExtBuildingAccess",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UINBuildingAccess"
                         }
                     }
                 }
@@ -5412,6 +5479,20 @@ var doc = `{
                 }
             }
         },
+        "UINBuildingAccess": {
+            "type": "object",
+            "properties": {
+                "access": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "uin": {
+                    "type": "string"
+                }
+            }
+        },
         "UINOverride": {
             "type": "object",
             "properties": {
@@ -6086,6 +6167,21 @@ var doc = `{
                 }
             }
         },
+        "setBuildingAccessRequest": {
+            "type": "object",
+            "required": [
+                "access",
+                "date"
+            ],
+            "properties": {
+                "access": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                }
+            }
+        },
         "updateAccessRuleItemRequest": {
             "type": "object",
             "required": [
@@ -6561,7 +6657,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.19.0",
+	Version:     "1.20.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

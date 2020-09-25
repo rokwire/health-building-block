@@ -4350,17 +4350,26 @@ func (sa *Adapter) FindUINBuildingAccess(uin string) (*model.UINBuildingAccess, 
 }
 
 //CreateOrUpdateUINBuildingAccess creates UIN building access or update it if already created
-func (sa *Adapter) CreateOrUpdateUINBuildingAccess(uin string, lastStatusCheck time.Time, access string) (*model.UINBuildingAccess, error) {
-	/*//TODO
-
-	uinBuildingAccess := model.UINBuildingAccess{UIN: uin, LastStatusCheck: time.Now(), Access: true}
-	_, err := sa.db.uinbuildingaccess.InsertOne(&uinBuildingAccess)
-	if err != nil {
-		return nil, err
+func (sa *Adapter) CreateOrUpdateUINBuildingAccess(uin string, lastStatusCheck time.Time, access string) error {
+	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "last_status_check", Value: lastStatusCheck},
+			primitive.E{Key: "access", Value: access},
+		}},
 	}
 
-	return &uinBuildingAccess, nil  */
-	return nil, nil
+	//insert if not exists
+	opt := options.Update()
+	upsert := true
+	opt.Upsert = &upsert
+
+	_, err := sa.db.uinbuildingaccess.UpdateOne(filter, update, opt)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {

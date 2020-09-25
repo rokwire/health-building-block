@@ -1300,23 +1300,16 @@ func (h ApisHandler) SetUINBuildingAccess(current model.User, w http.ResponseWri
 	lastStatusCheck := requestData.LastStatusCheck
 	access := requestData.Access
 
-	uinBuildingAccess, err := h.app.Services.SetUINBuildingAccess(current, lastStatusCheck, access)
+	err = h.app.Services.SetUINBuildingAccess(current, lastStatusCheck, access)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	data, err = json.Marshal(uinBuildingAccess)
-	if err != nil {
-		log.Println("Error on marshal an uin building access")
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-	w.Write(data)
+	w.Write([]byte("Successfully processed"))
 }
 
 //GetProviders gets the providers

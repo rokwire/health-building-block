@@ -398,8 +398,14 @@ func (app *Application) getUINOverride(current model.User) (*model.UINOverride, 
 	return uinOverrides[0], nil
 }
 
-func (app *Application) setUINBuildingAccess(current model.User, lastStatusCheck time.Time, access string) (*model.UINBuildingAccess, error) {
-	return nil, nil
+func (app *Application) setUINBuildingAccess(current model.User, lastStatusCheck time.Time, access string) error {
+	//supported only for Shibboleth users - uin
+	uin := current.ExternalID
+	err := app.storage.CreateOrUpdateUINBuildingAccess(uin, lastStatusCheck, access)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (app *Application) getExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error) {

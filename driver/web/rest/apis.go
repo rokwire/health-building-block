@@ -357,6 +357,15 @@ func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request)
 	w.Write(data)
 }
 
+//GetExtBuildingAccess gives the building access for the provided UIN
+// @Description Gives the building access for the provided UIN
+// @Tags Providers
+// @ID GetExtBuildingAccess
+// @Accept json
+// @Param uin query string true "UIN"
+// @Success 200 {object} model.UINBuildingAccess
+// @Security ProvidersAuth
+// @Router /covid19/ext/building-access [get]
 func (h ApisHandler) GetExtBuildingAccess(w http.ResponseWriter, r *http.Request) {
 	uinKeys, ok := r.URL.Query()["uin"]
 	if !ok || len(uinKeys[0]) < 1 {

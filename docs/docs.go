@@ -3625,6 +3625,40 @@ var doc = `{
                 }
             }
         },
+        "/covid19/ext/building-access": {
+            "get": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Gives the building access for the provided UIN",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "GetExtBuildingAccess",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UINBuildingAccess"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/faq": {
             "get": {
                 "security": [
@@ -5442,6 +5476,20 @@ var doc = `{
                 },
                 "timestamp": {
                     "type": "integer"
+                }
+            }
+        },
+        "UINBuildingAccess": {
+            "type": "object",
+            "properties": {
+                "access": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "uin": {
+                    "type": "string"
                 }
             }
         },

@@ -473,6 +473,15 @@ definitions:
       timestamp:
         type: integer
     type: object
+  UINBuildingAccess:
+    properties:
+      access:
+        type: string
+      date:
+        type: string
+      uin:
+        type: string
+    type: object
   UINOverride:
     properties:
       category:
@@ -3425,6 +3434,27 @@ paths:
       - AppUserAuth: []
       tags:
       - Covid19
+  /covid19/ext/building-access:
+    get:
+      consumes:
+      - application/json
+      description: Gives the building access for the provided UIN
+      operationId: GetExtBuildingAccess
+      parameters:
+      - description: UIN
+        in: query
+        name: uin
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UINBuildingAccess'
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
   /covid19/faq:
     get:
       consumes:

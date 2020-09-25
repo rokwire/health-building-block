@@ -21,8 +21,6 @@ import (
 	"context"
 	"errors"
 	"health/core"
-	"health/core/model"
-	"io/ioutil"
 	"log"
 	"time"
 
@@ -189,7 +187,7 @@ func (m *database) start() error {
 		return err
 	}
 	crules := &collectionWrapper{database: m, coll: db.Collection("crules")}
-	err = m.applyCRulesChecks(crules, counties)
+	err = m.applyCRulesChecks(crules)
 	if err != nil {
 		return err
 	}
@@ -612,34 +610,11 @@ func (m *database) applySymptomsChecks(symptoms *collectionWrapper) error {
 		return err
 	}
 
-	//add initial data for version 2.6 if not added
-	filter := bson.D{primitive.E{Key: "app_version", Value: "2.6"}}
-	var items []*model.Symptom
-	err = symptoms.Find(filter, &items, nil)
-	if err != nil {
-		return err
-	}
-	if len(items) <= 0 {
-		log.Println("there are no symptoms for version 2.6, so we need to add initial data")
-
-		data, err := ioutil.ReadFile("./driven/storage/symptoms_2.6.json")
-		if err != nil {
-			return err
-		}
-		d := model.Symptoms{AppVersion: "2.6", Items: string(data)}
-		_, err = symptoms.InsertOne(&d)
-		if err != nil {
-			return err
-		}
-	} else {
-		log.Println("there are symptoms for version 2.6, so nothing to do")
-	}
-
 	log.Println("symptoms checks passed")
 	return nil
 }
 
-func (m *database) applyCRulesChecks(cRules *collectionWrapper, counties *collectionWrapper) error {
+func (m *database) applyCRulesChecks(cRules *collectionWrapper) error {
 	log.Println("apply CRules checks.....")
 
 	//add indexes
@@ -651,41 +626,6 @@ func (m *database) applyCRulesChecks(cRules *collectionWrapper, counties *collec
 	err = cRules.AddIndex(bson.D{primitive.E{Key: "county_id", Value: 1}}, false)
 	if err != nil {
 		return err
-	}
-
-	//add initial data for version 2.6 and Champaign county if not added
-	//first find the county id
-	chFilter := bson.D{primitive.E{Key: "name", Value: "Champaign"}}
-	var champaignCounty *county
-	err = counties.FindOne(chFilter, &champaignCounty, nil)
-	if err != nil {
-		return err
-	}
-	if champaignCounty == nil {
-		return errors.New("there is no a Champaign county")
-	}
-
-	//check if added
-	filter := bson.D{primitive.E{Key: "app_version", Value: "2.6"}, primitive.E{Key: "county_id", Value: champaignCounty.ID}}
-	var items []*model.CRules
-	err = cRules.Find(filter, &items, nil)
-	if err != nil {
-		return err
-	}
-	if len(items) <= 0 {
-		log.Println("there are no symptoms rules for version 2.6 and Champaign county, so we need to add initial data")
-
-		data, err := ioutil.ReadFile("./driven/storage/rules_2.6.json")
-		if err != nil {
-			return err
-		}
-		d := model.CRules{AppVersion: "2.6", CountyID: champaignCounty.ID, Data: string(data)}
-		_, err = cRules.InsertOne(&d)
-		if err != nil {
-			return err
-		}
-	} else {
-		log.Println("there are symptoms rules for version 2.6 and Champaign county, so nothing to do")
 	}
 
 	log.Println("CRules checks passed")

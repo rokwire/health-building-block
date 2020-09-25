@@ -82,6 +82,10 @@ type Services interface {
 	GetExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)
 
 	GetUINOverride(current model.User) (*model.UINOverride, error)
+
+	SetUINBuildingAccess(current model.User, date time.Time, access string) error
+
+	GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
 }
 
 type servicesImpl struct {
@@ -243,6 +247,14 @@ func (s *servicesImpl) GetExposures(timestamp *int64, dateAdded *int64) ([]model
 
 func (s *servicesImpl) GetUINOverride(current model.User) (*model.UINOverride, error) {
 	return s.app.getUINOverride(current)
+}
+
+func (s *servicesImpl) SetUINBuildingAccess(current model.User, date time.Time, access string) error {
+	return s.app.setUINBuildingAccess(current, date, access)
+}
+
+func (s *servicesImpl) GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error) {
+	return s.app.getExtUINBuildingAccess(uin)
 }
 
 //Administration exposes administration APIs for the driver adapters
@@ -817,6 +829,9 @@ type Storage interface {
 	CreateUINOverride(uin string, interval int, category *string) (*model.UINOverride, error)
 	UpdateUINOverride(uin string, interval int, category *string) (*string, error)
 	DeleteUINOverride(uin string) error
+
+	FindUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
+	CreateOrUpdateUINBuildingAccess(uin string, date time.Time, access string) error
 }
 
 //StorageListener listenes for change data storage events

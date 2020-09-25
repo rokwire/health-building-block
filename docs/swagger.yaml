@@ -473,6 +473,15 @@ definitions:
       timestamp:
         type: integer
     type: object
+  UINBuildingAccess:
+    properties:
+      access:
+        type: string
+      date:
+        type: string
+      uin:
+        type: string
+    type: object
   UINOverride:
     properties:
       category:
@@ -924,6 +933,16 @@ definitions:
         type: string
     required:
     - status
+    type: object
+  setBuildingAccessRequest:
+    properties:
+      access:
+        type: string
+      date:
+        type: string
+    required:
+    - access
+    - date
     type: object
   updateAccessRuleItemRequest:
     properties:
@@ -3234,6 +3253,26 @@ paths:
       - RokwireAuth: []
       tags:
       - Covid19
+  /covid19/building-access:
+    put:
+      description: grant/deny building access
+      operationId: SetUINBuildingAccess
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/setBuildingAccessRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
   /covid19/counties:
     get:
       consumes:
@@ -3395,6 +3434,27 @@ paths:
       - AppUserAuth: []
       tags:
       - Covid19
+  /covid19/ext/building-access:
+    get:
+      consumes:
+      - application/json
+      description: Gives the building access for the provided UIN
+      operationId: GetExtBuildingAccess
+      parameters:
+      - description: UIN
+        in: query
+        name: uin
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UINBuildingAccess'
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
   /covid19/faq:
     get:
       consumes:

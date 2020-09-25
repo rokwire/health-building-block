@@ -398,6 +398,18 @@ func (app *Application) getUINOverride(current model.User) (*model.UINOverride, 
 	return uinOverrides[0], nil
 }
 
+func (app *Application) setUINBuildingAccess(current model.User, lastStatusCheck time.Time, access string) (*model.UINBuildingAccess, error) {
+	return nil, nil
+}
+
+func (app *Application) getExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error) {
+	uinBuildingAccess, err := app.storage.FindUINBuildingAccess(uin)
+	if err != nil {
+		return nil, err
+	}
+	return uinBuildingAccess, nil
+}
+
 func (app *Application) deleteEHitories(userID string) (int64, error) {
 	deletedCount, err := app.storage.DeleteEHistories(userID)
 	if err != nil {

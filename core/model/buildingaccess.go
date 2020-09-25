@@ -23,5 +23,5 @@ import "time"
 type UINBuildingAccess struct {
 	UIN             string    `json:"uin" bson:"uin"`
 	LastStatusCheck time.Time `json:"last_status_check" bson:"last_status_check"`
-	Access          bool      `json:"access" bson:"access"`
+	Access          string    `json:"access" bson:"access"`
 } // @name UINBuildingAccess

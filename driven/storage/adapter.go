@@ -4338,6 +4338,31 @@ func (sa *Adapter) DeleteUINOverride(uin string) error {
 	return nil
 }
 
+//FindUINBuildingAccess finds the UIN buinding access for the provided uin
+func (sa *Adapter) FindUINBuildingAccess(uin string) (*model.UINBuildingAccess, error) {
+	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
+	var uinBuildingAccess *model.UINBuildingAccess
+	err := sa.db.uinbuildingaccess.FindOne(filter, &uinBuildingAccess, nil)
+	if err != nil {
+		return nil, err
+	}
+	return uinBuildingAccess, nil
+}
+
+//CreateOrUpdateUINBuildingAccess creates UIN building access or update it if already created
+func (sa *Adapter) CreateOrUpdateUINBuildingAccess(uin string, lastStatusCheck time.Time, access string) (*model.UINBuildingAccess, error) {
+	/*//TODO
+
+	uinBuildingAccess := model.UINBuildingAccess{UIN: uin, LastStatusCheck: time.Now(), Access: true}
+	_, err := sa.db.uinbuildingaccess.InsertOne(&uinBuildingAccess)
+	if err != nil {
+		return nil, err
+	}
+
+	return &uinBuildingAccess, nil  */
+	return nil, nil
+}
+
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {
 	if list == nil {
 		return false

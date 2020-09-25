@@ -925,6 +925,16 @@ definitions:
     required:
     - status
     type: object
+  setBuildingAccessRequest:
+    properties:
+      access:
+        type: string
+      date:
+        type: string
+    required:
+    - access
+    - date
+    type: object
   updateAccessRuleItemRequest:
     properties:
       county_status_id:
@@ -3232,6 +3242,26 @@ paths:
             type: string
       security:
       - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/building-access:
+    put:
+      description: grant/deny building access
+      operationId: SetUINBuildingAccess
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/setBuildingAccessRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
       tags:
       - Covid19
   /covid19/counties:

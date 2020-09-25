@@ -3334,6 +3334,39 @@ var doc = `{
                 }
             }
         },
+        "/covid19/building-access": {
+            "put": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    }
+                ],
+                "description": "grant/deny building access",
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "SetUINBuildingAccess",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/setBuildingAccessRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/counties": {
             "get": {
                 "security": [
@@ -6082,6 +6115,21 @@ var doc = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "setBuildingAccessRequest": {
+            "type": "object",
+            "required": [
+                "access",
+                "date"
+            ],
+            "properties": {
+                "access": {
+                    "type": "string"
+                },
+                "date": {
                     "type": "string"
                 }
             }

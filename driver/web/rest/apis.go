@@ -1272,6 +1272,14 @@ type setBuildingAccessRequest struct {
 	Access string    `json:"access" validate:"required"`
 } //@name setBuildingAccessRequest
 
+//SetUINBuildingAccess grant/deny building access
+// @Description grant/deny building access
+// @Tags Covid19
+// @ID SetUINBuildingAccess
+// @Param data body setBuildingAccessRequest true "body data"
+// @Success 200 {object} string
+// @Security AppUserAuth
+// @Router /covid19/building-access [put]
 func (h ApisHandler) SetUINBuildingAccess(current model.User, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {

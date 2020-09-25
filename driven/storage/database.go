@@ -39,27 +39,28 @@ type database struct {
 	db       *mongo.Database
 	dbClient *mongo.Client
 
-	configs        *collectionWrapper
-	users          *collectionWrapper
-	providers      *collectionWrapper
-	locations      *collectionWrapper
-	ctests         *collectionWrapper
-	emanualtests   *collectionWrapper
-	resources      *collectionWrapper
-	faq            *collectionWrapper
-	news           *collectionWrapper
-	estatus        *collectionWrapper
-	ehistory       *collectionWrapper
-	counties       *collectionWrapper
-	testtypes      *collectionWrapper
-	rules          *collectionWrapper
-	symptomgroups  *collectionWrapper //old
-	symptomrules   *collectionWrapper //old
-	symptoms       *collectionWrapper
-	crules         *collectionWrapper
-	traceexposures *collectionWrapper
-	accessrules    *collectionWrapper
-	uinoverrides   *collectionWrapper
+	configs           *collectionWrapper
+	users             *collectionWrapper
+	providers         *collectionWrapper
+	locations         *collectionWrapper
+	ctests            *collectionWrapper
+	emanualtests      *collectionWrapper
+	resources         *collectionWrapper
+	faq               *collectionWrapper
+	news              *collectionWrapper
+	estatus           *collectionWrapper
+	ehistory          *collectionWrapper
+	counties          *collectionWrapper
+	testtypes         *collectionWrapper
+	rules             *collectionWrapper
+	symptomgroups     *collectionWrapper //old
+	symptomrules      *collectionWrapper //old
+	symptoms          *collectionWrapper
+	crules            *collectionWrapper
+	traceexposures    *collectionWrapper
+	accessrules       *collectionWrapper
+	uinoverrides      *collectionWrapper
+	uinbuildingaccess *collectionWrapper
 
 	listener core.StorageListener
 }
@@ -206,6 +207,11 @@ func (m *database) start() error {
 	if err != nil {
 		return err
 	}
+	uinbuildingaccess := &collectionWrapper{database: m, coll: db.Collection("uinbuildingaccess")}
+	err = m.applyUINBuildingAccessChecks(uinbuildingaccess)
+	if err != nil {
+		return err
+	}
 
 	//asign the db, db client and the collections
 	m.db = db
@@ -232,6 +238,7 @@ func (m *database) start() error {
 	m.traceexposures = traceexposures
 	m.accessrules = accessrules
 	m.uinoverrides = uinoverrides
+	m.uinbuildingaccess = uinbuildingaccess
 
 	//watch for config changes
 	go m.configs.Watch(nil)
@@ -680,6 +687,19 @@ func (m *database) applyUINOverridesChecks(uinoverrides *collectionWrapper) erro
 	}
 
 	log.Println("uinOverrides checks passed")
+	return nil
+}
+
+func (m *database) applyUINBuildingAccessChecks(uinbuildingaccess *collectionWrapper) error {
+	log.Println("apply uinBuildingAccess checks.....")
+
+	//add index - unique
+	err := uinbuildingaccess.AddIndex(bson.D{primitive.E{Key: "uin", Value: 1}}, true)
+	if err != nil {
+		return err
+	}
+
+	log.Println("uinBuildingAccess checks passed")
 	return nil
 }
 

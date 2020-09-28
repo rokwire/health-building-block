@@ -6641,6 +6641,9 @@ var doc = `{
                 "app_version": {
                     "type": "string"
                 },
+                "audit": {
+                    "type": "string"
+                },
                 "items": {
                     "type": "string"
                 }

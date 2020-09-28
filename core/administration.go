@@ -907,7 +907,7 @@ func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error)
 	return symptoms, nil
 }
 
-func (app *Application) updateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error) {
+func (app *Application) updateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error) {
 	symptoms, err := app.storage.UpdateSymptoms(appVersion, items)
 	if err != nil {
 		return nil, err
@@ -916,7 +916,7 @@ func (app *Application) updateSymptoms(current model.User, group string, appVers
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "appVersion", Value: appVersion}, {Key: "items", Value: items}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, audit)
 
 	return symptoms, nil
 }

@@ -351,7 +351,7 @@ type Administration interface {
 	UpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) (*model.CRules, error)
 
 	GetSymptoms(appVersion string) (*model.Symptoms, error)
-	UpdateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error)
+	UpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error)
 
 	GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
@@ -648,8 +648,8 @@ func (s *administrationImpl) GetSymptoms(appVersion string) (*model.Symptoms, er
 	return s.app.getASymptoms(appVersion)
 }
 
-func (s *administrationImpl) UpdateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error) {
-	return s.app.updateSymptoms(current, group, appVersion, items)
+func (s *administrationImpl) UpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error) {
+	return s.app.updateSymptoms(current, group, audit, appVersion, items)
 }
 
 func (s *administrationImpl) GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {

@@ -3992,8 +3992,9 @@ func (h AdminApisHandler) GetSymptoms(current model.User, group string, w http.R
 }
 
 type updateSymptomsRequest struct {
-	AppVersion string `json:"app_version" validate:"required"`
-	Items      string `json:"items" validate:"required"`
+	Audit      *string `json:"audit"`
+	AppVersion string  `json:"app_version" validate:"required"`
+	Items      string  `json:"items" validate:"required"`
 } //@name updateSymptomsRequest
 
 //UpdateSymptoms updates the symptoms
@@ -4032,10 +4033,11 @@ func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w htt
 		return
 	}
 
+	audit := requestData.Audit
 	appVersion := requestData.AppVersion
 	items := requestData.Items
 
-	symptoms, err := h.app.Administration.UpdateSymptoms(current, group, appVersion, items)
+	symptoms, err := h.app.Administration.UpdateSymptoms(current, group, audit, appVersion, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

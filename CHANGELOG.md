@@ -18,7 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Audit access contol update. [#41](https://github.com/rokwire/health-building-block/issues/41)
-- Admin APIs update - audit data. [#43](https://github.com/rokwire/health-building-block/issues/43)
 
 ## [1.18.0] - 2020-09-18
 ### Added

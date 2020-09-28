@@ -382,6 +382,40 @@ func (app *Application) getExposures(timestamp *int64, dateAdded *int64) ([]mode
 	return items, nil
 }
 
+func (app *Application) getUINOverride(current model.User) (*model.UINOverride, error) {
+	//supported only for Shibboleth users - uin
+	uin := current.ExternalID
+	uinOverrides, err := app.storage.FindUINOverrides(&uin, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(uinOverrides) == 0 {
+		//not found
+		return nil, nil
+	}
+
+	return uinOverrides[0], nil
+}
+
+func (app *Application) setUINBuildingAccess(current model.User, date time.Time, access string) error {
+	//supported only for Shibboleth users - uin
+	uin := current.ExternalID
+	err := app.storage.CreateOrUpdateUINBuildingAccess(uin, date, access)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (app *Application) getExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error) {
+	uinBuildingAccess, err := app.storage.FindUINBuildingAccess(uin)
+	if err != nil {
+		return nil, err
+	}
+	return uinBuildingAccess, nil
+}
+
 func (app *Application) deleteEHitories(userID string) (int64, error) {
 	deletedCount, err := app.storage.DeleteEHistories(userID)
 	if err != nil {

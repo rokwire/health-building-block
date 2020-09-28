@@ -49,7 +49,7 @@ type Adapter struct {
 
 // @title Rokwire Health Building Block API
 // @description Rokwire Health Building Block API Documentation.
-// @version 1.18.0
+// @version 1.20.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost
@@ -116,12 +116,17 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/v2/histories/{id}", we.userAuthWrapFunc(we.apisHandler.UpdateHistoryV2)).Methods("PUT")
 	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAuthWrapFunc(we.apisHandler.DeleteHistoriesV2)).Methods("DELETE")
 
+	covid19RestSubrouter.HandleFunc("/uin-override", we.userAuthWrapFunc(we.apisHandler.GetUINOverride)).Methods("GET")
+
+	covid19RestSubrouter.HandleFunc("/building-access", we.userAuthWrapFunc(we.apisHandler.SetUINBuildingAccess)).Methods("PUT")
+
 	//provider auth
 	covid19RestSubrouter.HandleFunc("/users/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.GetUserByShibbolethUIN)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/users/re-post", we.providerAuthWrapFunc(we.apisHandler.GetUsersForRePost)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/ctests", we.providerAuthWrapFunc(we.apisHandler.CreateExternalCTest)).Methods("POST")
 	covid19RestSubrouter.HandleFunc("/track/uins", we.providerAuthWrapFunc(we.apisHandler.GetUINsByOrderNumbers)).Methods("GET").Queries("order-numbers", "")
 	covid19RestSubrouter.HandleFunc("/track/items", we.providerAuthWrapFunc(we.apisHandler.GetItemsListsByUINs)).Methods("GET").Queries("uins", "")
+	covid19RestSubrouter.HandleFunc("/ext/building-access", we.providerAuthWrapFunc(we.apisHandler.GetExtBuildingAccess)).Methods("GET").Queries("uin", "")
 
 	// api key auth
 	covid19RestSubrouter.HandleFunc("/counties", we.authWrapFunc(we.apisHandler.GetCounties)).Methods("GET")
@@ -254,6 +259,11 @@ func (we Adapter) Start() {
 
 	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetSymptoms)).Methods("GET").Queries("app-version", "")
 	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateSymptoms)).Methods("PUT")
+
+	adminRestSubrouter.HandleFunc("/uin-overrides", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUINOverrides)).Methods("GET")
+	adminRestSubrouter.HandleFunc("/uin-overrides", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateUINOverride)).Methods("POST")
+	adminRestSubrouter.HandleFunc("/uin-overrides/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateUINOverride)).Methods("PUT")
+	adminRestSubrouter.HandleFunc("/uin-overrides/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteUINOverride)).Methods("DELETE")
 
 	adminRestSubrouter.HandleFunc("/user", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUserByExternalID)).Methods("GET").Queries("external-id", "")
 

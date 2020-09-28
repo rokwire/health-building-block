@@ -19,6 +19,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	"health/core/model"
 	"health/utils"
 	"log"
@@ -78,20 +79,51 @@ func (app *Application) setupLocationWaitTimeColorTimer() {
 	log.Println("Application -> setupLocationWaitTimeColorTimer")
 
 	//TODO
+	now := time.Now()
+	currentMinutes := now.Minute()
+	currentSecconds := now.Second()
+	log.Printf("MINUTES - %d SECONDS - %d", now.Minute(), now.Second())
+	var desiredMoment int
+	if currentMinutes < 30 {
+		log.Println("desired is 30")
+		desiredMoment = 30
+	} else {
+		log.Println("desired is 60")
+		desiredMoment = 60
+	}
 
-	ticker := time.NewTicker(30 * time.Minute)
+	desiredMomentInSec := desiredMoment * 60
+	log.Printf("desiredMomentInSec - %d", desiredMomentInSec)
+
+	currentMomentInSec := (currentMinutes * 60) + currentSecconds
+	log.Printf("currentMomentInSec - %d", currentMomentInSec)
+
+	difference := desiredMomentInSec - currentMomentInSec
+	log.Printf("difference - %d", difference)
+
+	//
+	duration := time.Second * time.Duration(difference)
+	log.Printf("start after - %s", duration)
+	timer := time.NewTimer(duration)
+	<-timer.C
+	fmt.Println("Timer 1 fired")
+
+	go app.checkLocationsWaitTimesColors()
+
+	ticker := time.NewTicker(5 * time.Second)
 	quit := make(chan struct{})
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				app.checkLocationsWaitTimesColors()
+				go app.checkLocationsWaitTimesColors()
 			case <-quit:
 				ticker.Stop()
 				return
 			}
 		}
 	}()
+	//close the quit channel when want to cancel the ticker.
 }
 
 func (app *Application) checkLocationsWaitTimesColors() {

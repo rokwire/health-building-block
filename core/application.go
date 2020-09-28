@@ -63,6 +63,8 @@ func (app *Application) Start() {
 	go app.loadNewsData()
 	//Disable the resource data loading as we cannot map the new created data
 	//go app.loadResourcesData()
+
+	go app.setupLocationWaitTimeColorTimer()
 }
 
 //AddListener adds application listener
@@ -70,6 +72,32 @@ func (app *Application) AddListener(listener ApplicationListener) {
 	log.Println("Application -> AddListener")
 
 	app.listeners = append(app.listeners, listener)
+}
+
+func (app *Application) setupLocationWaitTimeColorTimer() {
+	log.Println("Application -> setupLocationWaitTimeColorTimer")
+
+	//TODO
+
+	ticker := time.NewTicker(30 * time.Minute)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				app.checkLocationsWaitTimesColors()
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+}
+
+func (app *Application) checkLocationsWaitTimesColors() {
+	log.Println("Application -> checkLocationsWaitTimesColors")
+
+	//TODO
 }
 
 func (app *Application) notifyListeners(message string, data interface{}) {

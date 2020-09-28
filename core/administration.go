@@ -1550,7 +1550,7 @@ func (app *Application) getAccessRules() ([]*model.AccessRule, error) {
 	return accessRules, nil
 }
 
-func (app *Application) createAccessRule(current model.User, group string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+func (app *Application) createAccessRule(current model.User, group string, audit *string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
 	accessRule, err := app.storage.CreateAccessRule(countyID, rules)
 	if err != nil {
 		return nil, err
@@ -1559,12 +1559,12 @@ func (app *Application) createAccessRule(current model.User, group string, count
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "rules", Value: fmt.Sprint(rules)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "access-rule", accessRule.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "access-rule", accessRule.ID, lData, audit)
 
 	return accessRule, nil
 }
 
-func (app *Application) updateAccessRule(current model.User, group string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+func (app *Application) updateAccessRule(current model.User, group string, audit *string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
 	accessRule, err := app.storage.UpdateAccessRule(ID, countyID, rules)
 	if err != nil {
 		return nil, err
@@ -1573,7 +1573,7 @@ func (app *Application) updateAccessRule(current model.User, group string, ID st
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "rules", Value: fmt.Sprint(rules)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "access-rule", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "access-rule", ID, lData, audit)
 
 	return accessRule, nil
 }

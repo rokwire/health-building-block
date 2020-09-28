@@ -3575,6 +3575,7 @@ func (h AdminApisHandler) GetManualTestImage(current model.User, group string, w
 }
 
 type createAccessRuleRequest struct {
+	Audit    *string                       `json:"audit"`
 	CountyID string                        `json:"county_id" validate:"required,uuid"`
 	Rules    []createAccessRuleItemRequest `json:"rules" validate:"required,dive"`
 } // @name createAccessRuleRequest
@@ -3632,6 +3633,7 @@ func (h AdminApisHandler) CreateAccessRule(current model.User, group string, w h
 		return
 	}
 
+	audit := requestData.Audit
 	countyID := requestData.CountyID
 	rules := requestData.Rules
 
@@ -3643,7 +3645,7 @@ func (h AdminApisHandler) CreateAccessRule(current model.User, group string, w h
 		}
 	}
 
-	accessRule, err := h.app.Administration.CreateAccessRule(current, group, countyID, arRules)
+	accessRule, err := h.app.Administration.CreateAccessRule(current, group, audit, countyID, arRules)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -3721,6 +3723,7 @@ func (h AdminApisHandler) GetAccessRules(current model.User, group string, w htt
 }
 
 type updateAccessRuleRequest struct {
+	Audit    *string                       `json:"audit"`
 	CountyID string                        `json:"county_id" validate:"required,uuid"`
 	Rules    []updateAccessRuleItemRequest `json:"rules" validate:"required,dive"`
 } //@name updateAccessRuleRequest
@@ -3775,6 +3778,7 @@ func (h AdminApisHandler) UpdateAccessRule(current model.User, group string, w h
 		return
 	}
 
+	audit := requestData.Audit
 	countyID := requestData.CountyID
 	rules := requestData.Rules
 
@@ -3786,7 +3790,7 @@ func (h AdminApisHandler) UpdateAccessRule(current model.User, group string, w h
 		}
 	}
 
-	accessRule, err := h.app.Administration.UpdateAccessRule(current, group, ID, countyID, arRules)
+	accessRule, err := h.app.Administration.UpdateAccessRule(current, group, audit, ID, countyID, arRules)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -343,8 +343,8 @@ type Administration interface {
 	GetManualTestImage(ID string) (*string, *string, error)
 
 	GetAccessRules() ([]*model.AccessRule, error)
-	CreateAccessRule(current model.User, group string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
-	UpdateAccessRule(current model.User, group string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
+	CreateAccessRule(current model.User, group string, audit *string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
+	UpdateAccessRule(current model.User, group string, audit *string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
 	DeleteAccessRule(current model.User, group string, ID string) error
 
 	GetCRules(countyID string, appVersion string) (*model.CRules, error)
@@ -624,12 +624,12 @@ func (s *administrationImpl) GetAccessRules() ([]*model.AccessRule, error) {
 	return s.app.getAccessRules()
 }
 
-func (s *administrationImpl) CreateAccessRule(current model.User, group string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
-	return s.app.createAccessRule(current, group, countyID, rules)
+func (s *administrationImpl) CreateAccessRule(current model.User, group string, audit *string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+	return s.app.createAccessRule(current, group, audit, countyID, rules)
 }
 
-func (s *administrationImpl) UpdateAccessRule(current model.User, group string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
-	return s.app.updateAccessRule(current, group, ID, countyID, rules)
+func (s *administrationImpl) UpdateAccessRule(current model.User, group string, audit *string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+	return s.app.updateAccessRule(current, group, audit, ID, countyID, rules)
 }
 
 func (s *administrationImpl) DeleteAccessRule(current model.User, group string, ID string) error {

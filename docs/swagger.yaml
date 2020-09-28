@@ -536,6 +536,8 @@ definitions:
     type: object
   createAccessRuleRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       rules:
@@ -978,6 +980,8 @@ definitions:
     type: object
   updateAccessRuleRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       rules:

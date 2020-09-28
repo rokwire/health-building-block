@@ -5579,6 +5579,9 @@ var doc = `{
                 "rules"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -6237,6 +6240,9 @@ var doc = `{
                 "rules"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },

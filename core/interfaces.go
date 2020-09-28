@@ -348,7 +348,7 @@ type Administration interface {
 	DeleteAccessRule(current model.User, group string, ID string) error
 
 	GetCRules(countyID string, appVersion string) (*model.CRules, error)
-	UpdateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error)
+	UpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) (*model.CRules, error)
 
 	GetSymptoms(appVersion string) (*model.Symptoms, error)
 	UpdateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error)
@@ -640,8 +640,8 @@ func (s *administrationImpl) GetCRules(countyID string, appVersion string) (*mod
 	return s.app.getCRules(countyID, appVersion)
 }
 
-func (s *administrationImpl) UpdateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error) {
-	return s.app.updateCRules(current, group, countyID, appVersion, data)
+func (s *administrationImpl) UpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) (*model.CRules, error) {
+	return s.app.updateCRules(current, group, audit, countyID, appVersion, data)
 }
 
 func (s *administrationImpl) GetSymptoms(appVersion string) (*model.Symptoms, error) {

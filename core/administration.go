@@ -881,7 +881,7 @@ func (app *Application) getCRules(countyID string, appVersion string) (*model.CR
 	return cRules, nil
 }
 
-func (app *Application) updateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error) {
+func (app *Application) updateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) (*model.CRules, error) {
 	cRules, err := app.storage.UpdateCRules(appVersion, countyID, data)
 	if err != nil {
 		return nil, err
@@ -890,7 +890,7 @@ func (app *Application) updateCRules(current model.User, group string, countyID 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "appVersion", Value: appVersion}, {Key: "data", Value: data}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "crules", "", lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "crules", "", lData, audit)
 
 	return cRules, nil
 }

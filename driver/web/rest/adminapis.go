@@ -3893,9 +3893,10 @@ func (h AdminApisHandler) GetCRules(current model.User, group string, w http.Res
 }
 
 type updateCRulesRequest struct {
-	AppVersion string `json:"app_version" validate:"required"`
-	CountyID   string `json:"county_id" validate:"required"`
-	Data       string `json:"data" validate:"required"`
+	Audit      *string `json:"audit"`
+	AppVersion string  `json:"app_version" validate:"required"`
+	CountyID   string  `json:"county_id" validate:"required"`
+	Data       string  `json:"data" validate:"required"`
 } //@name updateCRulesRequest
 
 //UpdateCRules updates the rules
@@ -3934,11 +3935,12 @@ func (h AdminApisHandler) UpdateCRules(current model.User, group string, w http.
 		return
 	}
 
+	audit := requestData.Audit
 	appVersion := requestData.AppVersion
 	countyID := requestData.CountyID
 	data := requestData.Data
 
-	cRules, err := h.app.Administration.UpdateCRules(current, group, countyID, appVersion, data)
+	cRules, err := h.app.Administration.UpdateCRules(current, group, audit, countyID, appVersion, data)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

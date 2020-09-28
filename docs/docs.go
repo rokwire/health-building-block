@@ -6265,6 +6265,9 @@ var doc = `{
                 "app_version": {
                     "type": "string"
                 },
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },

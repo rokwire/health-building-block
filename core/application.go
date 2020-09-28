@@ -130,6 +130,20 @@ func (app *Application) checkLocationsWaitTimesColors() {
 	log.Println("Application -> checkLocationsWaitTimesColors")
 
 	//TODO
+	now := time.Now()
+	log.Printf("NOW: %s", now.Weekday())
+
+	log.Printf("A de: %s", now.Format("03:04:05PM"))
+
+	/*	layout1 := "03:04:05PM"
+		layout2 := "15:04:05"
+		t, err := time.Parse(layout1, "07:05:45PM")
+		if err != nil {
+		    fmt.Println(err)
+		    return
+		}
+		fmt.Println(t.Format(layout1))
+		fmt.Println(t.Format(layout2)) */
 }
 
 func (app *Application) notifyListeners(message string, data interface{}) {

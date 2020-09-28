@@ -5579,6 +5579,9 @@ var doc = `{
                 "rules"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5650,6 +5653,9 @@ var doc = `{
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },
@@ -5667,6 +5673,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5695,6 +5704,9 @@ var doc = `{
         "createFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -5733,6 +5745,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5802,6 +5817,9 @@ var doc = `{
                 "address_2": {
                     "type": "string"
                 },
+                "audit": {
+                    "type": "string"
+                },
                 "available_tests": {
                     "type": "array",
                     "items": {
@@ -5858,6 +5876,9 @@ var doc = `{
         "createNewsRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },
@@ -5897,6 +5918,9 @@ var doc = `{
                 "provider_name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "available_mechanisms": {
                     "type": "array",
                     "items": {
@@ -5914,6 +5938,9 @@ var doc = `{
         "createResourceRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -5933,6 +5960,9 @@ var doc = `{
                 "test_type_id"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -6035,6 +6065,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6049,6 +6082,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6204,6 +6240,9 @@ var doc = `{
                 "rules"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -6224,6 +6263,9 @@ var doc = `{
             ],
             "properties": {
                 "app_version": {
+                    "type": "string"
+                },
+                "audit": {
                     "type": "string"
                 },
                 "county_id": {
@@ -6253,6 +6295,9 @@ var doc = `{
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },
@@ -6270,6 +6315,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6292,6 +6340,9 @@ var doc = `{
         "updateFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6306,6 +6357,9 @@ var doc = `{
         "updateFAQSection": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -6340,6 +6394,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6381,6 +6438,9 @@ var doc = `{
                     "type": "string"
                 },
                 "address_2": {
+                    "type": "string"
+                },
+                "audit": {
                     "type": "string"
                 },
                 "available_tests": {
@@ -6433,6 +6493,9 @@ var doc = `{
         "updateNewsRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },
@@ -6454,6 +6517,9 @@ var doc = `{
                 "provider_name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "available_mechanisms": {
                     "type": "array",
                     "items": {
@@ -6471,6 +6537,9 @@ var doc = `{
         "updateResourceRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -6488,6 +6557,9 @@ var doc = `{
                 "results_statuses"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "priority": {
                     "type": "integer"
                 },
@@ -6569,6 +6641,9 @@ var doc = `{
                 "app_version": {
                     "type": "string"
                 },
+                "audit": {
+                    "type": "string"
+                },
                 "items": {
                     "type": "string"
                 }
@@ -6580,6 +6655,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6594,6 +6672,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 }

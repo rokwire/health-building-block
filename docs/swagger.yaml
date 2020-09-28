@@ -536,6 +536,8 @@ definitions:
     type: object
   createAccessRuleRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       rules:
@@ -584,6 +586,8 @@ definitions:
     type: object
   createCountyRequest:
     properties:
+      audit:
+        type: string
       country:
         type: string
       name:
@@ -597,6 +601,8 @@ definitions:
     type: object
   createCountyStatusRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       description:
@@ -617,6 +623,8 @@ definitions:
     type: object
   createFAQRequest:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       question:
@@ -640,6 +648,8 @@ definitions:
     type: object
   createGuidelineRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       description:
@@ -683,6 +693,8 @@ definitions:
       address_1:
         type: string
       address_2:
+        type: string
+      audit:
         type: string
       available_tests:
         items:
@@ -728,6 +740,8 @@ definitions:
     type: object
   createNewsRequest:
     properties:
+      audit:
+        type: string
       date:
         type: string
       description:
@@ -751,6 +765,8 @@ definitions:
     type: object
   createProviderRequest:
     properties:
+      audit:
+        type: string
       available_mechanisms:
         items:
           type: string
@@ -765,6 +781,8 @@ definitions:
     type: object
   createResourceRequest:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       link:
@@ -774,6 +792,8 @@ definitions:
     type: object
   createRuleRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       priority:
@@ -845,6 +865,8 @@ definitions:
     type: object
   createTestTypeRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
       priority:
@@ -854,6 +876,8 @@ definitions:
     type: object
   createTestTypeResultRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
       test_type_id:
@@ -956,6 +980,8 @@ definitions:
     type: object
   updateAccessRuleRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       rules:
@@ -969,6 +995,8 @@ definitions:
   updateCRulesRequest:
     properties:
       app_version:
+        type: string
+      audit:
         type: string
       county_id:
         type: string
@@ -988,6 +1016,8 @@ definitions:
     type: object
   updateCountyRequest:
     properties:
+      audit:
+        type: string
       country:
         type: string
       name:
@@ -1001,6 +1031,8 @@ definitions:
     type: object
   updateCountyStatusRequest:
     properties:
+      audit:
+        type: string
       description:
         type: string
       name:
@@ -1017,6 +1049,8 @@ definitions:
     type: object
   updateFAQRequest:
     properties:
+      audit:
+        type: string
       description:
         type: string
       display_order:
@@ -1026,6 +1060,8 @@ definitions:
     type: object
   updateFAQSection:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       title:
@@ -1046,6 +1082,8 @@ definitions:
     type: object
   updateGuidelineRequest:
     properties:
+      audit:
+        type: string
       description:
         type: string
       items:
@@ -1072,6 +1110,8 @@ definitions:
       address_1:
         type: string
       address_2:
+        type: string
+      audit:
         type: string
       available_tests:
         items:
@@ -1111,6 +1151,8 @@ definitions:
     type: object
   updateNewsRequest:
     properties:
+      audit:
+        type: string
       date:
         type: string
       description:
@@ -1122,6 +1164,8 @@ definitions:
     type: object
   updateProviderRequest:
     properties:
+      audit:
+        type: string
       available_mechanisms:
         items:
           type: string
@@ -1136,6 +1180,8 @@ definitions:
     type: object
   updateResourceRequest:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       link:
@@ -1145,6 +1191,8 @@ definitions:
     type: object
   updateRuleRequest:
     properties:
+      audit:
+        type: string
       priority:
         type: integer
       results_statuses:
@@ -1199,6 +1247,8 @@ definitions:
     properties:
       app_version:
         type: string
+      audit:
+        type: string
       items:
         type: string
     required:
@@ -1207,6 +1257,8 @@ definitions:
     type: object
   updateTestTypeRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
       priority:
@@ -1216,6 +1268,8 @@ definitions:
     type: object
   updateTestTypeResultRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
     required:

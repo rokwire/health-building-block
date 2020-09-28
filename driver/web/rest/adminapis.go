@@ -142,6 +142,7 @@ func (h AdminApisHandler) GetNews(current model.User, group string, w http.Respo
 }
 
 type createNews struct {
+	Audit       *string   `json:"audit"`
 	Date        time.Time `json:"date"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
@@ -174,6 +175,7 @@ func (h AdminApisHandler) CreateNews(current model.User, group string, w http.Re
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	date := requestData.Date
 	title := requestData.Title
 	description := requestData.Description
@@ -191,7 +193,7 @@ func (h AdminApisHandler) CreateNews(current model.User, group string, w http.Re
 		return
 	}
 
-	news, err := h.app.Administration.CreateNews(current, group, date, title, description, htmlContent, nil)
+	news, err := h.app.Administration.CreateNews(current, group, audit, date, title, description, htmlContent, nil)
 	if err != nil {
 		log.Println("Error on creating a new")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -210,6 +212,7 @@ func (h AdminApisHandler) CreateNews(current model.User, group string, w http.Re
 }
 
 type updateNews struct {
+	Audit       *string   `json:"audit"`
 	Date        time.Time `json:"date"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
@@ -251,7 +254,8 @@ func (h AdminApisHandler) UpdateNews(current model.User, group string, w http.Re
 		return
 	}
 
-	news, err := h.app.Administration.UpdateNews(current, group, ID, requestData.Date, requestData.Title,
+	audit := requestData.Audit
+	news, err := h.app.Administration.UpdateNews(current, group, audit, ID, requestData.Date, requestData.Title,
 		requestData.Description, requestData.HTMLContent, nil)
 	if err != nil {
 		log.Println("Error on updating the news item")
@@ -331,9 +335,10 @@ func (h AdminApisHandler) GetResources(current model.User, group string, w http.
 }
 
 type createResource struct {
-	Title        string `json:"title"`
-	Link         string `json:"link"`
-	DisplayOrder int    `json:"display_order"`
+	Audit        *string `json:"audit"`
+	Title        string  `json:"title"`
+	Link         string  `json:"link"`
+	DisplayOrder int     `json:"display_order"`
 } // @name createResourceRequest
 
 //CreateResources creates a new resource
@@ -362,6 +367,7 @@ func (h AdminApisHandler) CreateResources(current model.User, group string, w ht
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	title := requestData.Title
 	link := requestData.Link
 	displayOrder := requestData.DisplayOrder
@@ -378,7 +384,7 @@ func (h AdminApisHandler) CreateResources(current model.User, group string, w ht
 		return
 	}
 
-	resource, err := h.app.Administration.CreateResource(current, group, title, link, displayOrder)
+	resource, err := h.app.Administration.CreateResource(current, group, audit, title, link, displayOrder)
 	if err != nil {
 		log.Println("Error on creating a resource")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -397,9 +403,10 @@ func (h AdminApisHandler) CreateResources(current model.User, group string, w ht
 }
 
 type updateResource struct {
-	Title        string `json:"title"`
-	Link         string `json:"link"`
-	DisplayOrder int    `json:"display_order"`
+	Audit        *string `json:"audit"`
+	Title        string  `json:"title"`
+	Link         string  `json:"link"`
+	DisplayOrder int     `json:"display_order"`
 } // @name updateResourceRequest
 
 //UpdateResource updates a resource
@@ -443,7 +450,8 @@ func (h AdminApisHandler) UpdateResource(current model.User, group string, w htt
 		return
 	}
 
-	resource, err := h.app.Administration.UpdateResource(current, group, ID, requestData.Title, requestData.Link, displayOrder)
+	audit := requestData.Audit
+	resource, err := h.app.Administration.UpdateResource(current, group, audit, ID, requestData.Title, requestData.Link, displayOrder)
 	if err != nil {
 		log.Println("Error on updating the resource item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -538,6 +546,7 @@ func (h AdminApisHandler) UpdateDisplaOrderResources(current model.User, group s
 }
 
 type createFAQ struct {
+	Audit        *string           `json:"audit"`
 	Section      string            `json:"section"`
 	DisplayOrder int               `json:"display_order"`
 	Question     createFAQQuestion `json:"question"`
@@ -610,6 +619,7 @@ func (h AdminApisHandler) CreateFAQItem(current model.User, group string, w http
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	section := requestData.Section
 	sdo := requestData.DisplayOrder
 	title := requestData.Question.Title
@@ -628,7 +638,7 @@ func (h AdminApisHandler) CreateFAQItem(current model.User, group string, w http
 		return
 	}
 
-	err = h.app.Administration.CreateFAQ(current, group, section, sdo, title, description, qdo)
+	err = h.app.Administration.CreateFAQ(current, group, audit, section, sdo, title, description, qdo)
 	if err != nil {
 		log.Println("Error on creating a faq item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -640,9 +650,10 @@ func (h AdminApisHandler) CreateFAQItem(current model.User, group string, w http
 }
 
 type updateFAQ struct {
-	Title        string `json:"title"`
-	Description  string `json:"description"`
-	DisplayOrder int    `json:"display_order"`
+	Audit        *string `json:"audit"`
+	Title        string  `json:"title"`
+	Description  string  `json:"description"`
+	DisplayOrder int     `json:"display_order"`
 } // @name updateFAQRequest
 
 //UpdateFAQItem updates a faq item
@@ -689,7 +700,8 @@ func (h AdminApisHandler) UpdateFAQItem(current model.User, group string, w http
 		return
 	}
 
-	err = h.app.Administration.UpdateFAQ(current, group, ID, requestData.Title, requestData.Description, requestData.DisplayOrder)
+	audit := requestData.Audit
+	err = h.app.Administration.UpdateFAQ(current, group, audit, ID, requestData.Title, requestData.Description, requestData.DisplayOrder)
 	if err != nil {
 		log.Println("Error on updating the FAQ item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -701,8 +713,9 @@ func (h AdminApisHandler) UpdateFAQItem(current model.User, group string, w http
 }
 
 type updateFAQSection struct {
-	Title        string `json:"title"`
-	DisplayOrder int    `json:"display_order"`
+	Audit        *string `json:"audit"`
+	Title        string  `json:"title"`
+	DisplayOrder int     `json:"display_order"`
 } // @name updateFAQSection
 
 //UpdateFAQSection updates a faq section
@@ -738,6 +751,7 @@ func (h AdminApisHandler) UpdateFAQSection(current model.User, group string, w h
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	title := requestData.Title
 	displayOrder := requestData.DisplayOrder
 	if len(title) <= 0 {
@@ -749,7 +763,7 @@ func (h AdminApisHandler) UpdateFAQSection(current model.User, group string, w h
 		return
 	}
 
-	err = h.app.Administration.UpdateFAQSection(current, group, ID, requestData.Title, requestData.DisplayOrder)
+	err = h.app.Administration.UpdateFAQSection(current, group, audit, ID, requestData.Title, requestData.DisplayOrder)
 	if err != nil {
 		log.Println("Error on updating the FAQ section")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -858,6 +872,7 @@ func (h AdminApisHandler) GetProviders(current model.User, group string, w http.
 }
 
 type createProviderRequest struct {
+	Audit               *string  `json:"audit"`
 	ProviderName        string   `json:"provider_name" validate:"required"`
 	ManualTest          *bool    `json:"manual_test" validate:"required"`
 	AvailableMechanisms []string `json:"available_mechanisms"`
@@ -904,11 +919,12 @@ func (h AdminApisHandler) CreateProvider(current model.User, group string, w htt
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	providerName := requestData.ProviderName
 	manualTest := requestData.ManualTest
 	mechanisms := requestData.AvailableMechanisms
 
-	provider, err := h.app.Administration.CreateProvider(current, group, providerName, *manualTest, mechanisms)
+	provider, err := h.app.Administration.CreateProvider(current, group, audit, providerName, *manualTest, mechanisms)
 	if err != nil {
 		log.Println("Error on creating a provider")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -928,6 +944,7 @@ func (h AdminApisHandler) CreateProvider(current model.User, group string, w htt
 }
 
 type updateProviderRequest struct {
+	Audit               *string  `json:"audit"`
 	ProviderName        string   `json:"provider_name" validate:"required"`
 	ManualTest          *bool    `json:"manual_test" validate:"required"`
 	AvailableMechanisms []string `json:"available_mechanisms"`
@@ -984,7 +1001,8 @@ func (h AdminApisHandler) UpdateProvider(current model.User, group string, w htt
 		return
 	}
 
-	provider, err := h.app.Administration.UpdateProvider(current, group, ID, requestData.ProviderName, *requestData.ManualTest, requestData.AvailableMechanisms)
+	audit := requestData.Audit
+	provider, err := h.app.Administration.UpdateProvider(current, group, audit, ID, requestData.ProviderName, *requestData.ManualTest, requestData.AvailableMechanisms)
 	if err != nil {
 		log.Println("Error on updating the provider item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1034,9 +1052,10 @@ func (h AdminApisHandler) DeleteProvider(current model.User, group string, w htt
 }
 
 type createCountyRequest struct {
-	Name          string `json:"name" validate:"required"`
-	StateProvince string `json:"state_province" validate:"required"`
-	Country       string `json:"country" validate:"required"`
+	Audit         *string `json:"audit"`
+	Name          string  `json:"name" validate:"required"`
+	StateProvince string  `json:"state_province" validate:"required"`
+	Country       string  `json:"country" validate:"required"`
 } //@name createCountyRequest
 
 type createCountyResponse struct {
@@ -1081,11 +1100,12 @@ func (h AdminApisHandler) CreateCounty(current model.User, group string, w http.
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	name := requestData.Name
 	stateProvince := requestData.StateProvince
 	country := requestData.Country
 
-	county, err := h.app.Administration.CreateCounty(current, group, name, stateProvince, country)
+	county, err := h.app.Administration.CreateCounty(current, group, audit, name, stateProvince, country)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1106,9 +1126,10 @@ func (h AdminApisHandler) CreateCounty(current model.User, group string, w http.
 }
 
 type updateCountyRequest struct {
-	Name          string `json:"name" validate:"required"`
-	StateProvince string `json:"state_province" validate:"required"`
-	Country       string `json:"country" validate:"required"`
+	Audit         *string `json:"audit"`
+	Name          string  `json:"name" validate:"required"`
+	StateProvince string  `json:"state_province" validate:"required"`
+	Country       string  `json:"country" validate:"required"`
 } // @name updateCountyRequest
 
 type updateCountyResponse struct {
@@ -1163,7 +1184,8 @@ func (h AdminApisHandler) UpdateCounty(current model.User, group string, w http.
 		return
 	}
 
-	county, err := h.app.Administration.UpdateCounty(current, group, ID, requestData.Name,
+	audit := requestData.Audit
+	county, err := h.app.Administration.UpdateCounty(current, group, audit, ID, requestData.Name,
 		requestData.StateProvince, requestData.Country)
 	if err != nil {
 		log.Println(err.Error())
@@ -1261,6 +1283,7 @@ func (h AdminApisHandler) GetCounties(current model.User, group string, w http.R
 }
 
 type createGuidelineRequest struct {
+	Audit       *string                       `json:"audit"`
 	CountyID    string                        `json:"county_id" validate:"uuid"`
 	Name        string                        `json:"name" validate:"required"`
 	Description string                        `json:"description"`
@@ -1322,6 +1345,7 @@ func (h AdminApisHandler) CreateGuideline(current model.User, group string, w ht
 		return
 	}
 
+	audit := requestData.Audit
 	countyID := requestData.CountyID
 	name := requestData.Name
 	description := requestData.Description
@@ -1334,7 +1358,7 @@ func (h AdminApisHandler) CreateGuideline(current model.User, group string, w ht
 		items = append(items, r)
 	}
 
-	guideline, err := h.app.Administration.CreateGuideline(current, group, countyID, name, description, items)
+	guideline, err := h.app.Administration.CreateGuideline(current, group, audit, countyID, name, description, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1360,6 +1384,7 @@ func (h AdminApisHandler) CreateGuideline(current model.User, group string, w ht
 }
 
 type updateGuidelineRequest struct {
+	Audit       *string                       `json:"audit"`
 	Name        string                        `json:"name" validate:"required"`
 	Description string                        `json:"description"`
 	Items       []updateGuidelineItemsRequest `json:"items" validate:"required,dive"`
@@ -1429,6 +1454,7 @@ func (h AdminApisHandler) UpdateGuideline(current model.User, group string, w ht
 		return
 	}
 
+	audit := requestData.Audit
 	name := requestData.Name
 	description := requestData.Description
 	reqItems := requestData.Items
@@ -1440,7 +1466,7 @@ func (h AdminApisHandler) UpdateGuideline(current model.User, group string, w ht
 		items = append(items, r)
 	}
 
-	guideline, err := h.app.Administration.UpdateGuideline(current, group, ID, name, description, items)
+	guideline, err := h.app.Administration.UpdateGuideline(current, group, audit, ID, name, description, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1548,9 +1574,10 @@ func (h AdminApisHandler) GetGuidelinesByCountyID(current model.User, group stri
 }
 
 type createCountyStatusRequest struct {
-	CountyID    string `json:"county_id" validate:"uuid"`
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description"`
+	Audit       *string `json:"audit"`
+	CountyID    string  `json:"county_id" validate:"uuid"`
+	Name        string  `json:"name" validate:"required"`
+	Description string  `json:"description"`
 } //@name createCountyStatusRequest
 
 type createCountyStatusResponse struct {
@@ -1595,11 +1622,12 @@ func (h AdminApisHandler) CreateCountyStatus(current model.User, group string, w
 		return
 	}
 
+	audit := requestData.Audit
 	countyID := requestData.CountyID
 	name := requestData.Name
 	description := requestData.Description
 
-	countyStatus, err := h.app.Administration.CreateCountyStatus(current, group, countyID, name, description)
+	countyStatus, err := h.app.Administration.CreateCountyStatus(current, group, audit, countyID, name, description)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1619,8 +1647,9 @@ func (h AdminApisHandler) CreateCountyStatus(current model.User, group string, w
 }
 
 type updateCountyStatusRequest struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description"`
+	Audit       *string `json:"audit"`
+	Name        string  `json:"name" validate:"required"`
+	Description string  `json:"description"`
 } // @name updateCountyStatusRequest
 
 type updateCountyStatusResponse struct {
@@ -1674,10 +1703,11 @@ func (h AdminApisHandler) UpdateCountyStatus(current model.User, group string, w
 		return
 	}
 
+	audit := requestData.Audit
 	name := requestData.Name
 	description := requestData.Description
 
-	countyStatus, err := h.app.Administration.UpdateCountyStatus(current, group, ID, name, description)
+	countyStatus, err := h.app.Administration.UpdateCountyStatus(current, group, audit, ID, name, description)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1780,8 +1810,9 @@ func (h AdminApisHandler) GetCountyStatusesByCountyID(current model.User, group 
 }
 
 type createTestTypeRequest struct {
-	Name     string `json:"name" validate:"required"`
-	Priority *int   `json:"priority"`
+	Audit    *string `json:"audit"`
+	Name     string  `json:"name" validate:"required"`
+	Priority *int    `json:"priority"`
 } //@name createTestTypeRequest
 
 type createTestTypeResponse struct {
@@ -1825,10 +1856,11 @@ func (h AdminApisHandler) CreateTestType(current model.User, group string, w htt
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	name := requestData.Name
 	priority := requestData.Priority
 
-	testType, err := h.app.Administration.CreateTestType(current, group, name, priority)
+	testType, err := h.app.Administration.CreateTestType(current, group, audit, name, priority)
 	if err != nil {
 		log.Println("Error on creating a test type")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1848,8 +1880,9 @@ func (h AdminApisHandler) CreateTestType(current model.User, group string, w htt
 }
 
 type updateTestTypeRequest struct {
-	Name     string `json:"name" validate:"required"`
-	Priority *int   `json:"priority"`
+	Audit    *string `json:"audit"`
+	Name     string  `json:"name" validate:"required"`
+	Priority *int    `json:"priority"`
 } // @name updateTestTypeRequest
 
 type updateTestTypeResponse struct {
@@ -1903,7 +1936,8 @@ func (h AdminApisHandler) UpdateTestType(current model.User, group string, w htt
 		return
 	}
 
-	testType, err := h.app.Administration.UpdateTestType(current, group, ID, requestData.Name, requestData.Priority)
+	audit := requestData.Audit
+	testType, err := h.app.Administration.UpdateTestType(current, group, audit, ID, requestData.Name, requestData.Priority)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2002,8 +2036,9 @@ func (h AdminApisHandler) GetTestTypes(current model.User, group string, w http.
 }
 
 type createTestTypeResultRequest struct {
-	TestTypeID string `json:"test_type_id" validate:"uuid"`
-	Name       string `json:"name" validate:"required"`
+	Audit      *string `json:"audit"`
+	TestTypeID string  `json:"test_type_id" validate:"uuid"`
+	Name       string  `json:"name" validate:"required"`
 } //@name createTestTypeResultRequest
 
 type createTestTypeResultResponse struct {
@@ -2047,10 +2082,11 @@ func (h AdminApisHandler) CreateTestTypeResult(current model.User, group string,
 		return
 	}
 
+	audit := requestData.Audit
 	testTypeID := requestData.TestTypeID
 	name := requestData.Name
 
-	testTypeResult, err := h.app.Administration.CreateTestTypeResult(current, group, testTypeID, name, "", nil, nil)
+	testTypeResult, err := h.app.Administration.CreateTestTypeResult(current, group, audit, testTypeID, name, "", nil, nil)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2071,7 +2107,8 @@ func (h AdminApisHandler) CreateTestTypeResult(current model.User, group string,
 }
 
 type updateTestTypeResultRequest struct {
-	Name string `json:"name" validate:"required"`
+	Audit *string `json:"audit"`
+	Name  string  `json:"name" validate:"required"`
 } // @name updateTestTypeResultRequest
 
 type updateTestTypeResultResponse struct {
@@ -2124,9 +2161,10 @@ func (h AdminApisHandler) UpdateTestTypeResult(current model.User, group string,
 		return
 	}
 
+	audit := requestData.Audit
 	name := requestData.Name
 
-	testTypeResult, err := h.app.Administration.UpdateTestTypeResult(current, group, ID, name, "", nil, nil)
+	testTypeResult, err := h.app.Administration.UpdateTestTypeResult(current, group, audit, ID, name, "", nil, nil)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2228,9 +2266,10 @@ func (h AdminApisHandler) GetTestTypeResultsByTestTypeID(current model.User, gro
 }
 
 type createRuleRequest struct {
-	CountyID   string `json:"county_id" validate:"required,uuid"`
-	TestTypeID string `json:"test_type_id" validate:"required,uuid"`
-	Priority   *int   `json:"priority"`
+	Audit      *string `json:"audit"`
+	CountyID   string  `json:"county_id" validate:"required,uuid"`
+	TestTypeID string  `json:"test_type_id" validate:"required,uuid"`
+	Priority   *int    `json:"priority"`
 
 	ResultsStatuses []createRuleResultsStatusesTypeRequest `json:"results_statuses" validate:"required,dive"`
 } //@name createRuleRequest
@@ -2290,6 +2329,7 @@ func (h AdminApisHandler) CreateRule(current model.User, group string, w http.Re
 		return
 	}
 
+	audit := requestData.Audit
 	countyID := requestData.CountyID
 	testTypeID := requestData.TestTypeID
 	priority := requestData.Priority
@@ -2303,7 +2343,7 @@ func (h AdminApisHandler) CreateRule(current model.User, group string, w http.Re
 		}
 	}
 
-	rule, err := h.app.Administration.CreateRule(current, group, countyID, testTypeID, priority, rsItems)
+	rule, err := h.app.Administration.CreateRule(current, group, audit, countyID, testTypeID, priority, rsItems)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2333,7 +2373,8 @@ func (h AdminApisHandler) CreateRule(current model.User, group string, w http.Re
 }
 
 type updateRuleRequest struct {
-	Priority *int `json:"priority"`
+	Audit    *string `json:"audit"`
+	Priority *int    `json:"priority"`
 
 	ResultsStatuses []createRuleResultsStatusesTypeRequest `json:"results_statuses" validate:"required,dive"`
 } //@name updateRuleRequest
@@ -2402,6 +2443,7 @@ func (h AdminApisHandler) UpdateRule(current model.User, group string, w http.Re
 		return
 	}
 
+	audit := requestData.Audit
 	priority := requestData.Priority
 	resultsStatuses := requestData.ResultsStatuses
 
@@ -2413,7 +2455,7 @@ func (h AdminApisHandler) UpdateRule(current model.User, group string, w http.Re
 		}
 	}
 
-	rule, err := h.app.Administration.UpdateRule(current, group, ID, priority, rsItems)
+	rule, err := h.app.Administration.UpdateRule(current, group, audit, ID, priority, rsItems)
 	if err != nil {
 		log.Printf("Error on updating the rule item - %s\n", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2531,6 +2573,7 @@ func (h AdminApisHandler) GetRules(current model.User, group string, w http.Resp
 }
 
 type createLocationRequest struct {
+	Audit           *string                       `json:"audit"`
 	Name            string                        `json:"name" validate:"required"`
 	Address1        string                        `json:"address_1"`
 	Address2        string                        `json:"address_2"`
@@ -2593,6 +2636,7 @@ func (h AdminApisHandler) CreateLocation(current model.User, group string, w htt
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	name := requestData.Name
 	address1 := requestData.Address1
 	address2 := requestData.Address2
@@ -2613,7 +2657,7 @@ func (h AdminApisHandler) CreateLocation(current model.User, group string, w htt
 
 	availableTests := requestData.AvailableTests
 
-	location, err := h.app.Administration.CreateLocation(current, group, providerID, countyID, name, address1, address2, city,
+	location, err := h.app.Administration.CreateLocation(current, group, audit, providerID, countyID, name, address1, address2, city,
 		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 	if err != nil {
 		log.Printf("Error on creating a location - %s\n", err.Error())
@@ -2644,6 +2688,7 @@ func (h AdminApisHandler) CreateLocation(current model.User, group string, w htt
 }
 
 type updateLocationRequest struct {
+	Audit           *string                       `json:"audit"`
 	Name            string                        `json:"name" validate:"required"`
 	Address1        string                        `json:"address_1"`
 	Address2        string                        `json:"address_2"`
@@ -2706,6 +2751,7 @@ func (h AdminApisHandler) UpdateLocation(current model.User, group string, w htt
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	audit := requestData.Audit
 	name := requestData.Name
 	address1 := requestData.Address1
 	address2 := requestData.Address2
@@ -2723,7 +2769,7 @@ func (h AdminApisHandler) UpdateLocation(current model.User, group string, w htt
 
 	availableTests := requestData.AvailableTests
 
-	location, err := h.app.Administration.UpdateLocation(current, group, ID, name, address1, address2, city,
+	location, err := h.app.Administration.UpdateLocation(current, group, audit, ID, name, address1, address2, city,
 		state, zip, country, latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 	if err != nil {
 		log.Printf("Error on creating a location - %s\n", err.Error())
@@ -3529,6 +3575,7 @@ func (h AdminApisHandler) GetManualTestImage(current model.User, group string, w
 }
 
 type createAccessRuleRequest struct {
+	Audit    *string                       `json:"audit"`
 	CountyID string                        `json:"county_id" validate:"required,uuid"`
 	Rules    []createAccessRuleItemRequest `json:"rules" validate:"required,dive"`
 } // @name createAccessRuleRequest
@@ -3586,6 +3633,7 @@ func (h AdminApisHandler) CreateAccessRule(current model.User, group string, w h
 		return
 	}
 
+	audit := requestData.Audit
 	countyID := requestData.CountyID
 	rules := requestData.Rules
 
@@ -3597,7 +3645,7 @@ func (h AdminApisHandler) CreateAccessRule(current model.User, group string, w h
 		}
 	}
 
-	accessRule, err := h.app.Administration.CreateAccessRule(current, group, countyID, arRules)
+	accessRule, err := h.app.Administration.CreateAccessRule(current, group, audit, countyID, arRules)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -3675,6 +3723,7 @@ func (h AdminApisHandler) GetAccessRules(current model.User, group string, w htt
 }
 
 type updateAccessRuleRequest struct {
+	Audit    *string                       `json:"audit"`
 	CountyID string                        `json:"county_id" validate:"required,uuid"`
 	Rules    []updateAccessRuleItemRequest `json:"rules" validate:"required,dive"`
 } //@name updateAccessRuleRequest
@@ -3729,6 +3778,7 @@ func (h AdminApisHandler) UpdateAccessRule(current model.User, group string, w h
 		return
 	}
 
+	audit := requestData.Audit
 	countyID := requestData.CountyID
 	rules := requestData.Rules
 
@@ -3740,7 +3790,7 @@ func (h AdminApisHandler) UpdateAccessRule(current model.User, group string, w h
 		}
 	}
 
-	accessRule, err := h.app.Administration.UpdateAccessRule(current, group, ID, countyID, arRules)
+	accessRule, err := h.app.Administration.UpdateAccessRule(current, group, audit, ID, countyID, arRules)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -3843,9 +3893,10 @@ func (h AdminApisHandler) GetCRules(current model.User, group string, w http.Res
 }
 
 type updateCRulesRequest struct {
-	AppVersion string `json:"app_version" validate:"required"`
-	CountyID   string `json:"county_id" validate:"required"`
-	Data       string `json:"data" validate:"required"`
+	Audit      *string `json:"audit"`
+	AppVersion string  `json:"app_version" validate:"required"`
+	CountyID   string  `json:"county_id" validate:"required"`
+	Data       string  `json:"data" validate:"required"`
 } //@name updateCRulesRequest
 
 //UpdateCRules updates the rules
@@ -3884,11 +3935,12 @@ func (h AdminApisHandler) UpdateCRules(current model.User, group string, w http.
 		return
 	}
 
+	audit := requestData.Audit
 	appVersion := requestData.AppVersion
 	countyID := requestData.CountyID
 	data := requestData.Data
 
-	cRules, err := h.app.Administration.UpdateCRules(current, group, countyID, appVersion, data)
+	cRules, err := h.app.Administration.UpdateCRules(current, group, audit, countyID, appVersion, data)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -3940,8 +3992,9 @@ func (h AdminApisHandler) GetSymptoms(current model.User, group string, w http.R
 }
 
 type updateSymptomsRequest struct {
-	AppVersion string `json:"app_version" validate:"required"`
-	Items      string `json:"items" validate:"required"`
+	Audit      *string `json:"audit"`
+	AppVersion string  `json:"app_version" validate:"required"`
+	Items      string  `json:"items" validate:"required"`
 } //@name updateSymptomsRequest
 
 //UpdateSymptoms updates the symptoms
@@ -3980,10 +4033,11 @@ func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w htt
 		return
 	}
 
+	audit := requestData.Audit
 	appVersion := requestData.AppVersion
 	items := requestData.Items
 
-	symptoms, err := h.app.Administration.UpdateSymptoms(current, group, appVersion, items)
+	symptoms, err := h.app.Administration.UpdateSymptoms(current, group, audit, appVersion, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

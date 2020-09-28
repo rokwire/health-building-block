@@ -265,64 +265,64 @@ type Administration interface {
 	GetAppVersions() ([]string, error)
 
 	GetNews() ([]*model.News, error)
-	CreateNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
-	UpdateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
+	CreateNews(current model.User, group string, audit *string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
+	UpdateNews(current model.User, group string, audit *string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
 	DeleteNews(current model.User, group string, ID string) error
 
 	GetResources() ([]*model.Resource, error)
-	CreateResource(current model.User, group string, title string, link string, displayOrder int) (*model.Resource, error)
-	UpdateResource(current model.User, group string, ID string, title string, link string, displayOrder int) (*model.Resource, error)
+	CreateResource(current model.User, group string, audit *string, title string, link string, displayOrder int) (*model.Resource, error)
+	UpdateResource(current model.User, group string, audit *string, ID string, title string, link string, displayOrder int) (*model.Resource, error)
 	DeleteResource(current model.User, group string, ID string) error
 	UpdateResourceDisplayOrder(IDs []string) error
 
 	GetFAQs() (*model.FAQ, error)
-	CreateFAQ(current model.User, group string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error
-	UpdateFAQ(current model.User, group string, ID string, title string, description string, displayOrder int) error
+	CreateFAQ(current model.User, group string, audit *string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error
+	UpdateFAQ(current model.User, group string, audit *string, ID string, title string, description string, displayOrder int) error
 	DeleteFAQ(current model.User, group string, ID string) error
 
 	DeleteFAQSection(current model.User, group string, ID string) error
-	UpdateFAQSection(current model.User, group string, ID string, title string, displayOrder int) error
+	UpdateFAQSection(current model.User, group string, audit *string, ID string, title string, displayOrder int) error
 
 	GetProviders() ([]*model.Provider, error)
-	CreateProvider(current model.User, group string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
-	UpdateProvider(current model.User, group string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
+	CreateProvider(current model.User, group string, audit *string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
+	UpdateProvider(current model.User, group string, audit *string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error)
 	DeleteProvider(current model.User, group string, ID string) error
 
 	FindCounties(f *utils.Filter) ([]*model.County, error)
-	CreateCounty(current model.User, group string, name string, stateProvince string, country string) (*model.County, error)
-	UpdateCounty(current model.User, group string, ID string, name string, stateProvince string, country string) (*model.County, error)
+	CreateCounty(current model.User, group string, audit *string, name string, stateProvince string, country string) (*model.County, error)
+	UpdateCounty(current model.User, group string, audit *string, ID string, name string, stateProvince string, country string) (*model.County, error)
 	DeleteCounty(current model.User, group string, ID string) error
 
-	CreateGuideline(current model.User, group string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
-	UpdateGuideline(current model.User, group string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
+	CreateGuideline(current model.User, group string, audit *string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
+	UpdateGuideline(current model.User, group string, audit *string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error)
 	DeleteGuideline(current model.User, group string, ID string) error
 	GetGuidelinesByCountyID(countyID string) ([]*model.Guideline, error)
 
-	CreateCountyStatus(current model.User, group string, countyID string, name string, description string) (*model.CountyStatus, error)
-	UpdateCountyStatus(current model.User, group string, ID string, name string, description string) (*model.CountyStatus, error)
+	CreateCountyStatus(current model.User, group string, audit *string, countyID string, name string, description string) (*model.CountyStatus, error)
+	UpdateCountyStatus(current model.User, group string, audit *string, ID string, name string, description string) (*model.CountyStatus, error)
 	DeleteCountyStatus(current model.User, group string, ID string) error
 	GetCountyStatusByCountyID(countyID string) ([]*model.CountyStatus, error)
 
 	GetTestTypes() ([]*model.TestType, error)
-	CreateTestType(current model.User, group string, name string, priority *int) (*model.TestType, error)
-	UpdateTestType(current model.User, group string, ID string, name string, priority *int) (*model.TestType, error)
+	CreateTestType(current model.User, group string, audit *string, name string, priority *int) (*model.TestType, error)
+	UpdateTestType(current model.User, group string, audit *string, ID string, name string, priority *int) (*model.TestType, error)
 	DeleteTestType(current model.User, group string, ID string) error
 
-	CreateTestTypeResult(current model.User, group string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error)
-	UpdateTestTypeResult(current model.User, group string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error)
+	CreateTestTypeResult(current model.User, group string, audit *string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error)
+	UpdateTestTypeResult(current model.User, group string, audit *string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error)
 	DeleteTestTypeResult(current model.User, group string, ID string) error
 	GetTestTypeResultsByTestTypeID(testTypeID string) ([]*model.TestTypeResult, error)
 
 	GetRules() ([]*model.Rule, error)
-	CreateRule(current model.User, group string, countyID string, testTypeID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
-	UpdateRule(current model.User, group string, ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
+	CreateRule(current model.User, group string, audit *string, countyID string, testTypeID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
+	UpdateRule(current model.User, group string, audit *string, ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error)
 	DeleteRule(current model.User, group string, ID string) error
 
 	GetLocations() ([]*model.Location, error)
-	CreateLocation(current model.User, group string, providerID string, countyID string, name string, address1 string, address2 string, city string,
+	CreateLocation(current model.User, group string, audit *string, providerID string, countyID string, name string, address1 string, address2 string, city string,
 		state string, zip string, country string, latitude float64, longitude float64, contact string,
 		daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error)
-	UpdateLocation(current model.User, group string, ID string, name string, address1 string, address2 string, city string,
+	UpdateLocation(current model.User, group string, audit *string, ID string, name string, address1 string, address2 string, city string,
 		state string, zip string, country string, latitude float64, longitude float64, contact string,
 		daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error)
 	DeleteLocation(current model.User, group string, ID string) error
@@ -343,15 +343,15 @@ type Administration interface {
 	GetManualTestImage(ID string) (*string, *string, error)
 
 	GetAccessRules() ([]*model.AccessRule, error)
-	CreateAccessRule(current model.User, group string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
-	UpdateAccessRule(current model.User, group string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
+	CreateAccessRule(current model.User, group string, audit *string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
+	UpdateAccessRule(current model.User, group string, audit *string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)
 	DeleteAccessRule(current model.User, group string, ID string) error
 
 	GetCRules(countyID string, appVersion string) (*model.CRules, error)
-	UpdateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error)
+	UpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) (*model.CRules, error)
 
 	GetSymptoms(appVersion string) (*model.Symptoms, error)
-	UpdateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error)
+	UpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error)
 
 	GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
@@ -386,12 +386,12 @@ func (s *administrationImpl) GetAppVersions() ([]string, error) {
 	return s.app.getAppVersions()
 }
 
-func (s *administrationImpl) CreateNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
-	return s.app.createNews(current, group, date, title, description, htmlContent, link)
+func (s *administrationImpl) CreateNews(current model.User, group string, audit *string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+	return s.app.createNews(current, group, audit, date, title, description, htmlContent, link)
 }
 
-func (s *administrationImpl) UpdateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
-	return s.app.updateNews(current, group, ID, date, title, description, htmlContent, nil)
+func (s *administrationImpl) UpdateNews(current model.User, group string, audit *string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+	return s.app.updateNews(current, group, audit, ID, date, title, description, htmlContent, nil)
 }
 
 func (s *administrationImpl) DeleteNews(current model.User, group string, ID string) error {
@@ -402,12 +402,12 @@ func (s *administrationImpl) GetResources() ([]*model.Resource, error) {
 	return s.app.getAllResources()
 }
 
-func (s *administrationImpl) CreateResource(current model.User, group string, title string, link string, displayOrder int) (*model.Resource, error) {
-	return s.app.createResource(current, group, title, link, displayOrder)
+func (s *administrationImpl) CreateResource(current model.User, group string, audit *string, title string, link string, displayOrder int) (*model.Resource, error) {
+	return s.app.createResource(current, group, audit, title, link, displayOrder)
 }
 
-func (s *administrationImpl) UpdateResource(current model.User, group string, ID string, title string, link string, displayOrder int) (*model.Resource, error) {
-	return s.app.updateResource(current, group, ID, title, link, displayOrder)
+func (s *administrationImpl) UpdateResource(current model.User, group string, audit *string, ID string, title string, link string, displayOrder int) (*model.Resource, error) {
+	return s.app.updateResource(current, group, audit, ID, title, link, displayOrder)
 }
 
 func (s *administrationImpl) DeleteResource(current model.User, group string, ID string) error {
@@ -422,12 +422,12 @@ func (s *administrationImpl) GetFAQs() (*model.FAQ, error) {
 	return s.app.getFAQs()
 }
 
-func (s *administrationImpl) CreateFAQ(current model.User, group string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
-	return s.app.createFAQ(current, group, section, sectionDisplayOrder, title, description, questionDisplayOrder)
+func (s *administrationImpl) CreateFAQ(current model.User, group string, audit *string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
+	return s.app.createFAQ(current, group, audit, section, sectionDisplayOrder, title, description, questionDisplayOrder)
 }
 
-func (s *administrationImpl) UpdateFAQ(current model.User, group string, ID string, title string, description string, displayOrder int) error {
-	return s.app.updateFAQ(current, group, ID, title, description, displayOrder)
+func (s *administrationImpl) UpdateFAQ(current model.User, group string, audit *string, ID string, title string, description string, displayOrder int) error {
+	return s.app.updateFAQ(current, group, audit, ID, title, description, displayOrder)
 }
 
 func (s *administrationImpl) DeleteFAQ(current model.User, group string, ID string) error {
@@ -438,20 +438,20 @@ func (s *administrationImpl) DeleteFAQSection(current model.User, group string, 
 	return s.app.deleteFAQSection(current, group, ID)
 }
 
-func (s *administrationImpl) UpdateFAQSection(current model.User, group string, ID string, title string, displayOrder int) error {
-	return s.app.updateFAQSection(current, group, ID, title, displayOrder)
+func (s *administrationImpl) UpdateFAQSection(current model.User, group string, audit *string, ID string, title string, displayOrder int) error {
+	return s.app.updateFAQSection(current, group, audit, ID, title, displayOrder)
 }
 
 func (s *administrationImpl) GetProviders() ([]*model.Provider, error) {
 	return s.app.getProviders()
 }
 
-func (s *administrationImpl) CreateProvider(current model.User, group string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
-	return s.app.createProvider(current, group, providerName, manualTest, availableMechanisms)
+func (s *administrationImpl) CreateProvider(current model.User, group string, audit *string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
+	return s.app.createProvider(current, group, audit, providerName, manualTest, availableMechanisms)
 }
 
-func (s *administrationImpl) UpdateProvider(current model.User, group string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
-	return s.app.updateProvider(current, group, ID, providerName, manualTest, availableMechanisms)
+func (s *administrationImpl) UpdateProvider(current model.User, group string, audit *string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
+	return s.app.updateProvider(current, group, audit, ID, providerName, manualTest, availableMechanisms)
 }
 
 func (s *administrationImpl) DeleteProvider(current model.User, group string, ID string) error {
@@ -462,24 +462,24 @@ func (s *administrationImpl) FindCounties(f *utils.Filter) ([]*model.County, err
 	return s.app.findCounties(f)
 }
 
-func (s *administrationImpl) CreateCounty(current model.User, group string, name string, stateProvince string, country string) (*model.County, error) {
-	return s.app.createCounty(current, group, name, stateProvince, country)
+func (s *administrationImpl) CreateCounty(current model.User, group string, audit *string, name string, stateProvince string, country string) (*model.County, error) {
+	return s.app.createCounty(current, group, audit, name, stateProvince, country)
 }
 
-func (s *administrationImpl) UpdateCounty(current model.User, group string, ID string, name string, stateProvince string, country string) (*model.County, error) {
-	return s.app.updateCounty(current, group, ID, name, stateProvince, country)
+func (s *administrationImpl) UpdateCounty(current model.User, group string, audit *string, ID string, name string, stateProvince string, country string) (*model.County, error) {
+	return s.app.updateCounty(current, group, audit, ID, name, stateProvince, country)
 }
 
 func (s *administrationImpl) DeleteCounty(current model.User, group string, ID string) error {
 	return s.app.deleteCounty(current, group, ID)
 }
 
-func (s *administrationImpl) CreateGuideline(current model.User, group string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
-	return s.app.createGuideline(current, group, countyID, name, description, items)
+func (s *administrationImpl) CreateGuideline(current model.User, group string, audit *string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+	return s.app.createGuideline(current, group, audit, countyID, name, description, items)
 }
 
-func (s *administrationImpl) UpdateGuideline(current model.User, group string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
-	return s.app.updateGuideline(current, group, ID, name, description, items)
+func (s *administrationImpl) UpdateGuideline(current model.User, group string, audit *string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+	return s.app.updateGuideline(current, group, audit, ID, name, description, items)
 }
 
 func (s *administrationImpl) DeleteGuideline(current model.User, group string, ID string) error {
@@ -490,12 +490,12 @@ func (s *administrationImpl) GetGuidelinesByCountyID(countyID string) ([]*model.
 	return s.app.getGuidelinesByCountyID(countyID)
 }
 
-func (s *administrationImpl) CreateCountyStatus(current model.User, group string, countyID string, name string, description string) (*model.CountyStatus, error) {
-	return s.app.createCountyStatus(current, group, countyID, name, description)
+func (s *administrationImpl) CreateCountyStatus(current model.User, group string, audit *string, countyID string, name string, description string) (*model.CountyStatus, error) {
+	return s.app.createCountyStatus(current, group, audit, countyID, name, description)
 }
 
-func (s *administrationImpl) UpdateCountyStatus(current model.User, group string, ID string, name string, description string) (*model.CountyStatus, error) {
-	return s.app.updateCountyStatus(current, group, ID, name, description)
+func (s *administrationImpl) UpdateCountyStatus(current model.User, group string, audit *string, ID string, name string, description string) (*model.CountyStatus, error) {
+	return s.app.updateCountyStatus(current, group, audit, ID, name, description)
 }
 
 func (s *administrationImpl) DeleteCountyStatus(current model.User, group string, ID string) error {
@@ -510,24 +510,24 @@ func (s *administrationImpl) GetTestTypes() ([]*model.TestType, error) {
 	return s.app.getTestTypes()
 }
 
-func (s *administrationImpl) CreateTestType(current model.User, group string, name string, priority *int) (*model.TestType, error) {
-	return s.app.createTestType(current, group, name, priority)
+func (s *administrationImpl) CreateTestType(current model.User, group string, audit *string, name string, priority *int) (*model.TestType, error) {
+	return s.app.createTestType(current, group, audit, name, priority)
 }
 
-func (s *administrationImpl) UpdateTestType(current model.User, group string, ID string, name string, priority *int) (*model.TestType, error) {
-	return s.app.updateTestType(current, group, ID, name, priority)
+func (s *administrationImpl) UpdateTestType(current model.User, group string, audit *string, ID string, name string, priority *int) (*model.TestType, error) {
+	return s.app.updateTestType(current, group, audit, ID, name, priority)
 }
 
 func (s *administrationImpl) DeleteTestType(current model.User, group string, ID string) error {
 	return s.app.deleteTestType(current, group, ID)
 }
 
-func (s *administrationImpl) CreateTestTypeResult(current model.User, group string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
-	return s.app.createTestTypeResult(current, group, testTypeID, name, nextStep, nextStepOffset, resultExpiresOffset)
+func (s *administrationImpl) CreateTestTypeResult(current model.User, group string, audit *string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
+	return s.app.createTestTypeResult(current, group, audit, testTypeID, name, nextStep, nextStepOffset, resultExpiresOffset)
 }
 
-func (s *administrationImpl) UpdateTestTypeResult(current model.User, group string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
-	return s.app.updateTestTypeResult(current, group, ID, name, nextStep, nextStepOffset, resultExpiresOffset)
+func (s *administrationImpl) UpdateTestTypeResult(current model.User, group string, audit *string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
+	return s.app.updateTestTypeResult(current, group, audit, ID, name, nextStep, nextStepOffset, resultExpiresOffset)
 }
 
 func (s *administrationImpl) DeleteTestTypeResult(current model.User, group string, ID string) error {
@@ -542,12 +542,12 @@ func (s *administrationImpl) GetRules() ([]*model.Rule, error) {
 	return s.app.getRules()
 }
 
-func (s *administrationImpl) CreateRule(current model.User, group string, countyID string, testTypeID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
-	return s.app.createRule(current, group, countyID, testTypeID, priority, resultsStatuses)
+func (s *administrationImpl) CreateRule(current model.User, group string, audit *string, countyID string, testTypeID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
+	return s.app.createRule(current, group, audit, countyID, testTypeID, priority, resultsStatuses)
 }
 
-func (s *administrationImpl) UpdateRule(current model.User, group string, ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error) {
-	return s.app.updateRule(current, group, ID, priority, resultsStates)
+func (s *administrationImpl) UpdateRule(current model.User, group string, audit *string, ID string, priority *int, resultsStates []model.TestTypeResultCountyStatus) (*model.Rule, error) {
+	return s.app.updateRule(current, group, audit, ID, priority, resultsStates)
 }
 
 func (s *administrationImpl) DeleteRule(current model.User, group string, ID string) error {
@@ -558,17 +558,17 @@ func (s *administrationImpl) GetLocations() ([]*model.Location, error) {
 	return s.app.getLocations()
 }
 
-func (s *administrationImpl) CreateLocation(current model.User, group string, providerID string, countyID string, name string, address1 string, address2 string, city string,
+func (s *administrationImpl) CreateLocation(current model.User, group string, audit *string, providerID string, countyID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
 	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
-	return s.app.createLocation(current, group, providerID, countyID, name, address1, address2, city, state, zip, country,
+	return s.app.createLocation(current, group, audit, providerID, countyID, name, address1, address2, city, state, zip, country,
 		latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 }
 
-func (s *administrationImpl) UpdateLocation(current model.User, group string, ID string, name string, address1 string, address2 string, city string,
+func (s *administrationImpl) UpdateLocation(current model.User, group string, audit *string, ID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
 	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
-	return s.app.updateLocation(current, group, ID, name, address1, address2, city, state, zip, country,
+	return s.app.updateLocation(current, group, audit, ID, name, address1, address2, city, state, zip, country,
 		latitude, longitude, contact, daysOfOperation, url, notes, waitTimeColor, availableTests)
 }
 
@@ -624,12 +624,12 @@ func (s *administrationImpl) GetAccessRules() ([]*model.AccessRule, error) {
 	return s.app.getAccessRules()
 }
 
-func (s *administrationImpl) CreateAccessRule(current model.User, group string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
-	return s.app.createAccessRule(current, group, countyID, rules)
+func (s *administrationImpl) CreateAccessRule(current model.User, group string, audit *string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+	return s.app.createAccessRule(current, group, audit, countyID, rules)
 }
 
-func (s *administrationImpl) UpdateAccessRule(current model.User, group string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
-	return s.app.updateAccessRule(current, group, ID, countyID, rules)
+func (s *administrationImpl) UpdateAccessRule(current model.User, group string, audit *string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+	return s.app.updateAccessRule(current, group, audit, ID, countyID, rules)
 }
 
 func (s *administrationImpl) DeleteAccessRule(current model.User, group string, ID string) error {
@@ -640,16 +640,16 @@ func (s *administrationImpl) GetCRules(countyID string, appVersion string) (*mod
 	return s.app.getCRules(countyID, appVersion)
 }
 
-func (s *administrationImpl) UpdateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error) {
-	return s.app.updateCRules(current, group, countyID, appVersion, data)
+func (s *administrationImpl) UpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) (*model.CRules, error) {
+	return s.app.updateCRules(current, group, audit, countyID, appVersion, data)
 }
 
 func (s *administrationImpl) GetSymptoms(appVersion string) (*model.Symptoms, error) {
 	return s.app.getASymptoms(appVersion)
 }
 
-func (s *administrationImpl) UpdateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error) {
-	return s.app.updateSymptoms(current, group, appVersion, items)
+func (s *administrationImpl) UpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error) {
+	return s.app.updateSymptoms(current, group, audit, appVersion, items)
 }
 
 func (s *administrationImpl) GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {

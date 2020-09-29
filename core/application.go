@@ -63,6 +63,8 @@ func (app *Application) Start() {
 	go app.loadNewsData()
 	//Disable the resource data loading as we cannot map the new created data
 	//go app.loadResourcesData()
+
+	go app.setupLocationWaitTimeColorTimer()
 }
 
 //AddListener adds application listener
@@ -70,6 +72,156 @@ func (app *Application) AddListener(listener ApplicationListener) {
 	log.Println("Application -> AddListener")
 
 	app.listeners = append(app.listeners, listener)
+}
+
+func (app *Application) setupLocationWaitTimeColorTimer() {
+	log.Println("Application -> setupLocationWaitTimeColorTimer")
+
+	//determine the first moment of the wait time color check
+	//we check it every 30 minutes
+	now := time.Now()
+	currentMinutes := now.Minute()
+	currentSecconds := now.Second()
+	var desiredMoment int
+	if currentMinutes < 30 {
+		log.Println("Application -> setupLocationWaitTimeColorTimer -> desired is 30")
+		desiredMoment = 30
+	} else {
+		log.Println("Application -> setupLocationWaitTimeColorTimer -> desired is 60")
+		desiredMoment = 60
+	}
+
+	desiredMomentInSec := desiredMoment * 60
+	currentMomentInSec := (currentMinutes * 60) + currentSecconds
+	//we add 5 seconds which is insignificant from user point of view but we quarantee that the check is in the desired 30 minutes interval
+	difference := (desiredMomentInSec - currentMomentInSec) + 5
+	duration := time.Second * time.Duration(difference)
+	log.Printf("Application -> setupLocationWaitTimeColorTimer -> start after - %s", duration)
+	timer := time.NewTimer(duration)
+	<-timer.C
+
+	//check it for first time
+	go app.checkLocationsWaitTimesColors()
+
+	//check it every 30 minutes
+	ticker := time.NewTicker(30 * time.Minute)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				go app.checkLocationsWaitTimesColors()
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+	//close the quit channel when want to cancel the ticker.
+}
+
+func (app *Application) checkLocationsWaitTimesColors() {
+	log.Println("Application -> checkLocationsWaitTimesColors")
+
+	// load locations
+	locations, err := app.storage.ReadAllLocations()
+	if err != nil {
+		log.Printf("error loading locations for wait time color check - %s", err)
+	}
+
+	for _, loc := range locations {
+		app.checkLocationWaitTimeColor(loc)
+	}
+}
+
+func (app *Application) checkLocationWaitTimeColor(location *model.Location) {
+	log.Printf("Application -> checkLocationWaitTimeColor for %s with timezone %s", location.Name, location.Timezone)
+
+	//find the day of the week and the passed seconds within the day
+	timeLocation, err := time.LoadLocation(location.Timezone)
+	if err != nil {
+		log.Printf("Error getting time location:%s\n", err.Error())
+	}
+	now := time.Now().In(timeLocation)
+	nowWeekDay := now.Weekday()
+	nowMomentInSec := (now.Hour() * 60 * 60) + (now.Minute() * 60) + now.Second()
+	log.Printf("... -> now week day - %s, now moment in secs - %d\n", nowWeekDay, nowMomentInSec)
+
+	isLocationOpen := app.isLocationOpen(location, nowWeekDay.String(), nowMomentInSec)
+	if isLocationOpen {
+		log.Printf("... -> %s is OPEN, set it to green only if nil or grey\n", location.Name)
+		if location.WaitTimeColor == nil || *location.WaitTimeColor == "grey" {
+			log.Println("... -> setting it to green because the current wait time color is nil or grey")
+
+			waitTimeColor := "green"
+			location.WaitTimeColor = &waitTimeColor
+			err = app.storage.SaveLocation(location)
+			if err != nil {
+				log.Printf("error saving a location after setting green wait time color - %s", err)
+			} else {
+				log.Printf("... -> Successfully set green wait time color for %s\n", location.Name)
+			}
+		} else {
+			log.Printf("... -> nothing to set because the current wait time color is %s\n", *location.WaitTimeColor)
+		}
+	} else {
+		log.Printf("... -> %s is CLOSED, set it to grey if not grey\n", location.Name)
+		if location.WaitTimeColor == nil || *location.WaitTimeColor != "grey" {
+			log.Println("... -> setting it to gray because the current wait time color is nil or not grey")
+
+			waitTimeColor := "grey"
+			location.WaitTimeColor = &waitTimeColor
+			err = app.storage.SaveLocation(location)
+			if err != nil {
+				log.Printf("error saving a location after setting grey wait time color - %s", err)
+			} else {
+				log.Printf("... -> Successfully set grey wait time color for %s\n", location.Name)
+			}
+		} else {
+			log.Println("... -> nothing to set because the current wait time color is grey")
+		}
+	}
+
+}
+
+func (app *Application) isLocationOpen(location *model.Location, day string, passedSeconds int) bool {
+	daysOfOperations := location.DaysOfOperation
+	if len(daysOfOperations) == 0 {
+		return false
+	}
+
+	//check if the location is open this day
+	var operationDay *model.OperationDay
+	for _, current := range daysOfOperations {
+		if day == current.Name {
+			operationDay = &current
+			break
+		}
+	}
+	if operationDay == nil {
+		return false
+	}
+
+	//check if the location is open this moment in the day
+	openTime, err := time.Parse("03:04pm", operationDay.OpenTime)
+	if err != nil {
+		log.Printf("error parsing open time - %s", openTime)
+	}
+	openTimeInSec := (openTime.Hour() * 60 * 60) + (openTime.Minute() * 60) + openTime.Second()
+	log.Printf("... open moment is secs - %d", openTimeInSec)
+
+	closeTime, err := time.Parse("03:04pm", operationDay.CloseTime)
+	if err != nil {
+		log.Printf("error parsing close time - %s", closeTime)
+	}
+	closeTimeInSec := (closeTime.Hour() * 60 * 60) + (closeTime.Minute() * 60) + closeTime.Second()
+	log.Printf("... close moment is secs - %d", closeTimeInSec)
+	if !(passedSeconds >= openTimeInSec && passedSeconds < closeTimeInSec) {
+		return false
+	}
+
+	//it is open
+	return true
 }
 
 func (app *Application) notifyListeners(message string, data interface{}) {

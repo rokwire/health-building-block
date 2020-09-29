@@ -40,6 +40,7 @@ type Location struct {
 	Country         string
 	Latitude        float64
 	Longitude       float64
+	Timezone        string
 	Contact         string //phone
 	DaysOfOperation []OperationDay
 	URL             string

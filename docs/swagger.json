@@ -11,7 +11,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "1.20.0"
+        "version": "1.21.0"
     },
     "host": "localhost",
     "basePath": "/health",
@@ -5136,6 +5136,9 @@
                 "state": {
                     "type": "string"
                 },
+                "timezone": {
+                    "type": "string"
+                },
                 "url": {
                     "type": "string"
                 },
@@ -5567,6 +5570,9 @@
                 "rules"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5638,6 +5644,9 @@
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },
@@ -5655,6 +5664,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5683,6 +5695,9 @@
         "createFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -5721,6 +5736,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5790,6 +5808,9 @@
                 "address_2": {
                     "type": "string"
                 },
+                "audit": {
+                    "type": "string"
+                },
                 "available_tests": {
                     "type": "array",
                     "items": {
@@ -5846,6 +5867,9 @@
         "createNewsRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },
@@ -5885,6 +5909,9 @@
                 "provider_name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "available_mechanisms": {
                     "type": "array",
                     "items": {
@@ -5902,6 +5929,9 @@
         "createResourceRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -5921,6 +5951,9 @@
                 "test_type_id"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -6023,6 +6056,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6037,6 +6073,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6192,6 +6231,9 @@
                 "rules"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -6212,6 +6254,9 @@
             ],
             "properties": {
                 "app_version": {
+                    "type": "string"
+                },
+                "audit": {
                     "type": "string"
                 },
                 "county_id": {
@@ -6241,6 +6286,9 @@
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },
@@ -6258,6 +6306,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6280,6 +6331,9 @@
         "updateFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6294,6 +6348,9 @@
         "updateFAQSection": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -6328,6 +6385,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6369,6 +6429,9 @@
                     "type": "string"
                 },
                 "address_2": {
+                    "type": "string"
+                },
+                "audit": {
                     "type": "string"
                 },
                 "available_tests": {
@@ -6421,6 +6484,9 @@
         "updateNewsRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },
@@ -6442,6 +6508,9 @@
                 "provider_name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "available_mechanisms": {
                     "type": "array",
                     "items": {
@@ -6459,6 +6528,9 @@
         "updateResourceRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -6476,6 +6548,9 @@
                 "results_statuses"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "priority": {
                     "type": "integer"
                 },
@@ -6557,6 +6632,9 @@
                 "app_version": {
                     "type": "string"
                 },
+                "audit": {
+                    "type": "string"
+                },
                 "items": {
                     "type": "string"
                 }
@@ -6568,6 +6646,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6582,6 +6663,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 }

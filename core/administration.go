@@ -1230,6 +1230,7 @@ func (app *Application) updateLocation(current model.User, group string, audit *
 	location.Country = country
 	location.Latitude = latitude
 	location.Longitude = longitude
+	location.Timezone = "America/Chicago"
 	location.Contact = contact
 	location.DaysOfOperation = daysOfOperation
 	location.URL = url

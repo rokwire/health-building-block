@@ -149,11 +149,37 @@ func (app *Application) checkLocationWaitTimeColor(location *model.Location) {
 
 	isLocationOpen := app.isLocationOpen(location, nowWeekDay.String(), nowMomentInSec)
 	if isLocationOpen {
-		log.Printf("... -> %s is OPEN\n", location.Name)
-		//TODO
+		log.Printf("... -> %s is OPEN, set it to green only if nil or grey\n", location.Name)
+		if location.WaitTimeColor == nil || *location.WaitTimeColor == "grey" {
+			log.Println("... -> setting it to green because the current wait time color is nil or grey")
+
+			waitTimeColor := "green"
+			location.WaitTimeColor = &waitTimeColor
+			err = app.storage.SaveLocation(location)
+			if err != nil {
+				log.Printf("error saving a location after setting green wait time color - %s", err)
+			} else {
+				log.Printf("... -> Successfully set green wait time color for %s\n", location.Name)
+			}
+		} else {
+			log.Printf("... -> nothing to set because the current wait time color is %s\n", *location.WaitTimeColor)
+		}
 	} else {
-		//TODO
-		log.Printf("... -> %s is CLOSED\n", location.Name)
+		log.Printf("... -> %s is CLOSED, set it to grey if not grey\n", location.Name)
+		if location.WaitTimeColor == nil || *location.WaitTimeColor != "grey" {
+			log.Println("... -> setting it to gray because the current wait time color is nil or not grey")
+
+			waitTimeColor := "grey"
+			location.WaitTimeColor = &waitTimeColor
+			err = app.storage.SaveLocation(location)
+			if err != nil {
+				log.Printf("error saving a location after setting grey wait time color - %s", err)
+			} else {
+				log.Printf("... -> Successfully set grey wait time color for %s\n", location.Name)
+			}
+		} else {
+			log.Println("... -> nothing to set because the current wait time color is grey")
+		}
 	}
 
 }
@@ -196,62 +222,6 @@ func (app *Application) isLocationOpen(location *model.Location, day string, pas
 
 	//it is open
 	return true
-}
-
-func (app *Application) test() {
-	log.Println("Application -> checkLocationsWaitTimesColors")
-
-	// load locations
-	locations, err := app.storage.ReadAllLocations()
-	if err != nil {
-		log.Printf("error loading locations for wait time color check - %s", err)
-	}
-
-	for _, loc := range locations {
-		log.Printf("%s - %s", loc.Name, loc.DaysOfOperation)
-	}
-
-	//	ref, _ := time.Parse("03:04 PM", "12:00 AM")
-	//	t, err := time.Parse("03:04 PM", "11:22 PM")
-	//	if err != nil {
-	//		panic(err)
-	//	}
-
-	//fmt.Println(t.Sub(ref).Seconds())
-
-	t, err := time.Parse("03:04pm", "06:30pm")
-	log.Printf("Parsed -> t - hours:%d minutes:%d seconds:%d\n", t.Hour(), t.Minute(), t.Second())
-
-	//TODO
-	/*
-		location, err := time.LoadLocation("America/Chicago")
-		if err != nil {
-			log.Printf("Error getting location:%s\n", err.Error())
-		}
-		now := time.Now().In(location)
-		//log.Printf("setupColorChangeTimer -> now - hours:%d minutes:%d seconds:%d\n", now.Hour(), now.Minute(), now.Second())
-
-		//now := time.Now()
-		log.Printf("NOW: %s", now.Weekday())
-
-		log.Printf("A de: %s", now.Format("03:04:05PM"))
-
-		log.Printf("NOWWWW -> now - hours:%d minutes:%d seconds:%d\n", now.Hour(), now.Minute(), now.Second())
-
-		currentMomentInSec := (now.Hour() * 60 * 60) + (now.Minute() * 60) + now.Second()
-
-		log.Printf("NOWWWW in sec %d \n", currentMomentInSec)
-
-	*/
-	/*	layout1 := "03:04:05PM"
-		layout2 := "15:04:05"
-		t, err := time.Parse(layout1, "07:05:45PM")
-		if err != nil {
-		    fmt.Println(err)
-		    return
-		}
-		fmt.Println(t.Format(layout1))
-		fmt.Println(t.Format(layout2)) */
 }
 
 func (app *Application) notifyListeners(message string, data interface{}) {

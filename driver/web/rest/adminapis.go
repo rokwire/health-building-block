@@ -2672,7 +2672,7 @@ func (h AdminApisHandler) CreateLocation(current model.User, group string, w htt
 	}
 	response := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 		City: location.City, State: location.State, ZIP: location.ZIP, Latitude: location.Latitude, Longitude: location.Longitude,
-		Country: location.Country, Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
+		Timezone: location.Timezone, Country: location.Country, Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
 		URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
 		CountyID: location.County.ID, AvailableTests: availableTestsRes}
 	data, err = json.Marshal(response)
@@ -2784,7 +2784,7 @@ func (h AdminApisHandler) UpdateLocation(current model.User, group string, w htt
 	}
 	response := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 		City: location.City, State: location.State, ZIP: location.ZIP, Latitude: location.Latitude, Longitude: location.Longitude,
-		Country: location.Country, Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
+		Timezone: location.Timezone, Country: location.Country, Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
 		URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
 		CountyID: location.County.ID, AvailableTests: availableTestsRes}
 	data, err = json.Marshal(response)
@@ -2829,7 +2829,7 @@ func (h AdminApisHandler) GetLocations(current model.User, group string, w http.
 			}
 			loc := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 				City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude,
-				Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
+				Timezone: location.Timezone, Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
 				URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
 				CountyID: location.County.ID, AvailableTests: availableTestsRes}
 			responseList = append(responseList, loc)

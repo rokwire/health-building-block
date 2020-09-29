@@ -5148,6 +5148,9 @@ var doc = `{
                 "state": {
                     "type": "string"
                 },
+                "timezone": {
+                    "type": "string"
+                },
                 "url": {
                     "type": "string"
                 },

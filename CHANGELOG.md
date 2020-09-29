@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.0] - 2020-09-29
+### Fixed
+- Fix timezone database Docker issue. [#57](https://github.com/rokwire/health-building-block/issues/57)
+
 ## [1.21.0] - 2020-09-29
 ### Added
 - Reset wait times to gray when locations close (are closed). [#52](https://github.com/rokwire/health-building-block/issues/52)
@@ -136,7 +140,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.21.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.22.0...HEAD
+[1.22.0]: https://github.com/rokwire/health-building-block/compare/v1.21.0...v1.22.0
 [1.21.0]: https://github.com/rokwire/health-building-block/compare/v1.20.0...v1.21.0
 [1.20.0]: https://github.com/rokwire/health-building-block/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/rokwire/health-building-block/compare/v1.18.0...v1.19.0

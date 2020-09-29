@@ -130,6 +130,49 @@ func (app *Application) checkLocationsWaitTimesColors() {
 	}
 
 	for _, loc := range locations {
+		app.checkLocationWaitTimeColor(loc)
+	}
+}
+
+func (app *Application) checkLocationWaitTimeColor(location *model.Location) {
+	log.Printf("Application -> checkLocationWaitTimeColor for %s with timezone %s", location.Name, location.Timezone)
+
+	//find the day of the week and the passed seconds within the day
+	timeLocation, err := time.LoadLocation(location.Timezone)
+	if err != nil {
+		log.Printf("Error getting time location:%s\n", err.Error())
+	}
+	now := time.Now().In(timeLocation)
+	nowWeekDay := now.Weekday()
+	nowMomentInSec := (now.Hour() * 60 * 60) + (now.Minute() * 60) + now.Second()
+	log.Printf("... -> now week day - %s, now moment in secs - %d\n", nowWeekDay, nowMomentInSec)
+
+	isLocationOpen := app.isLocationOpen(location, nowWeekDay.String(), nowMomentInSec)
+	if isLocationOpen {
+		log.Printf("... -> %s is open\n", location.Name)
+		//TODO
+	} else {
+		//TODO
+		log.Printf("... -> %s is closed\n", location.Name)
+	}
+
+}
+
+func (app *Application) isLocationOpen(location *model.Location, day string, passedSeconds int) bool {
+	//TODO
+	return true
+}
+
+func (app *Application) test() {
+	log.Println("Application -> checkLocationsWaitTimesColors")
+
+	// load locations
+	locations, err := app.storage.ReadAllLocations()
+	if err != nil {
+		log.Printf("error loading locations for wait time color check - %s", err)
+	}
+
+	for _, loc := range locations {
 		log.Printf("%s - %s", loc.Name, loc.DaysOfOperation)
 	}
 

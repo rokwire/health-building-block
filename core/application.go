@@ -123,12 +123,48 @@ func (app *Application) setupLocationWaitTimeColorTimer() {
 func (app *Application) checkLocationsWaitTimesColors() {
 	log.Println("Application -> checkLocationsWaitTimesColors")
 
+	// load locations
+	locations, err := app.storage.ReadAllLocations()
+	if err != nil {
+		log.Printf("error loading locations for wait time color check - %s", err)
+	}
+
+	for _, loc := range locations {
+		log.Printf("%s - %s", loc.Name, loc.DaysOfOperation)
+	}
+
+	//	ref, _ := time.Parse("03:04 PM", "12:00 AM")
+	//	t, err := time.Parse("03:04 PM", "11:22 PM")
+	//	if err != nil {
+	//		panic(err)
+	//	}
+
+	//fmt.Println(t.Sub(ref).Seconds())
+
+	t, err := time.Parse("03:04pm", "06:30pm")
+	log.Printf("Parsed -> t - hours:%d minutes:%d seconds:%d\n", t.Hour(), t.Minute(), t.Second())
+
 	//TODO
-	now := time.Now()
-	log.Printf("NOW: %s", now.Weekday())
+	/*
+		location, err := time.LoadLocation("America/Chicago")
+		if err != nil {
+			log.Printf("Error getting location:%s\n", err.Error())
+		}
+		now := time.Now().In(location)
+		//log.Printf("setupColorChangeTimer -> now - hours:%d minutes:%d seconds:%d\n", now.Hour(), now.Minute(), now.Second())
 
-	log.Printf("A de: %s", now.Format("03:04:05PM"))
+		//now := time.Now()
+		log.Printf("NOW: %s", now.Weekday())
 
+		log.Printf("A de: %s", now.Format("03:04:05PM"))
+
+		log.Printf("NOWWWW -> now - hours:%d minutes:%d seconds:%d\n", now.Hour(), now.Minute(), now.Second())
+
+		currentMomentInSec := (now.Hour() * 60 * 60) + (now.Minute() * 60) + now.Second()
+
+		log.Printf("NOWWWW in sec %d \n", currentMomentInSec)
+
+	*/
 	/*	layout1 := "03:04:05PM"
 		layout2 := "15:04:05"
 		t, err := time.Parse(layout1, "07:05:45PM")

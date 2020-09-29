@@ -149,17 +149,52 @@ func (app *Application) checkLocationWaitTimeColor(location *model.Location) {
 
 	isLocationOpen := app.isLocationOpen(location, nowWeekDay.String(), nowMomentInSec)
 	if isLocationOpen {
-		log.Printf("... -> %s is open\n", location.Name)
+		log.Printf("... -> %s is OPEN\n", location.Name)
 		//TODO
 	} else {
 		//TODO
-		log.Printf("... -> %s is closed\n", location.Name)
+		log.Printf("... -> %s is CLOSED\n", location.Name)
 	}
 
 }
 
 func (app *Application) isLocationOpen(location *model.Location, day string, passedSeconds int) bool {
-	//TODO
+	daysOfOperations := location.DaysOfOperation
+	if len(daysOfOperations) == 0 {
+		return false
+	}
+
+	//check if the location is open this day
+	var operationDay *model.OperationDay
+	for _, current := range daysOfOperations {
+		if day == current.Name {
+			operationDay = &current
+			break
+		}
+	}
+	if operationDay == nil {
+		return false
+	}
+
+	//check if the location is open this moment in the day
+	openTime, err := time.Parse("03:04pm", operationDay.OpenTime)
+	if err != nil {
+		log.Printf("error parsing open time - %s", openTime)
+	}
+	openTimeInSec := (openTime.Hour() * 60 * 60) + (openTime.Minute() * 60) + openTime.Second()
+	log.Printf("... open moment is secs - %d", openTimeInSec)
+
+	closeTime, err := time.Parse("03:04pm", operationDay.CloseTime)
+	if err != nil {
+		log.Printf("error parsing close time - %s", closeTime)
+	}
+	closeTimeInSec := (closeTime.Hour() * 60 * 60) + (closeTime.Minute() * 60) + closeTime.Second()
+	log.Printf("... close moment is secs - %d", closeTimeInSec)
+	if !(passedSeconds >= openTimeInSec && passedSeconds < closeTimeInSec) {
+		return false
+	}
+
+	//it is open
 	return true
 }
 

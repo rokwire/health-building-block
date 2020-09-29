@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Admin APIs update - audit data. [#43](https://github.com/rokwire/health-building-block/issues/43)
 
+### Security
+- Allow location admins to retrieve providers, counties and test types. [#53](https://github.com/rokwire/health-building-block/issues/53)
+
 ## [1.20.0] - 2020-09-25
 ### Added
 - Building access APIs. [#48](https://github.com/rokwire/health-building-block/issues/48)

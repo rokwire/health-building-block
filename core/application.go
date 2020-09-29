@@ -19,7 +19,6 @@ package core
 
 import (
 	"errors"
-	"fmt"
 	"health/core/model"
 	"health/utils"
 	"log"
@@ -78,39 +77,34 @@ func (app *Application) AddListener(listener ApplicationListener) {
 func (app *Application) setupLocationWaitTimeColorTimer() {
 	log.Println("Application -> setupLocationWaitTimeColorTimer")
 
-	//TODO
+	//determine the first moment of the wait time color check
+	//we check it every 30 minutes
 	now := time.Now()
 	currentMinutes := now.Minute()
 	currentSecconds := now.Second()
-	log.Printf("MINUTES - %d SECONDS - %d", now.Minute(), now.Second())
 	var desiredMoment int
 	if currentMinutes < 30 {
-		log.Println("desired is 30")
+		log.Println("Application -> setupLocationWaitTimeColorTimer -> desired is 30")
 		desiredMoment = 30
 	} else {
-		log.Println("desired is 60")
+		log.Println("Application -> setupLocationWaitTimeColorTimer -> desired is 60")
 		desiredMoment = 60
 	}
 
 	desiredMomentInSec := desiredMoment * 60
-	log.Printf("desiredMomentInSec - %d", desiredMomentInSec)
-
 	currentMomentInSec := (currentMinutes * 60) + currentSecconds
-	log.Printf("currentMomentInSec - %d", currentMomentInSec)
-
-	difference := desiredMomentInSec - currentMomentInSec
-	log.Printf("difference - %d", difference)
-
-	//
+	//we add 5 seconds which is insignificant from user point of view but we quarantee that the check is in the desired 30 minutes interval
+	difference := (desiredMomentInSec - currentMomentInSec) + 5
 	duration := time.Second * time.Duration(difference)
-	log.Printf("start after - %s", duration)
+	log.Printf("Application -> setupLocationWaitTimeColorTimer -> start after - %s", duration)
 	timer := time.NewTimer(duration)
 	<-timer.C
-	fmt.Println("Timer 1 fired")
 
+	//check it for first time
 	go app.checkLocationsWaitTimesColors()
 
-	ticker := time.NewTicker(5 * time.Second)
+	//check it every 30 minutes
+	ticker := time.NewTicker(30 * time.Minute)
 	quit := make(chan struct{})
 	go func() {
 		for {

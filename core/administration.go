@@ -882,6 +882,10 @@ func (app *Application) getCRules(countyID string, appVersion string) (*model.CR
 }
 
 func (app *Application) updateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) (*model.CRules, error) {
+	if !app.isVersionSupported(appVersion) {
+		return nil, errors.New("app version is not supported")
+	}
+
 	cRules, err := app.storage.UpdateCRules(appVersion, countyID, data)
 	if err != nil {
 		return nil, err

@@ -19,12 +19,10 @@ package storage
 
 import (
 	"context"
-	"errors"
 	"health/core"
 	"log"
 	"time"
 
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -375,29 +373,6 @@ func (m *database) applyEManualTestsChecks(emanualtests *collectionWrapper) erro
 		return err
 	}
 
-	// Remove all verified manual tests as we already do not keep them
-	// First check their count
-	verifiedFilter := bson.D{primitive.E{Key: "status", Value: "verified"}}
-	var items []*eManualTest
-	err = emanualtests.Find(verifiedFilter, &items, nil)
-	if err != nil {
-		return err
-	}
-	if items != nil && len(items) > 0 {
-		log.Printf("there there are %d verified items, so remove them\n", len(items))
-
-		result, err := emanualtests.DeleteMany(verifiedFilter, nil)
-		if err != nil {
-			return err
-		}
-		if result == nil {
-			return errors.New("delete result is nil for some reasons")
-		}
-		log.Printf("%d items were removed\n", result.DeletedCount)
-	} else {
-		log.Println("there is no verified manual test items, so do nothing")
-	}
-
 	log.Println("emanualtests checks passed")
 	return nil
 }
@@ -551,44 +526,10 @@ func (m *database) applyRulesChecks(rules *collectionWrapper) error {
 func (m *database) applySymptomGroupsChecks(symptomGroups *collectionWrapper) error {
 	log.Println("apply symptomGroups checks.....")
 
-	//1. add index
+	// add index
 	err := symptomGroups.AddIndex(bson.D{primitive.E{Key: "symptoms.id", Value: 1}}, false)
 	if err != nil {
 		return err
-	}
-
-	//2. check if need to add the two groups
-	filter := bson.D{}
-	var result []symptomGroup
-	err = symptomGroups.Find(filter, &result, nil)
-	if err != nil {
-		return err
-	}
-	hasData := result != nil && len(result) > 0
-	if !hasData {
-		log.Println("there is no symptoms groups data, so create a default one")
-
-		gr1ID, err := uuid.NewUUID()
-		if err != nil {
-			return err
-		}
-		gr1 := symptomGroup{ID: gr1ID.String(), Name: "gr1"}
-		_, err = symptomGroups.InsertOne(&gr1)
-		if err != nil {
-			return err
-		}
-
-		gr2ID, err := uuid.NewUUID()
-		if err != nil {
-			return err
-		}
-		gr2 := symptomGroup{ID: gr2ID.String(), Name: "gr2"}
-		_, err = symptomGroups.InsertOne(&gr2)
-		if err != nil {
-			return err
-		}
-	} else {
-		log.Println("there is symptoms groups data, so do nothing")
 	}
 
 	log.Println("symptomGroups checks passed")

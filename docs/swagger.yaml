@@ -765,6 +765,18 @@ definitions:
     - encrypted_blob
     - encrypted_key
     type: object
+  createOrUpdateSymptomsRequest:
+    properties:
+      app_version:
+        type: string
+      audit:
+        type: string
+      items:
+        type: string
+    required:
+    - app_version
+    - items
+    type: object
   createProviderRequest:
     properties:
       audit:
@@ -1243,18 +1255,6 @@ definitions:
     - county_id
     - gr1_count
     - gr2_count
-    - items
-    type: object
-  updateSymptomsRequest:
-    properties:
-      app_version:
-        type: string
-      audit:
-        type: string
-      items:
-        type: string
-    required:
-    - app_version
     - items
     type: object
   updateTestTypeRequest:
@@ -2862,15 +2862,15 @@ paths:
     put:
       consumes:
       - application/json
-      description: Updates the symptoms.
-      operationId: UpdateASymptoms
+      description: Creates symptoms or update them if already created.
+      operationId: CreateorUpdateSymptoms
       parameters:
       - description: body data
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/updateSymptomsRequest'
+          $ref: '#/definitions/createOrUpdateSymptomsRequest'
       produces:
       - application/json
       responses:

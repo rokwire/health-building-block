@@ -2562,7 +2562,7 @@ var doc = `{
                         "AdminGroupAuth": []
                     }
                 ],
-                "description": "Updates the symptoms.",
+                "description": "Creates symptoms or update them if already created.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2572,7 +2572,7 @@ var doc = `{
                 "tags": [
                     "Admin"
                 ],
-                "operationId": "UpdateASymptoms",
+                "operationId": "CreateorUpdateSymptoms",
                 "parameters": [
                     {
                         "description": "body data",
@@ -2580,7 +2580,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/updateSymptomsRequest"
+                            "$ref": "#/definitions/createOrUpdateSymptomsRequest"
                         }
                     }
                 ],
@@ -5914,6 +5914,24 @@ var doc = `{
                 }
             }
         },
+        "createOrUpdateSymptomsRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "items"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "audit": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
         "createProviderRequest": {
             "type": "object",
             "required": [
@@ -6631,24 +6649,6 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/updateSymptomRuleItemRequest"
                     }
-                }
-            }
-        },
-        "updateSymptomsRequest": {
-            "type": "object",
-            "required": [
-                "app_version",
-                "items"
-            ],
-            "properties": {
-                "app_version": {
-                    "type": "string"
-                },
-                "audit": {
-                    "type": "string"
-                },
-                "items": {
-                    "type": "string"
                 }
             }
         },

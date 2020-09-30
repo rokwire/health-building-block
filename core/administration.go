@@ -907,12 +907,12 @@ func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error)
 	return symptoms, nil
 }
 
-func (app *Application) updateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error) {
+func (app *Application) createOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error) {
 	if !app.isVersionSupported(appVersion) {
 		return nil, errors.New("app version is not supported")
 	}
 
-	symptoms, err := app.storage.UpdateSymptoms(appVersion, items)
+	create, symptoms, err := app.storage.CreateOrUpdateSymptoms(appVersion, items)
 	if err != nil {
 		return nil, err
 	}
@@ -920,7 +920,13 @@ func (app *Application) updateSymptoms(current model.User, group string, audit *
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "appVersion", Value: appVersion}, {Key: "items", Value: items}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, audit)
+	if create {
+		//create
+		defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, audit)
+	} else {
+		//update
+		defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, audit)
+	}
 
 	return symptoms, nil
 }

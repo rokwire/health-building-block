@@ -3991,24 +3991,24 @@ func (h AdminApisHandler) GetSymptoms(current model.User, group string, w http.R
 	w.Write(data)
 }
 
-type updateSymptomsRequest struct {
+type createOrUpdateSymptomsRequest struct {
 	Audit      *string `json:"audit"`
 	AppVersion string  `json:"app_version" validate:"required"`
 	Items      string  `json:"items" validate:"required"`
-} //@name updateSymptomsRequest
+} //@name createOrUpdateSymptomsRequest
 
-//UpdateSymptoms updates the symptoms
-// @Description Updates the symptoms.
+//CreateorUpdateSymptoms creates symptoms or update them if already created
+// @Description Creates symptoms or update them if already created.
 // @Tags Admin
-// @ID UpdateASymptoms
+// @ID CreateorUpdateSymptoms
 // @Accept json
 // @Produce json
-// @Param data body updateSymptomsRequest true "body data"
+// @Param data body createOrUpdateSymptomsRequest true "body data"
 // @Success 200 {object} string
 // @Security AdminUserAuth
 // @Security AdminGroupAuth
 // @Router /admin/symptoms [put]
-func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateorUpdateSymptoms(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	bodyData, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal the update symptoms items  - %s\n", err.Error())
@@ -4016,7 +4016,7 @@ func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w htt
 		return
 	}
 
-	var requestData updateSymptomsRequest
+	var requestData createOrUpdateSymptomsRequest
 	err = json.Unmarshal(bodyData, &requestData)
 	if err != nil {
 		log.Printf("Error on unmarshal the update symptoms items request data - %s\n", err.Error())
@@ -4037,7 +4037,7 @@ func (h AdminApisHandler) UpdateSymptoms(current model.User, group string, w htt
 	appVersion := requestData.AppVersion
 	items := requestData.Items
 
-	symptoms, err := h.app.Administration.UpdateSymptoms(current, group, audit, appVersion, items)
+	symptoms, err := h.app.Administration.CreateOrUpdateSymptoms(current, group, audit, appVersion, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

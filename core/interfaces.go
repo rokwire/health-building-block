@@ -351,7 +351,7 @@ type Administration interface {
 	UpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) (*model.CRules, error)
 
 	GetSymptoms(appVersion string) (*model.Symptoms, error)
-	UpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error)
+	CreateOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error)
 
 	GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
@@ -648,8 +648,8 @@ func (s *administrationImpl) GetSymptoms(appVersion string) (*model.Symptoms, er
 	return s.app.getASymptoms(appVersion)
 }
 
-func (s *administrationImpl) UpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error) {
-	return s.app.updateSymptoms(current, group, audit, appVersion, items)
+func (s *administrationImpl) CreateOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error) {
+	return s.app.createOrUpdateSymptoms(current, group, audit, appVersion, items)
 }
 
 func (s *administrationImpl) GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
@@ -798,7 +798,7 @@ type Storage interface {
 	ReadAllSymptomGroups() ([]*model.SymptomGroup, error)
 
 	ReadSymptoms(appVersion string) (*model.Symptoms, error)
-	UpdateSymptoms(appVersion string, items string) (*model.Symptoms, error)
+	CreateOrUpdateSymptoms(appVersion string, items string) (bool, *model.Symptoms, error)
 
 	ReadAllSymptomRules() ([]*model.SymptomRule, error)
 	CreateSymptomRule(countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error)

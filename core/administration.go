@@ -907,20 +907,20 @@ func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error)
 	return symptoms, nil
 }
 
-func (app *Application) createOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error) {
+func (app *Application) createOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) error {
 	if !app.isVersionSupported(appVersion) {
-		return nil, errors.New("app version is not supported")
+		return errors.New("app version is not supported")
 	}
 
-	create, symptoms, err := app.storage.CreateOrUpdateSymptoms(appVersion, items)
+	create, err := app.storage.CreateOrUpdateSymptoms(appVersion, items)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "appVersion", Value: appVersion}, {Key: "items", Value: items}}
-	if create {
+	if *create {
 		//create
 		defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, audit)
 	} else {
@@ -928,7 +928,7 @@ func (app *Application) createOrUpdateSymptoms(current model.User, group string,
 		defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, audit)
 	}
 
-	return symptoms, nil
+	return nil
 }
 
 func (app *Application) getUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {

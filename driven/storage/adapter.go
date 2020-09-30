@@ -3362,61 +3362,29 @@ func (sa *Adapter) ReadSymptoms(appVersion string) (*model.Symptoms, error) {
 }
 
 //CreateOrUpdateSymptoms creates symptoms for the provided version or update them if already created
-func (sa *Adapter) CreateOrUpdateSymptoms(appVersion string, items string) (bool, *model.Symptoms, error) {
-	//TODO
-	return true, nil, nil
-	/*var resultItem *model.Symptoms
-	/*
-		// transaction
-		err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
-			err := sessionContext.StartTransaction()
-			if err != nil {
-				log.Printf("error starting a transaction - %s", err)
-				return err
-			}
+func (sa *Adapter) CreateOrUpdateSymptoms(appVersion string, items string) (*bool, error) {
+	filter := bson.D{primitive.E{Key: "app_version", Value: appVersion}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "items", Value: items},
+		}},
+	}
 
-			//1. find the symptoms
-			sFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}}
-			var sResult []*model.Symptoms
-			err = sa.db.symptoms.FindWithContext(sessionContext, sFilter, &sResult, nil)
-			if err != nil {
-				abortTransaction(sessionContext)
-				return err
-			}
-			if sResult == nil || len(sResult) == 0 {
-				abortTransaction(sessionContext)
-				return errors.New("there is no symptoms for the provided app version")
-			}
-			symptoms := sResult[0]
+	//insert if not exists
+	opt := options.Update()
+	upsert := true
+	opt.Upsert = &upsert
 
-			//2. update the symptoms
-			symptoms.Items = items
+	updateResult, err := sa.db.symptoms.UpdateOne(filter, update, opt)
+	if err != nil {
+		return nil, err
+	}
 
-			//3. save the symptoms
-			saveFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}}
-			err = sa.db.symptoms.ReplaceOneWithContext(sessionContext, saveFilter, &symptoms, nil)
-			if err != nil {
-				abortTransaction(sessionContext)
-				return err
-			}
-
-			resultItem = symptoms
-
-			//commit the transaction
-			err = sessionContext.CommitTransaction(sessionContext)
-			if err != nil {
-				fmt.Println(err)
-				return err
-			}
-			return nil
-		})
-		if err != nil {
-			return nil, err
-		}
-
-
-
-	return resultItem, nil */
+	create := true
+	if updateResult.ModifiedCount == 1 {
+		create = false //modified
+	}
+	return &create, nil
 }
 
 //ReadAllSymptomRules reads all the symptom rules

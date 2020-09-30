@@ -258,7 +258,7 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/crules", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateCRules)).Methods("PUT")
 
 	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetSymptoms)).Methods("GET").Queries("app-version", "")
-	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateorUpdateSymptoms)).Methods("PUT")
+	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateOrUpdateSymptoms)).Methods("PUT")
 
 	adminRestSubrouter.HandleFunc("/uin-overrides", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUINOverrides)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/uin-overrides", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateUINOverride)).Methods("POST")

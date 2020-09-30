@@ -4004,11 +4004,11 @@ type createOrUpdateSymptomsRequest struct {
 // @Accept json
 // @Produce json
 // @Param data body createOrUpdateSymptomsRequest true "body data"
-// @Success 200 {object} string
+// @Success 200 {string} Successfully processed
 // @Security AdminUserAuth
 // @Security AdminGroupAuth
 // @Router /admin/symptoms [put]
-func (h AdminApisHandler) CreateorUpdateSymptoms(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateOrUpdateSymptoms(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	bodyData, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal the update symptoms items  - %s\n", err.Error())
@@ -4037,18 +4037,16 @@ func (h AdminApisHandler) CreateorUpdateSymptoms(current model.User, group strin
 	appVersion := requestData.AppVersion
 	items := requestData.Items
 
-	symptoms, err := h.app.Administration.CreateOrUpdateSymptoms(current, group, audit, appVersion, items)
+	err = h.app.Administration.CreateOrUpdateSymptoms(current, group, audit, appVersion, items)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	resData := []byte(symptoms.Items)
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-	w.Write(resData)
+	w.Write([]byte("Successfully processed"))
 }
 
 //GetUINOverrides gives uin override items

@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Add 2.7 and 2.8 as supported app versions. [#60](https://github.com/rokwire/health-building-block/issues/60)
 
 ## [1.22.0] - 2020-09-29
 ### Fixed

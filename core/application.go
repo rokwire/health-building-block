@@ -608,7 +608,7 @@ func NewApplication(version string, build string, dataProvider DataProvider, sen
 	cvLock := &sync.RWMutex{}
 	listeners := []ApplicationListener{}
 
-	supportedVersion := []string{"2.6"}
+	supportedVersion := []string{"2.6", "2.7", "2.8"}
 
 	application := Application{version: version, build: build, dataProvider: dataProvider, sender: sender, messaging: messaging,
 		profileBB: profileBB, storage: storage, audit: audit, cvLock: cvLock, listeners: listeners, supportedVersions: supportedVersion}

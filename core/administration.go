@@ -881,18 +881,28 @@ func (app *Application) getCRules(countyID string, appVersion string) (*model.CR
 	return cRules, nil
 }
 
-func (app *Application) updateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) (*model.CRules, error) {
-	cRules, err := app.storage.UpdateCRules(appVersion, countyID, data)
+func (app *Application) createOrUpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) error {
+	if !app.isVersionSupported(appVersion) {
+		return errors.New("app version is not supported")
+	}
+
+	create, err := app.storage.CreateOrUpdateCRules(appVersion, countyID, data)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "appVersion", Value: appVersion}, {Key: "data", Value: data}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "crules", "", lData, audit)
+	if *create {
+		//create
+		defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "crules", "", lData, audit)
+	} else {
+		//update
+		defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "crules", "", lData, audit)
+	}
 
-	return cRules, nil
+	return nil
 }
 
 func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error) {
@@ -907,18 +917,28 @@ func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error)
 	return symptoms, nil
 }
 
-func (app *Application) updateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error) {
-	symptoms, err := app.storage.UpdateSymptoms(appVersion, items)
+func (app *Application) createOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) error {
+	if !app.isVersionSupported(appVersion) {
+		return errors.New("app version is not supported")
+	}
+
+	create, err := app.storage.CreateOrUpdateSymptoms(appVersion, items)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "appVersion", Value: appVersion}, {Key: "items", Value: items}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, audit)
+	if *create {
+		//create
+		defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, audit)
+	} else {
+		//update
+		defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, audit)
+	}
 
-	return symptoms, nil
+	return nil
 }
 
 func (app *Application) getUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {

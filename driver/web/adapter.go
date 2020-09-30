@@ -49,7 +49,7 @@ type Adapter struct {
 
 // @title Rokwire Health Building Block API
 // @description Rokwire Health Building Block API Documentation.
-// @version 1.22.0
+// @version 1.23.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost
@@ -255,10 +255,10 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/access-rules/{id}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteAccessRule)).Methods("DELETE")
 
 	adminRestSubrouter.HandleFunc("/crules", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetCRules)).Methods("GET").Queries("county-id", "", "app-version", "")
-	adminRestSubrouter.HandleFunc("/crules", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateCRules)).Methods("PUT")
+	adminRestSubrouter.HandleFunc("/crules", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateOrUpdateCRules)).Methods("PUT")
 
 	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetSymptoms)).Methods("GET").Queries("app-version", "")
-	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateSymptoms)).Methods("PUT")
+	adminRestSubrouter.HandleFunc("/symptoms", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateOrUpdateSymptoms)).Methods("PUT")
 
 	adminRestSubrouter.HandleFunc("/uin-overrides", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUINOverrides)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/uin-overrides", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateUINOverride)).Methods("POST")

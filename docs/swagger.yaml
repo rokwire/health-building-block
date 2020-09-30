@@ -753,6 +753,21 @@ definitions:
       title:
         type: string
     type: object
+  createOrUpdateCRulesRequest:
+    properties:
+      app_version:
+        type: string
+      audit:
+        type: string
+      county_id:
+        type: string
+      data:
+        type: string
+    required:
+    - app_version
+    - county_id
+    - data
+    type: object
   createOrUpdateStatusRequest:
     properties:
       date:
@@ -764,6 +779,18 @@ definitions:
     required:
     - encrypted_blob
     - encrypted_key
+    type: object
+  createOrUpdateSymptomsRequest:
+    properties:
+      app_version:
+        type: string
+      audit:
+        type: string
+      items:
+        type: string
+    required:
+    - app_version
+    - items
     type: object
   createProviderRequest:
     properties:
@@ -993,21 +1020,6 @@ definitions:
     required:
     - county_id
     - rules
-    type: object
-  updateCRulesRequest:
-    properties:
-      app_version:
-        type: string
-      audit:
-        type: string
-      county_id:
-        type: string
-      data:
-        type: string
-    required:
-    - app_version
-    - county_id
-    - data
     type: object
   updateCTestRequest:
     properties:
@@ -1243,18 +1255,6 @@ definitions:
     - county_id
     - gr1_count
     - gr2_count
-    - items
-    type: object
-  updateSymptomsRequest:
-    properties:
-      app_version:
-        type: string
-      audit:
-        type: string
-      items:
-        type: string
-    required:
-    - app_version
     - items
     type: object
   updateTestTypeRequest:
@@ -1741,15 +1741,15 @@ paths:
     put:
       consumes:
       - application/json
-      description: Updates the rules.
-      operationId: UpdateCRules
+      description: Creates rules, updates them if already created.
+      operationId: CreateOrUpdateCRules
       parameters:
       - description: body data
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/updateCRulesRequest'
+          $ref: '#/definitions/createOrUpdateCRulesRequest'
       produces:
       - application/json
       responses:
@@ -2862,15 +2862,15 @@ paths:
     put:
       consumes:
       - application/json
-      description: Updates the symptoms.
-      operationId: UpdateASymptoms
+      description: Creates symptoms or update them if already created.
+      operationId: CreateorUpdateSymptoms
       parameters:
       - description: body data
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/updateSymptomsRequest'
+          $ref: '#/definitions/createOrUpdateSymptomsRequest'
       produces:
       - application/json
       responses:

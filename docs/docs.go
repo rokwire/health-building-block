@@ -760,7 +760,7 @@ var doc = `{
                         "AdminGroupAuth": []
                     }
                 ],
-                "description": "Updates the rules.",
+                "description": "Creates rules, updates them if already created.",
                 "consumes": [
                     "application/json"
                 ],
@@ -770,7 +770,7 @@ var doc = `{
                 "tags": [
                     "Admin"
                 ],
-                "operationId": "UpdateCRules",
+                "operationId": "CreateOrUpdateCRules",
                 "parameters": [
                     {
                         "description": "body data",
@@ -778,7 +778,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/updateCRulesRequest"
+                            "$ref": "#/definitions/createOrUpdateCRulesRequest"
                         }
                     }
                 ],
@@ -2562,7 +2562,7 @@ var doc = `{
                         "AdminGroupAuth": []
                     }
                 ],
-                "description": "Updates the symptoms.",
+                "description": "Creates symptoms or update them if already created.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2572,7 +2572,7 @@ var doc = `{
                 "tags": [
                     "Admin"
                 ],
-                "operationId": "UpdateASymptoms",
+                "operationId": "CreateorUpdateSymptoms",
                 "parameters": [
                     {
                         "description": "body data",
@@ -2580,7 +2580,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/updateSymptomsRequest"
+                            "$ref": "#/definitions/createOrUpdateSymptomsRequest"
                         }
                     }
                 ],
@@ -5896,6 +5896,28 @@ var doc = `{
                 }
             }
         },
+        "createOrUpdateCRulesRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "county_id",
+                "data"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "audit": {
+                    "type": "string"
+                },
+                "county_id": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "string"
+                }
+            }
+        },
         "createOrUpdateStatusRequest": {
             "type": "object",
             "required": [
@@ -5910,6 +5932,24 @@ var doc = `{
                     "type": "string"
                 },
                 "encrypted_key": {
+                    "type": "string"
+                }
+            }
+        },
+        "createOrUpdateSymptomsRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "items"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "audit": {
+                    "type": "string"
+                },
+                "items": {
                     "type": "string"
                 }
             }
@@ -6254,28 +6294,6 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/updateAccessRuleItemRequest"
                     }
-                }
-            }
-        },
-        "updateCRulesRequest": {
-            "type": "object",
-            "required": [
-                "app_version",
-                "county_id",
-                "data"
-            ],
-            "properties": {
-                "app_version": {
-                    "type": "string"
-                },
-                "audit": {
-                    "type": "string"
-                },
-                "county_id": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "string"
                 }
             }
         },
@@ -6631,24 +6649,6 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/updateSymptomRuleItemRequest"
                     }
-                }
-            }
-        },
-        "updateSymptomsRequest": {
-            "type": "object",
-            "required": [
-                "app_version",
-                "items"
-            ],
-            "properties": {
-                "app_version": {
-                    "type": "string"
-                },
-                "audit": {
-                    "type": "string"
-                },
-                "items": {
-                    "type": "string"
                 }
             }
         },

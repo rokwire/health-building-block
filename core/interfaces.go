@@ -348,10 +348,10 @@ type Administration interface {
 	DeleteAccessRule(current model.User, group string, ID string) error
 
 	GetCRules(countyID string, appVersion string) (*model.CRules, error)
-	UpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) (*model.CRules, error)
+	CreateOrUpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) error
 
 	GetSymptoms(appVersion string) (*model.Symptoms, error)
-	UpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error)
+	CreateOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) error
 
 	GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
@@ -640,16 +640,16 @@ func (s *administrationImpl) GetCRules(countyID string, appVersion string) (*mod
 	return s.app.getCRules(countyID, appVersion)
 }
 
-func (s *administrationImpl) UpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) (*model.CRules, error) {
-	return s.app.updateCRules(current, group, audit, countyID, appVersion, data)
+func (s *administrationImpl) CreateOrUpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) error {
+	return s.app.createOrUpdateCRules(current, group, audit, countyID, appVersion, data)
 }
 
 func (s *administrationImpl) GetSymptoms(appVersion string) (*model.Symptoms, error) {
 	return s.app.getASymptoms(appVersion)
 }
 
-func (s *administrationImpl) UpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error) {
-	return s.app.updateSymptoms(current, group, audit, appVersion, items)
+func (s *administrationImpl) CreateOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) error {
+	return s.app.createOrUpdateSymptoms(current, group, audit, appVersion, items)
 }
 
 func (s *administrationImpl) GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
@@ -798,7 +798,7 @@ type Storage interface {
 	ReadAllSymptomGroups() ([]*model.SymptomGroup, error)
 
 	ReadSymptoms(appVersion string) (*model.Symptoms, error)
-	UpdateSymptoms(appVersion string, items string) (*model.Symptoms, error)
+	CreateOrUpdateSymptoms(appVersion string, items string) (*bool, error)
 
 	ReadAllSymptomRules() ([]*model.SymptomRule, error)
 	CreateSymptomRule(countyID string, gr1Count int, gr2Count int, items []model.SymptomRuleItem) (*model.SymptomRule, error)
@@ -808,7 +808,7 @@ type Storage interface {
 	DeleteSymptomRule(ID string) error
 
 	FindCRulesByCountyID(appVersion string, countyID string) (*model.CRules, error)
-	UpdateCRules(appVersion string, countyID string, data string) (*model.CRules, error)
+	CreateOrUpdateCRules(appVersion string, countyID string, data string) (*bool, error)
 
 	CreateTraceReports(items []model.TraceExposure) (int, error)
 	ReadTraceExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)

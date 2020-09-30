@@ -908,6 +908,10 @@ func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error)
 }
 
 func (app *Application) updateSymptoms(current model.User, group string, audit *string, appVersion string, items string) (*model.Symptoms, error) {
+	if !app.isVersionSupported(appVersion) {
+		return nil, errors.New("app version is not supported")
+	}
+
 	symptoms, err := app.storage.UpdateSymptoms(appVersion, items)
 	if err != nil {
 		return nil, err

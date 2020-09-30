@@ -3892,25 +3892,25 @@ func (h AdminApisHandler) GetCRules(current model.User, group string, w http.Res
 	w.Write(data)
 }
 
-type updateCRulesRequest struct {
+type createOrUpdateCRulesRequest struct {
 	Audit      *string `json:"audit"`
 	AppVersion string  `json:"app_version" validate:"required"`
 	CountyID   string  `json:"county_id" validate:"required"`
 	Data       string  `json:"data" validate:"required"`
-} //@name updateCRulesRequest
+} //@name createOrUpdateCRulesRequest
 
-//UpdateCRules updates the rules
-// @Description Updates the rules.
+//UpdateCRules creates rules, updates them if already created
+// @Description Creates rules, updates them if already created.
 // @Tags Admin
-// @ID UpdateCRules
+// @ID CreateOrUpdateCRules
 // @Accept json
 // @Produce json
-// @Param data body updateCRulesRequest true "body data"
+// @Param data body createOrUpdateCRulesRequest true "body data"
 // @Success 200 {object} string
 // @Security AdminUserAuth
 // @Security AdminGroupAuth
 // @Router /admin/crules [put]
-func (h AdminApisHandler) UpdateCRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+func (h AdminApisHandler) CreateOrUpdateCRules(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	bodyData, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal the update crules items  - %s\n", err.Error())
@@ -3918,7 +3918,7 @@ func (h AdminApisHandler) UpdateCRules(current model.User, group string, w http.
 		return
 	}
 
-	var requestData updateCRulesRequest
+	var requestData createOrUpdateCRulesRequest
 	err = json.Unmarshal(bodyData, &requestData)
 	if err != nil {
 		log.Printf("Error on unmarshal the update crules items request data - %s\n", err.Error())
@@ -3940,18 +3940,16 @@ func (h AdminApisHandler) UpdateCRules(current model.User, group string, w http.
 	countyID := requestData.CountyID
 	data := requestData.Data
 
-	cRules, err := h.app.Administration.UpdateCRules(current, group, audit, countyID, appVersion, data)
+	err = h.app.Administration.CreateOrUpdateCRules(current, group, audit, countyID, appVersion, data)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	resData := []byte(cRules.Data)
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-	w.Write(resData)
+	w.Write([]byte("Successfully processed"))
 }
 
 //GetSymptoms gets the symptoms

@@ -753,6 +753,21 @@ definitions:
       title:
         type: string
     type: object
+  createOrUpdateCRulesRequest:
+    properties:
+      app_version:
+        type: string
+      audit:
+        type: string
+      county_id:
+        type: string
+      data:
+        type: string
+    required:
+    - app_version
+    - county_id
+    - data
+    type: object
   createOrUpdateStatusRequest:
     properties:
       date:
@@ -1005,21 +1020,6 @@ definitions:
     required:
     - county_id
     - rules
-    type: object
-  updateCRulesRequest:
-    properties:
-      app_version:
-        type: string
-      audit:
-        type: string
-      county_id:
-        type: string
-      data:
-        type: string
-    required:
-    - app_version
-    - county_id
-    - data
     type: object
   updateCTestRequest:
     properties:
@@ -1741,15 +1741,15 @@ paths:
     put:
       consumes:
       - application/json
-      description: Updates the rules.
-      operationId: UpdateCRules
+      description: Creates rules, updates them if already created.
+      operationId: CreateOrUpdateCRules
       parameters:
       - description: body data
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/updateCRulesRequest'
+          $ref: '#/definitions/createOrUpdateCRulesRequest'
       produces:
       - application/json
       responses:

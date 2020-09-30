@@ -748,7 +748,7 @@
                         "AdminGroupAuth": []
                     }
                 ],
-                "description": "Updates the rules.",
+                "description": "Creates rules, updates them if already created.",
                 "consumes": [
                     "application/json"
                 ],
@@ -758,7 +758,7 @@
                 "tags": [
                     "Admin"
                 ],
-                "operationId": "UpdateCRules",
+                "operationId": "CreateOrUpdateCRules",
                 "parameters": [
                     {
                         "description": "body data",
@@ -766,7 +766,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/updateCRulesRequest"
+                            "$ref": "#/definitions/createOrUpdateCRulesRequest"
                         }
                     }
                 ],
@@ -5884,6 +5884,28 @@
                 }
             }
         },
+        "createOrUpdateCRulesRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "county_id",
+                "data"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "audit": {
+                    "type": "string"
+                },
+                "county_id": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "string"
+                }
+            }
+        },
         "createOrUpdateStatusRequest": {
             "type": "object",
             "required": [
@@ -6260,28 +6282,6 @@
                     "items": {
                         "$ref": "#/definitions/updateAccessRuleItemRequest"
                     }
-                }
-            }
-        },
-        "updateCRulesRequest": {
-            "type": "object",
-            "required": [
-                "app_version",
-                "county_id",
-                "data"
-            ],
-            "properties": {
-                "app_version": {
-                    "type": "string"
-                },
-                "audit": {
-                    "type": "string"
-                },
-                "county_id": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "string"
                 }
             }
         },

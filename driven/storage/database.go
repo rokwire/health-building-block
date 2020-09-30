@@ -304,31 +304,6 @@ func (m *database) applyLocationsChecks(locations *collectionWrapper) error {
 		return err
 	}
 
-	//set "America/Chicago" timezone for all locations
-	findFilter := bson.D{}
-	var result []*location
-	err = locations.Find(findFilter, &result, nil)
-	if err != nil {
-		return err
-	}
-	log.Printf("There are %d locations", len(result))
-
-	for _, loc := range result {
-		if len(loc.Timezone) == 0 {
-			log.Printf("need to set timezone for %s ....", loc.Name)
-
-			loc.Timezone = "America/Chicago"
-
-			saveFilter := bson.D{primitive.E{Key: "_id", Value: loc.ID}}
-			err = locations.ReplaceOne(saveFilter, loc, nil)
-			if err != nil {
-				return err
-			}
-		} else {
-			log.Printf("no need to set timezone for %s", loc.Name)
-		}
-	}
-
 	log.Println("locations checks passed")
 	return nil
 }

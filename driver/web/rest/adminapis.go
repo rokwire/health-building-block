@@ -110,6 +110,62 @@ func (h AdminApisHandler) GetAppVersions(current model.User, group string, w htt
 	w.Write(data)
 }
 
+type createAppVersionRequest struct {
+	Audit   *string `json:"audit"`
+	Version string  `json:"version" validate:"required"`
+} //@name createAppVersionRequest
+
+//CreateAppVersion creates an app version
+// @Description Creates an app version. The supported version format is x.x.x or x.x which is the short for x.x.0
+// @Tags Admin
+// @ID CreateAppVersion
+// @Accept json
+// @Produce json
+// @Param data body createAppVersionRequest true "body data"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/app-versions [post]
+func (h AdminApisHandler) CreateAppVersion(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create app version - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createAppVersionRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create app version data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create app version data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	version := requestData.Version
+
+	err = h.app.Administration.CreateAppVersion(current, group, audit, version)
+	if err != nil {
+		log.Printf("Error on creating app version - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully created"))
+}
+
 //GetNews gets news
 // @Description Gives news.
 // @Tags Admin
@@ -3899,7 +3955,7 @@ type createOrUpdateCRulesRequest struct {
 	Data       string  `json:"data" validate:"required"`
 } //@name createOrUpdateCRulesRequest
 
-//UpdateCRules creates rules, updates them if already created
+//CreateOrUpdateCRules creates rules, updates them if already created
 // @Description Creates rules, updates them if already created.
 // @Tags Admin
 // @ID CreateOrUpdateCRules
@@ -3995,7 +4051,7 @@ type createOrUpdateSymptomsRequest struct {
 	Items      string  `json:"items" validate:"required"`
 } //@name createOrUpdateSymptomsRequest
 
-//CreateorUpdateSymptoms creates symptoms or update them if already created
+//CreateOrUpdateSymptoms creates symptoms or update them if already created
 // @Description Creates symptoms or update them if already created.
 // @Tags Admin
 // @ID CreateorUpdateSymptoms

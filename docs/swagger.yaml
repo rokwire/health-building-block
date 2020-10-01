@@ -568,6 +568,15 @@ definitions:
     - provider_id
     - user_id
     type: object
+  createAppVersionRequest:
+    properties:
+      audit:
+        type: string
+      version:
+        type: string
+    required:
+    - version
+    type: object
   createCTestRequest:
     properties:
       encrypted_blob:
@@ -1296,7 +1305,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 1.23.0
+  version: 1.24.0
 paths:
   /admin/access-rules:
     get:
@@ -1441,6 +1450,31 @@ paths:
             items:
               type: string
             type: array
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates an app version. The supported version format is x.x.x or
+        x.x which is the short for x.x.0
+      operationId: CreateAppVersion
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createAppVersionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []

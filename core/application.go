@@ -19,9 +19,11 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	"health/core/model"
 	"health/utils"
 	"log"
+	"strings"
 	"sync"
 	"time"
 )
@@ -46,9 +48,11 @@ type Application struct {
 	cvLock              *sync.RWMutex
 	cachedCovid19Config *model.COVID19Config
 
-	listeners []ApplicationListener
+	//cache app versions
+	avLock            *sync.RWMutex
+	cachedAppVersions []string
 
-	supportedVersions []string
+	listeners []ApplicationListener
 }
 
 //Start starts the core part of the application
@@ -59,6 +63,9 @@ func (app *Application) Start() {
 
 	//cache the configs
 	app.loadCovid19Config()
+
+	//cache the app versions
+	app.loadAppVersions()
 
 	go app.loadNewsData()
 	//Disable the resource data loading as we cannot map the new created data
@@ -237,33 +244,77 @@ func (app *Application) notifyListeners(message string, data interface{}) {
 }
 
 func (app *Application) checkAppVersion(v *string) (*string, error) {
+	//use the latest version if not provided
 	if v == nil {
-		//use the latest version if not provided
 		latest := app.getLatestVersion()
 		return &latest, nil
 	}
 
-	//check if supported
-	supported := app.isVersionSupported(*v)
-	if !supported {
-		return nil, errors.New("the provided version is not supported")
+	//check if it matches
+	matches, version := app.isVersionSupported(*v)
+	if matches {
+		return version, nil
 	}
 
-	//the version is ok
-	return v, nil
+	//if it does not match then use the latest one which is less that the desired one
+	//the versions are sorted as the latest one is on possition 0
+	for _, current := range app.getCachedAppVersions() {
+		if utils.IsVersionLess(current, *v) {
+			return &current, nil
+		}
+	}
+
+	return nil, errors.New("Not supported version")
 }
 
 func (app *Application) getLatestVersion() string {
-	return "2.6"
+	//the versions list is sorted, the first element is the latest one
+	return app.getCachedAppVersions()[0]
 }
 
-func (app *Application) isVersionSupported(v string) bool {
-	for _, current := range app.supportedVersions {
-		if current == v {
-			return true
+func (app *Application) isVersionSupported(v string) (bool, *string) {
+	//if the input is 2.8.0 then we search for 2.8 because the system works with the short view when patch is 0
+	forSearch := v
+	elements := strings.Split(v, ".")
+	elementsCount := len(elements)
+	if !(elementsCount == 2 || elementsCount == 3) {
+		return false, nil
+	}
+	lastElement := elements[elementsCount-1]
+	if elementsCount == 3 && lastElement == "0" {
+		forSearch = fmt.Sprintf("%s.%s", elements[0], elements[1])
+	}
+
+	//search for it
+	for _, current := range app.getCachedAppVersions() {
+		if current == forSearch {
+			return true, &current
 		}
 	}
-	return false
+	return false, nil
+}
+
+func (app *Application) loadAppVersions() {
+	log.Println("Load App versions")
+
+	versions, err := app.storage.ReadAllAppVersions()
+	if err != nil {
+		log.Printf("Error reading the app versions %s", err)
+	}
+	app.setCachedAppVersions(versions)
+}
+
+func (app *Application) setCachedAppVersions(versions []string) {
+	app.avLock.RLock()
+	app.cachedAppVersions = versions
+	app.avLock.RUnlock()
+}
+
+func (app *Application) getCachedAppVersions() []string {
+	app.avLock.RLock()
+	defer app.avLock.RUnlock()
+
+	return app.cachedAppVersions
 }
 
 func (app *Application) loadCovid19Config() {
@@ -606,12 +657,11 @@ func (app *Application) getSymptomGroups() ([]*model.SymptomGroup, error) {
 //NewApplication creates new Application
 func NewApplication(version string, build string, dataProvider DataProvider, sender Sender, messaging Messaging, profileBB ProfileBuildingBlock, storage Storage, audit Audit) *Application {
 	cvLock := &sync.RWMutex{}
+	avLock := &sync.RWMutex{}
 	listeners := []ApplicationListener{}
 
-	supportedVersion := []string{"2.6", "2.7", "2.8"}
-
 	application := Application{version: version, build: build, dataProvider: dataProvider, sender: sender, messaging: messaging,
-		profileBB: profileBB, storage: storage, audit: audit, cvLock: cvLock, listeners: listeners, supportedVersions: supportedVersion}
+		profileBB: profileBB, storage: storage, audit: audit, cvLock: cvLock, avLock: avLock, listeners: listeners}
 
 	//add the drivers ports/interfaces
 	application.Services = &servicesImpl{app: &application}

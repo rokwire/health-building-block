@@ -49,7 +49,7 @@ type Adapter struct {
 
 // @title Rokwire Health Building Block API
 // @description Rokwire Health Building Block API Documentation.
-// @version 1.23.0
+// @version 1.24.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost
@@ -170,6 +170,7 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/covid19-config", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateCovid19Config)).Methods("PUT")
 
 	adminRestSubrouter.HandleFunc("/app-versions", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetAppVersions)).Methods("GET")
+	adminRestSubrouter.HandleFunc("/app-versions", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateAppVersion)).Methods("POST")
 
 	adminRestSubrouter.HandleFunc("/news", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetNews)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/news", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateNews)).Methods("POST")

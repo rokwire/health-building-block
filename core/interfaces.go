@@ -263,6 +263,7 @@ type Administration interface {
 	UpdateCovid19Config(config *model.COVID19Config) error
 
 	GetAppVersions() ([]string, error)
+	CreateAppVersion(current model.User, group string, audit *string, version string) error
 
 	GetNews() ([]*model.News, error)
 	CreateNews(current model.User, group string, audit *string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error)
@@ -384,6 +385,10 @@ func (s *administrationImpl) GetNews() ([]*model.News, error) {
 
 func (s *administrationImpl) GetAppVersions() ([]string, error) {
 	return s.app.getAppVersions()
+}
+
+func (s *administrationImpl) CreateAppVersion(current model.User, group string, audit *string, version string) error {
+	return s.app.createAppVersion(current, group, audit, version)
 }
 
 func (s *administrationImpl) CreateNews(current model.User, group string, audit *string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
@@ -685,6 +690,9 @@ func (s *administrationImpl) GetAudit(current model.User, group string, userIden
 type Storage interface {
 	SetStorageListener(storageListener StorageListener)
 
+	ReadAllAppVersions() ([]string, error)
+	CreateAppVersion(version string) error
+
 	ClearUserData(userID string) error
 	FindUser(userID string) (*model.User, error)
 	FindUserByExternalID(externalID string) (*model.User, error)
@@ -837,6 +845,7 @@ type Storage interface {
 //StorageListener listenes for change data storage events
 type StorageListener interface {
 	OnConfigsChanged()
+	OnAppVersionsChanged()
 }
 
 type storageListenerImpl struct {
@@ -846,6 +855,11 @@ type storageListenerImpl struct {
 func (a *storageListenerImpl) OnConfigsChanged() {
 	//reload the configs
 	a.app.loadCovid19Config()
+}
+
+func (a *storageListenerImpl) OnAppVersionsChanged() {
+	//reload the app versions
+	a.app.loadAppVersions()
 }
 
 //DataProvider is used by core to access needed data

@@ -59,6 +59,7 @@ type database struct {
 	accessrules       *collectionWrapper
 	uinoverrides      *collectionWrapper
 	uinbuildingaccess *collectionWrapper
+	appversions       *collectionWrapper
 
 	listener core.StorageListener
 }
@@ -210,6 +211,11 @@ func (m *database) start() error {
 	if err != nil {
 		return err
 	}
+	appversions := &collectionWrapper{database: m, coll: db.Collection("appversions")}
+	err = m.applyAppVersionsChecks(appversions)
+	if err != nil {
+		return err
+	}
 
 	//asign the db, db client and the collections
 	m.db = db
@@ -237,6 +243,7 @@ func (m *database) start() error {
 	m.accessrules = accessrules
 	m.uinoverrides = uinoverrides
 	m.uinbuildingaccess = uinbuildingaccess
+	m.appversions = appversions
 
 	//watch for config changes
 	go m.configs.Watch(nil)
@@ -641,6 +648,15 @@ func (m *database) applyUINBuildingAccessChecks(uinbuildingaccess *collectionWra
 	}
 
 	log.Println("uinBuildingAccess checks passed")
+	return nil
+}
+
+func (m *database) applyAppVersionsChecks(uinbuildingaccess *collectionWrapper) error {
+	log.Println("apply appVersions checks.....")
+
+	//TODO
+
+	log.Println("appVersions checks passed")
 	return nil
 }
 

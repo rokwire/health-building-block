@@ -241,7 +241,7 @@ func (sa *Adapter) SetStorageListener(storageListener core.StorageListener) {
 	sa.db.listener = storageListener
 }
 
-//TODO
+//ReadAllAppVersions reads all the versions. It gives them in a sorted way as the latest version is on position 0
 func (sa *Adapter) ReadAllAppVersions() ([]string, error) {
 	filter := bson.D{}
 	var result []interface{}
@@ -260,6 +260,10 @@ func (sa *Adapter) ReadAllAppVersions() ([]string, error) {
 		v := cc.Map()["version"].(string)
 		res[index] = v
 	}
+
+	//sort the versions list
+	utils.SortVersions(res)
+
 	return res, nil
 }
 

@@ -267,6 +267,17 @@ func (sa *Adapter) ReadAllAppVersions() ([]string, error) {
 	return res, nil
 }
 
+//CreateAppVersion preates app version
+func (sa *Adapter) CreateAppVersion(version string) error {
+	item := bson.D{primitive.E{Key: "version", Value: version}}
+	_, err := sa.db.appversions.InsertOne(item)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 //ClearUserData removes all the user data in the storage. It uses a transaction
 func (sa *Adapter) ClearUserData(userID string) error {
 	// transaction

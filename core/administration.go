@@ -52,6 +52,22 @@ func (app *Application) getAppVersions() ([]string, error) {
 	return appVersions, nil
 }
 
+func (app *Application) createAppVersion(current model.User, group string, audit *string, version string) error {
+	//TODO - validation
+
+	err := app.storage.CreateAppVersion(version)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "version", Value: version}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "app-version", version, lData, audit)
+
+	return nil
+}
+
 func (app *Application) getAllNews() ([]*model.News, error) {
 	news, err := app.storage.ReadNews(0)
 	if err != nil {

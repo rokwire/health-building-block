@@ -110,6 +110,52 @@ func (h AdminApisHandler) GetAppVersions(current model.User, group string, w htt
 	w.Write(data)
 }
 
+type createAppVersionRequest struct {
+	Audit   *string `json:"audit"`
+	Version string  `json:"version" validate:"required"`
+} //@name createAppVersionRequest
+
+//TODO
+func (h AdminApisHandler) CreateAppVersion(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create app version - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createAppVersionRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create app version data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create app version data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	version := requestData.Version
+
+	err = h.app.Administration.CreateAppVersion(current, group, audit, version)
+	if err != nil {
+		log.Printf("Error on creating app version - %s\n", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully created"))
+}
+
 //GetNews gets news
 // @Description Gives news.
 // @Tags Admin

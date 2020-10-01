@@ -248,6 +248,9 @@ func (m *database) start() error {
 	//watch for config changes
 	go m.configs.Watch(nil)
 
+	//watch for app versions changes
+	go m.appversions.Watch(nil)
+
 	return nil
 }
 
@@ -702,6 +705,12 @@ func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 
 		if m.listener != nil {
 			m.listener.OnConfigsChanged()
+		}
+	} else if "appversions" == coll {
+		log.Println("appversions collection changed")
+
+		if m.listener != nil {
+			m.listener.OnAppVersionsChanged()
 		}
 	} else {
 		log.Println("other collection changed")

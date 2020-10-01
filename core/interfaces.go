@@ -839,6 +839,7 @@ type Storage interface {
 //StorageListener listenes for change data storage events
 type StorageListener interface {
 	OnConfigsChanged()
+	OnAppVersionsChanged()
 }
 
 type storageListenerImpl struct {
@@ -848,6 +849,11 @@ type storageListenerImpl struct {
 func (a *storageListenerImpl) OnConfigsChanged() {
 	//reload the configs
 	a.app.loadCovid19Config()
+}
+
+func (a *storageListenerImpl) OnAppVersionsChanged() {
+	//reload the app versions
+	a.app.loadAppVersions()
 }
 
 //DataProvider is used by core to access needed data

@@ -685,6 +685,8 @@ func (s *administrationImpl) GetAudit(current model.User, group string, userIden
 type Storage interface {
 	SetStorageListener(storageListener StorageListener)
 
+	ReadAllAppVersions() ([]string, error)
+
 	ClearUserData(userID string) error
 	FindUser(userID string) (*model.User, error)
 	FindUserByExternalID(externalID string) (*model.User, error)

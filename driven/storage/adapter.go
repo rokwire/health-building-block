@@ -241,6 +241,28 @@ func (sa *Adapter) SetStorageListener(storageListener core.StorageListener) {
 	sa.db.listener = storageListener
 }
 
+//TODO
+func (sa *Adapter) ReadAllAppVersions() ([]string, error) {
+	filter := bson.D{}
+	var result []interface{}
+	err := sa.db.appversions.Find(filter, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(result) == 0 {
+		return nil, nil
+	}
+
+	res := make([]string, len(result))
+	for index, current := range result {
+		cc := current.(bson.D)
+		v := cc.Map()["version"].(string)
+		res[index] = v
+	}
+	return res, nil
+}
+
 //ClearUserData removes all the user data in the storage. It uses a transaction
 func (sa *Adapter) ClearUserData(userID string) error {
 	// transaction

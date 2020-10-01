@@ -46,9 +46,11 @@ type Application struct {
 	cvLock              *sync.RWMutex
 	cachedCovid19Config *model.COVID19Config
 
-	listeners []ApplicationListener
+	//cache app versions
+	avLock            *sync.RWMutex
+	cachedAppVersions []string
 
-	supportedVersions []string
+	listeners []ApplicationListener
 }
 
 //Start starts the core part of the application
@@ -59,6 +61,9 @@ func (app *Application) Start() {
 
 	//cache the configs
 	app.loadCovid19Config()
+
+	//cache the app versions
+	app.loadAppVersions()
 
 	go app.loadNewsData()
 	//Disable the resource data loading as we cannot map the new created data
@@ -243,6 +248,8 @@ func (app *Application) checkAppVersion(v *string) (*string, error) {
 		return &latest, nil
 	}
 
+	// TODO ensure that the client sends a correct format - The format is x.x.x or x.x which is the short for x.x.0
+
 	//check if supported
 	supported := app.isVersionSupported(*v)
 	if !supported {
@@ -254,16 +261,40 @@ func (app *Application) checkAppVersion(v *string) (*string, error) {
 }
 
 func (app *Application) getLatestVersion() string {
+	//TODO return the first element from the list
 	return "2.6"
 }
 
 func (app *Application) isVersionSupported(v string) bool {
-	for _, current := range app.supportedVersions {
+	for _, current := range app.getCachedAppVersions() {
 		if current == v {
 			return true
 		}
 	}
 	return false
+}
+
+func (app *Application) loadAppVersions() {
+	log.Println("Load App versions")
+
+	versions, err := app.storage.ReadAllAppVersions()
+	if err != nil {
+		log.Printf("Error reading the app versions %s", err)
+	}
+	app.setCachedAppVersions(versions)
+}
+
+func (app *Application) setCachedAppVersions(versions []string) {
+	app.avLock.RLock()
+	app.cachedAppVersions = versions
+	app.avLock.RUnlock()
+}
+
+func (app *Application) getCachedAppVersions() []string {
+	app.avLock.RLock()
+	defer app.avLock.RUnlock()
+
+	return app.cachedAppVersions
 }
 
 func (app *Application) loadCovid19Config() {
@@ -606,12 +637,11 @@ func (app *Application) getSymptomGroups() ([]*model.SymptomGroup, error) {
 //NewApplication creates new Application
 func NewApplication(version string, build string, dataProvider DataProvider, sender Sender, messaging Messaging, profileBB ProfileBuildingBlock, storage Storage, audit Audit) *Application {
 	cvLock := &sync.RWMutex{}
+	avLock := &sync.RWMutex{}
 	listeners := []ApplicationListener{}
 
-	supportedVersion := []string{"2.6", "2.7", "2.8"}
-
 	application := Application{version: version, build: build, dataProvider: dataProvider, sender: sender, messaging: messaging,
-		profileBB: profileBB, storage: storage, audit: audit, cvLock: cvLock, listeners: listeners, supportedVersions: supportedVersion}
+		profileBB: profileBB, storage: storage, audit: audit, cvLock: cvLock, avLock: avLock, listeners: listeners}
 
 	//add the drivers ports/interfaces
 	application.Services = &servicesImpl{app: &application}

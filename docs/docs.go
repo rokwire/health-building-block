@@ -272,6 +272,46 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Creates an app version. The supported version format is x.x.x or x.x which is the short for x.x.0",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "CreateAppVersion",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createAppVersionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/admin/audit": {
@@ -5618,6 +5658,20 @@ var doc = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "createAppVersionRequest": {
+            "type": "object",
+            "required": [
+                "version"
+            ],
+            "properties": {
+                "audit": {
+                    "type": "string"
+                },
+                "version": {
                     "type": "string"
                 }
             }

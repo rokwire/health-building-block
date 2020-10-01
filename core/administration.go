@@ -23,6 +23,8 @@ import (
 	"health/core/model"
 	"health/utils"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -45,7 +47,58 @@ func (app *Application) updateCovid19Config(config *model.COVID19Config) error {
 }
 
 func (app *Application) getAppVersions() ([]string, error) {
-	return app.supportedVersions, nil
+	appVersions, err := app.storage.ReadAllAppVersions()
+	if err != nil {
+		return nil, err
+	}
+	return appVersions, nil
+}
+
+func (app *Application) createAppVersion(current model.User, group string, audit *string, version string) error {
+	//First validate the version input. We accept x.x.x or x.x which is the short for x.x.0
+	//If the input is 3.5.0 then we will store 3.5 as the system works with the short view when the patch is 0
+	var major, minor, patch int
+	var err error
+	elements := strings.Split(version, ".")
+	elementsCount := len(elements)
+	if !(elementsCount == 2 || elementsCount == 3) {
+		return errors.New("format must be x.x.x or x.x")
+	}
+
+	major, err = strconv.Atoi(elements[0])
+	if err != nil {
+		return err
+	}
+	minor, err = strconv.Atoi(elements[1])
+	if err != nil {
+		return err
+	}
+	if elementsCount == 2 {
+		patch = 0
+	} else {
+		patch, err = strconv.Atoi(elements[2])
+		if err != nil {
+			return err
+		}
+	}
+
+	res := fmt.Sprintf("%d.%d.%d", major, minor, patch)
+	//the system work with the shor view when patch is 0
+	if patch == 0 {
+		res = fmt.Sprintf("%d.%d", major, minor)
+	}
+
+	err = app.storage.CreateAppVersion(res)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "version", Value: version}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "app-version", version, lData, audit)
+
+	return nil
 }
 
 func (app *Application) getAllNews() ([]*model.News, error) {
@@ -870,11 +923,12 @@ func (app *Application) getRules() ([]*model.Rule, error) {
 }
 
 func (app *Application) getCRules(countyID string, appVersion string) (*model.CRules, error) {
-	if !app.isVersionSupported(appVersion) {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
 		return nil, errors.New("app version is not supported")
 	}
 
-	cRules, err := app.storage.FindCRulesByCountyID(appVersion, countyID)
+	cRules, err := app.storage.FindCRulesByCountyID(*v, countyID)
 	if err != nil {
 		return nil, err
 	}
@@ -882,11 +936,12 @@ func (app *Application) getCRules(countyID string, appVersion string) (*model.CR
 }
 
 func (app *Application) createOrUpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) error {
-	if !app.isVersionSupported(appVersion) {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
 		return errors.New("app version is not supported")
 	}
 
-	create, err := app.storage.CreateOrUpdateCRules(appVersion, countyID, data)
+	create, err := app.storage.CreateOrUpdateCRules(*v, countyID, data)
 	if err != nil {
 		return err
 	}
@@ -906,11 +961,12 @@ func (app *Application) createOrUpdateCRules(current model.User, group string, a
 }
 
 func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error) {
-	if !app.isVersionSupported(appVersion) {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
 		return nil, errors.New("app version is not supported")
 	}
 
-	symptoms, err := app.storage.ReadSymptoms(appVersion)
+	symptoms, err := app.storage.ReadSymptoms(*v)
 	if err != nil {
 		return nil, err
 	}
@@ -918,11 +974,12 @@ func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error)
 }
 
 func (app *Application) createOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) error {
-	if !app.isVersionSupported(appVersion) {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
 		return errors.New("app version is not supported")
 	}
 
-	create, err := app.storage.CreateOrUpdateSymptoms(appVersion, items)
+	create, err := app.storage.CreateOrUpdateSymptoms(*v, items)
 	if err != nil {
 		return err
 	}

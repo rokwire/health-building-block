@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -190,4 +192,66 @@ func GetString(v *string) string {
 		return ""
 	}
 	return *v
+}
+
+//SortVersions sorts the versions list. The format is x.x.x or x.x which is the short for x.x.0
+func SortVersions(versions []string) {
+	//sort
+	sort.Slice(versions, func(i, j int) bool {
+		v1 := versions[i]
+		v2 := versions[j]
+		return !IsVersionLess(v1, v2)
+	})
+}
+
+//IsVersionLess checks if v1 is less than v2. The format is x.x.x or x.x which is the short for x.x.0
+func IsVersionLess(v1 string, v2 string) bool {
+	var v1Major, v1Minor, v1Patch int
+	var v2Major, v2Minor, v2Patch int
+
+	v1Elements := strings.Split(v1, ".")
+	v2Elements := strings.Split(v2, ".")
+
+	v1Major, _ = strconv.Atoi(v1Elements[0])
+	v1Minor, _ = strconv.Atoi(v1Elements[1])
+	if len(v1Elements) == 2 {
+		v1Patch = 0
+	} else {
+		v1Patch, _ = strconv.Atoi(v1Elements[2])
+	}
+
+	v2Major, _ = strconv.Atoi(v2Elements[0])
+	v2Minor, _ = strconv.Atoi(v2Elements[1])
+	if len(v2Elements) == 2 {
+		v2Patch = 0
+	} else {
+		v2Patch, _ = strconv.Atoi(v2Elements[2])
+	}
+
+	//1 first check major
+	if v1Major < v2Major {
+		return true
+	}
+	if v1Major > v2Major {
+		return false
+	}
+
+	//2. majors are equals so check minors
+	if v1Minor < v2Minor {
+		return true
+	}
+	if v1Minor > v2Minor {
+		return false
+	}
+
+	//3. minors are equals so check patch
+	if v1Patch < v2Patch {
+		return true
+	}
+	if v1Patch > v2Patch {
+		return false
+	}
+
+	// they are equals
+	return false
 }

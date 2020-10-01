@@ -923,11 +923,12 @@ func (app *Application) getRules() ([]*model.Rule, error) {
 }
 
 func (app *Application) getCRules(countyID string, appVersion string) (*model.CRules, error) {
-	if !app.isVersionSupported(appVersion) {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
 		return nil, errors.New("app version is not supported")
 	}
 
-	cRules, err := app.storage.FindCRulesByCountyID(appVersion, countyID)
+	cRules, err := app.storage.FindCRulesByCountyID(*v, countyID)
 	if err != nil {
 		return nil, err
 	}
@@ -935,11 +936,12 @@ func (app *Application) getCRules(countyID string, appVersion string) (*model.CR
 }
 
 func (app *Application) createOrUpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) error {
-	if !app.isVersionSupported(appVersion) {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
 		return errors.New("app version is not supported")
 	}
 
-	create, err := app.storage.CreateOrUpdateCRules(appVersion, countyID, data)
+	create, err := app.storage.CreateOrUpdateCRules(*v, countyID, data)
 	if err != nil {
 		return err
 	}
@@ -959,11 +961,12 @@ func (app *Application) createOrUpdateCRules(current model.User, group string, a
 }
 
 func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error) {
-	if !app.isVersionSupported(appVersion) {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
 		return nil, errors.New("app version is not supported")
 	}
 
-	symptoms, err := app.storage.ReadSymptoms(appVersion)
+	symptoms, err := app.storage.ReadSymptoms(*v)
 	if err != nil {
 		return nil, err
 	}
@@ -971,11 +974,12 @@ func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error)
 }
 
 func (app *Application) createOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) error {
-	if !app.isVersionSupported(appVersion) {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
 		return errors.New("app version is not supported")
 	}
 
-	create, err := app.storage.CreateOrUpdateSymptoms(appVersion, items)
+	create, err := app.storage.CreateOrUpdateSymptoms(*v, items)
 	if err != nil {
 		return err
 	}

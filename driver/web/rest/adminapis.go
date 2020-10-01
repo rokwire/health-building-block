@@ -115,7 +115,17 @@ type createAppVersionRequest struct {
 	Version string  `json:"version" validate:"required"`
 } //@name createAppVersionRequest
 
-//TODO
+//CreateAppVersion creates an app version
+// @Description Creates an app version. The supported version format is x.x.x or x.x which is the short for x.x.0
+// @Tags Admin
+// @ID CreateAppVersion
+// @Accept json
+// @Produce json
+// @Param data body createAppVersionRequest true "body data"
+// @Success 200 {object} string
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/app-versions [post]
 func (h AdminApisHandler) CreateAppVersion(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {

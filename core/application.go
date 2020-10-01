@@ -19,9 +19,11 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	"health/core/model"
 	"health/utils"
 	"log"
+	"strings"
 	"sync"
 	"time"
 )
@@ -242,36 +244,54 @@ func (app *Application) notifyListeners(message string, data interface{}) {
 }
 
 func (app *Application) checkAppVersion(v *string) (*string, error) {
+	//use the latest version if not provided
 	if v == nil {
-		//use the latest version if not provided
 		latest := app.getLatestVersion()
 		return &latest, nil
 	}
 
-	// TODO ensure that the client sends a correct format - The format is x.x.x or x.x which is the short for x.x.0
-
-	//check if supported
-	supported := app.isVersionSupported(*v)
-	if !supported {
-		return nil, errors.New("the provided version is not supported")
+	//check if it matches
+	matches, version := app.isVersionSupported(*v)
+	if matches {
+		return version, nil
 	}
 
-	//the version is ok
-	return v, nil
+	//if it does not match then use the latest one which is less that the desired one
+	//the versions are sorted as the latest one is on possition 0
+	for _, current := range app.getCachedAppVersions() {
+		if utils.IsVersionLess(current, *v) {
+			return &current, nil
+		}
+	}
+
+	return nil, errors.New("Not supported version")
 }
 
 func (app *Application) getLatestVersion() string {
-	//TODO return the first element from the list
-	return "2.6"
+	//the versions list is sorted, the first element is the latest one
+	return app.getCachedAppVersions()[0]
 }
 
-func (app *Application) isVersionSupported(v string) bool {
+func (app *Application) isVersionSupported(v string) (bool, *string) {
+	//if the input is 2.8.0 then we search for 2.8 because the system works with the short view when patch is 0
+	forSearch := v
+	elements := strings.Split(v, ".")
+	elementsCount := len(elements)
+	if !(elementsCount == 2 || elementsCount == 3) {
+		return false, nil
+	}
+	lastElement := elements[elementsCount-1]
+	if elementsCount == 3 && lastElement == "0" {
+		forSearch = fmt.Sprintf("%s.%s", elements[0], elements[1])
+	}
+
+	//search for it
 	for _, current := range app.getCachedAppVersions() {
-		if current == v {
-			return true
+		if current == forSearch {
+			return true, &current
 		}
 	}
-	return false
+	return false, nil
 }
 
 func (app *Application) loadAppVersions() {

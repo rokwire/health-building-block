@@ -3899,7 +3899,7 @@ type createOrUpdateCRulesRequest struct {
 	Data       string  `json:"data" validate:"required"`
 } //@name createOrUpdateCRulesRequest
 
-//UpdateCRules creates rules, updates them if already created
+//CreateOrUpdateCRules creates rules, updates them if already created
 // @Description Creates rules, updates them if already created.
 // @Tags Admin
 // @ID CreateOrUpdateCRules
@@ -3995,7 +3995,7 @@ type createOrUpdateSymptomsRequest struct {
 	Items      string  `json:"items" validate:"required"`
 } //@name createOrUpdateSymptomsRequest
 
-//CreateorUpdateSymptoms creates symptoms or update them if already created
+//CreateOrUpdateSymptoms creates symptoms or update them if already created
 // @Description Creates symptoms or update them if already created.
 // @Tags Admin
 // @ID CreateorUpdateSymptoms

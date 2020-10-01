@@ -147,7 +147,7 @@ func (h AdminApisHandler) CreateAppVersion(current model.User, group string, w h
 	err = h.app.Administration.CreateAppVersion(current, group, audit, version)
 	if err != nil {
 		log.Printf("Error on creating app version - %s\n", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

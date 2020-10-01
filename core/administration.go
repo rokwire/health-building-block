@@ -23,6 +23,8 @@ import (
 	"health/core/model"
 	"health/utils"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -53,9 +55,40 @@ func (app *Application) getAppVersions() ([]string, error) {
 }
 
 func (app *Application) createAppVersion(current model.User, group string, audit *string, version string) error {
-	//TODO - validation
+	//First validate the version input. We accept x.x.x or x.x which is the short for x.x.0
+	//If the input is 3.5.0 then we will store 3.5 as the system works with the short view when the patch is 0
+	var major, minor, patch int
+	var err error
+	elements := strings.Split(version, ".")
+	elementsCount := len(elements)
+	if !(elementsCount == 2 || elementsCount == 3) {
+		return errors.New("format must be x.x.x or x.x")
+	}
 
-	err := app.storage.CreateAppVersion(version)
+	major, err = strconv.Atoi(elements[0])
+	if err != nil {
+		return err
+	}
+	minor, err = strconv.Atoi(elements[1])
+	if err != nil {
+		return err
+	}
+	if elementsCount == 2 {
+		patch = 0
+	} else {
+		patch, err = strconv.Atoi(elements[2])
+		if err != nil {
+			return err
+		}
+	}
+
+	res := fmt.Sprintf("%d.%d.%d", major, minor, patch)
+	//the system work with the shor view when patch is 0
+	if patch == 0 {
+		res = fmt.Sprintf("%d.%d", major, minor)
+	}
+
+	err = app.storage.CreateAppVersion(res)
 	if err != nil {
 		return err
 	}

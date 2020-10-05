@@ -1323,6 +1323,53 @@ func (h ApisHandler) GetUINOverride(current model.User, w http.ResponseWriter, r
 	w.Write(data)
 }
 
+type createOrUpdateUINOverride struct {
+	Interval   int        `json:"interval" validate:"required"`
+	Category   *string    `json:"category"`
+	Expiration *time.Time `json:"expiration"`
+} //@name createOrUpdateUINOverride
+
+func (h ApisHandler) CreateOrUpdateUINOverride(current model.User, w http.ResponseWriter, r *http.Request) {
+	bodyData, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the create or update uin override  - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createOrUpdateUINOverride
+	err = json.Unmarshal(bodyData, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create or update uin override request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create or update uin override data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	interval := requestData.Interval
+	category := requestData.Category
+	expiration := requestData.Expiration
+
+	err = h.app.Services.CreateOrUpdateUINOverride(current, interval, category, expiration)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully processed"))
+}
+
 type setBuildingAccessRequest struct {
 	Date   time.Time `json:"date" validate:"required"`
 	Access string    `json:"access" validate:"required"`

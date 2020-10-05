@@ -398,6 +398,17 @@ func (app *Application) getUINOverride(current model.User) (*model.UINOverride, 
 	return uinOverrides[0], nil
 }
 
+func (app *Application) createOrUpdateUINOverride(current model.User, interval int, category *string, expiration *time.Time) error {
+	//supported only for Shibboleth users - uin
+	uin := current.ExternalID
+	err := app.storage.CreateOrUpdateUINOverride(uin, interval, category, expiration)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (app *Application) getExternalUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
 	uinOverrides, err := app.storage.FindUINOverrides(uin, sort)
 	if err != nil {

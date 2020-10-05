@@ -82,6 +82,8 @@ type Services interface {
 	GetExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)
 
 	GetUINOverride(current model.User) (*model.UINOverride, error)
+	CreateOrUpdateUINOverride(current model.User, interval int, category *string, expiration *time.Time) error
+
 	GetExternalUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 
 	SetUINBuildingAccess(current model.User, date time.Time, access string) error
@@ -247,6 +249,10 @@ func (s *servicesImpl) GetExposures(timestamp *int64, dateAdded *int64) ([]model
 
 func (s *servicesImpl) GetUINOverride(current model.User) (*model.UINOverride, error) {
 	return s.app.getUINOverride(current)
+}
+
+func (s *servicesImpl) CreateOrUpdateUINOverride(current model.User, interval int, category *string, expiration *time.Time) error {
+	return s.app.createOrUpdateUINOverride(current, interval, category, expiration)
 }
 
 func (s *servicesImpl) GetExternalUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
@@ -838,6 +844,7 @@ type Storage interface {
 	FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error)
 
 	FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
+	CreateOrUpdateUINOverride(uin string, interval int, category *string, expiration *time.Time) error
 	CreateUINOverride(uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error)
 	UpdateUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error)
 	DeleteUINOverride(uin string) error

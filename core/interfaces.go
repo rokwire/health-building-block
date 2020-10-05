@@ -359,8 +359,8 @@ type Administration interface {
 	CreateOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) error
 
 	GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
-	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error)
-	UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*string, error)
+	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error)
+	UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string, expiration *time.Time) (*string, error)
 	DeleteUINOverride(current model.User, group string, uin string) error
 
 	GetUserByExternalID(externalID string) (*model.User, error)
@@ -665,12 +665,12 @@ func (s *administrationImpl) GetUINOverrides(uin *string, sort *string) ([]*mode
 	return s.app.getUINOverrides(uin, sort)
 }
 
-func (s *administrationImpl) CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {
-	return s.app.createUINOverride(current, group, audit, uin, interval, category)
+func (s *administrationImpl) CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error) {
+	return s.app.createUINOverride(current, group, audit, uin, interval, category, expiration)
 }
 
-func (s *administrationImpl) UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*string, error) {
-	return s.app.updateUINOverride(current, group, audit, uin, interval, category)
+func (s *administrationImpl) UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string, expiration *time.Time) (*string, error) {
+	return s.app.updateUINOverride(current, group, audit, uin, interval, category, expiration)
 }
 
 func (s *administrationImpl) DeleteUINOverride(current model.User, group string, uin string) error {
@@ -838,8 +838,8 @@ type Storage interface {
 	FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error)
 
 	FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
-	CreateUINOverride(uin string, interval int, category *string) (*model.UINOverride, error)
-	UpdateUINOverride(uin string, interval int, category *string) (*string, error)
+	CreateUINOverride(uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error)
+	UpdateUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error)
 	DeleteUINOverride(uin string) error
 
 	FindUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)

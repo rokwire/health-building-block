@@ -5542,6 +5542,9 @@ var doc = `{
                 "category": {
                     "type": "string"
                 },
+                "expiration": {
+                    "type": "string"
+                },
                 "interval": {
                     "type": "integer"
                 },
@@ -6203,6 +6206,9 @@ var doc = `{
                 "category": {
                     "type": "string"
                 },
+                "expiration": {
+                    "type": "string"
+                },
                 "interval": {
                     "type": "integer"
                 },
@@ -6747,6 +6753,9 @@ var doc = `{
                     "type": "string"
                 },
                 "category": {
+                    "type": "string"
+                },
+                "expiration": {
                     "type": "string"
                 },
                 "interval": {

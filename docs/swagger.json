@@ -5530,6 +5530,9 @@
                 "category": {
                     "type": "string"
                 },
+                "expiration": {
+                    "type": "string"
+                },
                 "interval": {
                     "type": "integer"
                 },
@@ -6191,6 +6194,9 @@
                 "category": {
                     "type": "string"
                 },
+                "expiration": {
+                    "type": "string"
+                },
                 "interval": {
                     "type": "integer"
                 },
@@ -6735,6 +6741,9 @@
                     "type": "string"
                 },
                 "category": {
+                    "type": "string"
+                },
+                "expiration": {
                     "type": "string"
                 },
                 "interval": {

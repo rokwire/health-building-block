@@ -488,6 +488,8 @@ definitions:
     properties:
       category:
         type: string
+      expiration:
+        type: string
       interval:
         type: integer
       uin:
@@ -929,6 +931,8 @@ definitions:
         type: string
       category:
         type: string
+      expiration:
+        type: string
       interval:
         type: integer
       uin:
@@ -1291,6 +1295,8 @@ definitions:
       audit:
         type: string
       category:
+        type: string
+      expiration:
         type: string
       interval:
         type: integer

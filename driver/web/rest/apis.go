@@ -1329,6 +1329,15 @@ type createOrUpdateUINOverride struct {
 	Expiration *time.Time `json:"expiration"`
 } //@name createOrUpdateUINOverride
 
+//CreateOrUpdateUINOverride creates an uin override or updates it if already created
+// @Description Creates an uin override or updates it if already created
+// @Tags Covid19
+// @ID CreateOrUpdateUINOverride
+// @Produce json
+// @Param data body createOrUpdateUINOverride true "body data"
+// @Success 200 {object} string
+// @Security AppUserAuth
+// @Router /covid19/uin-override [put]
 func (h ApisHandler) CreateOrUpdateUINOverride(current model.User, w http.ResponseWriter, r *http.Request) {
 	bodyData, err := ioutil.ReadAll(r.Body)
 	if err != nil {

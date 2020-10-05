@@ -4360,6 +4360,40 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    }
+                ],
+                "description": "Creates an uin override or updates it if already created",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "CreateOrUpdateUINOverride",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createOrUpdateUINOverride"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/covid19/user": {
@@ -6050,6 +6084,23 @@ var doc = `{
                 },
                 "items": {
                     "type": "string"
+                }
+            }
+        },
+        "createOrUpdateUINOverride": {
+            "type": "object",
+            "required": [
+                "interval"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "expiration": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "integer"
                 }
             }
         },

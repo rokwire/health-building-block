@@ -803,6 +803,17 @@ definitions:
     - app_version
     - items
     type: object
+  createOrUpdateUINOverride:
+    properties:
+      category:
+        type: string
+      expiration:
+        type: string
+      interval:
+        type: integer
+    required:
+    - interval
+    type: object
   createProviderRequest:
     properties:
       audit:
@@ -3966,6 +3977,27 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/UINOverride'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+    put:
+      description: Creates an uin override or updates it if already created
+      operationId: CreateOrUpdateUINOverride
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createOrUpdateUINOverride'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
       security:
       - AppUserAuth: []
       tags:

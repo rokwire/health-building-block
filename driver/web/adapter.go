@@ -128,6 +128,9 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/track/uins", we.providerAuthWrapFunc(we.apisHandler.GetUINsByOrderNumbers)).Methods("GET").Queries("order-numbers", "")
 	covid19RestSubrouter.HandleFunc("/track/items", we.providerAuthWrapFunc(we.apisHandler.GetItemsListsByUINs)).Methods("GET").Queries("uins", "")
 	covid19RestSubrouter.HandleFunc("/ext/uin-overrides", we.providerAuthWrapFunc(we.apisHandler.GetExtUINOverrides)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/ext/uin-overrides", we.providerAuthWrapFunc(we.apisHandler.CreateExtUINOverrides)).Methods("POST")
+	covid19RestSubrouter.HandleFunc("/ext/uin-overrides/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.UpdateExtUINOverride)).Methods("PUT")
+	covid19RestSubrouter.HandleFunc("/ext/uin-overrides/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.DeleteExtUINOverride)).Methods("DELETE")
 	covid19RestSubrouter.HandleFunc("/ext/building-access", we.providerAuthWrapFunc(we.apisHandler.GetExtBuildingAccess)).Methods("GET").Queries("uin", "")
 
 	// api key auth

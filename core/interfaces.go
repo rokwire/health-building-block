@@ -84,7 +84,10 @@ type Services interface {
 	GetUINOverride(current model.User) (*model.UINOverride, error)
 	CreateOrUpdateUINOverride(current model.User, interval int, category *string, expiration *time.Time) error
 
-	GetExternalUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
+	GetExtUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
+	CreateExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error)
+	UpdateExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error)
+	DeleteExtUINOverride(uin string) error
 
 	SetUINBuildingAccess(current model.User, date time.Time, access string) error
 	GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
@@ -255,8 +258,20 @@ func (s *servicesImpl) CreateOrUpdateUINOverride(current model.User, interval in
 	return s.app.createOrUpdateUINOverride(current, interval, category, expiration)
 }
 
-func (s *servicesImpl) GetExternalUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
-	return s.app.getExternalUINOverrides(uin, sort)
+func (s *servicesImpl) GetExtUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
+	return s.app.getExtUINOverrides(uin, sort)
+}
+
+func (s *servicesImpl) CreateExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error) {
+	return s.app.createExtUINOverride(uin, interval, category, expiration)
+}
+
+func (s *servicesImpl) UpdateExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error) {
+	return s.app.updateExtUINOverride(uin, interval, category, expiration)
+}
+
+func (s *servicesImpl) DeleteExtUINOverride(uin string) error {
+	return s.app.deleteExtUINOverride(uin)
 }
 
 func (s *servicesImpl) SetUINBuildingAccess(current model.User, date time.Time, access string) error {

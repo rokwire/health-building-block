@@ -409,12 +409,31 @@ func (app *Application) createOrUpdateUINOverride(current model.User, interval i
 	return nil
 }
 
-func (app *Application) getExternalUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
+func (app *Application) getExtUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
 	uinOverrides, err := app.storage.FindUINOverrides(uin, sort)
 	if err != nil {
 		return nil, err
 	}
 	return uinOverrides, nil
+}
+
+func (app *Application) createExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error) {
+	uinOverride, err := app.storage.CreateUINOverride(uin, interval, category, expiration)
+	if err != nil {
+		return nil, err
+	}
+
+	return uinOverride, nil
+}
+
+func (app *Application) updateExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error) {
+	//TODO
+	return nil, nil
+}
+
+func (app *Application) deleteExtUINOverride(uin string) error {
+	//TODO
+	return nil
 }
 
 func (app *Application) setUINBuildingAccess(current model.User, date time.Time, access string) error {

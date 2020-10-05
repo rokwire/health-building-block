@@ -382,7 +382,7 @@ func (h ApisHandler) GetExtUINOverrides(w http.ResponseWriter, r *http.Request) 
 		sort = &sortByKeys[0]
 	}
 
-	uinOverrides, err := h.app.Services.GetExternalUINOverrides(uin, sort)
+	uinOverrides, err := h.app.Services.GetExtUINOverrides(uin, sort)
 	if err != nil {
 		log.Println("Error on getting the external uin overrides items")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -402,6 +402,70 @@ func (h ApisHandler) GetExtUINOverrides(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
+}
+
+type createExtUINOverrideRequest struct {
+	UIN        string     `json:"uin" validate:"required"`
+	Interval   int        `json:"interval" validate:"required"`
+	Category   *string    `json:"category"`
+	Expiration *time.Time `json:"expiration"`
+} // @name createExtUINOverrideRequest
+
+func (h ApisHandler) CreateExtUINOverrides(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create ext uin override - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createExtUINOverrideRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create an ext uin override request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create an ext uin override data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	uin := requestData.UIN
+	interval := requestData.Interval
+	category := requestData.Category
+	expiration := requestData.Expiration
+
+	uinOverride, err := h.app.Services.CreateExtUINOverride(uin, interval, category, expiration)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err = json.Marshal(uinOverride)
+	if err != nil {
+		log.Println("Error on marshal an ext uin override")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+func (h ApisHandler) UpdateExtUINOverride(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h ApisHandler) DeleteExtUINOverride(w http.ResponseWriter, r *http.Request) {
+
 }
 
 //GetExtBuildingAccess gives the building access for the provided UIN

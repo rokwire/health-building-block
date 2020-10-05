@@ -357,6 +357,16 @@ func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request)
 	w.Write(data)
 }
 
+//GetExtUINOverrides gives the UIN overrides elements
+// @Description Gives the UIN overrides elements. The list can be filtered by UIN and sorted by UIN or Category
+// @Tags Providers
+// @ID GetExtUINOverrides
+// @Accept json
+// @Param uin query string false "UIN"
+// @Param sort query string false "Sort by uin or category"
+// @Success 200 {array} model.UINOverride
+// @Security ProvidersAuth
+// @Router /covid19/ext/uin-overrides [get]
 func (h ApisHandler) GetExtUINOverrides(w http.ResponseWriter, r *http.Request) {
 	//uin
 	var uin *string

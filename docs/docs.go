@@ -3699,6 +3699,48 @@ var doc = `{
                 }
             }
         },
+        "/covid19/ext/uin-overrides": {
+            "get": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Gives the UIN overrides elements. The list can be filtered by UIN and sorted by UIN or Category",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "GetExtUINOverrides",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by uin or category",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/UINOverride"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/faq": {
             "get": {
                 "security": [

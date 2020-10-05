@@ -3551,6 +3551,33 @@ paths:
       - ProvidersAuth: []
       tags:
       - Providers
+  /covid19/ext/uin-overrides:
+    get:
+      consumes:
+      - application/json
+      description: Gives the UIN overrides elements. The list can be filtered by UIN
+        and sorted by UIN or Category
+      operationId: GetExtUINOverrides
+      parameters:
+      - description: UIN
+        in: query
+        name: uin
+        type: string
+      - description: Sort by uin or category
+        in: query
+        name: sort
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/UINOverride'
+            type: array
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
   /covid19/faq:
     get:
       consumes:

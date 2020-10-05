@@ -272,6 +272,46 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Creates an app version. The supported version format is x.x.x or x.x which is the short for x.x.0",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "CreateAppVersion",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createAppVersionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/admin/audit": {
@@ -760,7 +800,7 @@ var doc = `{
                         "AdminGroupAuth": []
                     }
                 ],
-                "description": "Updates the rules.",
+                "description": "Creates rules, updates them if already created.",
                 "consumes": [
                     "application/json"
                 ],
@@ -770,7 +810,7 @@ var doc = `{
                 "tags": [
                     "Admin"
                 ],
-                "operationId": "UpdateCRules",
+                "operationId": "CreateOrUpdateCRules",
                 "parameters": [
                     {
                         "description": "body data",
@@ -778,7 +818,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/updateCRulesRequest"
+                            "$ref": "#/definitions/createOrUpdateCRulesRequest"
                         }
                     }
                 ],
@@ -2562,7 +2602,7 @@ var doc = `{
                         "AdminGroupAuth": []
                     }
                 ],
-                "description": "Updates the symptoms.",
+                "description": "Creates symptoms or update them if already created.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2572,7 +2612,7 @@ var doc = `{
                 "tags": [
                     "Admin"
                 ],
-                "operationId": "UpdateASymptoms",
+                "operationId": "CreateorUpdateSymptoms",
                 "parameters": [
                     {
                         "description": "body data",
@@ -2580,7 +2620,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/updateSymptomsRequest"
+                            "$ref": "#/definitions/createOrUpdateSymptomsRequest"
                         }
                     }
                 ],
@@ -3334,6 +3374,39 @@ var doc = `{
                 }
             }
         },
+        "/covid19/building-access": {
+            "put": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    }
+                ],
+                "description": "grant/deny building access",
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "SetUINBuildingAccess",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/setBuildingAccessRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/counties": {
             "get": {
                 "security": [
@@ -3587,6 +3660,40 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/CTest"
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/ext/building-access": {
+            "get": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Gives the building access for the provided UIN",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "GetExtBuildingAccess",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UINBuildingAccess"
                         }
                     }
                 }
@@ -5081,6 +5188,9 @@ var doc = `{
                 "state": {
                     "type": "string"
                 },
+                "timezone": {
+                    "type": "string"
+                },
                 "url": {
                     "type": "string"
                 },
@@ -5412,6 +5522,20 @@ var doc = `{
                 }
             }
         },
+        "UINBuildingAccess": {
+            "type": "object",
+            "properties": {
+                "access": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "uin": {
+                    "type": "string"
+                }
+            }
+        },
         "UINOverride": {
             "type": "object",
             "properties": {
@@ -5498,6 +5622,9 @@ var doc = `{
                 "rules"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5531,6 +5658,20 @@ var doc = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "createAppVersionRequest": {
+            "type": "object",
+            "required": [
+                "version"
+            ],
+            "properties": {
+                "audit": {
+                    "type": "string"
+                },
+                "version": {
                     "type": "string"
                 }
             }
@@ -5569,6 +5710,9 @@ var doc = `{
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },
@@ -5586,6 +5730,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5614,6 +5761,9 @@ var doc = `{
         "createFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -5652,6 +5802,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5721,6 +5874,9 @@ var doc = `{
                 "address_2": {
                     "type": "string"
                 },
+                "audit": {
+                    "type": "string"
+                },
                 "available_tests": {
                     "type": "array",
                     "items": {
@@ -5777,6 +5933,9 @@ var doc = `{
         "createNewsRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },
@@ -5787,6 +5946,28 @@ var doc = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "createOrUpdateCRulesRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "county_id",
+                "data"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "audit": {
+                    "type": "string"
+                },
+                "county_id": {
+                    "type": "string"
+                },
+                "data": {
                     "type": "string"
                 }
             }
@@ -5809,6 +5990,24 @@ var doc = `{
                 }
             }
         },
+        "createOrUpdateSymptomsRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "items"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "audit": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
         "createProviderRequest": {
             "type": "object",
             "required": [
@@ -5816,6 +6015,9 @@ var doc = `{
                 "provider_name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "available_mechanisms": {
                     "type": "array",
                     "items": {
@@ -5833,6 +6035,9 @@ var doc = `{
         "createResourceRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -5852,6 +6057,9 @@ var doc = `{
                 "test_type_id"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5954,6 +6162,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -5968,6 +6179,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6086,6 +6300,21 @@ var doc = `{
                 }
             }
         },
+        "setBuildingAccessRequest": {
+            "type": "object",
+            "required": [
+                "access",
+                "date"
+            ],
+            "properties": {
+                "access": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                }
+            }
+        },
         "updateAccessRuleItemRequest": {
             "type": "object",
             "required": [
@@ -6108,6 +6337,9 @@ var doc = `{
                 "rules"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -6116,25 +6348,6 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/updateAccessRuleItemRequest"
                     }
-                }
-            }
-        },
-        "updateCRulesRequest": {
-            "type": "object",
-            "required": [
-                "app_version",
-                "county_id",
-                "data"
-            ],
-            "properties": {
-                "app_version": {
-                    "type": "string"
-                },
-                "county_id": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "string"
                 }
             }
         },
@@ -6157,6 +6370,9 @@ var doc = `{
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },
@@ -6174,6 +6390,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6196,6 +6415,9 @@ var doc = `{
         "updateFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6210,6 +6432,9 @@ var doc = `{
         "updateFAQSection": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -6244,6 +6469,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6285,6 +6513,9 @@ var doc = `{
                     "type": "string"
                 },
                 "address_2": {
+                    "type": "string"
+                },
+                "audit": {
                     "type": "string"
                 },
                 "available_tests": {
@@ -6337,6 +6568,9 @@ var doc = `{
         "updateNewsRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },
@@ -6358,6 +6592,9 @@ var doc = `{
                 "provider_name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "available_mechanisms": {
                     "type": "array",
                     "items": {
@@ -6375,6 +6612,9 @@ var doc = `{
         "updateResourceRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -6392,6 +6632,9 @@ var doc = `{
                 "results_statuses"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "priority": {
                     "type": "integer"
                 },
@@ -6463,27 +6706,15 @@ var doc = `{
                 }
             }
         },
-        "updateSymptomsRequest": {
-            "type": "object",
-            "required": [
-                "app_version",
-                "items"
-            ],
-            "properties": {
-                "app_version": {
-                    "type": "string"
-                },
-                "items": {
-                    "type": "string"
-                }
-            }
-        },
         "updateTestTypeRequest": {
             "type": "object",
             "required": [
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6498,6 +6729,9 @@ var doc = `{
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 }
@@ -6561,7 +6795,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.19.0",
+	Version:     "1.24.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

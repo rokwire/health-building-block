@@ -394,6 +394,41 @@ func (h ApisHandler) GetExternalUINOverrides(w http.ResponseWriter, r *http.Requ
 	w.Write(data)
 }
 
+//GetExtBuildingAccess gives the building access for the provided UIN
+// @Description Gives the building access for the provided UIN
+// @Tags Providers
+// @ID GetExtBuildingAccess
+// @Accept json
+// @Param uin query string true "UIN"
+// @Success 200 {object} model.UINBuildingAccess
+// @Security ProvidersAuth
+// @Router /covid19/ext/building-access [get]
+func (h ApisHandler) GetExtBuildingAccess(w http.ResponseWriter, r *http.Request) {
+	uinKeys, ok := r.URL.Query()["uin"]
+	if !ok || len(uinKeys[0]) < 1 {
+		log.Println("url param 'uin' is missing")
+		return
+	}
+	uin := uinKeys[0]
+
+	uinBuildingAccess, err := h.app.Services.GetExtUINBuildingAccess(uin)
+	if err != nil {
+		log.Printf("Error on getting ext uin building access %s", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.Marshal(uinBuildingAccess)
+	if err != nil {
+		log.Println("Error on marshal ext UINBuildingAccess")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //GetCounty gets a county
 // @Description Gets a county
 // @Tags Covid19
@@ -1278,6 +1313,59 @@ func (h ApisHandler) GetUINOverride(current model.User, w http.ResponseWriter, r
 	w.Write(data)
 }
 
+type setBuildingAccessRequest struct {
+	Date   time.Time `json:"date" validate:"required"`
+	Access string    `json:"access" validate:"required"`
+} //@name setBuildingAccessRequest
+
+//SetUINBuildingAccess grant/deny building access
+// @Description grant/deny building access
+// @Tags Covid19
+// @ID SetUINBuildingAccess
+// @Param data body setBuildingAccessRequest true "body data"
+// @Success 200 {object} string
+// @Security AppUserAuth
+// @Router /covid19/building-access [put]
+func (h ApisHandler) SetUINBuildingAccess(current model.User, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the set building access item - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData setBuildingAccessRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the set building access request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update an building access data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	date := requestData.Date
+	access := requestData.Access
+
+	err = h.app.Services.SetUINBuildingAccess(current, date, access)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully processed"))
+}
+
 //GetProviders gets the providers
 // @Description Gives all the providers
 // @Tags Covid19
@@ -1598,7 +1686,7 @@ func (h ApisHandler) GetLocationsByCountyIDProviderID(appVersion *string, w http
 			}
 			locItem := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 				City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude,
-				Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
+				Timezone: location.Timezone, Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
 				URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
 				CountyID: location.County.ID, AvailableTests: availableTestsRes}
 
@@ -1646,7 +1734,7 @@ func (h ApisHandler) GetLocationsByCountyID(appVersion *string, w http.ResponseW
 			}
 			locItem := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 				City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude,
-				Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
+				Timezone: location.Timezone, Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
 				URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
 				CountyID: location.County.ID, AvailableTests: availableTestsRes}
 
@@ -1705,7 +1793,7 @@ func (h ApisHandler) GetLocation(appVersion *string, w http.ResponseWriter, r *h
 	}
 	locItem := locationResponse{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
 		City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude,
-		Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
+		Timezone: location.Timezone, Contact: location.Contact, DaysOfOperation: convertFromDaysOfOperations(location.DaysOfOperation),
 		URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, ProviderID: location.Provider.ID,
 		CountyID: location.County.ID, AvailableTests: availableTestsRes}
 	data, err := json.Marshal(locItem)

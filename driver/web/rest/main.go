@@ -96,6 +96,7 @@ type locationResponse struct {
 	Country         string                         `json:"country"`
 	Latitude        float64                        `json:"latitude"`
 	Longitude       float64                        `json:"longitude"`
+	Timezone        string                         `json:"timezone"`
 	Contact         string                         `json:"contact"`
 	DaysOfOperation []locationOperationDayResponse `json:"days_of_operation"`
 	URL             string                         `json:"url"`

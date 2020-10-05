@@ -19,14 +19,10 @@ package storage
 
 import (
 	"context"
-	"errors"
 	"health/core"
-	"health/core/model"
-	"io/ioutil"
 	"log"
 	"time"
 
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -41,27 +37,29 @@ type database struct {
 	db       *mongo.Database
 	dbClient *mongo.Client
 
-	configs        *collectionWrapper
-	users          *collectionWrapper
-	providers      *collectionWrapper
-	locations      *collectionWrapper
-	ctests         *collectionWrapper
-	emanualtests   *collectionWrapper
-	resources      *collectionWrapper
-	faq            *collectionWrapper
-	news           *collectionWrapper
-	estatus        *collectionWrapper
-	ehistory       *collectionWrapper
-	counties       *collectionWrapper
-	testtypes      *collectionWrapper
-	rules          *collectionWrapper
-	symptomgroups  *collectionWrapper //old
-	symptomrules   *collectionWrapper //old
-	symptoms       *collectionWrapper
-	crules         *collectionWrapper
-	traceexposures *collectionWrapper
-	accessrules    *collectionWrapper
-	uinoverrides   *collectionWrapper
+	configs           *collectionWrapper
+	users             *collectionWrapper
+	providers         *collectionWrapper
+	locations         *collectionWrapper
+	ctests            *collectionWrapper
+	emanualtests      *collectionWrapper
+	resources         *collectionWrapper
+	faq               *collectionWrapper
+	news              *collectionWrapper
+	estatus           *collectionWrapper
+	ehistory          *collectionWrapper
+	counties          *collectionWrapper
+	testtypes         *collectionWrapper
+	rules             *collectionWrapper
+	symptomgroups     *collectionWrapper //old
+	symptomrules      *collectionWrapper //old
+	symptoms          *collectionWrapper
+	crules            *collectionWrapper
+	traceexposures    *collectionWrapper
+	accessrules       *collectionWrapper
+	uinoverrides      *collectionWrapper
+	uinbuildingaccess *collectionWrapper
+	appversions       *collectionWrapper
 
 	listener core.StorageListener
 }
@@ -189,7 +187,7 @@ func (m *database) start() error {
 		return err
 	}
 	crules := &collectionWrapper{database: m, coll: db.Collection("crules")}
-	err = m.applyCRulesChecks(crules, counties)
+	err = m.applyCRulesChecks(crules)
 	if err != nil {
 		return err
 	}
@@ -205,6 +203,16 @@ func (m *database) start() error {
 	}
 	uinoverrides := &collectionWrapper{database: m, coll: db.Collection("uinoverrides")}
 	err = m.applyUINOverridesChecks(uinoverrides)
+	if err != nil {
+		return err
+	}
+	uinbuildingaccess := &collectionWrapper{database: m, coll: db.Collection("uinbuildingaccess")}
+	err = m.applyUINBuildingAccessChecks(uinbuildingaccess)
+	if err != nil {
+		return err
+	}
+	appversions := &collectionWrapper{database: m, coll: db.Collection("appversions")}
+	err = m.applyAppVersionsChecks(appversions)
 	if err != nil {
 		return err
 	}
@@ -234,9 +242,14 @@ func (m *database) start() error {
 	m.traceexposures = traceexposures
 	m.accessrules = accessrules
 	m.uinoverrides = uinoverrides
+	m.uinbuildingaccess = uinbuildingaccess
+	m.appversions = appversions
 
 	//watch for config changes
 	go m.configs.Watch(nil)
+
+	//watch for app versions changes
+	go m.appversions.Watch(nil)
 
 	return nil
 }
@@ -368,29 +381,6 @@ func (m *database) applyEManualTestsChecks(emanualtests *collectionWrapper) erro
 	err = emanualtests.AddIndex(bson.D{primitive.E{Key: "status", Value: 1}}, false)
 	if err != nil {
 		return err
-	}
-
-	// Remove all verified manual tests as we already do not keep them
-	// First check their count
-	verifiedFilter := bson.D{primitive.E{Key: "status", Value: "verified"}}
-	var items []*eManualTest
-	err = emanualtests.Find(verifiedFilter, &items, nil)
-	if err != nil {
-		return err
-	}
-	if items != nil && len(items) > 0 {
-		log.Printf("there there are %d verified items, so remove them\n", len(items))
-
-		result, err := emanualtests.DeleteMany(verifiedFilter, nil)
-		if err != nil {
-			return err
-		}
-		if result == nil {
-			return errors.New("delete result is nil for some reasons")
-		}
-		log.Printf("%d items were removed\n", result.DeletedCount)
-	} else {
-		log.Println("there is no verified manual test items, so do nothing")
 	}
 
 	log.Println("emanualtests checks passed")
@@ -546,44 +536,10 @@ func (m *database) applyRulesChecks(rules *collectionWrapper) error {
 func (m *database) applySymptomGroupsChecks(symptomGroups *collectionWrapper) error {
 	log.Println("apply symptomGroups checks.....")
 
-	//1. add index
+	// add index
 	err := symptomGroups.AddIndex(bson.D{primitive.E{Key: "symptoms.id", Value: 1}}, false)
 	if err != nil {
 		return err
-	}
-
-	//2. check if need to add the two groups
-	filter := bson.D{}
-	var result []symptomGroup
-	err = symptomGroups.Find(filter, &result, nil)
-	if err != nil {
-		return err
-	}
-	hasData := result != nil && len(result) > 0
-	if !hasData {
-		log.Println("there is no symptoms groups data, so create a default one")
-
-		gr1ID, err := uuid.NewUUID()
-		if err != nil {
-			return err
-		}
-		gr1 := symptomGroup{ID: gr1ID.String(), Name: "gr1"}
-		_, err = symptomGroups.InsertOne(&gr1)
-		if err != nil {
-			return err
-		}
-
-		gr2ID, err := uuid.NewUUID()
-		if err != nil {
-			return err
-		}
-		gr2 := symptomGroup{ID: gr2ID.String(), Name: "gr2"}
-		_, err = symptomGroups.InsertOne(&gr2)
-		if err != nil {
-			return err
-		}
-	} else {
-		log.Println("there is symptoms groups data, so do nothing")
 	}
 
 	log.Println("symptomGroups checks passed")
@@ -612,34 +568,11 @@ func (m *database) applySymptomsChecks(symptoms *collectionWrapper) error {
 		return err
 	}
 
-	//add initial data for version 2.6 if not added
-	filter := bson.D{primitive.E{Key: "app_version", Value: "2.6"}}
-	var items []*model.Symptom
-	err = symptoms.Find(filter, &items, nil)
-	if err != nil {
-		return err
-	}
-	if len(items) <= 0 {
-		log.Println("there are no symptoms for version 2.6, so we need to add initial data")
-
-		data, err := ioutil.ReadFile("./driven/storage/symptoms_2.6.json")
-		if err != nil {
-			return err
-		}
-		d := model.Symptoms{AppVersion: "2.6", Items: string(data)}
-		_, err = symptoms.InsertOne(&d)
-		if err != nil {
-			return err
-		}
-	} else {
-		log.Println("there are symptoms for version 2.6, so nothing to do")
-	}
-
 	log.Println("symptoms checks passed")
 	return nil
 }
 
-func (m *database) applyCRulesChecks(cRules *collectionWrapper, counties *collectionWrapper) error {
+func (m *database) applyCRulesChecks(cRules *collectionWrapper) error {
 	log.Println("apply CRules checks.....")
 
 	//add indexes
@@ -651,41 +584,6 @@ func (m *database) applyCRulesChecks(cRules *collectionWrapper, counties *collec
 	err = cRules.AddIndex(bson.D{primitive.E{Key: "county_id", Value: 1}}, false)
 	if err != nil {
 		return err
-	}
-
-	//add initial data for version 2.6 and Champaign county if not added
-	//first find the county id
-	chFilter := bson.D{primitive.E{Key: "name", Value: "Champaign"}}
-	var champaignCounty *county
-	err = counties.FindOne(chFilter, &champaignCounty, nil)
-	if err != nil {
-		return err
-	}
-	if champaignCounty == nil {
-		return errors.New("there is no a Champaign county")
-	}
-
-	//check if added
-	filter := bson.D{primitive.E{Key: "app_version", Value: "2.6"}, primitive.E{Key: "county_id", Value: champaignCounty.ID}}
-	var items []*model.CRules
-	err = cRules.Find(filter, &items, nil)
-	if err != nil {
-		return err
-	}
-	if len(items) <= 0 {
-		log.Println("there are no symptoms rules for version 2.6 and Champaign county, so we need to add initial data")
-
-		data, err := ioutil.ReadFile("./driven/storage/rules_2.6.json")
-		if err != nil {
-			return err
-		}
-		d := model.CRules{AppVersion: "2.6", CountyID: champaignCounty.ID, Data: string(data)}
-		_, err = cRules.InsertOne(&d)
-		if err != nil {
-			return err
-		}
-	} else {
-		log.Println("there are symptoms rules for version 2.6 and Champaign county, so nothing to do")
 	}
 
 	log.Println("CRules checks passed")
@@ -743,6 +641,53 @@ func (m *database) applyUINOverridesChecks(uinoverrides *collectionWrapper) erro
 	return nil
 }
 
+func (m *database) applyUINBuildingAccessChecks(uinbuildingaccess *collectionWrapper) error {
+	log.Println("apply uinBuildingAccess checks.....")
+
+	//add index - unique
+	err := uinbuildingaccess.AddIndex(bson.D{primitive.E{Key: "uin", Value: 1}}, true)
+	if err != nil {
+		return err
+	}
+
+	log.Println("uinBuildingAccess checks passed")
+	return nil
+}
+
+func (m *database) applyAppVersionsChecks(appversions *collectionWrapper) error {
+	log.Println("apply appVersions checks.....")
+
+	//add index - unique
+	err := appversions.AddIndex(bson.D{primitive.E{Key: "version", Value: 1}}, true)
+	if err != nil {
+		return err
+	}
+
+	//check if need to add initial data
+	filter := bson.D{}
+	var result []bson.D
+	err = appversions.Find(filter, &result, nil)
+	if err != nil {
+		return err
+	}
+	if len(result) == 0 {
+		log.Println("need to add initial data, so adding it")
+
+		versions := []interface{}{bson.D{primitive.E{Key: "version", Value: "2.6"}},
+			bson.D{primitive.E{Key: "version", Value: "2.7"}},
+			bson.D{primitive.E{Key: "version", Value: "2.8"}}}
+		_, err = appversions.InsertMany(versions, nil)
+		if err != nil {
+			return err
+		}
+	} else {
+		log.Println("no need to add initial data")
+	}
+
+	log.Println("appVersions checks passed")
+	return nil
+}
+
 func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 	if changeDoc == nil {
 		return
@@ -760,6 +705,12 @@ func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 
 		if m.listener != nil {
 			m.listener.OnConfigsChanged()
+		}
+	} else if "appversions" == coll {
+		log.Println("appversions collection changed")
+
+		if m.listener != nil {
+			m.listener.OnAppVersionsChanged()
 		}
 	} else {
 		log.Println("other collection changed")

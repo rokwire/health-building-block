@@ -258,6 +258,8 @@ definitions:
         type: string
       state:
         type: string
+      timezone:
+        type: string
       url:
         type: string
       wait_time_color:
@@ -473,6 +475,15 @@ definitions:
       timestamp:
         type: integer
     type: object
+  UINBuildingAccess:
+    properties:
+      access:
+        type: string
+      date:
+        type: string
+      uin:
+        type: string
+    type: object
   UINOverride:
     properties:
       category:
@@ -527,6 +538,8 @@ definitions:
     type: object
   createAccessRuleRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       rules:
@@ -555,6 +568,15 @@ definitions:
     - provider_id
     - user_id
     type: object
+  createAppVersionRequest:
+    properties:
+      audit:
+        type: string
+      version:
+        type: string
+    required:
+    - version
+    type: object
   createCTestRequest:
     properties:
       encrypted_blob:
@@ -575,6 +597,8 @@ definitions:
     type: object
   createCountyRequest:
     properties:
+      audit:
+        type: string
       country:
         type: string
       name:
@@ -588,6 +612,8 @@ definitions:
     type: object
   createCountyStatusRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       description:
@@ -608,6 +634,8 @@ definitions:
     type: object
   createFAQRequest:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       question:
@@ -631,6 +659,8 @@ definitions:
     type: object
   createGuidelineRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       description:
@@ -674,6 +704,8 @@ definitions:
       address_1:
         type: string
       address_2:
+        type: string
+      audit:
         type: string
       available_tests:
         items:
@@ -719,6 +751,8 @@ definitions:
     type: object
   createNewsRequest:
     properties:
+      audit:
+        type: string
       date:
         type: string
       description:
@@ -727,6 +761,21 @@ definitions:
         type: string
       title:
         type: string
+    type: object
+  createOrUpdateCRulesRequest:
+    properties:
+      app_version:
+        type: string
+      audit:
+        type: string
+      county_id:
+        type: string
+      data:
+        type: string
+    required:
+    - app_version
+    - county_id
+    - data
     type: object
   createOrUpdateStatusRequest:
     properties:
@@ -740,8 +789,22 @@ definitions:
     - encrypted_blob
     - encrypted_key
     type: object
+  createOrUpdateSymptomsRequest:
+    properties:
+      app_version:
+        type: string
+      audit:
+        type: string
+      items:
+        type: string
+    required:
+    - app_version
+    - items
+    type: object
   createProviderRequest:
     properties:
+      audit:
+        type: string
       available_mechanisms:
         items:
           type: string
@@ -756,6 +819,8 @@ definitions:
     type: object
   createResourceRequest:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       link:
@@ -765,6 +830,8 @@ definitions:
     type: object
   createRuleRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       priority:
@@ -836,6 +903,8 @@ definitions:
     type: object
   createTestTypeRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
       priority:
@@ -845,6 +914,8 @@ definitions:
     type: object
   createTestTypeResultRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
       test_type_id:
@@ -925,6 +996,16 @@ definitions:
     required:
     - status
     type: object
+  setBuildingAccessRequest:
+    properties:
+      access:
+        type: string
+      date:
+        type: string
+    required:
+    - access
+    - date
+    type: object
   updateAccessRuleItemRequest:
     properties:
       county_status_id:
@@ -937,6 +1018,8 @@ definitions:
     type: object
   updateAccessRuleRequest:
     properties:
+      audit:
+        type: string
       county_id:
         type: string
       rules:
@@ -947,19 +1030,6 @@ definitions:
     - county_id
     - rules
     type: object
-  updateCRulesRequest:
-    properties:
-      app_version:
-        type: string
-      county_id:
-        type: string
-      data:
-        type: string
-    required:
-    - app_version
-    - county_id
-    - data
-    type: object
   updateCTestRequest:
     properties:
       processed:
@@ -969,6 +1039,8 @@ definitions:
     type: object
   updateCountyRequest:
     properties:
+      audit:
+        type: string
       country:
         type: string
       name:
@@ -982,6 +1054,8 @@ definitions:
     type: object
   updateCountyStatusRequest:
     properties:
+      audit:
+        type: string
       description:
         type: string
       name:
@@ -998,6 +1072,8 @@ definitions:
     type: object
   updateFAQRequest:
     properties:
+      audit:
+        type: string
       description:
         type: string
       display_order:
@@ -1007,6 +1083,8 @@ definitions:
     type: object
   updateFAQSection:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       title:
@@ -1027,6 +1105,8 @@ definitions:
     type: object
   updateGuidelineRequest:
     properties:
+      audit:
+        type: string
       description:
         type: string
       items:
@@ -1053,6 +1133,8 @@ definitions:
       address_1:
         type: string
       address_2:
+        type: string
+      audit:
         type: string
       available_tests:
         items:
@@ -1092,6 +1174,8 @@ definitions:
     type: object
   updateNewsRequest:
     properties:
+      audit:
+        type: string
       date:
         type: string
       description:
@@ -1103,6 +1187,8 @@ definitions:
     type: object
   updateProviderRequest:
     properties:
+      audit:
+        type: string
       available_mechanisms:
         items:
           type: string
@@ -1117,6 +1203,8 @@ definitions:
     type: object
   updateResourceRequest:
     properties:
+      audit:
+        type: string
       display_order:
         type: integer
       link:
@@ -1126,6 +1214,8 @@ definitions:
     type: object
   updateRuleRequest:
     properties:
+      audit:
+        type: string
       priority:
         type: integer
       results_statuses:
@@ -1176,18 +1266,10 @@ definitions:
     - gr2_count
     - items
     type: object
-  updateSymptomsRequest:
-    properties:
-      app_version:
-        type: string
-      items:
-        type: string
-    required:
-    - app_version
-    - items
-    type: object
   updateTestTypeRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
       priority:
@@ -1197,6 +1279,8 @@ definitions:
     type: object
   updateTestTypeResultRequest:
     properties:
+      audit:
+        type: string
       name:
         type: string
     required:
@@ -1221,7 +1305,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 1.19.0
+  version: 1.24.0
 paths:
   /admin/access-rules:
     get:
@@ -1366,6 +1450,31 @@ paths:
             items:
               type: string
             type: array
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates an app version. The supported version format is x.x.x or
+        x.x which is the short for x.x.0
+      operationId: CreateAppVersion
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createAppVersionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -1666,15 +1775,15 @@ paths:
     put:
       consumes:
       - application/json
-      description: Updates the rules.
-      operationId: UpdateCRules
+      description: Creates rules, updates them if already created.
+      operationId: CreateOrUpdateCRules
       parameters:
       - description: body data
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/updateCRulesRequest'
+          $ref: '#/definitions/createOrUpdateCRulesRequest'
       produces:
       - application/json
       responses:
@@ -2787,15 +2896,15 @@ paths:
     put:
       consumes:
       - application/json
-      description: Updates the symptoms.
-      operationId: UpdateASymptoms
+      description: Creates symptoms or update them if already created.
+      operationId: CreateorUpdateSymptoms
       parameters:
       - description: body data
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/updateSymptomsRequest'
+          $ref: '#/definitions/createOrUpdateSymptomsRequest'
       produces:
       - application/json
       responses:
@@ -3234,6 +3343,26 @@ paths:
       - RokwireAuth: []
       tags:
       - Covid19
+  /covid19/building-access:
+    put:
+      description: grant/deny building access
+      operationId: SetUINBuildingAccess
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/setBuildingAccessRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
   /covid19/counties:
     get:
       consumes:
@@ -3395,6 +3524,27 @@ paths:
       - AppUserAuth: []
       tags:
       - Covid19
+  /covid19/ext/building-access:
+    get:
+      consumes:
+      - application/json
+      description: Gives the building access for the provided UIN
+      operationId: GetExtBuildingAccess
+      parameters:
+      - description: UIN
+        in: query
+        name: uin
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UINBuildingAccess'
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
   /covid19/faq:
     get:
       consumes:

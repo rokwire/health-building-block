@@ -23,6 +23,8 @@ import (
 	"health/core/model"
 	"health/utils"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -45,7 +47,58 @@ func (app *Application) updateCovid19Config(config *model.COVID19Config) error {
 }
 
 func (app *Application) getAppVersions() ([]string, error) {
-	return app.supportedVersions, nil
+	appVersions, err := app.storage.ReadAllAppVersions()
+	if err != nil {
+		return nil, err
+	}
+	return appVersions, nil
+}
+
+func (app *Application) createAppVersion(current model.User, group string, audit *string, version string) error {
+	//First validate the version input. We accept x.x.x or x.x which is the short for x.x.0
+	//If the input is 3.5.0 then we will store 3.5 as the system works with the short view when the patch is 0
+	var major, minor, patch int
+	var err error
+	elements := strings.Split(version, ".")
+	elementsCount := len(elements)
+	if !(elementsCount == 2 || elementsCount == 3) {
+		return errors.New("format must be x.x.x or x.x")
+	}
+
+	major, err = strconv.Atoi(elements[0])
+	if err != nil {
+		return err
+	}
+	minor, err = strconv.Atoi(elements[1])
+	if err != nil {
+		return err
+	}
+	if elementsCount == 2 {
+		patch = 0
+	} else {
+		patch, err = strconv.Atoi(elements[2])
+		if err != nil {
+			return err
+		}
+	}
+
+	res := fmt.Sprintf("%d.%d.%d", major, minor, patch)
+	//the system work with the shor view when patch is 0
+	if patch == 0 {
+		res = fmt.Sprintf("%d.%d", major, minor)
+	}
+
+	err = app.storage.CreateAppVersion(res)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "version", Value: version}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "app-version", version, lData, audit)
+
+	return nil
 }
 
 func (app *Application) getAllNews() ([]*model.News, error) {
@@ -56,7 +109,7 @@ func (app *Application) getAllNews() ([]*model.News, error) {
 	return news, nil
 }
 
-func (app *Application) createNews(current model.User, group string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+func (app *Application) createNews(current model.User, group string, audit *string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
 	news, err := app.storage.CreateNews(date, title, description, htmlContent, link)
 	if err != nil {
 		return nil, err
@@ -66,12 +119,12 @@ func (app *Application) createNews(current model.User, group string, date time.T
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "date", Value: fmt.Sprint(date)}, {Key: "title", Value: title}, {Key: "description", Value: description},
 		{Key: "htmlContent", Value: htmlContent}, {Key: "link", Value: utils.GetString(link)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "news", news.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "news", news.ID, lData, audit)
 
 	return news, nil
 }
 
-func (app *Application) updateNews(current model.User, group string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
+func (app *Application) updateNews(current model.User, group string, audit *string, ID string, date time.Time, title string, description string, htmlContent string, link *string) (*model.News, error) {
 	news, err := app.storage.FindNews(ID)
 	if err != nil {
 		return nil, err
@@ -96,7 +149,7 @@ func (app *Application) updateNews(current model.User, group string, ID string, 
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "date", Value: fmt.Sprint(date)}, {Key: "title", Value: title}, {Key: "description", Value: description},
 		{Key: "htmlContent", Value: htmlContent}, {Key: "link", Value: utils.GetString(link)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "news", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "news", ID, lData, audit)
 
 	return news, nil
 }
@@ -121,7 +174,7 @@ func (app *Application) getAllResources() ([]*model.Resource, error) {
 	return news, nil
 }
 
-func (app *Application) createResource(current model.User, group string, title string, link string, displayOrder int) (*model.Resource, error) {
+func (app *Application) createResource(current model.User, group string, audit *string, title string, link string, displayOrder int) (*model.Resource, error) {
 	resource, err := app.storage.CreateResource(title, link, displayOrder)
 	if err != nil {
 		return nil, err
@@ -130,12 +183,12 @@ func (app *Application) createResource(current model.User, group string, title s
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "link", Value: link}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "resource", resource.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "resource", resource.ID, lData, audit)
 
 	return resource, nil
 }
 
-func (app *Application) updateResource(current model.User, group string, ID string, title string, link string, displayOrder int) (*model.Resource, error) {
+func (app *Application) updateResource(current model.User, group string, audit *string, ID string, title string, link string, displayOrder int) (*model.Resource, error) {
 	resource, err := app.storage.FindResource(ID)
 	if err != nil {
 		return nil, err
@@ -158,7 +211,7 @@ func (app *Application) updateResource(current model.User, group string, ID stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "link", Value: link}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "resource", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "resource", ID, lData, audit)
 
 	return resource, nil
 }
@@ -221,7 +274,7 @@ func (app *Application) getFAQs() (*model.FAQ, error) {
 	return faq, nil
 }
 
-func (app *Application) createFAQ(current model.User, group string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
+func (app *Application) createFAQ(current model.User, group string, audit *string, section string, sectionDisplayOrder int, title string, description string, questionDisplayOrder int) error {
 	faq, err := app.storage.ReadFAQ()
 	if err != nil {
 		return err
@@ -272,7 +325,7 @@ func (app *Application) createFAQ(current model.User, group string, section stri
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "section", Value: section}, {Key: "sectionDisplayOrder", Value: fmt.Sprint(sectionDisplayOrder)}, {Key: "title", Value: title},
 		{Key: "description", Value: description}, {Key: "questionDisplayOrder", Value: fmt.Sprint(questionDisplayOrder)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-question", question.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-question", question.ID, lData, audit)
 
 	return nil
 }
@@ -286,7 +339,7 @@ func (app *Application) findSection(title string, sections *[]*model.Section) *m
 	return nil
 }
 
-func (app *Application) updateFAQ(current model.User, group string, ID string, title string, description string, displayOrder int) error {
+func (app *Application) updateFAQ(current model.User, group string, audit *string, ID string, title string, description string, displayOrder int) error {
 	faq, err := app.storage.ReadFAQ()
 	if err != nil {
 		return err
@@ -328,7 +381,7 @@ func (app *Application) updateFAQ(current model.User, group string, ID string, t
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "description", Value: description}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "faq-question", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "faq-question", ID, lData, audit)
 
 	return nil
 }
@@ -397,7 +450,7 @@ func remove(questions []*model.Question, s int) []*model.Question {
 	return append(questions[:s], questions[s+1:]...)
 }
 
-func (app *Application) updateFAQSection(current model.User, group string, ID string, title string, displayOrder int) error {
+func (app *Application) updateFAQSection(current model.User, group string, audit *string, ID string, title string, displayOrder int) error {
 	faq, err := app.storage.ReadFAQ()
 	if err != nil {
 		return err
@@ -431,12 +484,12 @@ func (app *Application) updateFAQSection(current model.User, group string, ID st
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "title", Value: title}, {Key: "displayOrder", Value: fmt.Sprint(displayOrder)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-section", ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "faq-section", ID, lData, audit)
 
 	return nil
 }
 
-func (app *Application) createProvider(current model.User, group string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
+func (app *Application) createProvider(current model.User, group string, audit *string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
 	provider, err := app.storage.CreateProvider(providerName, manualTest, availableMechanisms)
 	if err != nil {
 		return nil, err
@@ -444,12 +497,12 @@ func (app *Application) createProvider(current model.User, group string, provide
 
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "providerName", Value: providerName}, {Key: "manualTest", Value: fmt.Sprint(manualTest)}, {Key: "availableMechanisms", Value: fmt.Sprint(availableMechanisms)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "provider", provider.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "provider", provider.ID, lData, audit)
 
 	return provider, nil
 }
 
-func (app *Application) updateProvider(current model.User, group string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
+func (app *Application) updateProvider(current model.User, group string, audit *string, ID string, providerName string, manualTest bool, availableMechanisms []string) (*model.Provider, error) {
 	provider, err := app.storage.FindProvider(ID)
 	if err != nil {
 		return nil, err
@@ -472,7 +525,7 @@ func (app *Application) updateProvider(current model.User, group string, ID stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "providerName", Value: providerName}, {Key: "manualTest", Value: fmt.Sprint(manualTest)}, {Key: "availableMechanisms", Value: fmt.Sprint(availableMechanisms)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "provider", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "provider", ID, lData, audit)
 
 	return provider, nil
 }
@@ -490,7 +543,7 @@ func (app *Application) deleteProvider(current model.User, group string, ID stri
 	return nil
 }
 
-func (app *Application) createCounty(current model.User, group string, name string, stateProvince string, country string) (*model.County, error) {
+func (app *Application) createCounty(current model.User, group string, audit *string, name string, stateProvince string, country string) (*model.County, error) {
 	county, err := app.storage.CreateCounty(name, stateProvince, country)
 	if err != nil {
 		return nil, err
@@ -499,12 +552,12 @@ func (app *Application) createCounty(current model.User, group string, name stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "stateProvince", Value: stateProvince}, {Key: "country", Value: country}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county", county.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county", county.ID, lData, audit)
 
 	return county, nil
 }
 
-func (app *Application) updateCounty(current model.User, group string, ID string, name string, stateProvince string, country string) (*model.County, error) {
+func (app *Application) updateCounty(current model.User, group string, audit *string, ID string, name string, stateProvince string, country string) (*model.County, error) {
 	county, err := app.storage.FindCounty(ID)
 	if err != nil {
 		return nil, err
@@ -527,7 +580,7 @@ func (app *Application) updateCounty(current model.User, group string, ID string
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "stateProvince", Value: stateProvince}, {Key: "country", Value: country}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county", county.ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county", county.ID, lData, audit)
 
 	return county, nil
 }
@@ -545,7 +598,7 @@ func (app *Application) deleteCounty(current model.User, group string, ID string
 	return nil
 }
 
-func (app *Application) createGuideline(current model.User, group string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+func (app *Application) createGuideline(current model.User, group string, audit *string, countyID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
 	//1. find if we have a county for the provided ID
 	county, err := app.storage.FindCounty(countyID)
 	if err != nil {
@@ -564,12 +617,12 @@ func (app *Application) createGuideline(current model.User, group string, county
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}, {Key: "items", Value: fmt.Sprint(items)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "guideline", guideline.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "guideline", guideline.ID, lData, audit)
 
 	return guideline, nil
 }
 
-func (app *Application) updateGuideline(current model.User, group string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
+func (app *Application) updateGuideline(current model.User, group string, audit *string, ID string, name string, description string, items []model.GuidelineItem) (*model.Guideline, error) {
 	guideline, err := app.storage.FindGuideline(ID)
 	if err != nil {
 		return nil, err
@@ -592,7 +645,7 @@ func (app *Application) updateGuideline(current model.User, group string, ID str
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}, {Key: "items", Value: fmt.Sprint(items)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "guideline", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "guideline", ID, lData, audit)
 
 	return guideline, nil
 }
@@ -628,7 +681,7 @@ func (app *Application) getGuidelinesByCountyID(countyID string) ([]*model.Guide
 	return guidelines, nil
 }
 
-func (app *Application) createCountyStatus(current model.User, group string, countyID string, name string, description string) (*model.CountyStatus, error) {
+func (app *Application) createCountyStatus(current model.User, group string, audit *string, countyID string, name string, description string) (*model.CountyStatus, error) {
 	//1. find if we have a county for the provided ID
 	county, err := app.storage.FindCounty(countyID)
 	if err != nil {
@@ -647,12 +700,12 @@ func (app *Application) createCountyStatus(current model.User, group string, cou
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "name", Value: name}, {Key: "description", Value: description}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county-status", countyStatus.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "county-status", countyStatus.ID, lData, audit)
 
 	return countyStatus, nil
 }
 
-func (app *Application) updateCountyStatus(current model.User, group string, ID string, name string, description string) (*model.CountyStatus, error) {
+func (app *Application) updateCountyStatus(current model.User, group string, audit *string, ID string, name string, description string) (*model.CountyStatus, error) {
 	countyStatus, err := app.storage.FindCountyStatus(ID)
 	if err != nil {
 		return nil, err
@@ -674,7 +727,7 @@ func (app *Application) updateCountyStatus(current model.User, group string, ID 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "description", Value: description}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county-status", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "county-status", ID, lData, audit)
 
 	return countyStatus, nil
 }
@@ -718,7 +771,7 @@ func (app *Application) getTestTypes() ([]*model.TestType, error) {
 	return testTypes, nil
 }
 
-func (app *Application) createTestType(current model.User, group string, name string, priority *int) (*model.TestType, error) {
+func (app *Application) createTestType(current model.User, group string, audit *string, name string, priority *int) (*model.TestType, error) {
 	testType, err := app.storage.CreateTestType(name, priority)
 	if err != nil {
 		return nil, err
@@ -730,12 +783,12 @@ func (app *Application) createTestType(current model.User, group string, name st
 
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type", testType.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type", testType.ID, lData, audit)
 
 	return testType, nil
 }
 
-func (app *Application) updateTestType(current model.User, group string, ID string, name string, priority *int) (*model.TestType, error) {
+func (app *Application) updateTestType(current model.User, group string, audit *string, ID string, name string, priority *int) (*model.TestType, error) {
 	testType, err := app.storage.FindTestType(ID)
 	if err != nil {
 		return nil, err
@@ -757,7 +810,7 @@ func (app *Application) updateTestType(current model.User, group string, ID stri
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type", ID, lData, audit)
 
 	return testType, nil
 }
@@ -775,7 +828,7 @@ func (app *Application) deleteTestType(current model.User, group string, ID stri
 	return nil
 }
 
-func (app *Application) createTestTypeResult(current model.User, group string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
+func (app *Application) createTestTypeResult(current model.User, group string, audit *string, testTypeID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
 	//1. find if we have a test type for the provided ID
 	testType, err := app.storage.FindTestType(testTypeID)
 	if err != nil {
@@ -795,12 +848,12 @@ func (app *Application) createTestTypeResult(current model.User, group string, t
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "testTypeID", Value: testTypeID}, {Key: "name", Value: name}, {Key: "nextStep", Value: nextStep},
 		{Key: "nextStepOffset", Value: fmt.Sprint(utils.GetInt(nextStepOffset))}, {Key: "resultExpiresOffset", Value: fmt.Sprint(utils.GetInt(resultExpiresOffset))}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type-result", testTypeResult.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "test-type-result", testTypeResult.ID, lData, audit)
 
 	return testTypeResult, nil
 }
 
-func (app *Application) updateTestTypeResult(current model.User, group string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
+func (app *Application) updateTestTypeResult(current model.User, group string, audit *string, ID string, name string, nextStep string, nextStepOffset *int, resultExpiresOffset *int) (*model.TestTypeResult, error) {
 	testTypeResult, err := app.storage.FindTestTypeResult(ID)
 	if err != nil {
 		return nil, err
@@ -825,7 +878,7 @@ func (app *Application) updateTestTypeResult(current model.User, group string, I
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "name", Value: name}, {Key: "nextStep", Value: nextStep},
 		{Key: "nextStepOffset", Value: fmt.Sprint(utils.GetInt(nextStepOffset))}, {Key: "resultExpiresOffset", Value: fmt.Sprint(utils.GetInt(resultExpiresOffset))}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type-result", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "test-type-result", ID, lData, audit)
 
 	return testTypeResult, nil
 }
@@ -870,55 +923,79 @@ func (app *Application) getRules() ([]*model.Rule, error) {
 }
 
 func (app *Application) getCRules(countyID string, appVersion string) (*model.CRules, error) {
-	if !app.isVersionSupported(appVersion) {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
 		return nil, errors.New("app version is not supported")
 	}
 
-	cRules, err := app.storage.FindCRulesByCountyID(appVersion, countyID)
+	cRules, err := app.storage.FindCRulesByCountyID(*v, countyID)
 	if err != nil {
 		return nil, err
 	}
 	return cRules, nil
 }
 
-func (app *Application) updateCRules(current model.User, group string, countyID string, appVersion string, data string) (*model.CRules, error) {
-	cRules, err := app.storage.UpdateCRules(appVersion, countyID, data)
+func (app *Application) createOrUpdateCRules(current model.User, group string, audit *string, countyID string, appVersion string, data string) error {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
+		return errors.New("app version is not supported")
+	}
+
+	create, err := app.storage.CreateOrUpdateCRules(*v, countyID, data)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "appVersion", Value: appVersion}, {Key: "data", Value: data}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "crules", "", lData, nil)
+	if *create {
+		//create
+		defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "crules", "", lData, audit)
+	} else {
+		//update
+		defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "crules", "", lData, audit)
+	}
 
-	return cRules, nil
+	return nil
 }
 
 func (app *Application) getASymptoms(appVersion string) (*model.Symptoms, error) {
-	if !app.isVersionSupported(appVersion) {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
 		return nil, errors.New("app version is not supported")
 	}
 
-	symptoms, err := app.storage.ReadSymptoms(appVersion)
+	symptoms, err := app.storage.ReadSymptoms(*v)
 	if err != nil {
 		return nil, err
 	}
 	return symptoms, nil
 }
 
-func (app *Application) updateSymptoms(current model.User, group string, appVersion string, items string) (*model.Symptoms, error) {
-	symptoms, err := app.storage.UpdateSymptoms(appVersion, items)
+func (app *Application) createOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) error {
+	supported, v := app.isVersionSupported(appVersion)
+	if !supported {
+		return errors.New("app version is not supported")
+	}
+
+	create, err := app.storage.CreateOrUpdateSymptoms(*v, items)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "appVersion", Value: appVersion}, {Key: "items", Value: items}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, nil)
+	if *create {
+		//create
+		defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, audit)
+	} else {
+		//update
+		defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "symptoms", "", lData, audit)
+	}
 
-	return symptoms, nil
+	return nil
 }
 
 func (app *Application) getUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
@@ -970,7 +1047,7 @@ func (app *Application) deleteUINOverride(current model.User, group string, uin 
 	return nil
 }
 
-func (app *Application) createRule(current model.User, group string, countyID string, testTypeID string, priority *int,
+func (app *Application) createRule(current model.User, group string, audit *string, countyID string, testTypeID string, priority *int,
 	resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
 
 	//TODO - transactions, consistency!!!
@@ -1022,12 +1099,12 @@ func (app *Application) createRule(current model.User, group string, countyID st
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "testTypeID", Value: testTypeID},
 		{Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}, {Key: "resultsStatuses", Value: fmt.Sprint(resultsStatuses)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "rule", rule.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "rule", rule.ID, lData, audit)
 
 	return rule, nil
 }
 
-func (app *Application) updateRule(current model.User, group string, ID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
+func (app *Application) updateRule(current model.User, group string, audit *string, ID string, priority *int, resultsStatuses []model.TestTypeResultCountyStatus) (*model.Rule, error) {
 	//1. find the rule
 	rule, err := app.storage.FindRule(ID)
 	if err != nil {
@@ -1059,7 +1136,7 @@ func (app *Application) updateRule(current model.User, group string, ID string, 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "priority", Value: fmt.Sprint(utils.GetInt(priority))}, {Key: "resultsStatuses", Value: fmt.Sprint(resultsStatuses)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "rule", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "rule", ID, lData, audit)
 
 	return rule, nil
 }
@@ -1170,7 +1247,7 @@ func (app *Application) getLocations() ([]*model.Location, error) {
 	return locations, nil
 }
 
-func (app *Application) createLocation(current model.User, group string, providerID string, countyID string, name string, address1 string, address2 string, city string,
+func (app *Application) createLocation(current model.User, group string, audit *string, providerID string, countyID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
 	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
 	//1. check if the location data is valid
@@ -1193,12 +1270,12 @@ func (app *Application) createLocation(current model.User, group string, provide
 		{Key: "latitude", Value: fmt.Sprint(latitude)}, {Key: "longitude", Value: fmt.Sprint(longitude)}, {Key: "contact", Value: contact},
 		{Key: "daysOfOperation", Value: fmt.Sprint(daysOfOperation)}, {Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "waitTimeColor", Value: utils.GetString(waitTimeColor)},
 		{Key: "availableTests", Value: fmt.Sprint(availableTests)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "location", location.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "location", location.ID, lData, audit)
 
 	return location, nil
 }
 
-func (app *Application) updateLocation(current model.User, group string, ID string, name string, address1 string, address2 string, city string,
+func (app *Application) updateLocation(current model.User, group string, audit *string, ID string, name string, address1 string, address2 string, city string,
 	state string, zip string, country string, latitude float64, longitude float64, contact string,
 	daysOfOperation []model.OperationDay, url string, notes string, waitTimeColor *string, availableTests []string) (*model.Location, error) {
 
@@ -1230,6 +1307,7 @@ func (app *Application) updateLocation(current model.User, group string, ID stri
 	location.Country = country
 	location.Latitude = latitude
 	location.Longitude = longitude
+	location.Timezone = "America/Chicago"
 	location.Contact = contact
 	location.DaysOfOperation = daysOfOperation
 	location.URL = url
@@ -1257,7 +1335,7 @@ func (app *Application) updateLocation(current model.User, group string, ID stri
 		{Key: "longitude", Value: fmt.Sprint(longitude)}, {Key: "contact", Value: contact}, {Key: "daysOfOperation", Value: fmt.Sprint(daysOfOperation)},
 		{Key: "url", Value: url}, {Key: "notes", Value: notes}, {Key: "waitTimeColor", Value: utils.GetString(waitTimeColor)},
 		{Key: "availableTests", Value: fmt.Sprint(availableTests)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "location", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "location", ID, lData, audit)
 
 	return location, nil
 }
@@ -1550,7 +1628,7 @@ func (app *Application) getAccessRules() ([]*model.AccessRule, error) {
 	return accessRules, nil
 }
 
-func (app *Application) createAccessRule(current model.User, group string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+func (app *Application) createAccessRule(current model.User, group string, audit *string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
 	accessRule, err := app.storage.CreateAccessRule(countyID, rules)
 	if err != nil {
 		return nil, err
@@ -1559,12 +1637,12 @@ func (app *Application) createAccessRule(current model.User, group string, count
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "rules", Value: fmt.Sprint(rules)}}
-	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "access-rule", accessRule.ID, lData, nil)
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "access-rule", accessRule.ID, lData, audit)
 
 	return accessRule, nil
 }
 
-func (app *Application) updateAccessRule(current model.User, group string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
+func (app *Application) updateAccessRule(current model.User, group string, audit *string, ID string, countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error) {
 	accessRule, err := app.storage.UpdateAccessRule(ID, countyID, rules)
 	if err != nil {
 		return nil, err
@@ -1573,7 +1651,7 @@ func (app *Application) updateAccessRule(current model.User, group string, ID st
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
 	lData := []AuditDataEntry{{Key: "countyID", Value: countyID}, {Key: "rules", Value: fmt.Sprint(rules)}}
-	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "access-rule", ID, lData, nil)
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "access-rule", ID, lData, audit)
 
 	return accessRule, nil
 }

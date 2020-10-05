@@ -406,6 +406,24 @@ func (app *Application) getExternalUINOverrides(uin *string, sort *string) ([]*m
 	return uinOverrides, nil
 }
 
+func (app *Application) setUINBuildingAccess(current model.User, date time.Time, access string) error {
+	//supported only for Shibboleth users - uin
+	uin := current.ExternalID
+	err := app.storage.CreateOrUpdateUINBuildingAccess(uin, date, access)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (app *Application) getExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error) {
+	uinBuildingAccess, err := app.storage.FindUINBuildingAccess(uin)
+	if err != nil {
+		return nil, err
+	}
+	return uinBuildingAccess, nil
+}
+
 func (app *Application) deleteEHitories(userID string) (int64, error) {
 	deletedCount, err := app.storage.DeleteEHistories(userID)
 	if err != nil {

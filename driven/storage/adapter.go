@@ -114,6 +114,7 @@ type location struct {
 	Country         string         `bson:"country"`
 	Latitude        float64        `bson:"latitude"`
 	Longitude       float64        `bson:"longitude"`
+	Timezone        string         `bson:"timezone"`
 	Contact         string         `bson:"contact"`
 	DaysOfOperation []operationDay `bson:"days_of_operation"`
 	URL             string         `bson:"url"`
@@ -238,6 +239,43 @@ func (sa *Adapter) Start() error {
 //SetStorageListener sets listener for the storage
 func (sa *Adapter) SetStorageListener(storageListener core.StorageListener) {
 	sa.db.listener = storageListener
+}
+
+//ReadAllAppVersions reads all the versions. It gives them in a sorted way as the latest version is on position 0
+func (sa *Adapter) ReadAllAppVersions() ([]string, error) {
+	filter := bson.D{}
+	var result []interface{}
+	err := sa.db.appversions.Find(filter, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(result) == 0 {
+		return nil, nil
+	}
+
+	res := make([]string, len(result))
+	for index, current := range result {
+		cc := current.(bson.D)
+		v := cc.Map()["version"].(string)
+		res[index] = v
+	}
+
+	//sort the versions list
+	utils.SortVersions(res)
+
+	return res, nil
+}
+
+//CreateAppVersion preates app version
+func (sa *Adapter) CreateAppVersion(version string) error {
+	item := bson.D{primitive.E{Key: "version", Value: version}}
+	_, err := sa.db.appversions.InsertOne(item)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 //ClearUserData removes all the user data in the storage. It uses a transaction
@@ -2831,8 +2869,10 @@ func (sa *Adapter) ReadAllLocations() ([]*model.Location, error) {
 			}
 			daysOfOperation := convertToDaysOfOperation(location.DaysOfOperation)
 			locationEntity := &model.Location{ID: location.ID, Name: location.Name, Address1: location.Address1,
-				Address2: location.Address2, City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude, Contact: location.Contact,
-				DaysOfOperation: daysOfOperation, URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, Provider: provider, County: county, AvailableTests: avTests}
+				Address2: location.Address2, City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country,
+				Latitude: location.Latitude, Longitude: location.Longitude, Contact: location.Contact, Timezone: location.Timezone,
+				DaysOfOperation: daysOfOperation, URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor,
+				Provider: provider, County: county, AvailableTests: avTests}
 			resultList = append(resultList, locationEntity)
 		}
 	}
@@ -2853,7 +2893,7 @@ func (sa *Adapter) CreateLocation(providerID string, countyID string, name strin
 
 	doo := convertFromDaysOfOperation(daysOfOperation)
 	location := location{ID: id.String(), Name: name, Address1: address1, Address2: address2, City: city,
-		State: state, ZIP: zip, Country: country, Latitude: latitude, Longitude: longitude, Contact: contact,
+		State: state, ZIP: zip, Country: country, Latitude: latitude, Longitude: longitude, Timezone: "America/Chicago", Contact: contact,
 		DaysOfOperation: doo, URL: url, Notes: notes, WaitTimeColor: waitTimeColor, ProviderID: providerID, CountyID: countyID,
 		AvailableTests: availableTests, DateCreated: dateCreated}
 	_, err = sa.db.locations.InsertOne(&location)
@@ -2905,9 +2945,9 @@ func (sa *Adapter) FindLocationsByProviderIDCountyID(providerID string, countyID
 		daysOfOperations := convertToDaysOfOperation(location.DaysOfOperation)
 		locationEntity := &model.Location{ID: location.ID, Name: location.Name, Address1: location.Address1,
 			Address2: location.Address2, City: location.City, State: location.State, ZIP: location.ZIP,
-			Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude, Contact: location.Contact,
-			DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor,
-			Provider: provider, County: county, AvailableTests: avTests}
+			Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude, Timezone: location.Timezone,
+			Contact: location.Contact, DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes,
+			WaitTimeColor: location.WaitTimeColor, Provider: provider, County: county, AvailableTests: avTests}
 		resultList = append(resultList, locationEntity)
 	}
 	return resultList, nil
@@ -2924,6 +2964,7 @@ type locationProviderJoin struct {
 	Country         string         `bson:"country"`
 	Latitude        float64        `bson:"latitude"`
 	Longitude       float64        `bson:"longitude"`
+	Timezone        string         `bson:"timezone"`
 	Contact         string         `bson:"contact"`
 	DaysOfOperation []operationDay `bson:"days_of_operation"`
 	URL             string         `bson:"url"`
@@ -2949,7 +2990,7 @@ func (sa *Adapter) FindLocationsByCountyIDDeep(countyID string) ([]*model.Locati
 		{"$match": bson.M{"county_id": countyID}},
 		{"$unwind": "$provider"},
 		{"$project": bson.M{
-			"_id": 1, "name": 1, "address_1": 1, "address_2": 1, "city": 1, "state": 1, "zip": 1, "country": 1, "latitude": 1, "longitude": 1,
+			"_id": 1, "name": 1, "address_1": 1, "address_2": 1, "city": 1, "state": 1, "zip": 1, "country": 1, "latitude": 1, "longitude": 1, "timezone": 1,
 			"contact": 1, "days_of_operation": 1, "url": 1, "notes": 1, "wait_time_color": 1, "available_tests": 1, "county_id": 1,
 			"provider_id": "$provider._id", "provider_name": "$provider.provider_name", "provider_available_mechanisms": "$provider.available_mechanisms",
 		}}}
@@ -2979,7 +3020,7 @@ func (sa *Adapter) FindLocationsByCountyIDDeep(countyID string) ([]*model.Locati
 		}
 		daysOfOperations := convertToDaysOfOperation(location.DaysOfOperation)
 		locationEntity := &model.Location{ID: location.ID, Name: location.Name, Address1: location.Address1, Address2: location.Address2,
-			City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude,
+			City: location.City, State: location.State, ZIP: location.ZIP, Country: location.Country, Latitude: location.Latitude, Timezone: location.Timezone,
 			Longitude: location.Longitude, Contact: location.Contact, DaysOfOperation: daysOfOperations, URL: location.URL,
 			Notes: location.Notes, WaitTimeColor: location.WaitTimeColor, Provider: provider, County: county, AvailableTests: avTests}
 		resultList = append(resultList, locationEntity)
@@ -2999,7 +3040,7 @@ func (sa *Adapter) FindLocationsByCountiesDeep(countyIDs []string) ([]*model.Loc
 		{"$match": bson.M{"county_id": bson.M{"$in": countyIDs}}},
 		{"$unwind": "$provider"},
 		{"$project": bson.M{
-			"_id": 1, "name": 1, "address_1": 1, "address_2": 1, "city": 1, "state": 1, "zip": 1, "country": 1, "latitude": 1, "longitude": 1,
+			"_id": 1, "name": 1, "address_1": 1, "address_2": 1, "city": 1, "state": 1, "zip": 1, "country": 1, "latitude": 1, "longitude": 1, "timezone": 1,
 			"contact": 1, "days_of_operation": 1, "url": 1, "notes": 1, "wait_time_color": 1, "available_tests": 1, "county_id": 1,
 			"provider_id": "$provider._id", "provider_name": "$provider.provider_name", "provider_available_mechanisms": "$provider.available_mechanisms",
 		}}}
@@ -3030,8 +3071,8 @@ func (sa *Adapter) FindLocationsByCountiesDeep(countyIDs []string) ([]*model.Loc
 		daysOfOperations := convertToDaysOfOperation(location.DaysOfOperation)
 		locationEntity := &model.Location{ID: location.ID, Name: location.Name, Address1: location.Address1,
 			Address2: location.Address2, City: location.City, State: location.State, ZIP: location.ZIP,
-			Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude, Contact: location.Contact,
-			DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor,
+			Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude, Timezone: location.Timezone,
+			Contact: location.Contact, DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor,
 			Provider: provider, County: county, AvailableTests: avTests}
 		resultList = append(resultList, locationEntity)
 	}
@@ -3064,9 +3105,9 @@ func (sa *Adapter) FindLocation(ID string) (*model.Location, error) {
 	daysOfOperations := convertToDaysOfOperation(location.DaysOfOperation)
 	resultEntity := &model.Location{ID: location.ID, Name: location.Name, Address1: location.Address1,
 		Address2: location.Address2, City: location.City, State: location.State, ZIP: location.ZIP,
-		Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude, Contact: location.Contact,
-		DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes, WaitTimeColor: location.WaitTimeColor,
-		Provider: provider, County: county, AvailableTests: avTests}
+		Country: location.Country, Latitude: location.Latitude, Longitude: location.Longitude, Timezone: location.Timezone,
+		Contact: location.Contact, DaysOfOperation: daysOfOperations, URL: location.URL, Notes: location.Notes,
+		WaitTimeColor: location.WaitTimeColor, Provider: provider, County: county, AvailableTests: avTests}
 	return resultEntity, nil
 }
 
@@ -3094,6 +3135,7 @@ func (sa *Adapter) SaveLocation(entity *model.Location) error {
 	location.Country = entity.Country
 	location.Latitude = entity.Latitude
 	location.Longitude = entity.Longitude
+	location.Timezone = entity.Timezone
 	location.Contact = entity.Contact
 	location.DaysOfOperation = convertFromDaysOfOperation(entity.DaysOfOperation)
 	location.URL = entity.URL
@@ -3356,58 +3398,30 @@ func (sa *Adapter) ReadSymptoms(appVersion string) (*model.Symptoms, error) {
 	return symptoms, nil
 }
 
-//UpdateSymptoms updates teh symptoms
-func (sa *Adapter) UpdateSymptoms(appVersion string, items string) (*model.Symptoms, error) {
-	var resultItem *model.Symptoms
+//CreateOrUpdateSymptoms creates symptoms for the provided version or update them if already created
+func (sa *Adapter) CreateOrUpdateSymptoms(appVersion string, items string) (*bool, error) {
+	filter := bson.D{primitive.E{Key: "app_version", Value: appVersion}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "items", Value: items},
+		}},
+	}
 
-	// transaction
-	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
-		err := sessionContext.StartTransaction()
-		if err != nil {
-			log.Printf("error starting a transaction - %s", err)
-			return err
-		}
+	//insert if not exists
+	opt := options.Update()
+	upsert := true
+	opt.Upsert = &upsert
 
-		//1. find the symptoms
-		sFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}}
-		var sResult []*model.Symptoms
-		err = sa.db.symptoms.FindWithContext(sessionContext, sFilter, &sResult, nil)
-		if err != nil {
-			abortTransaction(sessionContext)
-			return err
-		}
-		if sResult == nil || len(sResult) == 0 {
-			abortTransaction(sessionContext)
-			return errors.New("there is no symptoms for the provided app version")
-		}
-		symptoms := sResult[0]
-
-		//2. update the symptoms
-		symptoms.Items = items
-
-		//3. save the symptoms
-		saveFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}}
-		err = sa.db.symptoms.ReplaceOneWithContext(sessionContext, saveFilter, &symptoms, nil)
-		if err != nil {
-			abortTransaction(sessionContext)
-			return err
-		}
-
-		resultItem = symptoms
-
-		//commit the transaction
-		err = sessionContext.CommitTransaction(sessionContext)
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
-		return nil
-	})
+	updateResult, err := sa.db.symptoms.UpdateOne(filter, update, opt)
 	if err != nil {
 		return nil, err
 	}
 
-	return resultItem, nil
+	create := true
+	if updateResult.ModifiedCount == 1 {
+		create = false //modified
+	}
+	return &create, nil
 }
 
 //ReadAllSymptomRules reads all the symptom rules
@@ -3693,58 +3707,30 @@ func (sa *Adapter) FindCRulesByCountyID(appVersion string, countyID string) (*mo
 	return symptomsRules, nil
 }
 
-//UpdateCRules updates crules
-func (sa *Adapter) UpdateCRules(appVersion string, countyID string, data string) (*model.CRules, error) {
-	var resultItem *model.CRules
+//CreateOrUpdateCRules creates crule or update it if already created
+func (sa *Adapter) CreateOrUpdateCRules(appVersion string, countyID string, data string) (*bool, error) {
+	filter := bson.D{primitive.E{Key: "app_version", Value: appVersion}, primitive.E{Key: "county_id", Value: countyID}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "data", Value: data},
+		}},
+	}
 
-	// transaction
-	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
-		err := sessionContext.StartTransaction()
-		if err != nil {
-			log.Printf("error starting a transaction - %s", err)
-			return err
-		}
+	//insert if not exists
+	opt := options.Update()
+	upsert := true
+	opt.Upsert = &upsert
 
-		//1. find the crule item
-		crFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}, primitive.E{Key: "county_id", Value: countyID}}
-		var crResult []*model.CRules
-		err = sa.db.crules.FindWithContext(sessionContext, crFilter, &crResult, nil)
-		if err != nil {
-			abortTransaction(sessionContext)
-			return err
-		}
-		if crResult == nil || len(crResult) == 0 {
-			abortTransaction(sessionContext)
-			return errors.New("there is no crules for the provided app version and county")
-		}
-		cRules := crResult[0]
-
-		//2. update the crules
-		cRules.Data = data
-
-		//3. save the crules
-		saveFilter := bson.D{primitive.E{Key: "app_version", Value: appVersion}, primitive.E{Key: "county_id", Value: countyID}}
-		err = sa.db.crules.ReplaceOneWithContext(sessionContext, saveFilter, &cRules, nil)
-		if err != nil {
-			abortTransaction(sessionContext)
-			return err
-		}
-
-		resultItem = cRules
-
-		//commit the transaction
-		err = sessionContext.CommitTransaction(sessionContext)
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
-		return nil
-	})
+	updateResult, err := sa.db.crules.UpdateOne(filter, update, opt)
 	if err != nil {
 		return nil, err
 	}
 
-	return resultItem, nil
+	create := true
+	if updateResult.ModifiedCount == 1 {
+		create = false //modified
+	}
+	return &create, nil
 }
 
 //CreateTraceReports creates trace reports items
@@ -4335,6 +4321,40 @@ func (sa *Adapter) DeleteUINOverride(uin string) error {
 	}
 
 	//success - count = 1
+	return nil
+}
+
+//FindUINBuildingAccess finds the UIN buinding access for the provided uin
+func (sa *Adapter) FindUINBuildingAccess(uin string) (*model.UINBuildingAccess, error) {
+	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
+	var uinBuildingAccess *model.UINBuildingAccess
+	err := sa.db.uinbuildingaccess.FindOne(filter, &uinBuildingAccess, nil)
+	if err != nil {
+		return nil, err
+	}
+	return uinBuildingAccess, nil
+}
+
+//CreateOrUpdateUINBuildingAccess creates UIN building access or update it if already created
+func (sa *Adapter) CreateOrUpdateUINBuildingAccess(uin string, date time.Time, access string) error {
+	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "date", Value: date},
+			primitive.E{Key: "access", Value: access},
+		}},
+	}
+
+	//insert if not exists
+	opt := options.Update()
+	upsert := true
+	opt.Upsert = &upsert
+
+	_, err := sa.db.uinbuildingaccess.UpdateOne(filter, update, opt)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

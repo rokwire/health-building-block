@@ -11,7 +11,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "1.19.0"
+        "version": "1.24.0"
     },
     "host": "localhost",
     "basePath": "/health",
@@ -257,6 +257,46 @@
                             "items": {
                                 "type": "string"
                             }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Creates an app version. The supported version format is x.x.x or x.x which is the short for x.x.0",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "CreateAppVersion",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createAppVersionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -748,7 +788,7 @@
                         "AdminGroupAuth": []
                     }
                 ],
-                "description": "Updates the rules.",
+                "description": "Creates rules, updates them if already created.",
                 "consumes": [
                     "application/json"
                 ],
@@ -758,7 +798,7 @@
                 "tags": [
                     "Admin"
                 ],
-                "operationId": "UpdateCRules",
+                "operationId": "CreateOrUpdateCRules",
                 "parameters": [
                     {
                         "description": "body data",
@@ -766,7 +806,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/updateCRulesRequest"
+                            "$ref": "#/definitions/createOrUpdateCRulesRequest"
                         }
                     }
                 ],
@@ -2550,7 +2590,7 @@
                         "AdminGroupAuth": []
                     }
                 ],
-                "description": "Updates the symptoms.",
+                "description": "Creates symptoms or update them if already created.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2560,7 +2600,7 @@
                 "tags": [
                     "Admin"
                 ],
-                "operationId": "UpdateASymptoms",
+                "operationId": "CreateorUpdateSymptoms",
                 "parameters": [
                     {
                         "description": "body data",
@@ -2568,7 +2608,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/updateSymptomsRequest"
+                            "$ref": "#/definitions/createOrUpdateSymptomsRequest"
                         }
                     }
                 ],
@@ -3322,6 +3362,39 @@
                 }
             }
         },
+        "/covid19/building-access": {
+            "put": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    }
+                ],
+                "description": "grant/deny building access",
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "SetUINBuildingAccess",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/setBuildingAccessRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/counties": {
             "get": {
                 "security": [
@@ -3575,6 +3648,40 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/CTest"
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/ext/building-access": {
+            "get": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Gives the building access for the provided UIN",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "GetExtBuildingAccess",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UINBuildingAccess"
                         }
                     }
                 }
@@ -5069,6 +5176,9 @@
                 "state": {
                     "type": "string"
                 },
+                "timezone": {
+                    "type": "string"
+                },
                 "url": {
                     "type": "string"
                 },
@@ -5400,6 +5510,20 @@
                 }
             }
         },
+        "UINBuildingAccess": {
+            "type": "object",
+            "properties": {
+                "access": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "uin": {
+                    "type": "string"
+                }
+            }
+        },
         "UINOverride": {
             "type": "object",
             "properties": {
@@ -5486,6 +5610,9 @@
                 "rules"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5519,6 +5646,20 @@
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "createAppVersionRequest": {
+            "type": "object",
+            "required": [
+                "version"
+            ],
+            "properties": {
+                "audit": {
+                    "type": "string"
+                },
+                "version": {
                     "type": "string"
                 }
             }
@@ -5557,6 +5698,9 @@
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },
@@ -5574,6 +5718,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5602,6 +5749,9 @@
         "createFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -5640,6 +5790,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5709,6 +5862,9 @@
                 "address_2": {
                     "type": "string"
                 },
+                "audit": {
+                    "type": "string"
+                },
                 "available_tests": {
                     "type": "array",
                     "items": {
@@ -5765,6 +5921,9 @@
         "createNewsRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },
@@ -5775,6 +5934,28 @@
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "createOrUpdateCRulesRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "county_id",
+                "data"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "audit": {
+                    "type": "string"
+                },
+                "county_id": {
+                    "type": "string"
+                },
+                "data": {
                     "type": "string"
                 }
             }
@@ -5797,6 +5978,24 @@
                 }
             }
         },
+        "createOrUpdateSymptomsRequest": {
+            "type": "object",
+            "required": [
+                "app_version",
+                "items"
+            ],
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "audit": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
         "createProviderRequest": {
             "type": "object",
             "required": [
@@ -5804,6 +6003,9 @@
                 "provider_name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "available_mechanisms": {
                     "type": "array",
                     "items": {
@@ -5821,6 +6023,9 @@
         "createResourceRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -5840,6 +6045,9 @@
                 "test_type_id"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5942,6 +6150,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -5956,6 +6167,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6074,6 +6288,21 @@
                 }
             }
         },
+        "setBuildingAccessRequest": {
+            "type": "object",
+            "required": [
+                "access",
+                "date"
+            ],
+            "properties": {
+                "access": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                }
+            }
+        },
         "updateAccessRuleItemRequest": {
             "type": "object",
             "required": [
@@ -6096,6 +6325,9 @@
                 "rules"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -6104,25 +6336,6 @@
                     "items": {
                         "$ref": "#/definitions/updateAccessRuleItemRequest"
                     }
-                }
-            }
-        },
-        "updateCRulesRequest": {
-            "type": "object",
-            "required": [
-                "app_version",
-                "county_id",
-                "data"
-            ],
-            "properties": {
-                "app_version": {
-                    "type": "string"
-                },
-                "county_id": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "string"
                 }
             }
         },
@@ -6145,6 +6358,9 @@
                 "state_province"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "country": {
                     "type": "string"
                 },
@@ -6162,6 +6378,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6184,6 +6403,9 @@
         "updateFAQRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6198,6 +6420,9 @@
         "updateFAQSection": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -6232,6 +6457,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -6273,6 +6501,9 @@
                     "type": "string"
                 },
                 "address_2": {
+                    "type": "string"
+                },
+                "audit": {
                     "type": "string"
                 },
                 "available_tests": {
@@ -6325,6 +6556,9 @@
         "updateNewsRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },
@@ -6346,6 +6580,9 @@
                 "provider_name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "available_mechanisms": {
                     "type": "array",
                     "items": {
@@ -6363,6 +6600,9 @@
         "updateResourceRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "display_order": {
                     "type": "integer"
                 },
@@ -6380,6 +6620,9 @@
                 "results_statuses"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "priority": {
                     "type": "integer"
                 },
@@ -6451,27 +6694,15 @@
                 }
             }
         },
-        "updateSymptomsRequest": {
-            "type": "object",
-            "required": [
-                "app_version",
-                "items"
-            ],
-            "properties": {
-                "app_version": {
-                    "type": "string"
-                },
-                "items": {
-                    "type": "string"
-                }
-            }
-        },
         "updateTestTypeRequest": {
             "type": "object",
             "required": [
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6486,6 +6717,9 @@
                 "name"
             ],
             "properties": {
+                "audit": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 }

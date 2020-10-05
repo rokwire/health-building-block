@@ -6,7 +6,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Expose UIN override external APIs. [#47](https://github.com/rokwire/health-building-block/issues/47)
+- UIN override extentions. [#47](https://github.com/rokwire/health-building-block/issues/47)
+
+## [1.24.0] - 2020-10-01
+### Added
+- App versions handling improvements. [#63](https://github.com/rokwire/health-building-block/issues/63)
+
+## [1.23.0] - 2020-09-30
+### Added
+- Add 2.7 and 2.8 as supported app versions. [#60](https://github.com/rokwire/health-building-block/issues/60)
+
+## [1.22.0] - 2020-09-29
+### Fixed
+- Fix timezone database Docker issue. [#57](https://github.com/rokwire/health-building-block/issues/57)
+
+## [1.21.0] - 2020-09-29
+### Added
+- Reset wait times to gray when locations close (are closed). [#52](https://github.com/rokwire/health-building-block/issues/52)
+
+### Changed
+- Admin APIs update - audit data. [#43](https://github.com/rokwire/health-building-block/issues/43)
+
+### Security
+- Allow location admins to retrieve providers, counties and test types. [#53](https://github.com/rokwire/health-building-block/issues/53)
+
+## [1.20.0] - 2020-09-25
+### Added
+- Building access APIs. [#48](https://github.com/rokwire/health-building-block/issues/48)
 
 ## [1.19.0] - 2020-09-24
 ### Added
@@ -124,7 +150,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.19.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.24.0...HEAD
+[1.24.0]: https://github.com/rokwire/health-building-block/compare/v1.23.0...v1.24.0
+[1.23.0]: https://github.com/rokwire/health-building-block/compare/v1.22.0...v1.23.0
+[1.22.0]: https://github.com/rokwire/health-building-block/compare/v1.21.0...v1.22.0
+[1.21.0]: https://github.com/rokwire/health-building-block/compare/v1.20.0...v1.21.0
+[1.20.0]: https://github.com/rokwire/health-building-block/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/rokwire/health-building-block/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/rokwire/health-building-block/compare/v1.17.0...v1.18.0
 [1.17.0]: https://github.com/rokwire/health-building-block/compare/v1.16.0...v1.17.0

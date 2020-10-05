@@ -411,6 +411,16 @@ type createExtUINOverrideRequest struct {
 	Expiration *time.Time `json:"expiration"`
 } // @name createExtUINOverrideRequest
 
+//CreateExtUINOverrides creates an uin override
+// @Description Creates an uin override. The date format of the expiration field is "2021-12-09T08:09:49.259Z"
+// @Tags Providers
+// @ID CreateExtUINOverrides
+// @Accept json
+// @Produce json
+// @Param data body createExtUINOverrideRequest true "body data"
+// @Success 200 {object} model.UINOverride
+// @Security ProvidersAuth
+// @Router /covid19/ext/uin-overrides [post]
 func (h ApisHandler) CreateExtUINOverrides(w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -466,6 +476,17 @@ type updateExtUINOverrideRequest struct {
 	Expiration *time.Time `json:"expiration"`
 } // @name updateExtUINOverrideRequest
 
+//UpdateExtUINOverride updates uin override
+// @Description Updates uin override. The date format of the expiration field is "2021-12-09T08:09:49.259Z"
+// @Tags Providers
+// @ID UpdateExtUINOverride
+// @Accept json
+// @Produce json
+// @Param data body updateExtUINOverrideRequest true "body data"
+// @Param uin path string true "UIN"
+// @Success 200 {object} string
+// @Security ProvidersAuth
+// @Router /covid19/ext/uin-overrides/uin/{uin} [put]
 func (h ApisHandler) UpdateExtUINOverride(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uin := params["uin"]
@@ -522,6 +543,15 @@ func (h ApisHandler) UpdateExtUINOverride(w http.ResponseWriter, r *http.Request
 	w.Write(data)
 }
 
+//DeleteExtUINOverride deletes an uin override
+// @Description Deletes an uin override
+// @Tags Providers
+// @ID DeleteExtUINOverride
+// @Accept plain
+// @Param uin path string true "UIN"
+// @Success 200 {object} string "Successfuly deleted"
+// @Security ProvidersAuth
+// @Router /covid19/ext/uin-overrides/uin/{uin} [delete]
 func (h ApisHandler) DeleteExtUINOverride(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uin := params["uin"]

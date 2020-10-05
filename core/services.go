@@ -398,6 +398,52 @@ func (app *Application) getUINOverride(current model.User) (*model.UINOverride, 
 	return uinOverrides[0], nil
 }
 
+func (app *Application) createOrUpdateUINOverride(current model.User, interval int, category *string, expiration *time.Time) error {
+	//supported only for Shibboleth users - uin
+	uin := current.ExternalID
+	err := app.storage.CreateOrUpdateUINOverride(uin, interval, category, expiration)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Application) getExtUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
+	uinOverrides, err := app.storage.FindUINOverrides(uin, sort)
+	if err != nil {
+		return nil, err
+	}
+	return uinOverrides, nil
+}
+
+func (app *Application) createExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error) {
+	uinOverride, err := app.storage.CreateUINOverride(uin, interval, category, expiration)
+	if err != nil {
+		return nil, err
+	}
+
+	return uinOverride, nil
+}
+
+func (app *Application) updateExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error) {
+	uinOverride, err := app.storage.UpdateUINOverride(uin, interval, category, expiration)
+	if err != nil {
+		return nil, err
+	}
+
+	return uinOverride, nil
+}
+
+func (app *Application) deleteExtUINOverride(uin string) error {
+	err := app.storage.DeleteUINOverride(uin)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (app *Application) setUINBuildingAccess(current model.User, date time.Time, access string) error {
 	//supported only for Shibboleth users - uin
 	uin := current.ExternalID

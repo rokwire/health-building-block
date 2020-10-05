@@ -488,6 +488,8 @@ definitions:
     properties:
       category:
         type: string
+      expiration:
+        type: string
       interval:
         type: integer
       uin:
@@ -622,6 +624,20 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  createExtUINOverrideRequest:
+    properties:
+      category:
+        type: string
+      expiration:
+        type: string
+      interval:
+        type: integer
+      uin:
+        type: string
+    required:
+    - interval
+    - uin
     type: object
   createFAQQuestionRequest:
     properties:
@@ -801,6 +817,17 @@ definitions:
     - app_version
     - items
     type: object
+  createOrUpdateUINOverride:
+    properties:
+      category:
+        type: string
+      expiration:
+        type: string
+      interval:
+        type: integer
+    required:
+    - interval
+    type: object
   createProviderRequest:
     properties:
       audit:
@@ -928,6 +955,8 @@ definitions:
       audit:
         type: string
       category:
+        type: string
+      expiration:
         type: string
       interval:
         type: integer
@@ -1069,6 +1098,17 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  updateExtUINOverrideRequest:
+    properties:
+      category:
+        type: string
+      expiration:
+        type: string
+      interval:
+        type: integer
+    required:
+    - interval
     type: object
   updateFAQRequest:
     properties:
@@ -1291,6 +1331,8 @@ definitions:
       audit:
         type: string
       category:
+        type: string
+      expiration:
         type: string
       interval:
         type: integer
@@ -3545,6 +3587,107 @@ paths:
       - ProvidersAuth: []
       tags:
       - Providers
+  /covid19/ext/uin-overrides:
+    get:
+      consumes:
+      - application/json
+      description: Gives the UIN overrides elements. The list can be filtered by UIN
+        and sorted by UIN or Category
+      operationId: GetExtUINOverrides
+      parameters:
+      - description: UIN
+        in: query
+        name: uin
+        type: string
+      - description: Sort by uin or category
+        in: query
+        name: sort
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/UINOverride'
+            type: array
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
+    post:
+      consumes:
+      - application/json
+      description: Creates an uin override. The date format of the expiration field
+        is "2021-12-09T08:09:49.259Z"
+      operationId: CreateExtUINOverrides
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createExtUINOverrideRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UINOverride'
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
+  /covid19/ext/uin-overrides/uin/{uin}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes an uin override
+      operationId: DeleteExtUINOverride
+      parameters:
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
+    put:
+      consumes:
+      - application/json
+      description: Updates uin override. The date format of the expiration field is
+        "2021-12-09T08:09:49.259Z"
+      operationId: UpdateExtUINOverride
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateExtUINOverrideRequest'
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - ProvidersAuth: []
+      tags:
+      - Providers
   /covid19/faq:
     get:
       consumes:
@@ -3933,6 +4076,27 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/UINOverride'
+      security:
+      - AppUserAuth: []
+      tags:
+      - Covid19
+    put:
+      description: Creates an uin override or updates it if already created
+      operationId: CreateOrUpdateUINOverride
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createOrUpdateUINOverride'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
       security:
       - AppUserAuth: []
       tags:

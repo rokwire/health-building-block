@@ -17,6 +17,8 @@
 
 package model
 
+import "time"
+
 //Rule represents county and test types rule item
 type Rule struct {
 	ID       string
@@ -74,7 +76,8 @@ type AccessRuleCountyStatus struct {
 
 //UINOverride represents uin rules exceptions
 type UINOverride struct {
-	UIN      string  `json:"uin" bson:"uin"`
-	Interval int     `json:"interval" bson:"interval"`
-	Category *string `json:"category" bson:"category"`
+	UIN        string     `json:"uin" bson:"uin"`
+	Interval   int        `json:"interval" bson:"interval"`
+	Category   *string    `json:"category" bson:"category"`
+	Expiration *time.Time `json:"expiration" bson:"expiration"`
 } // @name UINOverride

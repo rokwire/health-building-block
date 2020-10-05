@@ -4272,9 +4272,33 @@ func (sa *Adapter) FindUINOverrides(uin *string, sort *string) ([]*model.UINOver
 	return result, nil
 }
 
+//CreateOrUpdateUINOverride creates a new uin override entity or updates it if already created
+func (sa *Adapter) CreateOrUpdateUINOverride(uin string, interval int, category *string, expiration *time.Time) error {
+	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "interval", Value: interval},
+			primitive.E{Key: "category", Value: category},
+			primitive.E{Key: "expiration", Value: expiration},
+		}},
+	}
+
+	//insert if not exists
+	opt := options.Update()
+	upsert := true
+	opt.Upsert = &upsert
+
+	_, err := sa.db.uinoverrides.UpdateOne(filter, update, opt)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 //CreateUINOverride creates a new uin override entity
-func (sa *Adapter) CreateUINOverride(uin string, interval int, category *string) (*model.UINOverride, error) {
-	uinOverride := model.UINOverride{UIN: uin, Interval: interval, Category: category}
+func (sa *Adapter) CreateUINOverride(uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error) {
+	uinOverride := model.UINOverride{UIN: uin, Interval: interval, Category: category, Expiration: expiration}
 	_, err := sa.db.uinoverrides.InsertOne(&uinOverride)
 	if err != nil {
 		return nil, err
@@ -4284,12 +4308,13 @@ func (sa *Adapter) CreateUINOverride(uin string, interval int, category *string)
 }
 
 //UpdateUINOverride updates uin override entity
-func (sa *Adapter) UpdateUINOverride(uin string, interval int, category *string) (*string, error) {
+func (sa *Adapter) UpdateUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error) {
 	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
 	update := bson.D{
 		primitive.E{Key: "$set", Value: bson.D{
 			primitive.E{Key: "interval", Value: interval},
 			primitive.E{Key: "category", Value: category},
+			primitive.E{Key: "expiration", Value: expiration},
 		}},
 	}
 

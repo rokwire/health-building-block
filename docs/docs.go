@@ -3699,6 +3699,163 @@ var doc = `{
                 }
             }
         },
+        "/covid19/ext/uin-overrides": {
+            "get": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Gives the UIN overrides elements. The list can be filtered by UIN and sorted by UIN or Category",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "GetExtUINOverrides",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by uin or category",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/UINOverride"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Creates an uin override. The date format of the expiration field is \"2021-12-09T08:09:49.259Z\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "CreateExtUINOverrides",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createExtUINOverrideRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UINOverride"
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/ext/uin-overrides/uin/{uin}": {
+            "put": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Updates uin override. The date format of the expiration field is \"2021-12-09T08:09:49.259Z\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "UpdateExtUINOverride",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/updateExtUINOverrideRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ProvidersAuth": []
+                    }
+                ],
+                "description": "Deletes an uin override",
+                "consumes": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Providers"
+                ],
+                "operationId": "DeleteExtUINOverride",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfuly deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/faq": {
             "get": {
                 "security": [
@@ -4315,6 +4472,40 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/UINOverride"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    }
+                ],
+                "description": "Creates an uin override or updates it if already created",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "CreateOrUpdateUINOverride",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createOrUpdateUINOverride"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -5542,6 +5733,9 @@ var doc = `{
                 "category": {
                     "type": "string"
                 },
+                "expiration": {
+                    "type": "string"
+                },
                 "interval": {
                     "type": "integer"
                 },
@@ -5740,6 +5934,27 @@ var doc = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "createExtUINOverrideRequest": {
+            "type": "object",
+            "required": [
+                "interval",
+                "uin"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "expiration": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "integer"
+                },
+                "uin": {
                     "type": "string"
                 }
             }
@@ -6008,6 +6223,23 @@ var doc = `{
                 }
             }
         },
+        "createOrUpdateUINOverride": {
+            "type": "object",
+            "required": [
+                "interval"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "expiration": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "integer"
+                }
+            }
+        },
         "createProviderRequest": {
             "type": "object",
             "required": [
@@ -6201,6 +6433,9 @@ var doc = `{
                     "type": "string"
                 },
                 "category": {
+                    "type": "string"
+                },
+                "expiration": {
                     "type": "string"
                 },
                 "interval": {
@@ -6409,6 +6644,23 @@ var doc = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "updateExtUINOverrideRequest": {
+            "type": "object",
+            "required": [
+                "interval"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "expiration": {
+                    "type": "string"
+                },
+                "interval": {
+                    "type": "integer"
                 }
             }
         },
@@ -6747,6 +6999,9 @@ var doc = `{
                     "type": "string"
                 },
                 "category": {
+                    "type": "string"
+                },
+                "expiration": {
                     "type": "string"
                 },
                 "interval": {

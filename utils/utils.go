@@ -24,6 +24,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -192,6 +193,14 @@ func GetString(v *string) string {
 		return ""
 	}
 	return *v
+}
+
+//GetTime gives the value which this pointer points. Gives empty string if the pointer is nil
+func GetTime(time *time.Time) string {
+	if time == nil {
+		return ""
+	}
+	return fmt.Sprintf("%s", time)
 }
 
 //SortVersions sorts the versions list. The format is x.x.x or x.x which is the short for x.x.0

@@ -436,7 +436,11 @@ func (app *Application) updateExtUINOverride(uin string, interval int, category 
 }
 
 func (app *Application) deleteExtUINOverride(uin string) error {
-	//TODO
+	err := app.storage.DeleteUINOverride(uin)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

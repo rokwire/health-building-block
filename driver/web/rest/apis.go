@@ -523,7 +523,23 @@ func (h ApisHandler) UpdateExtUINOverride(w http.ResponseWriter, r *http.Request
 }
 
 func (h ApisHandler) DeleteExtUINOverride(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+	err := h.app.Services.DeleteExtUINOverride(uin)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully deleted"))
 }
 
 //GetExtBuildingAccess gives the building access for the provided UIN

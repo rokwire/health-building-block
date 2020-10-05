@@ -460,8 +460,66 @@ func (h ApisHandler) CreateExtUINOverrides(w http.ResponseWriter, r *http.Reques
 	w.Write(data)
 }
 
-func (h ApisHandler) UpdateExtUINOverride(w http.ResponseWriter, r *http.Request) {
+type updateExtUINOverrideRequest struct {
+	Interval   int        `json:"interval" validate:"required"`
+	Category   *string    `json:"category"`
+	Expiration *time.Time `json:"expiration"`
+} // @name updateExtUINOverrideRequest
 
+func (h ApisHandler) UpdateExtUINOverride(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update ext uin override item - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateExtUINOverrideRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update ext uin override item request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update an ext uin override data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	interval := requestData.Interval
+	category := requestData.Category
+	expiration := requestData.Expiration
+
+	uinOverride, err := h.app.Services.UpdateExtUINOverride(uin, interval, category, expiration)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err = json.Marshal(uinOverride)
+	if err != nil {
+		log.Println("Error on marshal an ext uin override")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 func (h ApisHandler) DeleteExtUINOverride(w http.ResponseWriter, r *http.Request) {

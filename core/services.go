@@ -427,8 +427,12 @@ func (app *Application) createExtUINOverride(uin string, interval int, category 
 }
 
 func (app *Application) updateExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error) {
-	//TODO
-	return nil, nil
+	uinOverride, err := app.storage.UpdateUINOverride(uin, interval, category, expiration)
+	if err != nil {
+		return nil, err
+	}
+
+	return uinOverride, nil
 }
 
 func (app *Application) deleteExtUINOverride(uin string) error {

@@ -1006,29 +1006,29 @@ func (app *Application) getUINOverrides(uin *string, sort *string) ([]*model.UIN
 	return uinOverrides, nil
 }
 
-func (app *Application) createUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*model.UINOverride, error) {
-	uinOverride, err := app.storage.CreateUINOverride(uin, interval, category)
+func (app *Application) createUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error) {
+	uinOverride, err := app.storage.CreateUINOverride(uin, interval, category, expiration)
 	if err != nil {
 		return nil, err
 	}
 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
-	lData := []AuditDataEntry{{Key: "uin", Value: uin}, {Key: "interval", Value: fmt.Sprint(interval)}, {Key: "category", Value: utils.GetString(category)}}
+	lData := []AuditDataEntry{{Key: "uin", Value: uin}, {Key: "interval", Value: fmt.Sprint(interval)}, {Key: "category", Value: utils.GetString(category)}, {Key: "expiration", Value: utils.GetTime(expiration)}}
 	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "uin-override", uin, lData, audit)
 
 	return uinOverride, nil
 }
 
-func (app *Application) updateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string) (*string, error) {
-	result, err := app.storage.UpdateUINOverride(uin, interval, category)
+func (app *Application) updateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string, expiration *time.Time) (*string, error) {
+	result, err := app.storage.UpdateUINOverride(uin, interval, category, expiration)
 	if err != nil {
 		return nil, err
 	}
 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
-	lData := []AuditDataEntry{{Key: "uin", Value: uin}, {Key: "interval", Value: fmt.Sprint(interval)}, {Key: "category", Value: utils.GetString(category)}}
+	lData := []AuditDataEntry{{Key: "uin", Value: uin}, {Key: "interval", Value: fmt.Sprint(interval)}, {Key: "category", Value: utils.GetString(category)}, {Key: "expiration", Value: utils.GetTime(expiration)}}
 	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "uin-override", uin, lData, audit)
 
 	return result, nil

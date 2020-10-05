@@ -357,6 +357,221 @@ func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request)
 	w.Write(data)
 }
 
+//GetExtUINOverrides gives the UIN overrides elements
+// @Description Gives the UIN overrides elements. The list can be filtered by UIN and sorted by UIN or Category
+// @Tags Providers
+// @ID GetExtUINOverrides
+// @Accept json
+// @Param uin query string false "UIN"
+// @Param sort query string false "Sort by uin or category"
+// @Success 200 {array} model.UINOverride
+// @Security ProvidersAuth
+// @Router /covid19/ext/uin-overrides [get]
+func (h ApisHandler) GetExtUINOverrides(w http.ResponseWriter, r *http.Request) {
+	//uin
+	var uin *string
+	uinKeys, ok := r.URL.Query()["uin"]
+	if ok && len(uinKeys[0]) > 0 {
+		uin = &uinKeys[0]
+	}
+
+	//sort by
+	var sort *string
+	sortByKeys, ok := r.URL.Query()["sort"]
+	if ok {
+		sort = &sortByKeys[0]
+	}
+
+	uinOverrides, err := h.app.Services.GetExtUINOverrides(uin, sort)
+	if err != nil {
+		log.Println("Error on getting the external uin overrides items")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if len(uinOverrides) == 0 {
+		uinOverrides = make([]*model.UINOverride, 0)
+	}
+	data, err := json.Marshal(uinOverrides)
+	if err != nil {
+		log.Println("Error on marshal the external uin overrides items")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+type createExtUINOverrideRequest struct {
+	UIN        string     `json:"uin" validate:"required"`
+	Interval   int        `json:"interval" validate:"required"`
+	Category   *string    `json:"category"`
+	Expiration *time.Time `json:"expiration"`
+} // @name createExtUINOverrideRequest
+
+//CreateExtUINOverrides creates an uin override
+// @Description Creates an uin override. The date format of the expiration field is "2021-12-09T08:09:49.259Z"
+// @Tags Providers
+// @ID CreateExtUINOverrides
+// @Accept json
+// @Produce json
+// @Param data body createExtUINOverrideRequest true "body data"
+// @Success 200 {object} model.UINOverride
+// @Security ProvidersAuth
+// @Router /covid19/ext/uin-overrides [post]
+func (h ApisHandler) CreateExtUINOverrides(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create ext uin override - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createExtUINOverrideRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create an ext uin override request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create an ext uin override data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	uin := requestData.UIN
+	interval := requestData.Interval
+	category := requestData.Category
+	expiration := requestData.Expiration
+
+	uinOverride, err := h.app.Services.CreateExtUINOverride(uin, interval, category, expiration)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err = json.Marshal(uinOverride)
+	if err != nil {
+		log.Println("Error on marshal an ext uin override")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+type updateExtUINOverrideRequest struct {
+	Interval   int        `json:"interval" validate:"required"`
+	Category   *string    `json:"category"`
+	Expiration *time.Time `json:"expiration"`
+} // @name updateExtUINOverrideRequest
+
+//UpdateExtUINOverride updates uin override
+// @Description Updates uin override. The date format of the expiration field is "2021-12-09T08:09:49.259Z"
+// @Tags Providers
+// @ID UpdateExtUINOverride
+// @Accept json
+// @Produce json
+// @Param data body updateExtUINOverrideRequest true "body data"
+// @Param uin path string true "UIN"
+// @Success 200 {object} string
+// @Security ProvidersAuth
+// @Router /covid19/ext/uin-overrides/uin/{uin} [put]
+func (h ApisHandler) UpdateExtUINOverride(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update ext uin override item - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateExtUINOverrideRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update ext uin override item request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update an ext uin override data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	interval := requestData.Interval
+	category := requestData.Category
+	expiration := requestData.Expiration
+
+	uinOverride, err := h.app.Services.UpdateExtUINOverride(uin, interval, category, expiration)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err = json.Marshal(uinOverride)
+	if err != nil {
+		log.Println("Error on marshal an ext uin override")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+//DeleteExtUINOverride deletes an uin override
+// @Description Deletes an uin override
+// @Tags Providers
+// @ID DeleteExtUINOverride
+// @Accept plain
+// @Param uin path string true "UIN"
+// @Success 200 {object} string "Successfuly deleted"
+// @Security ProvidersAuth
+// @Router /covid19/ext/uin-overrides/uin/{uin} [delete]
+func (h ApisHandler) DeleteExtUINOverride(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+	err := h.app.Services.DeleteExtUINOverride(uin)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully deleted"))
+}
+
 //GetExtBuildingAccess gives the building access for the provided UIN
 // @Description Gives the building access for the provided UIN
 // @Tags Providers
@@ -1274,6 +1489,62 @@ func (h ApisHandler) GetUINOverride(current model.User, w http.ResponseWriter, r
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
+}
+
+type createOrUpdateUINOverride struct {
+	Interval   int        `json:"interval" validate:"required"`
+	Category   *string    `json:"category"`
+	Expiration *time.Time `json:"expiration"`
+} //@name createOrUpdateUINOverride
+
+//CreateOrUpdateUINOverride creates an uin override or updates it if already created
+// @Description Creates an uin override or updates it if already created
+// @Tags Covid19
+// @ID CreateOrUpdateUINOverride
+// @Produce json
+// @Param data body createOrUpdateUINOverride true "body data"
+// @Success 200 {object} string
+// @Security AppUserAuth
+// @Router /covid19/uin-override [put]
+func (h ApisHandler) CreateOrUpdateUINOverride(current model.User, w http.ResponseWriter, r *http.Request) {
+	bodyData, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the create or update uin override  - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createOrUpdateUINOverride
+	err = json.Unmarshal(bodyData, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create or update uin override request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create or update uin override data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	interval := requestData.Interval
+	category := requestData.Category
+	expiration := requestData.Expiration
+
+	err = h.app.Services.CreateOrUpdateUINOverride(current, interval, category, expiration)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully processed"))
 }
 
 type setBuildingAccessRequest struct {

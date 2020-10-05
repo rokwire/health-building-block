@@ -4152,10 +4152,11 @@ func (h AdminApisHandler) GetUINOverrides(current model.User, group string, w ht
 }
 
 type createUINOverrideRequest struct {
-	Audit    *string `json:"audit"`
-	UIN      string  `json:"uin" validate:"required"`
-	Interval int     `json:"interval" validate:"required"`
-	Category *string `json:"category"`
+	Audit      *string    `json:"audit"`
+	UIN        string     `json:"uin" validate:"required"`
+	Interval   int        `json:"interval" validate:"required"`
+	Category   *string    `json:"category"`
+	Expiration *time.Time `json:"expiration"`
 } // @name createUINOverrideRequest
 
 //CreateUINOverride creates an uin override
@@ -4198,8 +4199,9 @@ func (h AdminApisHandler) CreateUINOverride(current model.User, group string, w 
 	uin := requestData.UIN
 	interval := requestData.Interval
 	category := requestData.Category
+	expiration := requestData.Expiration
 
-	uinOverride, err := h.app.Administration.CreateUINOverride(current, group, audit, uin, interval, category)
+	uinOverride, err := h.app.Administration.CreateUINOverride(current, group, audit, uin, interval, category, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -4219,9 +4221,10 @@ func (h AdminApisHandler) CreateUINOverride(current model.User, group string, w 
 }
 
 type updateUINOverrideRequest struct {
-	Audit    *string `json:"audit"`
-	Interval int     `json:"interval" validate:"required"`
-	Category *string `json:"category"`
+	Audit      *string    `json:"audit"`
+	Interval   int        `json:"interval" validate:"required"`
+	Category   *string    `json:"category"`
+	Expiration *time.Time `json:"expiration"`
 } // @name updateUINOverrideRequest
 
 //UpdateUINOverride updates uin override
@@ -4272,8 +4275,9 @@ func (h AdminApisHandler) UpdateUINOverride(current model.User, group string, w 
 	audit := requestData.Audit
 	interval := requestData.Interval
 	category := requestData.Category
+	expiration := requestData.Expiration
 
-	uinOverride, err := h.app.Administration.UpdateUINOverride(current, group, audit, uin, interval, category)
+	uinOverride, err := h.app.Administration.UpdateUINOverride(current, group, audit, uin, interval, category, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

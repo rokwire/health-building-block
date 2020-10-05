@@ -49,7 +49,7 @@ type Adapter struct {
 
 // @title Rokwire Health Building Block API
 // @description Rokwire Health Building Block API Documentation.
-// @version 1.24.0
+// @version 1.25.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost
@@ -117,6 +117,7 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAuthWrapFunc(we.apisHandler.DeleteHistoriesV2)).Methods("DELETE")
 
 	covid19RestSubrouter.HandleFunc("/uin-override", we.userAuthWrapFunc(we.apisHandler.GetUINOverride)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/uin-override", we.userAuthWrapFunc(we.apisHandler.CreateOrUpdateUINOverride)).Methods("PUT")
 
 	covid19RestSubrouter.HandleFunc("/building-access", we.userAuthWrapFunc(we.apisHandler.SetUINBuildingAccess)).Methods("PUT")
 
@@ -126,6 +127,10 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/ctests", we.providerAuthWrapFunc(we.apisHandler.CreateExternalCTest)).Methods("POST")
 	covid19RestSubrouter.HandleFunc("/track/uins", we.providerAuthWrapFunc(we.apisHandler.GetUINsByOrderNumbers)).Methods("GET").Queries("order-numbers", "")
 	covid19RestSubrouter.HandleFunc("/track/items", we.providerAuthWrapFunc(we.apisHandler.GetItemsListsByUINs)).Methods("GET").Queries("uins", "")
+	covid19RestSubrouter.HandleFunc("/ext/uin-overrides", we.providerAuthWrapFunc(we.apisHandler.GetExtUINOverrides)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/ext/uin-overrides", we.providerAuthWrapFunc(we.apisHandler.CreateExtUINOverrides)).Methods("POST")
+	covid19RestSubrouter.HandleFunc("/ext/uin-overrides/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.UpdateExtUINOverride)).Methods("PUT")
+	covid19RestSubrouter.HandleFunc("/ext/uin-overrides/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.DeleteExtUINOverride)).Methods("DELETE")
 	covid19RestSubrouter.HandleFunc("/ext/building-access", we.providerAuthWrapFunc(we.apisHandler.GetExtBuildingAccess)).Methods("GET").Queries("uin", "")
 
 	// api key auth

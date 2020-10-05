@@ -357,7 +357,7 @@ func (h ApisHandler) GetItemsListsByUINs(w http.ResponseWriter, r *http.Request)
 	w.Write(data)
 }
 
-func (h ApisHandler) GetExternalUINOverrides(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetExtUINOverrides(w http.ResponseWriter, r *http.Request) {
 	//uin
 	var uin *string
 	uinKeys, ok := r.URL.Query()["uin"]

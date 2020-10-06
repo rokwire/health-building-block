@@ -637,6 +637,7 @@ func (m *database) applyUINOverridesChecks(uinoverrides *collectionWrapper) erro
 		return err
 	}
 
+	//add index - delete records when expiration - time to live 0
 	options := options.Index()
 	eas := int32(0)
 	options.ExpireAfterSeconds = &eas

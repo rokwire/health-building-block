@@ -4277,10 +4277,10 @@ func (sa *Adapter) CreateOrUpdateUINOverride(uin string, interval int, category 
 func (sa *Adapter) FindUINOverride(uin string) (*model.UINOverride, error) {
 	now := time.Now()
 	filter := bson.D{
-		{"uin", uin},
-		{"$or", []interface{}{
-			bson.D{{"expiration", bson.M{"$gte": now}}},
-			bson.D{{"expiration", nil}},
+		primitive.E{Key: "uin", Value: uin},
+		primitive.E{Key: "$or", Value: []interface{}{
+			bson.D{primitive.E{Key: "expiration", Value: bson.M{"$gte": now}}},
+			bson.D{primitive.E{Key: "expiration", Value: nil}},
 		}},
 	}
 

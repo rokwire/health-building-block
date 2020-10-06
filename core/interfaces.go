@@ -858,8 +858,12 @@ type Storage interface {
 
 	FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error)
 
-	FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateOrUpdateUINOverride(uin string, interval int, category *string, expiration *time.Time) error
+	//finds the uin override for the provided uin. It makes additional check for the expiration because of the mongoDB TTL delay
+	FindUINOverride(uin string) (*model.UINOverride, error)
+
+	//finds the uin override for the provided uin. If uin is nil then it gives all
+	FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateUINOverride(uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error)
 	UpdateUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error)
 	DeleteUINOverride(uin string) error

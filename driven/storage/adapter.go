@@ -4249,29 +4249,6 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 	return mapData, nil
 }
 
-//FindUINOverrides finds the uin override for the provided uin. If uin is nil then it gives all
-func (sa *Adapter) FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
-	//filter by uin if provided
-	filter := bson.D{}
-	if uin != nil {
-		filter = bson.D{primitive.E{Key: "uin", Value: *uin}}
-	}
-
-	// sort by if provided
-	var opt *options.FindOptions
-	if sort != nil {
-		opt = options.Find()
-		opt.SetSort(bson.D{primitive.E{Key: *sort, Value: 1}})
-	}
-
-	var result []*model.UINOverride
-	err := sa.db.uinoverrides.Find(filter, &result, opt)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
 //CreateOrUpdateUINOverride creates a new uin override entity or updates it if already created
 func (sa *Adapter) CreateOrUpdateUINOverride(uin string, interval int, category *string, expiration *time.Time) error {
 	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
@@ -4294,6 +4271,53 @@ func (sa *Adapter) CreateOrUpdateUINOverride(uin string, interval int, category 
 	}
 
 	return nil
+}
+
+//finds the uin override for the provided uin. It makes additional check for the expiration because of the mongoDB TTL delay
+func (sa *Adapter) FindUINOverride(uin string) (*model.UINOverride, error) {
+	now := time.Now()
+	filter := bson.D{
+		{"uin", uin},
+		{"$or", []interface{}{
+			bson.D{{"expiration", bson.M{"$gte": now}}},
+			bson.D{{"expiration", nil}},
+		}},
+	}
+
+	var uinOverrides []*model.UINOverride
+	err := sa.db.uinoverrides.Find(filter, &uinOverrides, nil)
+	if err != nil {
+		return nil, err
+	}
+	if len(uinOverrides) == 0 {
+		//not found
+		return nil, nil
+	}
+
+	return uinOverrides[0], nil
+}
+
+//FindUINOverrides finds the uin override for the provided uin. If uin is nil then it gives all
+func (sa *Adapter) FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
+	//filter by uin if provided
+	filter := bson.D{}
+	if uin != nil {
+		filter = bson.D{primitive.E{Key: "uin", Value: *uin}}
+	}
+
+	// sort by if provided
+	var opt *options.FindOptions
+	if sort != nil {
+		opt = options.Find()
+		opt.SetSort(bson.D{primitive.E{Key: *sort, Value: 1}})
+	}
+
+	var result []*model.UINOverride
+	err := sa.db.uinoverrides.Find(filter, &result, opt)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 //CreateUINOverride creates a new uin override entity

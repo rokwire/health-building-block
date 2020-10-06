@@ -637,6 +637,14 @@ func (m *database) applyUINOverridesChecks(uinoverrides *collectionWrapper) erro
 		return err
 	}
 
+	options := options.Index()
+	eas := int32(0)
+	options.ExpireAfterSeconds = &eas
+	err = uinoverrides.AddIndexWithOptions(bson.D{primitive.E{Key: "expiration", Value: 1}}, options)
+	if err != nil {
+		return err
+	}
+
 	log.Println("uinOverrides checks passed")
 	return nil
 }

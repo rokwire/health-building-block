@@ -4273,7 +4273,7 @@ func (sa *Adapter) CreateOrUpdateUINOverride(uin string, interval int, category 
 	return nil
 }
 
-//finds the uin override for the provided uin. It makes additional check for the expiration because of the mongoDB TTL delay
+//FindUINOverride finds the uin override for the provided uin. It makes additional check for the expiration because of the mongoDB TTL delay
 func (sa *Adapter) FindUINOverride(uin string) (*model.UINOverride, error) {
 	now := time.Now()
 	filter := bson.D{

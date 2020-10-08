@@ -672,27 +672,6 @@ func (m *database) applyAppVersionsChecks(appversions *collectionWrapper) error 
 		return err
 	}
 
-	//check if need to add initial data
-	filter := bson.D{}
-	var result []bson.D
-	err = appversions.Find(filter, &result, nil)
-	if err != nil {
-		return err
-	}
-	if len(result) == 0 {
-		log.Println("need to add initial data, so adding it")
-
-		versions := []interface{}{bson.D{primitive.E{Key: "version", Value: "2.6"}},
-			bson.D{primitive.E{Key: "version", Value: "2.7"}},
-			bson.D{primitive.E{Key: "version", Value: "2.8"}}}
-		_, err = appversions.InsertMany(versions, nil)
-		if err != nil {
-			return err
-		}
-	} else {
-		log.Println("no need to add initial data")
-	}
-
 	log.Println("appVersions checks passed")
 	return nil
 }

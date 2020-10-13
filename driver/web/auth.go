@@ -306,6 +306,13 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 	return true, user, group, shibboAuth
 }
 
+//gets the token from the request - as cookie or as Authorization header.
+//returns the id token and its type - mobile or web. If the token is taken by the cookie it is web otherwise it is mobile
+func (auth *AdminAuth) getIDToken(r *http.Request) (*string, *string, error) {
+	//TODO
+	return nil, nil, nil
+}
+
 func (auth *AdminAuth) verify(rawIDToken string) (*oidc.IDToken, error) {
 	parser := new(jwt.Parser)
 	claims := jwt.MapClaims{}

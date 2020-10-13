@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Security
+- Prepare the admin APIs for the web application. [#71](https://github.com/rokwire/health-building-block/issues/71)
 
 ## [1.26.0] - 2020-10-08
 ### Changed

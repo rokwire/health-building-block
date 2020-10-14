@@ -222,56 +222,46 @@ func (auth *AdminAuth) cleanCacheUser() {
 }
 
 func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *model.User, string, *model.ShibbolethAuth) {
-	//1. Get the token and the group from the request
-	authorizationHeader := r.Header.Get("Authorization")
-	if len(authorizationHeader) <= 0 {
+	//1. Get the token from the request
+	rawIDToken, tokenType, err := auth.getIDToken(r)
+	if err != nil {
 		auth.responseBadRequest(w)
 		return false, nil, "", nil
 	}
+
+	//2. Get the group from the request
 	group := r.Header.Get("GROUP")
 	if len(group) <= 0 {
 		auth.responseBadRequest(w)
 		return false, nil, "", nil
 	}
 
-	splitAuthorization := strings.Fields(authorizationHeader)
-	if len(splitAuthorization) != 2 {
-		auth.responseBadRequest(w)
-		return false, nil, "", nil
-	}
-	// expected - Bearer 1234
-	if splitAuthorization[0] != "Bearer" {
-		auth.responseBadRequest(w)
-		return false, nil, "", nil
-	}
-	rawIDToken := splitAuthorization[1]
-
-	//2. Validate the token
-	idToken, err := auth.verify(rawIDToken)
+	//3. Validate the token
+	idToken, err := auth.verify(*rawIDToken, *tokenType)
 	if err != nil {
 		log.Printf("error validating token - %s\n", err)
 
-		auth.responseUnauthorized(rawIDToken, w)
+		auth.responseUnauthorized(*rawIDToken, w)
 		return false, nil, "", nil
 	}
 
-	//3. Get the user data from the token
+	//4. Get the user data from the token
 	var userData userData
 	if err := idToken.Claims(&userData); err != nil {
 		log.Printf("error getting user data from token - %s\n", err)
 
-		auth.responseUnauthorized(rawIDToken, w)
+		auth.responseUnauthorized(*rawIDToken, w)
 		return false, nil, "", nil
 	}
 	//we must have UIuceduUIN
 	if userData.UIuceduUIN == nil {
 		log.Printf("error - missing uiuceuin data in the token - %s\n", err)
 
-		auth.responseUnauthorized(rawIDToken, w)
+		auth.responseUnauthorized(*rawIDToken, w)
 		return false, nil, "", nil
 	}
 
-	//4. Get the user for the provided external id.
+	//5. Get the user for the provided external id.
 	user, err := auth.getUser(*userData.UIuceduUIN)
 	if err != nil {
 		log.Printf("error getting an user for external id - %s\n", err)
@@ -283,7 +273,7 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 	shibboAuth := &model.ShibbolethAuth{Uin: *userData.UIuceduUIN, Email: *userData.Email,
 		IsMemberOf: userData.UIuceduIsMemberOf}
 
-	//5.
+	//6.
 	if user == nil {
 		//we do not have a such user yet but the ID token is valid so return ok
 		return true, nil, "", shibboAuth
@@ -297,7 +287,7 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 		return false, nil, "", nil
 	}
 
-	//6. Check if the user is member of the group
+	//7. Check if the user is member of the group
 	if !user.IsMemberOf(group) {
 		auth.responseForbbiden(fmt.Sprintf("Security - %s is trying to access not allowed resource", *userData.Email), w)
 		return false, nil, "", nil
@@ -306,32 +296,48 @@ func (auth *AdminAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mod
 	return true, user, group, shibboAuth
 }
 
-func (auth *AdminAuth) verify(rawIDToken string) (*oidc.IDToken, error) {
-	parser := new(jwt.Parser)
-	claims := jwt.MapClaims{}
-	_, _, errr := parser.ParseUnverified(rawIDToken, claims)
-	if errr != nil {
-		return nil, errr
+//gets the token from the request - as cookie or as Authorization header.
+//returns the id token and its type - mobile or web. If the token is taken by the cookie it is web otherwise it is mobile
+func (auth *AdminAuth) getIDToken(r *http.Request) (*string, *string, error) {
+	var tokenType string
+
+	//1. Check if there is a cookie
+	cookie, err := r.Cookie("rwa-at-data")
+	if err == nil && cookie != nil && len(cookie.Value) > 0 {
+		//there is a cookie
+		tokenType = "web"
+		return &cookie.Value, &tokenType, nil
 	}
 
-	for key := range claims {
-		if key == "aud" {
-			audience := claims[key]
-			switch audience {
-			case auth.appClientID:
-				log.Println("AuthAdmin -> app client token")
-				return auth.appVerifier.Verify(context.Background(), rawIDToken)
-			case auth.webAppClientID:
-				log.Println("AuthAdmin -> web app client token")
-				return auth.webAppVerifier.Verify(context.Background(), rawIDToken)
-			default:
-				return nil, errors.New("there is an issue with the audience")
-			}
-
-		}
-
+	//2. Check if there is a token in the Authorization header
+	authorizationHeader := r.Header.Get("Authorization")
+	if len(authorizationHeader) <= 0 {
+		return nil, nil, errors.New("error getting Authorization header")
 	}
-	return nil, errors.New("there is an issue with the audience")
+	splitAuthorization := strings.Fields(authorizationHeader)
+	if len(splitAuthorization) != 2 {
+		return nil, nil, errors.New("error processing the Authorization header")
+	}
+	// expected - Bearer 1234
+	if splitAuthorization[0] != "Bearer" {
+		return nil, nil, errors.New("error processing the Authorization header")
+	}
+	rawIDToken := splitAuthorization[1]
+	tokenType = "mobile"
+	return &rawIDToken, &tokenType, nil
+}
+
+func (auth *AdminAuth) verify(rawIDToken string, tokenType string) (*oidc.IDToken, error) {
+	switch tokenType {
+	case "mobile":
+		log.Println("AdminAuth -> mobile app client token")
+		return auth.appVerifier.Verify(context.Background(), rawIDToken)
+	case "web":
+		log.Println("AdminAuth -> web app client token")
+		return auth.webAppVerifier.Verify(context.Background(), rawIDToken)
+	default:
+		return nil, errors.New("AdminAuth -> there is an issue with the audience")
+	}
 }
 
 func (auth *AdminAuth) createAdminAppUser(shibboAuth *model.ShibbolethAuth) (*model.User, error) {

@@ -1545,6 +1545,10 @@ paths:
         in: query
         name: operation
         type: string
+      - description: Client data
+        in: query
+        name: client-data
+        type: string
       - description: Created At
         in: query
         name: created-at

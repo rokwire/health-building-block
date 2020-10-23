@@ -4451,6 +4451,7 @@ func (h ApisHandler) CreateAction(current model.User, group string, w http.Respo
 // @Param entity query string false "Entity"
 // @Param entity-id query string false "Entity ID"
 // @Param operation query string false "Operation"
+// @Param client-data query string false "Client data"
 // @Param created-at query string false "Created At"
 // @Param sort query string false "Sort By"
 // @Param asc query string false "Ascending"

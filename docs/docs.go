@@ -359,6 +359,12 @@ var doc = `{
                     },
                     {
                         "type": "string",
+                        "description": "Client data",
+                        "name": "client-data",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Created At",
                         "name": "created-at",
                         "in": "query"
@@ -7050,7 +7056,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.27.0",
+	Version:     "1.28.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

@@ -83,6 +83,10 @@ func (m *database) applyAuditChecks(audit *collectionWrapper) error {
 	if err != nil {
 		return err
 	}
+	err = audit.AddIndex(bson.D{primitive.E{Key: "client_data", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
 	err = audit.AddIndex(bson.D{primitive.E{Key: "created_at", Value: 1}}, false)
 	if err != nil {
 		return err

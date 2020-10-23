@@ -11,7 +11,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "1.27.0"
+        "version": "1.28.0"
     },
     "host": "localhost",
     "basePath": "/health",
@@ -343,6 +343,12 @@
                         "type": "string",
                         "description": "Operation",
                         "name": "operation",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Client data",
+                        "name": "client-data",
                         "in": "query"
                     },
                     {

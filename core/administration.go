@@ -1717,7 +1717,7 @@ func (app *Application) createAction(current model.User, group string, audit *st
 }
 
 func (app *Application) getAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,
-	createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error) {
+	clientData *string, createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error) {
 
 	//Admin can look all logs
 	var usedGroup *string
@@ -1727,7 +1727,7 @@ func (app *Application) getAudit(current model.User, group string, userIdentifie
 		usedGroup = &group
 	}
 
-	items, err := app.audit.Find(userIdentifier, usedGroup, entity, entityID, operation, createdAt, sortBy, asc, limit)
+	items, err := app.audit.Find(userIdentifier, usedGroup, entity, entityID, operation, clientData, createdAt, sortBy, asc, limit)
 	if err != nil {
 		return nil, err
 	}

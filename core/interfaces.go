@@ -388,7 +388,7 @@ type Administration interface {
 
 	CreateAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
 
-	GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,
+	GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string, clientData *string,
 		createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error)
 }
 
@@ -707,8 +707,8 @@ func (s *administrationImpl) CreateAction(current model.User, group string, audi
 }
 
 func (s *administrationImpl) GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,
-	createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error) {
-	return s.app.getAudit(current, group, userIdentifier, entity, entityID, operation, createdAt, sortBy, asc, limit)
+	clientData *string, createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error) {
+	return s.app.getAudit(current, group, userIdentifier, entity, entityID, operation, clientData, createdAt, sortBy, asc, limit)
 }
 
 //Storage is used by core to storage data - DB storage adapter, file storage adapter etc
@@ -940,7 +940,7 @@ type Audit interface {
 	LogDeleteEvent(userIdentifier string, userInfo string, usedGroup string, entity string, entityID string)
 
 	Find(userIdentifier *string, usedGroup *string, entity *string, entityID *string, operation *string,
-		createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error)
+		clientData *string, createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error)
 }
 
 //AuditEntity represents audit module entity

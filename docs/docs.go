@@ -359,6 +359,12 @@ var doc = `{
                     },
                     {
                         "type": "string",
+                        "description": "Client data",
+                        "name": "client-data",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Created At",
                         "name": "created-at",
                         "in": "query"

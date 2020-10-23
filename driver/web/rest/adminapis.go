@@ -4489,7 +4489,14 @@ func (h ApisHandler) GetAudit(current model.User, group string, w http.ResponseW
 		operation = &operationKeys[0]
 	}
 
-	//operation
+	//client data
+	var clientData *string
+	clientDataKeys, ok := r.URL.Query()["client-data"]
+	if ok {
+		clientData = &clientDataKeys[0]
+	}
+
+	//created at
 	var createdAt *time.Time
 	createdAtKeys, ok := r.URL.Query()["created-at"]
 	if ok {
@@ -4534,7 +4541,7 @@ func (h ApisHandler) GetAudit(current model.User, group string, w http.ResponseW
 		}
 	}
 
-	items, err := h.app.Administration.GetAudit(current, group, userIdentifier, entity, entityID, operation, createdAt, sort, asc, limit)
+	items, err := h.app.Administration.GetAudit(current, group, userIdentifier, entity, entityID, operation, clientData, createdAt, sort, asc, limit)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

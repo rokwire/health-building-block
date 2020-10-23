@@ -111,7 +111,7 @@ func (a *Adapter) log(entity core.AuditEntity) {
 
 //Find finds items
 func (a *Adapter) Find(userIdentifier *string, usedGroup *string, entity *string, entityID *string, operation *string,
-	createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*core.AuditEntity, error) {
+	clientData *string, createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*core.AuditEntity, error) {
 	options := options.Find()
 
 	//add sort
@@ -147,6 +147,9 @@ func (a *Adapter) Find(userIdentifier *string, usedGroup *string, entity *string
 	}
 	if operation != nil {
 		filter = append(filter, bson.E{Key: "operation", Value: *operation})
+	}
+	if clientData != nil {
+		filter = append(filter, bson.E{Key: "client_data", Value: bson.D{{"$regex", primitive.Regex{Pattern: *clientData, Options: "i"}}}})
 	}
 	if createdAt != nil {
 		filter = append(filter, bson.E{Key: "created_at", Value: bson.M{"$gte": *createdAt}})

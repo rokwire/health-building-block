@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.28.0] - 2020-10-23
 ### Changed
 - Get audit API update. [#74](https://github.com/rokwire/health-building-block/issues/74)
 
@@ -162,7 +164,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.27.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.28.0...HEAD
+[1.28.0]: https://github.com/rokwire/health-building-block/compare/v1.27.0...v1.28.0
 [1.27.0]: https://github.com/rokwire/health-building-block/compare/v1.26.0...v1.27.0
 [1.26.0]: https://github.com/rokwire/health-building-block/compare/v1.25.0...v1.26.0
 [1.25.0]: https://github.com/rokwire/health-building-block/compare/v1.24.0...v1.25.0

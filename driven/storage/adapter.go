@@ -2043,7 +2043,7 @@ func (sa *Adapter) DeleteCountyStatus(ID string) error {
 			abortTransaction(sessionContext)
 			return err
 		}
-		if len(aRulesFilter) > 0 {
+		if len(aRulesResult) > 0 {
 			abortTransaction(sessionContext)
 			return errors.New("there are associated access rules for this county status")
 		}

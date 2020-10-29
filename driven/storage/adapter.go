@@ -4407,14 +4407,12 @@ func (sa *Adapter) CreateOrUpdateUINBuildingAccess(uin string, date time.Time, a
 	return nil
 }
 
-//GetRoster retrieves a roster for the given clientID
-func (sa *Adapter) GetRoster(f *utils.Filter, sortBy string, sortOrder int, limit int, offset int, clientID string) ([]map[string]interface{}, error) {
+//GetRoster returns the roster members matching filters, sorted, and paginated
+func (sa *Adapter) GetRoster(f *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
 	var filter bson.D
 	if f != nil {
 		filter = constructFilter(f).(bson.D)
 	}
-
-	filter = append(filter, primitive.E{Key: "clientID", Value: clientID})
 
 	options := options.Find()
 	options.SetSort(bson.D{primitive.E{Key: sortBy, Value: sortOrder}})
@@ -4427,7 +4425,6 @@ func (sa *Adapter) GetRoster(f *utils.Filter, sortBy string, sortOrder int, limi
 
 	projection := bson.D{
 		bson.E{Key: "_id", Value: 0},
-		bson.E{Key: "clientID", Value: 0},
 	}
 	options.SetProjection(projection)
 
@@ -4444,8 +4441,8 @@ func (sa *Adapter) GetRoster(f *utils.Filter, sortBy string, sortOrder int, limi
 	return result, nil
 }
 
-//UpdateRoster updates a roster for the given clientID
-func (sa *Adapter) UpdateRoster(rosterData []map[string]interface{}, clientID string) error {
+//UpdateRoster adds/updates roster members based on externalID field
+func (sa *Adapter) UpdateRoster(rosterData []map[string]interface{}) error {
 	if rosterData == nil || len(rosterData) == 0 {
 		return errors.New("Incoming roster data is empty")
 	}
@@ -4458,7 +4455,7 @@ func (sa *Adapter) UpdateRoster(rosterData []map[string]interface{}, clientID st
 		}
 
 		for _, v := range rosterData {
-			for _, key := range []string{"externalID", "firstname", "lastname", "middleInitial", "dateOfBirth"} {
+			for _, key := range []string{"externalID", "phone"} {
 				_, ok := v[key]
 				if !ok {
 					log.Printf("User missing required field: %s\n", key)
@@ -4468,23 +4465,13 @@ func (sa *Adapter) UpdateRoster(rosterData []map[string]interface{}, clientID st
 					return errors.New("User missing required field: " + key)
 				}
 			}
-			_, okEmail := v["email"]
-			_, okPhone := v["phone"]
-			if !(okEmail || okPhone) {
-				log.Printf("User missing email and phone\n")
-
-				abortTransaction(sessionContext)
-
-				return errors.New("All users must have either 'email' or 'phone' field")
-			}
 
 			doc := bson.D{}
 			for key, val := range v {
 				doc = append(doc, primitive.E{Key: key, Value: val})
 			}
-			doc = append(doc, primitive.E{Key: "clientID", Value: clientID})
 
-			var filter = bson.D{primitive.E{Key: "clientID", Value: clientID}, primitive.E{Key: "externalID", Value: v["externalID"]}}
+			var filter = bson.D{primitive.E{Key: "externalID", Value: v["externalID"]}}
 			opts := options.Replace().SetUpsert(true)
 			err = sa.db.rosters.ReplaceOneWithContext(sessionContext, filter, doc, opts)
 			if err != nil {
@@ -4510,14 +4497,12 @@ func (sa *Adapter) UpdateRoster(rosterData []map[string]interface{}, clientID st
 	return nil
 }
 
-//DeleteRoster removes a roster for the given clientID
-func (sa *Adapter) DeleteRoster(f *utils.Filter, clientID string) error {
+//DeleteRoster deletes all roster members matching filter. If no filter, entire roster is deleted
+func (sa *Adapter) DeleteRoster(f *utils.Filter) error {
 	var filter bson.D
 	if f != nil {
 		filter = constructFilter(f).(bson.D)
 	}
-
-	filter = append(filter, primitive.E{Key: "clientID", Value: clientID})
 
 	_, err := sa.db.rosters.DeleteMany(filter, nil)
 	if err != nil {

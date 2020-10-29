@@ -167,6 +167,8 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/trace/report", we.authWrapFunc(we.apisHandler.AddTraceReport)).Methods("POST")
 	covid19RestSubrouter.HandleFunc("/trace/exposures", we.authWrapFunc(we.apisHandler.GetExposures)).Methods("GET")
 
+	covid19RestSubrouter.HandleFunc("/rosters/phone/{phone}", we.authWrapFunc(we.apisHandler.GetRosterIDByPhone)).Methods("GET")
+
 	// handle admin rest apis /////////////////
 	adminRestSubrouter := router.PathPrefix("/health/admin").Subrouter()
 
@@ -270,6 +272,12 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/uin-overrides", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateUINOverride)).Methods("POST")
 	adminRestSubrouter.HandleFunc("/uin-overrides/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateUINOverride)).Methods("PUT")
 	adminRestSubrouter.HandleFunc("/uin-overrides/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteUINOverride)).Methods("DELETE")
+
+	//TODO: Add appropriate permission groups to authorization_policy.csv
+	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetRoster)).Methods("GET")
+	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.ReplaceRoster)).Methods("POST")
+	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateRoster)).Methods("PUT")
+	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteRoster)).Methods("DELETE")
 
 	adminRestSubrouter.HandleFunc("/user", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUserByExternalID)).Methods("GET").Queries("external-id", "")
 

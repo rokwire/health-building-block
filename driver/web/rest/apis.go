@@ -2509,6 +2509,30 @@ func (h ApisHandler) GetExposures(appVersion *string, w http.ResponseWriter, r *
 	w.Write(data)
 }
 
+//GetRosterIDByPhone returns a comma separated list of externalIDs that match to a given phone number (should be one)
+func (h ApisHandler) GetRosterIDByPhone(appVersion *string, w http.ResponseWriter, r *http.Request) {
+	phone, ok := mux.Vars(r)["phone"]
+	if !ok || len(phone) < 1 {
+		log.Println("GetRosterIDByPhone: missing phone query parameter")
+		http.Error(w, "Missing missing phone query parameter", http.StatusBadRequest)
+		return
+	}
+
+	sponsorString, err := h.app.Services.GetRosterIDByPhone(phone)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	} else if len(sponsorString) < 1 {
+		log.Println("GetRosterIDByPhone: no externalIDs found for " + phone)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(sponsorString))
+}
+
 //NewApisHandler creates new rest Handler instance
 func NewApisHandler(app *core.Application) ApisHandler {
 	return ApisHandler{app: app}

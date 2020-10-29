@@ -37,7 +37,7 @@ type Filter struct {
 //FilterItem represents find filter pair - field/value
 type FilterItem struct {
 	Field string
-	Value string
+	Value []string
 }
 
 //ConstructFilter constructs Filter from the http request params
@@ -51,7 +51,7 @@ func ConstructFilter(r *http.Request) *Filter {
 	var items []FilterItem
 	for k, v := range values {
 		if len(v) > 0 {
-			items = append(items, FilterItem{Field: k, Value: v[0]})
+			items = append(items, FilterItem{Field: k, Value: v})
 		}
 	}
 	filter.Items = items

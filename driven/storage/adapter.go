@@ -4517,29 +4517,23 @@ func (sa *Adapter) DeleteRoster(f *utils.Filter) error {
 func (sa *Adapter) GetRosterIDByPhone(phone string) (string, error) {
 	filter := bson.D{primitive.E{Key: "phone", Value: phone}}
 
-	var result []map[string]interface{}
-	err := sa.db.rosters.Find(filter, &result, nil)
+	var result map[string]interface{}
+	err := sa.db.rosters.FindOne(filter, &result, nil)
 	if err != nil {
 		log.Println("GetRosterIDByPhone:", err.Error())
 		return "", err
-	} else if len(result) < 1 {
+	} else if result == nil {
 		log.Println("GetRosterIDByPhone: no roster data found")
 		return "", nil
 	}
 
-	idList := ""
-	for _, roster := range result {
-		if val, ok := roster["externalID"]; ok {
-			if externalID, ok := val.(string); ok {
-				if len(idList) > 0 {
-					idList += ","
-				}
-				idList += externalID
-			}
-		}
+	val, ok := result["externalID"].(string)
+	if !ok {
+		log.Println("GetRosterIDByPhone: roster member missing 'externalID' field")
+		return "", nil
 	}
 
-	return idList, nil
+	return val, nil
 }
 
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {

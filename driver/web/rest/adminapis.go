@@ -4436,7 +4436,7 @@ func (h AdminApisHandler) GetRoster(current model.User, group string, w http.Res
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(data))
 }

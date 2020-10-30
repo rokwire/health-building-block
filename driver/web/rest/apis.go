@@ -2509,7 +2509,7 @@ func (h ApisHandler) GetExposures(appVersion *string, w http.ResponseWriter, r *
 	w.Write(data)
 }
 
-//GetRosterIDByPhone returns a comma separated list of externalIDs that match to a given phone number (should be one)
+//GetRosterIDByPhone returns externalID of the roster member with a given phone number
 func (h ApisHandler) GetRosterIDByPhone(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	phone, ok := mux.Vars(r)["phone"]
 	if !ok || len(phone) < 1 {

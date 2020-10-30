@@ -692,7 +692,7 @@ func (m *database) applyRostersChecks(rosters *collectionWrapper) error {
 		return err
 	}
 
-	err = rosters.AddIndex(bson.D{primitive.E{Key: "lastname", Value: 1}}, false)
+	err = rosters.AddIndex(bson.D{primitive.E{Key: "phone", Value: 1}}, true)
 	if err != nil {
 		return err
 	}

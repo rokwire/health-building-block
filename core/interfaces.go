@@ -904,10 +904,11 @@ type Storage interface {
 	FindUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
 	CreateOrUpdateUINBuildingAccess(uin string, date time.Time, access string) error
 
+	ReadAllRosters() ([]map[string]string, error)
+	FindRosterIDByPhone(phone string) (*string, error)
 	GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	UpdateRoster(rosterData []map[string]interface{}) error
 	DeleteRoster(filter *utils.Filter) error
-	FindRosterIDByPhone(phone string) (*string, error)
 }
 
 //StorageListener listenes for change data storage events

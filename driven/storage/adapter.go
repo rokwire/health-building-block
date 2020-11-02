@@ -4407,6 +4407,41 @@ func (sa *Adapter) CreateOrUpdateUINBuildingAccess(uin string, date time.Time, a
 	return nil
 }
 
+//ReadAllRosters reads all rosters
+func (sa *Adapter) ReadAllRosters() ([]map[string]string, error) {
+	filter := bson.D{}
+	var result []map[string]string
+	err := sa.db.rosters.Find(filter, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+//FindRosterIDByPhone finds the UIN for the user with the given phone number
+func (sa *Adapter) FindRosterIDByPhone(phone string) (*string, error) {
+	filter := bson.D{primitive.E{Key: "phone", Value: phone}}
+
+	var result []map[string]interface{}
+	err := sa.db.rosters.Find(filter, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil || len(result) == 0 {
+		//not found
+		return nil, nil
+	}
+	item := result[0]
+
+	val, ok := item["uin"].(string)
+	if !ok {
+		log.Println("GetRosterIDByPhone: roster member missing 'uin' field")
+		return nil, errors.New("roster member missing 'uin' field")
+	}
+	return &val, nil
+}
+
 //GetRoster returns the roster members matching filters, sorted, and paginated
 func (sa *Adapter) GetRoster(f *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
 	var filter bson.D
@@ -4511,29 +4546,6 @@ func (sa *Adapter) DeleteRoster(f *utils.Filter) error {
 	}
 
 	return nil
-}
-
-//FindRosterIDByPhone finds the UIN for the user with the given phone number
-func (sa *Adapter) FindRosterIDByPhone(phone string) (*string, error) {
-	filter := bson.D{primitive.E{Key: "phone", Value: phone}}
-
-	var result []map[string]interface{}
-	err := sa.db.rosters.Find(filter, &result, nil)
-	if err != nil {
-		return nil, err
-	}
-	if result == nil || len(result) == 0 {
-		//not found
-		return nil, nil
-	}
-	item := result[0]
-
-	val, ok := item["uin"].(string)
-	if !ok {
-		log.Println("GetRosterIDByPhone: roster member missing 'uin' field")
-		return nil, errors.New("roster member missing 'uin' field")
-	}
-	return &val, nil
 }
 
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {

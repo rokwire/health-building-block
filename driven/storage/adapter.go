@@ -4513,27 +4513,27 @@ func (sa *Adapter) DeleteRoster(f *utils.Filter) error {
 	return nil
 }
 
-//FindRosterIDByPhone finds the externalID for the user with the given phone number
-func (sa *Adapter) FindRosterIDByPhone(phone string) (string, error) {
+//FindRosterIDByPhone finds the UIN for the user with the given phone number
+func (sa *Adapter) FindRosterIDByPhone(phone string) (*string, error) {
 	filter := bson.D{primitive.E{Key: "phone", Value: phone}}
 
-	var result map[string]interface{}
-	err := sa.db.rosters.FindOne(filter, &result, nil)
+	var result []map[string]interface{}
+	err := sa.db.rosters.Find(filter, &result, nil)
 	if err != nil {
-		log.Println("GetRosterIDByPhone:", err.Error())
-		return "", err
-	} else if result == nil {
-		log.Println("GetRosterIDByPhone: no roster data found")
-		return "", nil
+		return nil, err
 	}
+	if result == nil || len(result) == 0 {
+		//not found
+		return nil, nil
+	}
+	item := result[0]
 
-	val, ok := result["externalID"].(string)
+	val, ok := item["uin"].(string)
 	if !ok {
-		log.Println("GetRosterIDByPhone: roster member missing 'externalID' field")
-		return "", nil
+		log.Println("GetRosterIDByPhone: roster member missing 'uin' field")
+		return nil, errors.New("roster member missing 'uin' field")
 	}
-
-	return val, nil
+	return &val, nil
 }
 
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {

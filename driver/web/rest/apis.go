@@ -2509,7 +2509,11 @@ func (h ApisHandler) GetExposures(appVersion *string, w http.ResponseWriter, r *
 	w.Write(data)
 }
 
-//GetRosterIDByPhone returns externalID of the roster member with a given phone number
+type getRosterIDByPhoneResponse struct {
+	UIN string `json:"uin"`
+}
+
+//GetRosterIDByPhone returns uin of the roster member with a given phone number
 func (h ApisHandler) GetRosterIDByPhone(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	phone, ok := mux.Vars(r)["phone"]
 	if !ok || len(phone) < 1 {
@@ -2518,19 +2522,27 @@ func (h ApisHandler) GetRosterIDByPhone(appVersion *string, w http.ResponseWrite
 		return
 	}
 
-	sponsorString, err := h.app.Services.GetRosterIDByPhone(phone)
+	uin, err := h.app.Services.GetRosterIDByPhone(phone)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
-	} else if len(sponsorString) < 1 {
-		log.Println("GetRosterIDByPhone: no externalIDs found for " + phone)
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	}
+
+	var response *getRosterIDByPhoneResponse
+	if uin != nil {
+		response = &getRosterIDByPhoneResponse{UIN: *uin}
+	}
+
+	data, err := json.Marshal(response)
+	if err != nil {
+		log.Println("Error on marshal getRosterIDByPhone")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(sponsorString))
+	w.Write(data)
 }
 
 //NewApisHandler creates new rest Handler instance

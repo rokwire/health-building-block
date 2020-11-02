@@ -93,7 +93,7 @@ type Services interface {
 	SetUINBuildingAccess(current model.User, date time.Time, access string) error
 	GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
 
-	GetRosterIDByPhone(phone string) (string, error)
+	GetRosterIDByPhone(phone string) (*string, error)
 }
 
 type servicesImpl struct {
@@ -285,7 +285,7 @@ func (s *servicesImpl) GetExtUINBuildingAccess(uin string) (*model.UINBuildingAc
 	return s.app.getExtUINBuildingAccess(uin)
 }
 
-func (s *servicesImpl) GetRosterIDByPhone(phone string) (string, error) {
+func (s *servicesImpl) GetRosterIDByPhone(phone string) (*string, error) {
 	return s.app.getRosterIDByPhone(phone)
 }
 
@@ -907,7 +907,7 @@ type Storage interface {
 	GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	UpdateRoster(rosterData []map[string]interface{}) error
 	DeleteRoster(filter *utils.Filter) error
-	FindRosterIDByPhone(phone string) (string, error)
+	FindRosterIDByPhone(phone string) (*string, error)
 }
 
 //StorageListener listenes for change data storage events

@@ -687,7 +687,7 @@ func (m *database) applyRostersChecks(rosters *collectionWrapper) error {
 	log.Println("apply rosters checks.....")
 
 	//add indexes
-	err := rosters.AddIndex(bson.D{primitive.E{Key: "externalID", Value: 1}}, true)
+	err := rosters.AddIndex(bson.D{primitive.E{Key: "uin", Value: 1}}, true)
 	if err != nil {
 		return err
 	}

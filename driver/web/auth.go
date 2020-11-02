@@ -538,6 +538,9 @@ type UserAuth struct {
 
 	cachedUsers     *syncmap.Map //cache users while active - 5 minutes timeout
 	cachedUsersLock *sync.RWMutex
+
+	rosters     *syncmap.Map //cache rosters
+	rostersLock *sync.RWMutex
 }
 
 func (auth *UserAuth) start() {
@@ -643,6 +646,20 @@ func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mode
 		authType = "phone"
 	}
 
+	//TODO - refactor!!!
+	// if phone token then treat it as shibboleth
+	if authType == "phone" {
+		foundedUIN := auth.findUINByPhone(externalID)
+		if foundedUIN == nil {
+			//not found, it means that this phone is not added, so return unauthorized
+			auth.responseUnauthorized(fmt.Sprintf("%s phone is not added in the system", externalID), w)
+			return false, nil, nil, nil
+		}
+		//it is found
+		externalID = *foundedUIN
+		authType = "shibboleth"
+	}
+
 	// get the user for the provided external id.
 	user, err := auth.getUser(externalID)
 	if err != nil {
@@ -674,6 +691,10 @@ func (auth *UserAuth) processShibbolethToken(token string) (*string, error) {
 		return nil, errors.New("missing uiuceuin data in the token")
 	}
 	return userData.UIuceduUIN, nil
+}
+
+func (auth *UserAuth) findUINByPhone(phone string) *string {
+	return nil
 }
 
 func (auth *UserAuth) processPhoneToken(token string) (*string, error) {

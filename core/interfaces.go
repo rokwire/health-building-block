@@ -286,7 +286,7 @@ func (s *servicesImpl) GetExtUINBuildingAccess(uin string) (*model.UINBuildingAc
 }
 
 func (s *servicesImpl) GetRosterIDByPhone(phone string) (string, error) {
-	return s.app.storage.GetRosterIDByPhone(phone)
+	return s.app.getRosterIDByPhone(phone)
 }
 
 //Administration exposes administration APIs for the driver adapters
@@ -907,7 +907,7 @@ type Storage interface {
 	GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	UpdateRoster(rosterData []map[string]interface{}) error
 	DeleteRoster(filter *utils.Filter) error
-	GetRosterIDByPhone(phone string) (string, error)
+	FindRosterIDByPhone(phone string) (string, error)
 }
 
 //StorageListener listenes for change data storage events

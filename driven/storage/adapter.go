@@ -4513,8 +4513,8 @@ func (sa *Adapter) DeleteRoster(f *utils.Filter) error {
 	return nil
 }
 
-//GetRosterIDByPhone gets the externalID for the user with the given phone number
-func (sa *Adapter) GetRosterIDByPhone(phone string) (string, error) {
+//FindRosterIDByPhone finds the externalID for the user with the given phone number
+func (sa *Adapter) FindRosterIDByPhone(phone string) (string, error) {
 	filter := bson.D{primitive.E{Key: "phone", Value: phone}}
 
 	var result map[string]interface{}

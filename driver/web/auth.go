@@ -539,12 +539,32 @@ type UserAuth struct {
 	cachedUsers     *syncmap.Map //cache users while active - 5 minutes timeout
 	cachedUsersLock *sync.RWMutex
 
-	rosters     *syncmap.Map //cache rosters
+	rosters     []map[string]string //cache rosters
 	rostersLock *sync.RWMutex
 }
 
 func (auth *UserAuth) start() {
+	auth.loadRosters()
 	go auth.cleanCacheUser()
+}
+
+//loadRosters loads all rosters
+func (auth *UserAuth) loadRosters() {
+	log.Println("UserAuth -> load Rosters")
+
+	rosters, err := auth.app.LoadAllRosters()
+	if err != nil {
+		log.Println("cannot load rosters")
+	}
+
+	count := len(rosters)
+	newValues := make([]map[string]string, count)
+	if count > 0 {
+		for index, item := range rosters {
+			newValues[index] = item
+		}
+	}
+	auth.setRosters(newValues)
 }
 
 //cleanChacheUser cleans all users from the cache with no activity > 5 minutes
@@ -694,6 +714,18 @@ func (auth *UserAuth) processShibbolethToken(token string) (*string, error) {
 }
 
 func (auth *UserAuth) findUINByPhone(phone string) *string {
+	rosters := auth.getRosters()
+	if len(rosters) == 0 {
+		return nil
+	}
+
+	for _, item := range rosters {
+		cPhone := item["phone"]
+		if cPhone == phone {
+			uin := item["uin"]
+			return &uin
+		}
+	}
 	return nil
 }
 
@@ -811,6 +843,21 @@ func (auth *UserAuth) deleteCacheUser(externalID string) {
 	auth.cachedUsersLock.RUnlock()
 }
 
+func (auth *UserAuth) setRosters(rosters []map[string]string) {
+	auth.rostersLock.RLock()
+
+	auth.rosters = rosters
+
+	auth.rostersLock.RUnlock()
+}
+
+func (auth *UserAuth) getRosters() []map[string]string {
+	auth.rostersLock.RLock()
+	defer auth.rostersLock.RUnlock()
+
+	return auth.rosters
+}
+
 func (auth *UserAuth) getUser(externalID string) (*model.User, error) {
 	var err error
 
@@ -868,7 +915,11 @@ func newUserAuth(app *core.Application, oidcProvider string, oidcAppClientID str
 	cacheUsers := &syncmap.Map{}
 	lock := &sync.RWMutex{}
 
+	cacheRosters := []map[string]string{}
+	rostersLock := &sync.RWMutex{}
+
 	auth := UserAuth{app: app, appIDTokenVerifier: appIDTokenVerifier,
-		phoneAuthSecret: phoneAuthSecret, cachedUsers: cacheUsers, cachedUsersLock: lock}
+		phoneAuthSecret: phoneAuthSecret, cachedUsers: cacheUsers, cachedUsersLock: lock,
+		rosters: cacheRosters, rostersLock: rostersLock}
 	return &auth
 }

@@ -573,6 +573,15 @@ func (app *Application) UpdateUser(user *model.User) error {
 	return nil
 }
 
+//LoadAllRosters loads all rosters
+func (app *Application) LoadAllRosters() ([]map[string]string, error) {
+	rosters, err := app.storage.ReadAllRosters()
+	if err != nil {
+		return nil, err
+	}
+	return rosters, nil
+}
+
 func (app *Application) getEHistoriesByUserID(userID string) ([]*model.EHistory, error) {
 	histories, err := app.storage.FindEHistories(userID)
 	if err != nil {

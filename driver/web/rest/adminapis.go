@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"health/core"
 	"health/core/model"
+	"health/utils"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -4371,6 +4372,147 @@ func (h AdminApisHandler) GetUserByExternalID(current model.User, group string, 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
+}
+
+//GetRoster returns the roster members matching filters, sorted, and paginated
+func (h AdminApisHandler) GetRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	sortBy := "lastname"
+	sortOrder := 1
+	limit := 20
+	offset := 0
+	var filter utils.Filter
+	for key, value := range r.URL.Query() {
+		if len(value) < 1 || len(value[0]) < 1 {
+			continue
+		}
+		switch key {
+		case "sortBy":
+			sortBy = value[0]
+		case "sortOrder":
+			if value[0] == "1" {
+				sortOrder = 1
+			} else if value[0] == "-1" {
+				sortOrder = -1
+			} else {
+				log.Println("Invalid 'sortOrder' value - " + value[0])
+				http.Error(w, "Invalid 'sortOrder' value - Must be 1 or -1", http.StatusBadRequest)
+				return
+			}
+		case "limit":
+			limitValue, err := strconv.Atoi(value[0])
+			if err == nil {
+				if limitValue < 1 || limitValue > 50 {
+					log.Println("Invalid 'limit' value - " + value[0])
+					http.Error(w, "Invalid 'limit' value - Must be an integer between 1 and 50", http.StatusBadRequest)
+					return
+				}
+				limit = limitValue
+			} else {
+				log.Printf("error parsing limit - %s\n", err)
+			}
+		case "offset":
+			offsetValue, err := strconv.Atoi(value[0])
+			if err == nil {
+				offset = offsetValue
+			} else {
+				log.Printf("error parsing offset - %s\n", err)
+			}
+		default:
+			filter.Items = append(filter.Items, utils.FilterItem{Field: key, Value: value})
+		}
+	}
+
+	roster, err := h.app.Administration.GetRoster(&filter, sortBy, sortOrder, limit, offset)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.Marshal(roster)
+	if err != nil {
+		log.Println("Error on marshal roster")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(data))
+}
+
+//ReplaceRoster replaces all members on the existing roster with new data
+func (h AdminApisHandler) ReplaceRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println("ReplaceRoster - could not read request body:", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	var dataArray []map[string]interface{}
+	err = json.Unmarshal(data, &dataArray)
+	if err != nil {
+		log.Println("ReplaceRoster - invalid json body:", err.Error())
+		http.Error(w, "Invalid json body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = h.app.Administration.ReplaceRoster(dataArray)
+	if err != nil {
+		log.Println("Unable to replace roster data:", err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Replace roster successful"))
+}
+
+//UpdateRoster adds/updates roster members based on externalID field
+func (h AdminApisHandler) UpdateRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println("UpdateRoster - could not read request body:", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	var dataArray []map[string]interface{}
+	err = json.Unmarshal(data, &dataArray)
+	if err != nil {
+		log.Println("ReplaceRoster - invalid json body:", err.Error())
+		http.Error(w, "Invalid json body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = h.app.Administration.UpdateRoster(dataArray)
+	if err != nil {
+		log.Println("Unable to update roster data:", err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Update roster successful"))
+}
+
+//DeleteRoster deletes all roster members matching filter. If no filter, entire roster is deleted
+func (h AdminApisHandler) DeleteRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	var filter utils.Filter
+	for key, value := range r.URL.Query() {
+		if len(value) < 1 {
+			continue
+		}
+		filter.Items = append(filter.Items, utils.FilterItem{Field: key, Value: value})
+	}
+
+	err := h.app.Administration.DeleteRoster(&filter)
+	if err != nil {
+		log.Println("Unable to delete roster:", err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Delete successful"))
 }
 
 type createActionRequest struct {

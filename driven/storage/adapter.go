@@ -4407,6 +4407,135 @@ func (sa *Adapter) CreateOrUpdateUINBuildingAccess(uin string, date time.Time, a
 	return nil
 }
 
+//GetRoster returns the roster members matching filters, sorted, and paginated
+func (sa *Adapter) GetRoster(f *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
+	var filter bson.D
+	if f != nil {
+		filter = constructFilter(f).(bson.D)
+	}
+
+	options := options.Find()
+	options.SetSort(bson.D{primitive.E{Key: sortBy, Value: sortOrder}})
+	if limit > 0 {
+		options.SetLimit(int64(limit))
+	}
+	if offset > 0 {
+		options.SetSkip(int64(offset))
+	}
+
+	projection := bson.D{
+		bson.E{Key: "_id", Value: 0},
+	}
+	options.SetProjection(projection)
+
+	var result []map[string]interface{}
+	err := sa.db.rosters.Find(filter, &result, options)
+	if err != nil {
+		log.Println("GetRoster:", err.Error())
+		return []map[string]interface{}{}, err
+	} else if len(result) < 1 {
+		log.Println("GetRoster: no roster data found")
+		return []map[string]interface{}{}, nil
+	}
+
+	return result, nil
+}
+
+//UpdateRoster adds/updates roster members based on externalID field
+func (sa *Adapter) UpdateRoster(rosterData []map[string]interface{}) error {
+	if rosterData == nil || len(rosterData) == 0 {
+		return errors.New("Incoming roster data is empty")
+	}
+
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			log.Printf("error unmarshaling bson - %s\n", err)
+			return err
+		}
+
+		for _, v := range rosterData {
+			for _, key := range []string{"externalID", "phone"} {
+				_, ok := v[key]
+				if !ok {
+					log.Printf("User missing required field: %s\n", key)
+
+					abortTransaction(sessionContext)
+
+					return errors.New("User missing required field: " + key)
+				}
+			}
+
+			doc := bson.D{}
+			for key, val := range v {
+				doc = append(doc, primitive.E{Key: key, Value: val})
+			}
+
+			var filter = bson.D{primitive.E{Key: "externalID", Value: v["externalID"]}}
+			opts := options.Replace().SetUpsert(true)
+			err = sa.db.rosters.ReplaceOneWithContext(sessionContext, filter, doc, opts)
+			if err != nil {
+				log.Printf("error updating roster - %s\n", err)
+
+				abortTransaction(sessionContext)
+
+				return err
+			}
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//DeleteRoster deletes all roster members matching filter. If no filter, entire roster is deleted
+func (sa *Adapter) DeleteRoster(f *utils.Filter) error {
+	var filter bson.D
+	if f != nil {
+		filter = constructFilter(f).(bson.D)
+	}
+
+	_, err := sa.db.rosters.DeleteMany(filter, nil)
+	if err != nil {
+		log.Println("DeleteRoster:", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+//GetRosterIDByPhone gets the externalID for the user with the given phone number
+func (sa *Adapter) GetRosterIDByPhone(phone string) (string, error) {
+	filter := bson.D{primitive.E{Key: "phone", Value: phone}}
+
+	var result map[string]interface{}
+	err := sa.db.rosters.FindOne(filter, &result, nil)
+	if err != nil {
+		log.Println("GetRosterIDByPhone:", err.Error())
+		return "", err
+	} else if result == nil {
+		log.Println("GetRosterIDByPhone: no roster data found")
+		return "", nil
+	}
+
+	val, ok := result["externalID"].(string)
+	if !ok {
+		log.Println("GetRosterIDByPhone: roster member missing 'externalID' field")
+		return "", nil
+	}
+
+	return val, nil
+}
+
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {
 	if list == nil {
 		return false
@@ -4448,7 +4577,15 @@ func constructFilter(f *utils.Filter) interface{} {
 	}
 	var filter bson.D
 	for _, item := range f.Items {
-		filter = append(filter, bson.E{Key: item.Field, Value: item.Value})
+		if len(item.Value) == 1 {
+			filter = append(filter, bson.E{Key: item.Field, Value: item.Value[0]})
+		} else if len(item.Value) > 1 {
+			var vals []interface{}
+			for _, value := range item.Value {
+				vals = append(vals, bson.D{bson.E{Key: item.Field, Value: value}})
+			}
+			filter = append(filter, bson.E{Key: "$or", Value: vals})
+		}
 	}
 	return filter
 }

@@ -60,6 +60,7 @@ type database struct {
 	uinoverrides      *collectionWrapper
 	uinbuildingaccess *collectionWrapper
 	appversions       *collectionWrapper
+	rosters           *collectionWrapper
 
 	listener core.StorageListener
 }
@@ -216,6 +217,11 @@ func (m *database) start() error {
 	if err != nil {
 		return err
 	}
+	rosters := &collectionWrapper{database: m, coll: db.Collection("rosters")}
+	err = m.applyRostersChecks(rosters)
+	if err != nil {
+		return err
+	}
 
 	//asign the db, db client and the collections
 	m.db = db
@@ -244,6 +250,7 @@ func (m *database) start() error {
 	m.uinoverrides = uinoverrides
 	m.uinbuildingaccess = uinbuildingaccess
 	m.appversions = appversions
+	m.rosters = rosters
 
 	//watch for config changes
 	go m.configs.Watch(nil)
@@ -673,6 +680,24 @@ func (m *database) applyAppVersionsChecks(appversions *collectionWrapper) error 
 	}
 
 	log.Println("appVersions checks passed")
+	return nil
+}
+
+func (m *database) applyRostersChecks(rosters *collectionWrapper) error {
+	log.Println("apply rosters checks.....")
+
+	//add indexes
+	err := rosters.AddIndex(bson.D{primitive.E{Key: "externalID", Value: 1}}, true)
+	if err != nil {
+		return err
+	}
+
+	err = rosters.AddIndex(bson.D{primitive.E{Key: "phone", Value: 1}}, true)
+	if err != nil {
+		return err
+	}
+
+	log.Println("rosters checks passed")
 	return nil
 }
 

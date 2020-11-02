@@ -20,6 +20,7 @@ package core
 import (
 	"health/core/model"
 	"health/utils"
+	"log"
 	"time"
 )
 
@@ -91,6 +92,8 @@ type Services interface {
 
 	SetUINBuildingAccess(current model.User, date time.Time, access string) error
 	GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
+
+	GetRosterIDByPhone(phone string) (string, error)
 }
 
 type servicesImpl struct {
@@ -282,6 +285,10 @@ func (s *servicesImpl) GetExtUINBuildingAccess(uin string) (*model.UINBuildingAc
 	return s.app.getExtUINBuildingAccess(uin)
 }
 
+func (s *servicesImpl) GetRosterIDByPhone(phone string) (string, error) {
+	return s.app.storage.GetRosterIDByPhone(phone)
+}
+
 //Administration exposes administration APIs for the driver adapters
 type Administration interface {
 	GetCovid19Config() (*model.COVID19Config, error)
@@ -383,6 +390,11 @@ type Administration interface {
 	CreateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error)
 	UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string, expiration *time.Time) (*string, error)
 	DeleteUINOverride(current model.User, group string, uin string) error
+
+	GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
+	ReplaceRoster(rosterData []map[string]interface{}) error
+	UpdateRoster(rosterData []map[string]interface{}) error
+	DeleteRoster(filter *utils.Filter) error
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
@@ -702,6 +714,27 @@ func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User
 	return s.app.getUserByExternalID(externalID)
 }
 
+func (s *administrationImpl) GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
+	return s.app.storage.GetRoster(filter, sortBy, sortOrder, limit, offset)
+}
+
+func (s *administrationImpl) ReplaceRoster(rosterData []map[string]interface{}) error {
+	err := s.app.storage.DeleteRoster(nil)
+	if err != nil {
+		log.Println("ReplaceRoster - Error deleting roster:", err.Error())
+		return err
+	}
+	return s.app.storage.UpdateRoster(rosterData)
+}
+
+func (s *administrationImpl) UpdateRoster(rosterData []map[string]interface{}) error {
+	return s.app.storage.UpdateRoster(rosterData)
+}
+
+func (s *administrationImpl) DeleteRoster(filter *utils.Filter) error {
+	return s.app.storage.DeleteRoster(filter)
+}
+
 func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	return s.app.createAction(current, group, audit, providerID, userID, encryptedKey, encryptedBlob)
 }
@@ -870,6 +903,11 @@ type Storage interface {
 
 	FindUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
 	CreateOrUpdateUINBuildingAccess(uin string, date time.Time, access string) error
+
+	GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
+	UpdateRoster(rosterData []map[string]interface{}) error
+	DeleteRoster(filter *utils.Filter) error
+	GetRosterIDByPhone(phone string) (string, error)
 }
 
 //StorageListener listenes for change data storage events

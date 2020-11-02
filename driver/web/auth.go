@@ -843,6 +843,16 @@ func (auth *UserAuth) deleteCacheUser(externalID string) {
 	auth.cachedUsersLock.RUnlock()
 }
 
+func (auth *UserAuth) clearCacheUsers() {
+	log.Println("UserAuth -> clearCacheUsers")
+
+	auth.cachedUsersLock.RLock()
+
+	auth.cachedUsers = &syncmap.Map{}
+
+	auth.cachedUsersLock.RUnlock()
+}
+
 func (auth *UserAuth) setRosters(rosters []map[string]string) {
 	auth.rostersLock.RLock()
 

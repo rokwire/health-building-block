@@ -565,5 +565,9 @@ func (al *AppListener) OnUserUpdated(user model.User) {
 func (al *AppListener) OnRostersUpdated() {
 	log.Println("AppListener -> OnRostersUpdated")
 
-	//TODO
+	//clear the cached users and reload the rosters
+	go func() {
+		al.adapter.auth.userAuth.clearCacheUsers()
+		al.adapter.auth.userAuth.loadRosters()
+	}()
 }

@@ -2511,9 +2511,17 @@ func (h ApisHandler) GetExposures(appVersion *string, w http.ResponseWriter, r *
 
 type getRosterIDByPhoneResponse struct {
 	UIN string `json:"uin"`
-}
+} // @name getRosterIDByPhoneResponse
 
 //GetRosterIDByPhone returns uin of the roster member with a given phone number
+// @Description Gives uin of the roster member with a given phone number.
+// @Tags Covid19
+// @ID GetRosterIDByPhone
+// @Accept json
+// @Param phone path string true "Phone"
+// @Success 200 {object} getRosterIDByPhoneResponse
+// @Security RokwireAuth
+// @Router /covid19/rosters/phone/{phone} [get]
 func (h ApisHandler) GetRosterIDByPhone(appVersion *string, w http.ResponseWriter, r *http.Request) {
 	phone, ok := mux.Vars(r)["phone"]
 	if !ok || len(phone) < 1 {

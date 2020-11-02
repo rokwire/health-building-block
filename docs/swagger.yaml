@@ -966,6 +966,11 @@ definitions:
     - interval
     - uin
     type: object
+  getRosterIDByPhoneResponse:
+    properties:
+      uin:
+        type: string
+    type: object
   gubonResponse:
     additionalProperties:
       type: string
@@ -3865,6 +3870,27 @@ paths:
             items:
               $ref: '#/definitions/Resource'
             type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/rosters/phone/{phone}:
+    get:
+      consumes:
+      - application/json
+      description: Gives uin of the roster member with a given phone number.
+      operationId: GetRosterIDByPhone
+      parameters:
+      - description: Phone
+        in: path
+        name: phone
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/getRosterIDByPhoneResponse'
       security:
       - RokwireAuth: []
       tags:

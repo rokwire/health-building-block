@@ -4144,6 +4144,40 @@ var doc = `{
                 }
             }
         },
+        "/covid19/rosters/phone/{phone}": {
+            "get": {
+                "security": [
+                    {
+                        "RokwireAuth": []
+                    }
+                ],
+                "description": "Gives uin of the roster member with a given phone number.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetRosterIDByPhone",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Phone",
+                        "name": "phone",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/getRosterIDByPhoneResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/rules/county/{id}": {
             "get": {
                 "security": [
@@ -6447,6 +6481,14 @@ var doc = `{
                 "interval": {
                     "type": "integer"
                 },
+                "uin": {
+                    "type": "string"
+                }
+            }
+        },
+        "getRosterIDByPhoneResponse": {
+            "type": "object",
+            "properties": {
                 "uin": {
                     "type": "string"
                 }

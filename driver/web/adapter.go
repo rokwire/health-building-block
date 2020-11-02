@@ -560,3 +560,10 @@ func (al *AppListener) OnUserUpdated(user model.User) {
 	//take out the updated user from the cached users
 	al.adapter.auth.userAuth.deleteCacheUser(user.ExternalID)
 }
+
+//OnRostersUpdated notifies that the rosters are updated
+func (al *AppListener) OnRostersUpdated() {
+	log.Println("AppListener -> OnRostersUpdated")
+
+	//TODO
+}

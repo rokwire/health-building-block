@@ -238,6 +238,8 @@ func (app *Application) notifyListeners(message string, data interface{}) {
 				listener.OnClearUserData(data.(model.User))
 			} else if message == "onUserUpdated" {
 				listener.OnUserUpdated(data.(model.User))
+			} else if message == "onRostersUpdated" {
+				listener.OnRostersUpdated()
 			}
 		}
 	}()

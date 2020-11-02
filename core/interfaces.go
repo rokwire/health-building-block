@@ -915,6 +915,7 @@ type Storage interface {
 type StorageListener interface {
 	OnConfigsChanged()
 	OnAppVersionsChanged()
+	OnRostersChanged()
 }
 
 type storageListenerImpl struct {
@@ -929,6 +930,11 @@ func (a *storageListenerImpl) OnConfigsChanged() {
 func (a *storageListenerImpl) OnAppVersionsChanged() {
 	//reload the app versions
 	a.app.loadAppVersions()
+}
+
+func (a *storageListenerImpl) OnRostersChanged() {
+	//notify that th rosters has been changed
+	a.app.notifyListeners("onRostersUpdated", nil)
 }
 
 //DataProvider is used by core to access needed data
@@ -1005,4 +1011,5 @@ type AuditDataEntry struct {
 type ApplicationListener interface {
 	OnClearUserData(user model.User)
 	OnUserUpdated(user model.User)
+	OnRostersUpdated()
 }

@@ -2666,6 +2666,41 @@ paths:
       tags:
       - Admin
   /admin/rosters:
+    get:
+      consumes:
+      - application/json
+      description: Gives the roster members matching filters, sorted, and paginated
+      operationId: GetRosters
+      parameters:
+      - description: Phone
+        in: query
+        name: phone
+        type: string
+      - description: UIN
+        in: query
+        name: uin
+        type: string
+      - description: Sort By
+        in: query
+        name: sortBy
+        type: string
+      - description: Order By
+        in: query
+        name: orderBy
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Offset
+        in: query
+        name: offset
+        type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
     post:
       consumes:
       - application/json

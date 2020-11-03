@@ -4432,6 +4432,19 @@ func (h AdminApisHandler) CreateRoster(current model.User, group string, w http.
 }
 
 //GetRosters returns the roster members matching filters, sorted, and paginated
+// @Description Gives the roster members matching filters, sorted, and paginated
+// @Tags Admin
+// @ID GetRosters
+// @Accept json
+// @Param phone query string false "Phone"
+// @Param uin query string false "UIN"
+// @Param sortBy query string false "Sort By"
+// @Param orderBy query string false "Order By"
+// @Param limit query string false "Limit"
+// @Param offset query string false "Offset"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters [get]
 func (h AdminApisHandler) GetRosters(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	sortBy := "phone"
 	sortOrder := 1

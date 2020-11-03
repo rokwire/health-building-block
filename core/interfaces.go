@@ -392,8 +392,8 @@ type Administration interface {
 	DeleteUINOverride(current model.User, group string, uin string) error
 
 	CreateRoster(current model.User, group string, audit *string, phone string, uin string) error
+	GetRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	//TODO
-	GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	ReplaceRoster(rosterData []map[string]interface{}) error
 	UpdateRoster(rosterData []map[string]interface{}) error
 	DeleteRoster(filter *utils.Filter) error
@@ -720,8 +720,8 @@ func (s *administrationImpl) CreateRoster(current model.User, group string, audi
 	return s.app.createRoster(current, group, audit, phone, uin)
 }
 
-func (s *administrationImpl) GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
-	return s.app.storage.GetRoster(filter, sortBy, sortOrder, limit, offset)
+func (s *administrationImpl) GetRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
+	return s.app.getRosters(filter, sortBy, sortOrder, limit, offset)
 }
 
 func (s *administrationImpl) ReplaceRoster(rosterData []map[string]interface{}) error {
@@ -912,10 +912,10 @@ type Storage interface {
 
 	ReadAllRosters() ([]map[string]string, error)
 	FindRosterIDByPhone(phone string) (*string, error)
+	FindRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	CreateRoster(phone string, uin string) error
 
 	//TODO
-	GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	UpdateRoster(rosterData []map[string]interface{}) error
 	DeleteRoster(filter *utils.Filter) error
 }

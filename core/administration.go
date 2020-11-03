@@ -1690,6 +1690,14 @@ func (app *Application) createRoster(current model.User, group string, audit *st
 	return nil
 }
 
+func (app *Application) getRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
+	rosters, err := app.storage.FindRosters(filter, sortBy, sortOrder, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	return rosters, nil
+}
+
 func (app *Application) createAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false, nil)

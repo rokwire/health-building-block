@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"health/core"
 	"health/core/model"
+	"health/utils"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -4430,9 +4431,8 @@ func (h AdminApisHandler) CreateRoster(current model.User, group string, w http.
 	w.Write([]byte("Successfully created"))
 }
 
-/*
-//GetRoster returns the roster members matching filters, sorted, and paginated
-func (h AdminApisHandler) GetRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+//GetRosters returns the roster members matching filters, sorted, and paginated
+func (h AdminApisHandler) GetRosters(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	sortBy := "lastname"
 	sortOrder := 1
 	limit := 20
@@ -4479,7 +4479,7 @@ func (h AdminApisHandler) GetRoster(current model.User, group string, w http.Res
 		}
 	}
 
-	roster, err := h.app.Administration.GetRoster(&filter, sortBy, sortOrder, limit, offset)
+	roster, err := h.app.Administration.GetRosters(&filter, sortBy, sortOrder, limit, offset)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -4498,6 +4498,7 @@ func (h AdminApisHandler) GetRoster(current model.User, group string, w http.Res
 	w.Write([]byte(data))
 }
 
+/*
 //ReplaceRoster replaces all members on the existing roster with new data
 func (h AdminApisHandler) ReplaceRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)

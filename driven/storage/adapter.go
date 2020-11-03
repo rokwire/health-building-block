@@ -4442,6 +4442,40 @@ func (sa *Adapter) FindRosterIDByPhone(phone string) (*string, error) {
 	return &val, nil
 }
 
+//FindRosters returns the roster members matching filters, sorted, and paginated
+func (sa *Adapter) FindRosters(f *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
+	var filter bson.D
+	if f != nil {
+		filter = constructFilter(f).(bson.D)
+	}
+
+	options := options.Find()
+	options.SetSort(bson.D{primitive.E{Key: sortBy, Value: sortOrder}})
+	if limit > 0 {
+		options.SetLimit(int64(limit))
+	}
+	if offset > 0 {
+		options.SetSkip(int64(offset))
+	}
+
+	projection := bson.D{
+		bson.E{Key: "_id", Value: 0},
+	}
+	options.SetProjection(projection)
+
+	var result []map[string]interface{}
+	err := sa.db.rosters.Find(filter, &result, options)
+	if err != nil {
+		log.Println("GetRoster:", err.Error())
+		return []map[string]interface{}{}, err
+	} else if len(result) < 1 {
+		log.Println("GetRoster: no roster data found")
+		return []map[string]interface{}{}, nil
+	}
+
+	return result, nil
+}
+
 //CreateRoster creates a roster
 func (sa *Adapter) CreateRoster(phone string, uin string) error {
 	// transaction
@@ -4484,40 +4518,6 @@ func (sa *Adapter) CreateRoster(phone string, uin string) error {
 		return err
 	}
 	return nil
-}
-
-//GetRoster returns the roster members matching filters, sorted, and paginated
-func (sa *Adapter) GetRoster(f *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
-	var filter bson.D
-	if f != nil {
-		filter = constructFilter(f).(bson.D)
-	}
-
-	options := options.Find()
-	options.SetSort(bson.D{primitive.E{Key: sortBy, Value: sortOrder}})
-	if limit > 0 {
-		options.SetLimit(int64(limit))
-	}
-	if offset > 0 {
-		options.SetSkip(int64(offset))
-	}
-
-	projection := bson.D{
-		bson.E{Key: "_id", Value: 0},
-	}
-	options.SetProjection(projection)
-
-	var result []map[string]interface{}
-	err := sa.db.rosters.Find(filter, &result, options)
-	if err != nil {
-		log.Println("GetRoster:", err.Error())
-		return []map[string]interface{}{}, err
-	} else if len(result) < 1 {
-		log.Println("GetRoster: no roster data found")
-		return []map[string]interface{}{}, nil
-	}
-
-	return result, nil
 }
 
 //UpdateRoster adds/updates roster members based on externalID field

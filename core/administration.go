@@ -1676,6 +1676,14 @@ func (app *Application) getUserByExternalID(externalID string) (*model.User, err
 	return user, nil
 }
 
+func (app *Application) createRoster(phone string, uin string) error {
+	err := app.storage.CreateRoster(phone, uin)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (app *Application) createAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false, nil)

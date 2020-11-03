@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"health/core"
 	"health/core/model"
-	"health/utils"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -4374,6 +4373,13 @@ func (h AdminApisHandler) GetUserByExternalID(current model.User, group string, 
 	w.Write(data)
 }
 
+//CreateRoster creates a roster
+func (h AdminApisHandler) CreateRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("CreateRoster"))
+}
+
+/*
 //GetRoster returns the roster members matching filters, sorted, and paginated
 func (h AdminApisHandler) GetRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	sortBy := "lastname"
@@ -4513,7 +4519,7 @@ func (h AdminApisHandler) DeleteRoster(current model.User, group string, w http.
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Delete successful"))
-}
+} */
 
 type createActionRequest struct {
 	Audit         *string `json:"audit"`

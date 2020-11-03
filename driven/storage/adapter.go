@@ -4442,6 +4442,12 @@ func (sa *Adapter) FindRosterIDByPhone(phone string) (*string, error) {
 	return &val, nil
 }
 
+//CreateRoster creates a roster
+func (sa *Adapter) CreateRoster(phone string, uin string) error {
+	//TODO
+	return nil
+}
+
 //GetRoster returns the roster members matching filters, sorted, and paginated
 func (sa *Adapter) GetRoster(f *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
 	var filter bson.D

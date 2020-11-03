@@ -391,6 +391,8 @@ type Administration interface {
 	UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string, expiration *time.Time) (*string, error)
 	DeleteUINOverride(current model.User, group string, uin string) error
 
+	CreateRoster(phone string, uin string) error
+	//TODO
 	GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	ReplaceRoster(rosterData []map[string]interface{}) error
 	UpdateRoster(rosterData []map[string]interface{}) error
@@ -714,6 +716,10 @@ func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User
 	return s.app.getUserByExternalID(externalID)
 }
 
+func (s *administrationImpl) CreateRoster(phone string, uin string) error {
+
+}
+
 func (s *administrationImpl) GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
 	return s.app.storage.GetRoster(filter, sortBy, sortOrder, limit, offset)
 }
@@ -906,6 +912,9 @@ type Storage interface {
 
 	ReadAllRosters() ([]map[string]string, error)
 	FindRosterIDByPhone(phone string) (*string, error)
+	CreateRoster(phone string, uin string) error
+
+	//TODO
 	GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	UpdateRoster(rosterData []map[string]interface{}) error
 	DeleteRoster(filter *utils.Filter) error

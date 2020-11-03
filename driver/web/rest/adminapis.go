@@ -4511,6 +4511,50 @@ func (h AdminApisHandler) GetRosters(current model.User, group string, w http.Re
 	w.Write([]byte(data))
 }
 
+//DeleteRosterByPhone deletes a roster by phone
+func (h AdminApisHandler) DeleteRosterByPhone(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	phone := params["phone"]
+	if len(phone) <= 0 {
+		log.Println("phone is required")
+		http.Error(w, "phone is required", http.StatusBadRequest)
+		return
+	}
+
+	err := h.app.Administration.DeleteRosterByPhone(current, group, phone)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully deleted"))
+}
+
+//DeleteRosterByUIN deletes a roster by uin
+func (h AdminApisHandler) DeleteRosterByUIN(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+
+	err := h.app.Administration.DeleteRosterByUIN(current, group, uin)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully deleted"))
+}
+
 /*
 //ReplaceRoster replaces all members on the existing roster with new data
 func (h AdminApisHandler) ReplaceRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {

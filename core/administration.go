@@ -1698,6 +1698,16 @@ func (app *Application) getRosters(filter *utils.Filter, sortBy string, sortOrde
 	return rosters, nil
 }
 
+func (app *Application) deleteRosterByPhone(current model.User, group string, phone string) error {
+	//TODO
+	return nil
+}
+
+func (app *Application) deleteRosterByUIN(current model.User, group string, uin string) error {
+	//TODO
+	return nil
+}
+
 func (app *Application) createAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false, nil)

@@ -393,10 +393,12 @@ type Administration interface {
 
 	CreateRoster(current model.User, group string, audit *string, phone string, uin string) error
 	GetRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
+	DeleteRosterByPhone(current model.User, group string, phone string) error
+	DeleteRosterByUIN(current model.User, group string, uin string) error
+
 	//TODO
 	ReplaceRoster(rosterData []map[string]interface{}) error
 	UpdateRoster(rosterData []map[string]interface{}) error
-	DeleteRoster(filter *utils.Filter) error
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
@@ -724,6 +726,14 @@ func (s *administrationImpl) GetRosters(filter *utils.Filter, sortBy string, sor
 	return s.app.getRosters(filter, sortBy, sortOrder, limit, offset)
 }
 
+func (s *administrationImpl) DeleteRosterByPhone(current model.User, group string, phone string) error {
+	return s.app.deleteRosterByPhone(current, group, phone)
+}
+
+func (s *administrationImpl) DeleteRosterByUIN(current model.User, group string, uin string) error {
+	return s.app.deleteRosterByUIN(current, group, uin)
+}
+
 func (s *administrationImpl) ReplaceRoster(rosterData []map[string]interface{}) error {
 	err := s.app.storage.DeleteRoster(nil)
 	if err != nil {
@@ -735,10 +745,6 @@ func (s *administrationImpl) ReplaceRoster(rosterData []map[string]interface{}) 
 
 func (s *administrationImpl) UpdateRoster(rosterData []map[string]interface{}) error {
 	return s.app.storage.UpdateRoster(rosterData)
-}
-
-func (s *administrationImpl) DeleteRoster(filter *utils.Filter) error {
-	return s.app.storage.DeleteRoster(filter)
 }
 
 func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {

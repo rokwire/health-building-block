@@ -4522,8 +4522,75 @@ func (sa *Adapter) CreateRoster(phone string, uin string) error {
 
 //DeleteRosterByPhone deletes the roster for the provided phone
 func (sa *Adapter) DeleteRosterByPhone(phone string) error {
-	//TODO
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
 
+		//first check if there is a user for the provided phone
+		//get the roster - we need to know the uin
+		rFilter := bson.D{primitive.E{Key: "phone", Value: phone}}
+		var rosters []map[string]interface{}
+		err = sa.db.rosters.FindWithContext(sessionContext, rFilter, &rosters, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(rosters) == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("There is no a roster for the provided phone")
+		}
+		roster := rosters[0]
+		uin := roster["uin"]
+
+		//now check if there is a user for the uin
+		uFilter := bson.D{primitive.E{Key: "external_id", Value: uin}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(usersResult) > 0 {
+			abortTransaction(sessionContext)
+			return errors.New("User with the provided phone/uin has already logged in in the system")
+		}
+
+		//now we can remove the item
+		deleteFilter := bson.D{primitive.E{Key: "phone", Value: phone}}
+		result, err := sa.db.rosters.DeleteOneWithContext(sessionContext, deleteFilter, nil)
+		if err != nil {
+			log.Printf("error deleting a roster - %s", err)
+			abortTransaction(sessionContext)
+			return err
+		}
+		if result == nil {
+			abortTransaction(sessionContext)
+			return errors.New("result is nil for roster with phone " + phone)
+		}
+		deletedCount := result.DeletedCount
+		if deletedCount == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is no a roster for phone " + phone)
+		}
+		if deletedCount > 1 {
+			abortTransaction(sessionContext)
+			return errors.New("deleted more than one records for phone " + phone)
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

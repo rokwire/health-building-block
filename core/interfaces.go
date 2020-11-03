@@ -391,7 +391,7 @@ type Administration interface {
 	UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string, expiration *time.Time) (*string, error)
 	DeleteUINOverride(current model.User, group string, uin string) error
 
-	CreateRoster(phone string, uin string) error
+	CreateRoster(current model.User, group string, audit *string, phone string, uin string) error
 	//TODO
 	GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	ReplaceRoster(rosterData []map[string]interface{}) error
@@ -716,8 +716,8 @@ func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User
 	return s.app.getUserByExternalID(externalID)
 }
 
-func (s *administrationImpl) CreateRoster(phone string, uin string) error {
-
+func (s *administrationImpl) CreateRoster(current model.User, group string, audit *string, phone string, uin string) error {
+	return s.app.createRoster(current, group, audit, phone, uin)
 }
 
 func (s *administrationImpl) GetRoster(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {

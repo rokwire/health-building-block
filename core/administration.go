@@ -1676,11 +1676,17 @@ func (app *Application) getUserByExternalID(externalID string) (*model.User, err
 	return user, nil
 }
 
-func (app *Application) createRoster(phone string, uin string) error {
+func (app *Application) createRoster(current model.User, group string, audit *string, phone string, uin string) error {
 	err := app.storage.CreateRoster(phone, uin)
 	if err != nil {
 		return err
 	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "phone", Value: phone}, {Key: "uin", Value: uin}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "roster", "", lData, audit)
+
 	return nil
 }
 

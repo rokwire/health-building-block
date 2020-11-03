@@ -4444,7 +4444,45 @@ func (sa *Adapter) FindRosterIDByPhone(phone string) (*string, error) {
 
 //CreateRoster creates a roster
 func (sa *Adapter) CreateRoster(phone string, uin string) error {
-	//TODO
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//first check if there is already a user with the provided uin
+		filter := bson.D{primitive.E{Key: "external_id", Value: uin}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, filter, &usersResult, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(usersResult) > 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is a user in the system with the provided uin")
+		}
+
+		//insert the roster
+		item := map[string]string{"phone": phone, "uin": uin}
+		_, err = sa.db.rosters.InsertOneWithContext(sessionContext, &item)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

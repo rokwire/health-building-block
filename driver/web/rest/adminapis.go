@@ -4373,10 +4373,51 @@ func (h AdminApisHandler) GetUserByExternalID(current model.User, group string, 
 	w.Write(data)
 }
 
+type createRosterRequest struct {
+	Audit *string `json:"audit"`
+	Phone string  `json:"phone" validate:"required"`
+	UIN   string  `json:"uin" validate:"required"`
+}
+
 //CreateRoster creates a roster
 func (h AdminApisHandler) CreateRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create a roster - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createRosterRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create roster request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create roster data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	audit := requestData.Audit
+	phone := requestData.Phone
+	uin := requestData.UIN
+
+	err = h.app.Administration.CreateRoster(current, group, audit, phone, uin)
+	if err != nil {
+		log.Printf("Error on creating a roster - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("CreateRoster"))
+	w.Write([]byte("Successfully created"))
 }
 
 /*

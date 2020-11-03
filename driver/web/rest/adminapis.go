@@ -4377,9 +4377,19 @@ type createRosterRequest struct {
 	Audit *string `json:"audit"`
 	Phone string  `json:"phone" validate:"required"`
 	UIN   string  `json:"uin" validate:"required"`
-}
+} // @name createRosterRequest
 
 //CreateRoster creates a roster
+// @Description Creates a roster
+// @Tags Admin
+// @ID CreateRoster
+// @Accept json
+// @Produce json
+// @Param data body createRosterRequest true "body data"
+// @Success 200 {string} Successfully created
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters [post]
 func (h AdminApisHandler) CreateRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {

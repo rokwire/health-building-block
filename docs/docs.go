@@ -2164,6 +2164,48 @@ var doc = `{
                 }
             }
         },
+        "/admin/rosters": {
+            "post": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Creates a roster",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "CreateRoster",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createRosterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/rules": {
             "get": {
                 "security": [
@@ -6317,6 +6359,24 @@ var doc = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "createRosterRequest": {
+            "type": "object",
+            "required": [
+                "phone",
+                "uin"
+            ],
+            "properties": {
+                "audit": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "uin": {
                     "type": "string"
                 }
             }

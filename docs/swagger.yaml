@@ -855,6 +855,18 @@ definitions:
       title:
         type: string
     type: object
+  createRosterRequest:
+    properties:
+      audit:
+        type: string
+      phone:
+        type: string
+      uin:
+        type: string
+    required:
+    - phone
+    - uin
+    type: object
   createRuleRequest:
     properties:
       audit:
@@ -2646,6 +2658,31 @@ paths:
       responses:
         "200":
           description: Successfully updated resource items
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/rosters:
+    post:
+      consumes:
+      - application/json
+      description: Creates a roster
+      operationId: CreateRoster
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createRosterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
           schema:
             type: string
       security:

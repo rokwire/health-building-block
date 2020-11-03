@@ -4512,6 +4512,15 @@ func (h AdminApisHandler) GetRosters(current model.User, group string, w http.Re
 }
 
 //DeleteRosterByPhone deletes a roster by phone
+// @Description Deletes a roster by phone
+// @Tags Admin
+// @ID DeleteRosterByPhone
+// @Accept plain
+// @Param phone path string true "Phone"
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters/phone/{phone} [delete]
 func (h AdminApisHandler) DeleteRosterByPhone(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	phone := params["phone"]
@@ -4534,6 +4543,15 @@ func (h AdminApisHandler) DeleteRosterByPhone(current model.User, group string, 
 }
 
 //DeleteRosterByUIN deletes a roster by uin
+// @Description Deletes a roster by uin
+// @Tags Admin
+// @ID DeleteRosterByUIN
+// @Accept plain
+// @Param uin path string true "UIN"
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters/uin/{uin} [delete]
 func (h AdminApisHandler) DeleteRosterByUIN(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uin := params["uin"]

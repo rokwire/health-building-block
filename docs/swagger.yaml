@@ -2725,6 +2725,50 @@ paths:
       - AdminGroupAuth: []
       tags:
       - Admin
+  /admin/rosters/phone/{phone}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a roster by phone
+      operationId: DeleteRosterByPhone
+      parameters:
+      - description: Phone
+        in: path
+        name: phone
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/rosters/uin/{uin}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a roster by uin
+      operationId: DeleteRosterByUIN
+      parameters:
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
   /admin/rules:
     get:
       consumes:

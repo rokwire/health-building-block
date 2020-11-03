@@ -4433,7 +4433,7 @@ func (h AdminApisHandler) CreateRoster(current model.User, group string, w http.
 
 //GetRosters returns the roster members matching filters, sorted, and paginated
 func (h AdminApisHandler) GetRosters(current model.User, group string, w http.ResponseWriter, r *http.Request) {
-	sortBy := "lastname"
+	sortBy := "phone"
 	sortOrder := 1
 	limit := 20
 	offset := 0

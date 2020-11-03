@@ -4520,6 +4520,71 @@ func (sa *Adapter) CreateRoster(phone string, uin string) error {
 	return nil
 }
 
+//DeleteRosterByPhone deletes the roster for the provided phone
+func (sa *Adapter) DeleteRosterByPhone(phone string) error {
+	//TODO
+
+	return nil
+}
+
+//DeleteRosterByUIN deletes the roster for the provided uin
+func (sa *Adapter) DeleteRosterByUIN(uin string) error {
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//first check if there is a user for the provided uin.
+		filter := bson.D{primitive.E{Key: "external_id", Value: uin}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, filter, &usersResult, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(usersResult) > 0 {
+			abortTransaction(sessionContext)
+			return errors.New("User with the provided uin has already logged in in the system")
+		}
+
+		//now we can remove the item
+		deleteFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
+		result, err := sa.db.rosters.DeleteOneWithContext(sessionContext, deleteFilter, nil)
+		if err != nil {
+			log.Printf("error deleting a roster - %s", err)
+			abortTransaction(sessionContext)
+			return err
+		}
+		if result == nil {
+			abortTransaction(sessionContext)
+			return errors.New("result is nil for roster with uin " + uin)
+		}
+		deletedCount := result.DeletedCount
+		if deletedCount == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is no a roster for uin " + uin)
+		}
+		if deletedCount > 1 {
+			abortTransaction(sessionContext)
+			return errors.New("deleted more than one records for uin " + uin)
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 //UpdateRoster adds/updates roster members based on externalID field
 func (sa *Adapter) UpdateRoster(rosterData []map[string]interface{}) error {
 	if rosterData == nil || len(rosterData) == 0 {
@@ -4570,22 +4635,6 @@ func (sa *Adapter) UpdateRoster(rosterData []map[string]interface{}) error {
 		return nil
 	})
 	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-//DeleteRoster deletes all roster members matching filter. If no filter, entire roster is deleted
-func (sa *Adapter) DeleteRoster(f *utils.Filter) error {
-	var filter bson.D
-	if f != nil {
-		filter = constructFilter(f).(bson.D)
-	}
-
-	_, err := sa.db.rosters.DeleteMany(filter, nil)
-	if err != nil {
-		log.Println("DeleteRoster:", err.Error())
 		return err
 	}
 

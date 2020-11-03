@@ -1699,12 +1699,28 @@ func (app *Application) getRosters(filter *utils.Filter, sortBy string, sortOrde
 }
 
 func (app *Application) deleteRosterByPhone(current model.User, group string, phone string) error {
-	//TODO
+	err := app.storage.DeleteRosterByPhone(phone)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "roster", fmt.Sprintf("phone:%s", phone))
+
 	return nil
 }
 
 func (app *Application) deleteRosterByUIN(current model.User, group string, uin string) error {
-	//TODO
+	err := app.storage.DeleteRosterByUIN(uin)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "roster", fmt.Sprintf("uin:%s", uin))
+
 	return nil
 }
 

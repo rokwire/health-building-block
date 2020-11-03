@@ -20,7 +20,6 @@ package core
 import (
 	"health/core/model"
 	"health/utils"
-	"log"
 	"time"
 )
 
@@ -735,12 +734,8 @@ func (s *administrationImpl) DeleteRosterByUIN(current model.User, group string,
 }
 
 func (s *administrationImpl) ReplaceRoster(rosterData []map[string]interface{}) error {
-	err := s.app.storage.DeleteRoster(nil)
-	if err != nil {
-		log.Println("ReplaceRoster - Error deleting roster:", err.Error())
-		return err
-	}
-	return s.app.storage.UpdateRoster(rosterData)
+	//TODO
+	return nil
 }
 
 func (s *administrationImpl) UpdateRoster(rosterData []map[string]interface{}) error {
@@ -920,10 +915,11 @@ type Storage interface {
 	FindRosterIDByPhone(phone string) (*string, error)
 	FindRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	CreateRoster(phone string, uin string) error
+	DeleteRosterByPhone(phone string) error
+	DeleteRosterByUIN(uin string) error
 
 	//TODO
 	UpdateRoster(rosterData []map[string]interface{}) error
-	DeleteRoster(filter *utils.Filter) error
 }
 
 //StorageListener listenes for change data storage events

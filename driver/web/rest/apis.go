@@ -2509,6 +2509,50 @@ func (h ApisHandler) GetExposures(appVersion *string, w http.ResponseWriter, r *
 	w.Write(data)
 }
 
+type getRosterIDByPhoneResponse struct {
+	UIN string `json:"uin"`
+} // @name getRosterIDByPhoneResponse
+
+//GetRosterIDByPhone returns uin of the roster member with a given phone number
+// @Description Gives uin of the roster member with a given phone number.
+// @Tags Covid19
+// @ID GetRosterIDByPhone
+// @Accept json
+// @Param phone path string true "Phone"
+// @Success 200 {object} getRosterIDByPhoneResponse
+// @Security RokwireAuth
+// @Router /covid19/rosters/phone/{phone} [get]
+func (h ApisHandler) GetRosterIDByPhone(appVersion *string, w http.ResponseWriter, r *http.Request) {
+	phone, ok := mux.Vars(r)["phone"]
+	if !ok || len(phone) < 1 {
+		log.Println("GetRosterIDByPhone: missing phone query parameter")
+		http.Error(w, "Missing missing phone query parameter", http.StatusBadRequest)
+		return
+	}
+
+	uin, err := h.app.Services.GetRosterIDByPhone(phone)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	var response *getRosterIDByPhoneResponse
+	if uin != nil {
+		response = &getRosterIDByPhoneResponse{UIN: *uin}
+	}
+
+	data, err := json.Marshal(response)
+	if err != nil {
+		log.Println("Error on marshal getRosterIDByPhone")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //NewApisHandler creates new rest Handler instance
 func NewApisHandler(app *core.Application) ApisHandler {
 	return ApisHandler{app: app}

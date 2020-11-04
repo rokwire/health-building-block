@@ -18,6 +18,7 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -288,54 +289,10 @@ func (sa *Adapter) ClearUserData(userID string) error {
 			return err
 		}
 
-		//remove from ctest
-		cTestFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
-		_, err = sa.db.ctests.DeleteManyWithContext(sessionContext, cTestFilter, nil)
+		// delete the user data
+		err = sa.deleteUserData(sessionContext, userID)
 		if err != nil {
-			log.Printf("error deleting ctests for a user - %s", err)
-
 			abortTransaction(sessionContext)
-
-			return err
-		}
-
-		//remove from history
-		historyFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
-		//from ehistory
-		_, err = sa.db.ehistory.DeleteManyWithContext(sessionContext, historyFilter, nil)
-		if err != nil {
-			log.Printf("error deleting ehistories for a user - %s", err)
-			abortTransaction(sessionContext)
-			return err
-		}
-
-		//remove from status
-		statusFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
-		//from estatus
-		_, err = sa.db.estatus.DeleteManyWithContext(sessionContext, statusFilter, nil)
-		if err != nil {
-			log.Printf("error deleting estatus for a user - %s", err)
-			abortTransaction(sessionContext)
-			return err
-		}
-
-		//remove from manual tests
-		mtFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
-		_, err = sa.db.emanualtests.DeleteOneWithContext(sessionContext, mtFilter, nil)
-		if err != nil {
-			log.Printf("error deleting manual tests for a user - %s", err)
-			abortTransaction(sessionContext)
-			return err
-		}
-
-		//remove from users
-		usersFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
-		_, err = sa.db.users.DeleteOneWithContext(sessionContext, usersFilter, nil)
-		if err != nil {
-			log.Printf("error deleting user record for a user - %s", err)
-
-			abortTransaction(sessionContext)
-
 			return err
 		}
 
@@ -4407,6 +4364,406 @@ func (sa *Adapter) CreateOrUpdateUINBuildingAccess(uin string, date time.Time, a
 	return nil
 }
 
+//ReadAllRosters reads all rosters
+func (sa *Adapter) ReadAllRosters() ([]map[string]string, error) {
+	filter := bson.D{}
+	var result []map[string]string
+	err := sa.db.rosters.Find(filter, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+//FindRosterIDByPhone finds the UIN for the user with the given phone number
+func (sa *Adapter) FindRosterIDByPhone(phone string) (*string, error) {
+	filter := bson.D{primitive.E{Key: "phone", Value: phone}}
+
+	var result []map[string]interface{}
+	err := sa.db.rosters.Find(filter, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil || len(result) == 0 {
+		//not found
+		return nil, nil
+	}
+	item := result[0]
+
+	val, ok := item["uin"].(string)
+	if !ok {
+		log.Println("GetRosterIDByPhone: roster member missing 'uin' field")
+		return nil, errors.New("roster member missing 'uin' field")
+	}
+	return &val, nil
+}
+
+//FindRosters returns the roster members matching filters, sorted, and paginated
+func (sa *Adapter) FindRosters(f *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
+	var filter bson.D
+	if f != nil {
+		filter = constructFilter(f).(bson.D)
+	}
+
+	options := options.Find()
+	options.SetSort(bson.D{primitive.E{Key: sortBy, Value: sortOrder}})
+	if limit > 0 {
+		options.SetLimit(int64(limit))
+	}
+	if offset > 0 {
+		options.SetSkip(int64(offset))
+	}
+
+	projection := bson.D{
+		bson.E{Key: "_id", Value: 0},
+	}
+	options.SetProjection(projection)
+
+	var result []map[string]interface{}
+	err := sa.db.rosters.Find(filter, &result, options)
+	if err != nil {
+		log.Println("GetRoster:", err.Error())
+		return []map[string]interface{}{}, err
+	} else if len(result) < 1 {
+		log.Println("GetRoster: no roster data found")
+		return []map[string]interface{}{}, nil
+	}
+
+	return result, nil
+}
+
+//CreateRoster creates a roster
+func (sa *Adapter) CreateRoster(phone string, uin string) error {
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//first check if there is already a user with the provided uin
+		filter := bson.D{primitive.E{Key: "external_id", Value: uin}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, filter, &usersResult, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(usersResult) > 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is a user in the system with the provided uin")
+		}
+
+		//insert the roster
+		item := map[string]string{"phone": phone, "uin": uin}
+		_, err = sa.db.rosters.InsertOneWithContext(sessionContext, &item)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//CreateRosterItems creates roster items
+func (sa *Adapter) CreateRosterItems(items []map[string]string) error {
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//first check if the input data is valid, i.e all uins are new
+		//check in users
+		uins := make([]string, len(items))
+		for i, current := range items {
+			uins[i] = current["uin"]
+		}
+		uFilter := bson.D{primitive.E{Key: "external_id", Value: bson.M{"$in": uins}}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
+		if err != nil {
+			log.Printf("error reading users for roster check - %s", err)
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(usersResult) > 0 {
+			abortTransaction(sessionContext)
+
+			//construct the error
+			var b bytes.Buffer
+			for _, c := range usersResult {
+				b.WriteString(c.ExternalID)
+				b.WriteString(" ")
+			}
+			errorMessage := fmt.Sprintf("%s- used in the system", b.String())
+			log.Printf(errorMessage)
+			return errors.New(errorMessage)
+		}
+
+		//insert the items
+		//need to prepare the input data
+		data := make([]interface{}, len(items))
+		for i, c := range items {
+			data[i] = c
+		}
+		result, err := sa.db.rosters.InsertManyWithContext(sessionContext, data, nil)
+		if err != nil {
+			log.Printf("error inserting many roster items - %s", err)
+			abortTransaction(sessionContext)
+			return err
+		}
+		if result == nil {
+			log.Println("for some reasons the result is nil when create many roster items")
+			return errors.New("for some reasons the result is nil when create many roster items")
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//DeleteRosterByPhone deletes the roster for the provided phone
+func (sa *Adapter) DeleteRosterByPhone(phone string) error {
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//first check if there is a user for the provided phone
+		//get the roster - we need to know the uin
+		rFilter := bson.D{primitive.E{Key: "phone", Value: phone}}
+		var rosters []map[string]interface{}
+		err = sa.db.rosters.FindWithContext(sessionContext, rFilter, &rosters, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(rosters) == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("There is no a roster for the provided phone")
+		}
+		roster := rosters[0]
+		uin := roster["uin"]
+
+		//now check if there is a user for the uin
+		uFilter := bson.D{primitive.E{Key: "external_id", Value: uin}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		if len(usersResult) > 0 {
+			//there is a user, so we need to remove it and all related data
+			user := usersResult[0]
+
+			// delete the user data
+			err = sa.deleteUserData(sessionContext, user.ID)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+		}
+
+		//now we can remove the item
+		deleteFilter := bson.D{primitive.E{Key: "phone", Value: phone}}
+		result, err := sa.db.rosters.DeleteOneWithContext(sessionContext, deleteFilter, nil)
+		if err != nil {
+			log.Printf("error deleting a roster - %s", err)
+			abortTransaction(sessionContext)
+			return err
+		}
+		if result == nil {
+			abortTransaction(sessionContext)
+			return errors.New("result is nil for roster with phone " + phone)
+		}
+		deletedCount := result.DeletedCount
+		if deletedCount == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is no a roster for phone " + phone)
+		}
+		if deletedCount > 1 {
+			abortTransaction(sessionContext)
+			return errors.New("deleted more than one records for phone " + phone)
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//DeleteRosterByUIN deletes the roster for the provided uin
+func (sa *Adapter) DeleteRosterByUIN(uin string) error {
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//first find if there is logged in user in the system for this uin
+		filter := bson.D{primitive.E{Key: "external_id", Value: uin}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, filter, &usersResult, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		if len(usersResult) > 0 {
+			//there is a user, so we need to remove it and all related data
+			user := usersResult[0]
+
+			// delete the user data
+			err = sa.deleteUserData(sessionContext, user.ID)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+		}
+
+		//now we can remove the item
+		deleteFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
+		result, err := sa.db.rosters.DeleteOneWithContext(sessionContext, deleteFilter, nil)
+		if err != nil {
+			log.Printf("error deleting a roster - %s", err)
+			abortTransaction(sessionContext)
+			return err
+		}
+		if result == nil {
+			abortTransaction(sessionContext)
+			return errors.New("result is nil for roster with uin " + uin)
+		}
+		deletedCount := result.DeletedCount
+		if deletedCount == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is no a roster for uin " + uin)
+		}
+		if deletedCount > 1 {
+			abortTransaction(sessionContext)
+			return errors.New("deleted more than one records for uin " + uin)
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//DeleteAllRosters deletes all rosters
+func (sa *Adapter) DeleteAllRosters() error {
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//first read all rosters items
+		allRostersFilter := bson.D{}
+		var rostersList []map[string]string
+		err = sa.db.rosters.Find(allRostersFilter, &rostersList, nil)
+		if err != nil {
+			log.Printf("error reading all rosters items for removing - %s", err)
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		//loop every item - we need to remove all users for the rosters
+		if len(rostersList) > 0 {
+			for _, roster := range rostersList {
+				uin := roster["uin"]
+
+				//process every item
+
+				//first find if there is logged in user in the system for this uin
+				filter := bson.D{primitive.E{Key: "external_id", Value: uin}}
+				var usersResult []*model.User
+				err = sa.db.users.FindWithContext(sessionContext, filter, &usersResult, nil)
+				if err != nil {
+					abortTransaction(sessionContext)
+					return err
+				}
+
+				if len(usersResult) > 0 {
+					//there is a user, so we need to remove it and all related data
+					user := usersResult[0]
+
+					// delete the user data
+					err = sa.deleteUserData(sessionContext, user.ID)
+					if err != nil {
+						abortTransaction(sessionContext)
+						return err
+					}
+				}
+			}
+		}
+
+		//delete all rosters
+		deleteRostersFilter := bson.D{}
+		_, err = sa.db.rosters.DeleteManyWithContext(sessionContext, deleteRostersFilter, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {
 	if list == nil {
 		return false
@@ -4429,6 +4786,83 @@ func (sa *Adapter) deleteAllStatuses(sessionContext mongo.SessionContext) error 
 	return nil
 }
 
+func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID string) error {
+
+	//first read the user as we need the external id too
+	uFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+	var usersResult []*model.User
+	err := sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
+	if err != nil {
+		return err
+	}
+	if len(usersResult) == 0 {
+		log.Printf("there is no a user for the provided user id - %s %s", userID, err)
+		return err
+	}
+	user := usersResult[0]
+	externalID := user.ExternalID
+
+	//remove from uinoverrides
+	uinOverridesFilter := bson.D{primitive.E{Key: "uin", Value: externalID}}
+	_, err = sa.db.uinoverrides.DeleteOneWithContext(sessionContext, uinOverridesFilter, nil)
+	if err != nil {
+		log.Printf("error deleting uinoverride record for a user - %s", err)
+		return err
+	}
+
+	//remove from uinbuildingaccess
+	uinBuildingAccessFilter := bson.D{primitive.E{Key: "uin", Value: externalID}}
+	_, err = sa.db.uinbuildingaccess.DeleteOneWithContext(sessionContext, uinBuildingAccessFilter, nil)
+	if err != nil {
+		log.Printf("error deleting uinbuildingaccess record for a user - %s", err)
+		return err
+	}
+
+	//remove from ctest
+	cTestFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	_, err = sa.db.ctests.DeleteManyWithContext(sessionContext, cTestFilter, nil)
+	if err != nil {
+		log.Printf("error deleting ctests for a user - %s", err)
+		return err
+	}
+
+	//remove from history
+	historyFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	//from ehistory
+	_, err = sa.db.ehistory.DeleteManyWithContext(sessionContext, historyFilter, nil)
+	if err != nil {
+		log.Printf("error deleting ehistories for a user - %s", err)
+		return err
+	}
+
+	//remove from status
+	statusFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	//from estatus
+	_, err = sa.db.estatus.DeleteManyWithContext(sessionContext, statusFilter, nil)
+	if err != nil {
+		log.Printf("error deleting estatus for a user - %s", err)
+		return err
+	}
+
+	//remove from manual tests
+	mtFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	_, err = sa.db.emanualtests.DeleteOneWithContext(sessionContext, mtFilter, nil)
+	if err != nil {
+		log.Printf("error deleting manual tests for a user - %s", err)
+		return err
+	}
+
+	//remove from users
+	usersFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+	_, err = sa.db.users.DeleteOneWithContext(sessionContext, usersFilter, nil)
+	if err != nil {
+		log.Printf("error deleting user record for a user - %s", err)
+		return err
+	}
+
+	return nil
+}
+
 //NewStorageAdapter creates a new storage adapter instance
 func NewStorageAdapter(mongoDBAuth string, mongoDBName string, mongoTimeout string) *Adapter {
 	timeout, err := strconv.Atoi(mongoTimeout)
@@ -4448,7 +4882,15 @@ func constructFilter(f *utils.Filter) interface{} {
 	}
 	var filter bson.D
 	for _, item := range f.Items {
-		filter = append(filter, bson.E{Key: item.Field, Value: item.Value})
+		if len(item.Value) == 1 {
+			filter = append(filter, bson.E{Key: item.Field, Value: item.Value[0]})
+		} else if len(item.Value) > 1 {
+			var vals []interface{}
+			for _, value := range item.Value {
+				vals = append(vals, bson.D{bson.E{Key: item.Field, Value: value}})
+			}
+			filter = append(filter, bson.E{Key: "$or", Value: vals})
+		}
 	}
 	return filter
 }

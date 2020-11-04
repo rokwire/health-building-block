@@ -60,6 +60,7 @@ type database struct {
 	uinoverrides      *collectionWrapper
 	uinbuildingaccess *collectionWrapper
 	appversions       *collectionWrapper
+	rosters           *collectionWrapper
 
 	listener core.StorageListener
 }
@@ -216,6 +217,11 @@ func (m *database) start() error {
 	if err != nil {
 		return err
 	}
+	rosters := &collectionWrapper{database: m, coll: db.Collection("rosters")}
+	err = m.applyRostersChecks(rosters)
+	if err != nil {
+		return err
+	}
 
 	//asign the db, db client and the collections
 	m.db = db
@@ -244,12 +250,16 @@ func (m *database) start() error {
 	m.uinoverrides = uinoverrides
 	m.uinbuildingaccess = uinbuildingaccess
 	m.appversions = appversions
+	m.rosters = rosters
 
 	//watch for config changes
 	go m.configs.Watch(nil)
 
 	//watch for app versions changes
 	go m.appversions.Watch(nil)
+
+	//watch for rosters changes
+	go m.rosters.Watch(nil)
 
 	return nil
 }
@@ -676,6 +686,24 @@ func (m *database) applyAppVersionsChecks(appversions *collectionWrapper) error 
 	return nil
 }
 
+func (m *database) applyRostersChecks(rosters *collectionWrapper) error {
+	log.Println("apply rosters checks.....")
+
+	//add indexes
+	err := rosters.AddIndex(bson.D{primitive.E{Key: "uin", Value: 1}}, true)
+	if err != nil {
+		return err
+	}
+
+	err = rosters.AddIndex(bson.D{primitive.E{Key: "phone", Value: 1}}, true)
+	if err != nil {
+		return err
+	}
+
+	log.Println("rosters checks passed")
+	return nil
+}
+
 func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 	if changeDoc == nil {
 		return
@@ -699,6 +727,12 @@ func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 
 		if m.listener != nil {
 			m.listener.OnAppVersionsChanged()
+		}
+	} else if "rosters" == coll {
+		log.Println("rosters collection changed")
+
+		if m.listener != nil {
+			m.listener.OnRostersChanged()
 		}
 	} else {
 		log.Println("other collection changed")

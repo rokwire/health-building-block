@@ -273,11 +273,12 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/uin-overrides/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateUINOverride)).Methods("PUT")
 	adminRestSubrouter.HandleFunc("/uin-overrides/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteUINOverride)).Methods("DELETE")
 
-	//TODO: Add appropriate permission groups to authorization_policy.csv
-	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetRoster)).Methods("GET")
-	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.ReplaceRoster)).Methods("POST")
-	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateRoster)).Methods("PUT")
-	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteRoster)).Methods("DELETE")
+	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateRoster)).Methods("POST")
+	adminRestSubrouter.HandleFunc("/roster-items", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateRosterItems)).Methods("POST")
+	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetRosters)).Methods("GET")
+	adminRestSubrouter.HandleFunc("/rosters/phone/{phone}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteRosterByPhone)).Methods("DELETE")
+	adminRestSubrouter.HandleFunc("/rosters/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteRosterByUIN)).Methods("DELETE")
+	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteAllRosters)).Methods("DELETE")
 
 	adminRestSubrouter.HandleFunc("/user", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUserByExternalID)).Methods("GET").Queries("external-id", "")
 
@@ -559,4 +560,15 @@ func (al *AppListener) OnUserUpdated(user model.User) {
 
 	//take out the updated user from the cached users
 	al.adapter.auth.userAuth.deleteCacheUser(user.ExternalID)
+}
+
+//OnRostersUpdated notifies that the rosters are updated
+func (al *AppListener) OnRostersUpdated() {
+	log.Println("AppListener -> OnRostersUpdated")
+
+	//clear the cached users and reload the rosters
+	go func() {
+		al.adapter.auth.userAuth.clearCacheUsers()
+		al.adapter.auth.userAuth.loadRosters()
+	}()
 }

@@ -4374,9 +4374,151 @@ func (h AdminApisHandler) GetUserByExternalID(current model.User, group string, 
 	w.Write(data)
 }
 
-//GetRoster returns the roster members matching filters, sorted, and paginated
-func (h AdminApisHandler) GetRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
-	sortBy := "lastname"
+type createRosterRequest struct {
+	Audit *string `json:"audit"`
+	Phone string  `json:"phone" validate:"required"`
+	UIN   string  `json:"uin" validate:"required"`
+} // @name createRosterRequest
+
+//CreateRoster creates a roster
+// @Description Creates a roster
+// @Tags Admin
+// @ID CreateRoster
+// @Accept json
+// @Produce json
+// @Param data body createRosterRequest true "body data"
+// @Success 200 {string} Successfully created
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters [post]
+func (h AdminApisHandler) CreateRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create a roster - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createRosterRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create roster request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create roster data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	audit := requestData.Audit
+	phone := requestData.Phone
+	uin := requestData.UIN
+
+	err = h.app.Administration.CreateRoster(current, group, audit, phone, uin)
+	if err != nil {
+		log.Printf("Error on creating a roster - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully created"))
+}
+
+type createRosterItemsRequest struct {
+	Audit *string `json:"audit"`
+	Items []struct {
+		Phone string `json:"phone" validate:"required"`
+		UIN   string `json:"uin" validate:"required"`
+	} `json:"items" validate:"required,min=1"`
+} // @name createRosterItemsRequest
+
+//CreateRosterItems creates many roster items
+// @Description Creates many roster items
+// @Tags Admin
+// @ID CreateRosterItems
+// @Accept json
+// @Produce json
+// @Param data body createRosterItemsRequest true "body data"
+// @Success 200 {string} Successfully created
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/roster-items [post]
+func (h AdminApisHandler) CreateRosterItems(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create roster items - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createRosterItemsRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create roster items request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create roster items data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = validate.Var(requestData.Items, "required,dive")
+	if err != nil {
+		log.Printf("Error on validating create roster items - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	items := requestData.Items
+
+	//prepare the items
+	itemsList := make([]map[string]string, len(items))
+	for i, current := range items {
+		item := map[string]string{"phone": current.Phone, "uin": current.UIN}
+		itemsList[i] = item
+	}
+
+	err = h.app.Administration.CreateRosterItems(current, group, audit, itemsList)
+	if err != nil {
+		log.Printf("Error on creating roster items - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully created"))
+}
+
+//GetRosters returns the roster members matching filters, sorted, and paginated
+// @Description Gives the roster members matching filters, sorted, and paginated
+// @Tags Admin
+// @ID GetRosters
+// @Accept json
+// @Param phone query string false "Phone"
+// @Param uin query string false "UIN"
+// @Param sortBy query string false "Sort By"
+// @Param orderBy query string false "Order By"
+// @Param limit query string false "Limit"
+// @Param offset query string false "Offset"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters [get]
+func (h AdminApisHandler) GetRosters(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	sortBy := "phone"
 	sortOrder := 1
 	limit := 20
 	offset := 0
@@ -4422,7 +4564,7 @@ func (h AdminApisHandler) GetRoster(current model.User, group string, w http.Res
 		}
 	}
 
-	roster, err := h.app.Administration.GetRoster(&filter, sortBy, sortOrder, limit, offset)
+	roster, err := h.app.Administration.GetRosters(&filter, sortBy, sortOrder, limit, offset)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -4441,78 +4583,88 @@ func (h AdminApisHandler) GetRoster(current model.User, group string, w http.Res
 	w.Write([]byte(data))
 }
 
-//ReplaceRoster replaces all members on the existing roster with new data
-func (h AdminApisHandler) ReplaceRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
-	data, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Println("ReplaceRoster - could not read request body:", err.Error())
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-	var dataArray []map[string]interface{}
-	err = json.Unmarshal(data, &dataArray)
-	if err != nil {
-		log.Println("ReplaceRoster - invalid json body:", err.Error())
-		http.Error(w, "Invalid json body: "+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = h.app.Administration.ReplaceRoster(dataArray)
-	if err != nil {
-		log.Println("Unable to replace roster data:", err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+//DeleteRosterByPhone deletes a roster by phone
+// @Description Deletes a roster by phone
+// @Tags Admin
+// @ID DeleteRosterByPhone
+// @Accept plain
+// @Param phone path string true "Phone"
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters/phone/{phone} [delete]
+func (h AdminApisHandler) DeleteRosterByPhone(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	phone := params["phone"]
+	if len(phone) <= 0 {
+		log.Println("phone is required")
+		http.Error(w, "phone is required", http.StatusBadRequest)
 		return
 	}
 
+	err := h.app.Administration.DeleteRosterByPhone(current, group, phone)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Replace roster successful"))
+	w.Write([]byte("Successfully deleted"))
 }
 
-//UpdateRoster adds/updates roster members based on externalID field
-func (h AdminApisHandler) UpdateRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
-	data, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Println("UpdateRoster - could not read request body:", err.Error())
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-	var dataArray []map[string]interface{}
-	err = json.Unmarshal(data, &dataArray)
-	if err != nil {
-		log.Println("ReplaceRoster - invalid json body:", err.Error())
-		http.Error(w, "Invalid json body: "+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = h.app.Administration.UpdateRoster(dataArray)
-	if err != nil {
-		log.Println("Unable to update roster data:", err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+//DeleteRosterByUIN deletes a roster by uin
+// @Description Deletes a roster by uin
+// @Tags Admin
+// @ID DeleteRosterByUIN
+// @Accept plain
+// @Param uin path string true "UIN"
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters/uin/{uin} [delete]
+func (h AdminApisHandler) DeleteRosterByUIN(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
 		return
 	}
 
+	err := h.app.Administration.DeleteRosterByUIN(current, group, uin)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Update roster successful"))
+	w.Write([]byte("Successfully deleted"))
 }
 
-//DeleteRoster deletes all roster members matching filter. If no filter, entire roster is deleted
-func (h AdminApisHandler) DeleteRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
-	var filter utils.Filter
-	for key, value := range r.URL.Query() {
-		if len(value) < 1 {
-			continue
-		}
-		filter.Items = append(filter.Items, utils.FilterItem{Field: key, Value: value})
-	}
-
-	err := h.app.Administration.DeleteRoster(&filter)
+//DeleteAllRosters deletes all rosters
+// @Description Deletes all rosters
+// @Tags Admin
+// @ID DeleteAllRosters
+// @Accept plain
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters [delete]
+func (h AdminApisHandler) DeleteAllRosters(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	err := h.app.Administration.DeleteAllRosters(current, group)
 	if err != nil {
-		log.Println("Unable to delete roster:", err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Delete successful"))
+	w.Write([]byte("Successfully deleted"))
 }
 
 type createActionRequest struct {

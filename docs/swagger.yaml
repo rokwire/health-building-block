@@ -855,6 +855,36 @@ definitions:
       title:
         type: string
     type: object
+  createRosterItemsRequest:
+    properties:
+      audit:
+        type: string
+      items:
+        items:
+          properties:
+            phone:
+              required:
+              - phone
+              type: string
+            uin:
+              required:
+              - uin
+              type: string
+          type: object
+        type: array
+    type: object
+  createRosterRequest:
+    properties:
+      audit:
+        type: string
+      phone:
+        type: string
+      uin:
+        type: string
+    required:
+    - phone
+    - uin
+    type: object
   createRuleRequest:
     properties:
       audit:
@@ -965,6 +995,11 @@ definitions:
     required:
     - interval
     - uin
+    type: object
+  getRosterIDByPhoneResponse:
+    properties:
+      uin:
+        type: string
     type: object
   gubonResponse:
     additionalProperties:
@@ -2648,6 +2683,150 @@ paths:
       - AdminGroupAuth: []
       tags:
       - Admin
+  /admin/roster-items:
+    post:
+      consumes:
+      - application/json
+      description: Creates many roster items
+      operationId: CreateRosterItems
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createRosterItemsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/rosters:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes all rosters
+      operationId: DeleteAllRosters
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: Gives the roster members matching filters, sorted, and paginated
+      operationId: GetRosters
+      parameters:
+      - description: Phone
+        in: query
+        name: phone
+        type: string
+      - description: UIN
+        in: query
+        name: uin
+        type: string
+      - description: Sort By
+        in: query
+        name: sortBy
+        type: string
+      - description: Order By
+        in: query
+        name: orderBy
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Offset
+        in: query
+        name: offset
+        type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a roster
+      operationId: CreateRoster
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createRosterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/rosters/phone/{phone}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a roster by phone
+      operationId: DeleteRosterByPhone
+      parameters:
+      - description: Phone
+        in: path
+        name: phone
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/rosters/uin/{uin}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a roster by uin
+      operationId: DeleteRosterByUIN
+      parameters:
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
   /admin/rules:
     get:
       consumes:
@@ -3865,6 +4044,27 @@ paths:
             items:
               $ref: '#/definitions/Resource'
             type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/rosters/phone/{phone}:
+    get:
+      consumes:
+      - application/json
+      description: Gives uin of the roster member with a given phone number.
+      operationId: GetRosterIDByPhone
+      parameters:
+      - description: Phone
+        in: path
+        name: phone
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/getRosterIDByPhoneResponse'
       security:
       - RokwireAuth: []
       tags:

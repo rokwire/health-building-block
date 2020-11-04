@@ -258,6 +258,9 @@ func (m *database) start() error {
 	//watch for app versions changes
 	go m.appversions.Watch(nil)
 
+	//watch for rosters changes
+	go m.rosters.Watch(nil)
+
 	return nil
 }
 
@@ -687,7 +690,7 @@ func (m *database) applyRostersChecks(rosters *collectionWrapper) error {
 	log.Println("apply rosters checks.....")
 
 	//add indexes
-	err := rosters.AddIndex(bson.D{primitive.E{Key: "externalID", Value: 1}}, true)
+	err := rosters.AddIndex(bson.D{primitive.E{Key: "uin", Value: 1}}, true)
 	if err != nil {
 		return err
 	}
@@ -724,6 +727,12 @@ func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 
 		if m.listener != nil {
 			m.listener.OnAppVersionsChanged()
+		}
+	} else if "rosters" == coll {
+		log.Println("rosters collection changed")
+
+		if m.listener != nil {
+			m.listener.OnRostersChanged()
 		}
 	} else {
 		log.Println("other collection changed")

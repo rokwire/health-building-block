@@ -238,6 +238,8 @@ func (app *Application) notifyListeners(message string, data interface{}) {
 				listener.OnClearUserData(data.(model.User))
 			} else if message == "onUserUpdated" {
 				listener.OnUserUpdated(data.(model.User))
+			} else if message == "onRostersUpdated" {
+				listener.OnRostersUpdated()
 			}
 		}
 	}()
@@ -571,6 +573,15 @@ func (app *Application) UpdateUser(user *model.User) error {
 		return err
 	}
 	return nil
+}
+
+//LoadAllRosters loads all rosters
+func (app *Application) LoadAllRosters() ([]map[string]string, error) {
+	rosters, err := app.storage.ReadAllRosters()
+	if err != nil {
+		return nil, err
+	}
+	return rosters, nil
 }
 
 func (app *Application) getEHistoriesByUserID(userID string) ([]*model.EHistory, error) {

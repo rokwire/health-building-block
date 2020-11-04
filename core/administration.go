@@ -1676,6 +1676,81 @@ func (app *Application) getUserByExternalID(externalID string) (*model.User, err
 	return user, nil
 }
 
+func (app *Application) createRoster(current model.User, group string, audit *string, phone string, uin string) error {
+	err := app.storage.CreateRoster(phone, uin)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "phone", Value: phone}, {Key: "uin", Value: uin}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "roster", "", lData, audit)
+
+	return nil
+}
+
+func (app *Application) createRosterItems(current model.User, group string, audit *string, items []map[string]string) error {
+	err := app.storage.CreateRosterItems(items)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "items", Value: fmt.Sprintf("%s", items)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "roster", "", lData, audit)
+
+	return nil
+}
+
+func (app *Application) getRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
+	rosters, err := app.storage.FindRosters(filter, sortBy, sortOrder, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	return rosters, nil
+}
+
+func (app *Application) deleteRosterByPhone(current model.User, group string, phone string) error {
+	err := app.storage.DeleteRosterByPhone(phone)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "roster", fmt.Sprintf("phone:%s", phone))
+
+	return nil
+}
+
+func (app *Application) deleteRosterByUIN(current model.User, group string, uin string) error {
+	err := app.storage.DeleteRosterByUIN(uin)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "roster", fmt.Sprintf("uin:%s", uin))
+
+	return nil
+}
+
+func (app *Application) deleteAllRosters(current model.User, group string) error {
+	err := app.storage.DeleteAllRosters()
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "roster", "all")
+
+	return nil
+}
+
 func (app *Application) createAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false, nil)

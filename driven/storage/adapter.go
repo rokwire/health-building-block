@@ -4510,9 +4510,17 @@ func (sa *Adapter) DeleteRosterByPhone(phone string) error {
 			abortTransaction(sessionContext)
 			return err
 		}
+
 		if len(usersResult) > 0 {
-			abortTransaction(sessionContext)
-			return errors.New("User with the provided phone/uin has already logged in in the system")
+			//there is a user, so we need to remove it and all related data
+			user := usersResult[0]
+
+			// delete the user data
+			err = sa.deleteUserData(sessionContext, user.ID)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
 		}
 
 		//now we can remove the item

@@ -4715,6 +4715,14 @@ func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID st
 		return err
 	}
 
+	//remove from uinbuildingaccess
+	uinBuildingAccessFilter := bson.D{primitive.E{Key: "uin", Value: externalID}}
+	_, err = sa.db.uinbuildingaccess.DeleteOneWithContext(sessionContext, uinBuildingAccessFilter, nil)
+	if err != nil {
+		log.Printf("error deleting uinbuildingaccess record for a user - %s", err)
+		return err
+	}
+
 	//remove from ctest
 	cTestFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
 	_, err := sa.db.ctests.DeleteManyWithContext(sessionContext, cTestFilter, nil)

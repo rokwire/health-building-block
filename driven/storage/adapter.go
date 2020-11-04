@@ -18,6 +18,7 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -4478,6 +4479,69 @@ func (sa *Adapter) CreateRoster(phone string, uin string) error {
 
 //CreateRosterItems creates roster items
 func (sa *Adapter) CreateRosterItems(items []map[string]string) error {
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//first check if the input data is valid, i.e all uins are new
+		//check in users
+		uins := make([]string, len(items))
+		for i, current := range items {
+			uins[i] = current["uin"]
+		}
+		uFilter := bson.D{primitive.E{Key: "external_id", Value: bson.M{"$in": uins}}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
+		if err != nil {
+			log.Printf("error reading users for roster check - %s", err)
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(usersResult) > 0 {
+			abortTransaction(sessionContext)
+
+			//construct the error
+			var b bytes.Buffer
+			for _, c := range usersResult {
+				b.WriteString(c.ExternalID)
+				b.WriteString(" ")
+			}
+			errorMessage := fmt.Sprintf("%s- used in the system", b.String())
+			log.Printf(errorMessage)
+			return errors.New(errorMessage)
+		}
+
+		//insert the items
+		//need to prepare the input data
+		data := make([]interface{}, len(items))
+		for i, c := range items {
+			data[i] = c
+		}
+		result, err := sa.db.rosters.InsertManyWithContext(sessionContext, data, nil)
+		if err != nil {
+			log.Printf("error inserting many roster items - %s", err)
+			abortTransaction(sessionContext)
+			return err
+		}
+		if result == nil {
+			log.Println("for some reasons the result is nil when create many trace items")
+			return errors.New("for some reasons the result is nil when create many trace items")
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

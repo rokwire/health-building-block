@@ -127,7 +127,11 @@ func (collWrapper *collectionWrapper) InsertOneWithContext(ctx context.Context, 
 }
 
 func (collWrapper *collectionWrapper) InsertMany(documents []interface{}, opts *options.InsertManyOptions) (*mongo.InsertManyResult, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), collWrapper.database.mongoTimeout)
+	return collWrapper.InsertManyWithContext(context.Background(), documents, opts)
+}
+
+func (collWrapper *collectionWrapper) InsertManyWithContext(ctx context.Context, documents []interface{}, opts *options.InsertManyOptions) (*mongo.InsertManyResult, error) {
+	ctx, cancel := context.WithTimeout(ctx, collWrapper.database.mongoTimeout)
 	defer cancel()
 
 	result, err := collWrapper.coll.InsertMany(ctx, documents, opts)

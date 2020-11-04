@@ -4440,6 +4440,16 @@ type createRosterItemsRequest struct {
 } // @name createRosterItemsRequest
 
 //CreateRosterItems creates many roster items
+// @Description Creates many roster items
+// @Tags Admin
+// @ID CreateRosterItems
+// @Accept json
+// @Produce json
+// @Param data body createRosterItemsRequest true "body data"
+// @Success 200 {string} Successfully created
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/roster-items [post]
 func (h AdminApisHandler) CreateRosterItems(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {

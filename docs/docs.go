@@ -2164,6 +2164,48 @@ var doc = `{
                 }
             }
         },
+        "/admin/roster-items": {
+            "post": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Creates many roster items",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "CreateRosterItems",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createRosterItemsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/rosters": {
             "get": {
                 "security": [
@@ -6516,6 +6558,34 @@ var doc = `{
                 },
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "createRosterItemsRequest": {
+            "type": "object",
+            "properties": {
+                "audit": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "phone": {
+                                "type": "string",
+                                "required": [
+                                    "phone"
+                                ]
+                            },
+                            "uin": {
+                                "type": "string",
+                                "required": [
+                                    "uin"
+                                ]
+                            }
+                        }
+                    }
                 }
             }
         },

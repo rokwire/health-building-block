@@ -4528,8 +4528,8 @@ func (sa *Adapter) CreateRosterItems(items []map[string]string) error {
 			return err
 		}
 		if result == nil {
-			log.Println("for some reasons the result is nil when create many trace items")
-			return errors.New("for some reasons the result is nil when create many trace items")
+			log.Println("for some reasons the result is nil when create many roster items")
+			return errors.New("for some reasons the result is nil when create many roster items")
 		}
 
 		err = sessionContext.CommitTransaction(sessionContext)

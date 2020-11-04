@@ -4693,6 +4693,28 @@ func (sa *Adapter) deleteAllStatuses(sessionContext mongo.SessionContext) error 
 
 func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID string) error {
 
+	//first read the user as we need the external id too
+	uFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+	var usersResult []*model.User
+	err := sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
+	if err != nil {
+		return err
+	}
+	if len(usersResult) == 0 {
+		log.Printf("there is no a user for the provided user id - %s %s", userID, err)
+		return err
+	}
+	user := usersResult[0]
+	externalID := user.ExternalID
+
+	//remove from uinoverrides
+	uinOverridesFilter := bson.D{primitive.E{Key: "uin", Value: externalID}}
+	_, err = sa.db.uinoverrides.DeleteOneWithContext(sessionContext, uinOverridesFilter, nil)
+	if err != nil {
+		log.Printf("error deleting uinoverride record for a user - %s", err)
+		return err
+	}
+
 	//remove from ctest
 	cTestFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
 	_, err := sa.db.ctests.DeleteManyWithContext(sessionContext, cTestFilter, nil)

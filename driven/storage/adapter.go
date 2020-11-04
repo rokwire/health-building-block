@@ -4725,7 +4725,7 @@ func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID st
 
 	//remove from ctest
 	cTestFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
-	_, err := sa.db.ctests.DeleteManyWithContext(sessionContext, cTestFilter, nil)
+	_, err = sa.db.ctests.DeleteManyWithContext(sessionContext, cTestFilter, nil)
 	if err != nil {
 		log.Printf("error deleting ctests for a user - %s", err)
 		return err

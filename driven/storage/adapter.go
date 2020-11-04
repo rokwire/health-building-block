@@ -4573,38 +4573,41 @@ func (sa *Adapter) DeleteRosterByUIN(uin string) error {
 			//there is a user, so we need to remove it and all related data
 			user := usersResult[0]
 
-			//TODO
-			log.Println(user.ID)
+			// delete the user data
+			err = sa.deleteUserData(sessionContext, user.ID)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
 		}
 
-		/*
-			//now we can remove the item
-			deleteFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
-			result, err := sa.db.rosters.DeleteOneWithContext(sessionContext, deleteFilter, nil)
-			if err != nil {
-				log.Printf("error deleting a roster - %s", err)
-				abortTransaction(sessionContext)
-				return err
-			}
-			if result == nil {
-				abortTransaction(sessionContext)
-				return errors.New("result is nil for roster with uin " + uin)
-			}
-			deletedCount := result.DeletedCount
-			if deletedCount == 0 {
-				abortTransaction(sessionContext)
-				return errors.New("there is no a roster for uin " + uin)
-			}
-			if deletedCount > 1 {
-				abortTransaction(sessionContext)
-				return errors.New("deleted more than one records for uin " + uin)
-			}
+		//now we can remove the item
+		deleteFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
+		result, err := sa.db.rosters.DeleteOneWithContext(sessionContext, deleteFilter, nil)
+		if err != nil {
+			log.Printf("error deleting a roster - %s", err)
+			abortTransaction(sessionContext)
+			return err
+		}
+		if result == nil {
+			abortTransaction(sessionContext)
+			return errors.New("result is nil for roster with uin " + uin)
+		}
+		deletedCount := result.DeletedCount
+		if deletedCount == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is no a roster for uin " + uin)
+		}
+		if deletedCount > 1 {
+			abortTransaction(sessionContext)
+			return errors.New("deleted more than one records for uin " + uin)
+		}
 
-			err = sessionContext.CommitTransaction(sessionContext)
-			if err != nil {
-				log.Printf("error on commiting a transaction - %s", err)
-				return err
-			} */
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
 		return nil
 	})
 	if err != nil {

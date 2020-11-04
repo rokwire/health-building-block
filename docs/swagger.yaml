@@ -2666,6 +2666,21 @@ paths:
       tags:
       - Admin
   /admin/rosters:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes all rosters
+      operationId: DeleteAllRosters
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
     get:
       consumes:
       - application/json

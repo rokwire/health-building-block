@@ -4574,6 +4574,14 @@ func (h AdminApisHandler) DeleteRosterByUIN(current model.User, group string, w 
 }
 
 //DeleteAllRosters deletes all rosters
+// @Description Deletes all rosters
+// @Tags Admin
+// @ID DeleteAllRosters
+// @Accept plain
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters [delete]
 func (h AdminApisHandler) DeleteAllRosters(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	err := h.app.Administration.DeleteAllRosters(current, group)
 	if err != nil {

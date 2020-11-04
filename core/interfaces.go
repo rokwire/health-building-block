@@ -391,6 +391,7 @@ type Administration interface {
 	DeleteUINOverride(current model.User, group string, uin string) error
 
 	CreateRoster(current model.User, group string, audit *string, phone string, uin string) error
+	CreateRosterItems(current model.User, group string, audit *string, items []map[string]string) error
 	GetRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	DeleteRosterByPhone(current model.User, group string, phone string) error
 	DeleteRosterByUIN(current model.User, group string, uin string) error
@@ -718,6 +719,10 @@ func (s *administrationImpl) CreateRoster(current model.User, group string, audi
 	return s.app.createRoster(current, group, audit, phone, uin)
 }
 
+func (s *administrationImpl) CreateRosterItems(current model.User, group string, audit *string, items []map[string]string) error {
+	return s.app.createRosterItems(current, group, audit, items)
+}
+
 func (s *administrationImpl) GetRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
 	return s.app.getRosters(filter, sortBy, sortOrder, limit, offset)
 }
@@ -907,6 +912,7 @@ type Storage interface {
 	FindRosterIDByPhone(phone string) (*string, error)
 	FindRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	CreateRoster(phone string, uin string) error
+	CreateRosterItems(items []map[string]string) error
 	DeleteRosterByPhone(phone string) error
 	DeleteRosterByUIN(uin string) error
 	DeleteAllRosters() error

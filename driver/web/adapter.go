@@ -274,6 +274,7 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/uin-overrides/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteUINOverride)).Methods("DELETE")
 
 	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateRoster)).Methods("POST")
+	adminRestSubrouter.HandleFunc("/roster-items", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateRosterItems)).Methods("POST")
 	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetRosters)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/rosters/phone/{phone}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteRosterByPhone)).Methods("DELETE")
 	adminRestSubrouter.HandleFunc("/rosters/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteRosterByUIN)).Methods("DELETE")

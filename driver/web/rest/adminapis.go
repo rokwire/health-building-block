@@ -4431,6 +4431,68 @@ func (h AdminApisHandler) CreateRoster(current model.User, group string, w http.
 	w.Write([]byte("Successfully created"))
 }
 
+type createRosterItemsRequest struct {
+	Audit *string `json:"audit"`
+	Items []struct {
+		Phone string `json:"phone" validate:"required"`
+		UIN   string `json:"uin" validate:"required"`
+	} `json:"items" validate:"required,min=1"`
+} // @name createRosterItemsRequest
+
+//CreateRosterItems creates many roster items
+func (h AdminApisHandler) CreateRosterItems(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create roster items - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createRosterItemsRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create roster items request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create roster items data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = validate.Var(requestData.Items, "required,dive")
+	if err != nil {
+		log.Printf("Error on validating create roster items - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	items := requestData.Items
+
+	//prepare the items
+	itemsList := make([]map[string]string, len(items))
+	for i, current := range items {
+		item := map[string]string{"phone": current.Phone, "uin": current.UIN}
+		itemsList[i] = item
+	}
+
+	err = h.app.Administration.CreateRosterItems(current, group, audit, itemsList)
+	if err != nil {
+		log.Printf("Error on creating roster items - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully created"))
+}
+
 //GetRosters returns the roster members matching filters, sorted, and paginated
 // @Description Gives the roster members matching filters, sorted, and paginated
 // @Tags Admin

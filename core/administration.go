@@ -1690,6 +1690,20 @@ func (app *Application) createRoster(current model.User, group string, audit *st
 	return nil
 }
 
+func (app *Application) createRosterItems(current model.User, group string, audit *string, items []map[string]string) error {
+	err := app.storage.CreateRosterItems(items)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "items", Value: fmt.Sprintf("%s", items)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "roster", "", lData, audit)
+
+	return nil
+}
+
 func (app *Application) getRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
 	rosters, err := app.storage.FindRosters(filter, sortBy, sortOrder, limit, offset)
 	if err != nil {

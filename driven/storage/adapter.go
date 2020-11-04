@@ -4476,6 +4476,11 @@ func (sa *Adapter) CreateRoster(phone string, uin string) error {
 	return nil
 }
 
+//CreateRosterItems creates roster items
+func (sa *Adapter) CreateRosterItems(items []map[string]string) error {
+	return nil
+}
+
 //DeleteRosterByPhone deletes the roster for the provided phone
 func (sa *Adapter) DeleteRosterByPhone(phone string) error {
 	// transaction

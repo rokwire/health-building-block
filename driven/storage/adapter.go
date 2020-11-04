@@ -288,54 +288,10 @@ func (sa *Adapter) ClearUserData(userID string) error {
 			return err
 		}
 
-		//remove from ctest
-		cTestFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
-		_, err = sa.db.ctests.DeleteManyWithContext(sessionContext, cTestFilter, nil)
+		// delete the user data
+		err = sa.deleteUserData(sessionContext, userID)
 		if err != nil {
-			log.Printf("error deleting ctests for a user - %s", err)
-
 			abortTransaction(sessionContext)
-
-			return err
-		}
-
-		//remove from history
-		historyFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
-		//from ehistory
-		_, err = sa.db.ehistory.DeleteManyWithContext(sessionContext, historyFilter, nil)
-		if err != nil {
-			log.Printf("error deleting ehistories for a user - %s", err)
-			abortTransaction(sessionContext)
-			return err
-		}
-
-		//remove from status
-		statusFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
-		//from estatus
-		_, err = sa.db.estatus.DeleteManyWithContext(sessionContext, statusFilter, nil)
-		if err != nil {
-			log.Printf("error deleting estatus for a user - %s", err)
-			abortTransaction(sessionContext)
-			return err
-		}
-
-		//remove from manual tests
-		mtFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
-		_, err = sa.db.emanualtests.DeleteOneWithContext(sessionContext, mtFilter, nil)
-		if err != nil {
-			log.Printf("error deleting manual tests for a user - %s", err)
-			abortTransaction(sessionContext)
-			return err
-		}
-
-		//remove from users
-		usersFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
-		_, err = sa.db.users.DeleteOneWithContext(sessionContext, usersFilter, nil)
-		if err != nil {
-			log.Printf("error deleting user record for a user - %s", err)
-
-			abortTransaction(sessionContext)
-
 			return err
 		}
 
@@ -4604,7 +4560,7 @@ func (sa *Adapter) DeleteRosterByUIN(uin string) error {
 			return err
 		}
 
-		//first check if there is a user for the provided uin.
+		//first find if there is logged in user in the system for this uin
 		filter := bson.D{primitive.E{Key: "external_id", Value: uin}}
 		var usersResult []*model.User
 		err = sa.db.users.FindWithContext(sessionContext, filter, &usersResult, nil)
@@ -4612,38 +4568,43 @@ func (sa *Adapter) DeleteRosterByUIN(uin string) error {
 			abortTransaction(sessionContext)
 			return err
 		}
+
 		if len(usersResult) > 0 {
-			abortTransaction(sessionContext)
-			return errors.New("User with the provided uin has already logged in in the system")
+			//there is a user, so we need to remove it and all related data
+			user := usersResult[0]
+
+			//TODO
+			log.Println(user.ID)
 		}
 
-		//now we can remove the item
-		deleteFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
-		result, err := sa.db.rosters.DeleteOneWithContext(sessionContext, deleteFilter, nil)
-		if err != nil {
-			log.Printf("error deleting a roster - %s", err)
-			abortTransaction(sessionContext)
-			return err
-		}
-		if result == nil {
-			abortTransaction(sessionContext)
-			return errors.New("result is nil for roster with uin " + uin)
-		}
-		deletedCount := result.DeletedCount
-		if deletedCount == 0 {
-			abortTransaction(sessionContext)
-			return errors.New("there is no a roster for uin " + uin)
-		}
-		if deletedCount > 1 {
-			abortTransaction(sessionContext)
-			return errors.New("deleted more than one records for uin " + uin)
-		}
+		/*
+			//now we can remove the item
+			deleteFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
+			result, err := sa.db.rosters.DeleteOneWithContext(sessionContext, deleteFilter, nil)
+			if err != nil {
+				log.Printf("error deleting a roster - %s", err)
+				abortTransaction(sessionContext)
+				return err
+			}
+			if result == nil {
+				abortTransaction(sessionContext)
+				return errors.New("result is nil for roster with uin " + uin)
+			}
+			deletedCount := result.DeletedCount
+			if deletedCount == 0 {
+				abortTransaction(sessionContext)
+				return errors.New("there is no a roster for uin " + uin)
+			}
+			if deletedCount > 1 {
+				abortTransaction(sessionContext)
+				return errors.New("deleted more than one records for uin " + uin)
+			}
 
-		err = sessionContext.CommitTransaction(sessionContext)
-		if err != nil {
-			log.Printf("error on commiting a transaction - %s", err)
-			return err
-		}
+			err = sessionContext.CommitTransaction(sessionContext)
+			if err != nil {
+				log.Printf("error on commiting a transaction - %s", err)
+				return err
+			} */
 		return nil
 	})
 	if err != nil {
@@ -4727,6 +4688,53 @@ func (sa *Adapter) deleteAllStatuses(sessionContext mongo.SessionContext) error 
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID string) error {
+
+	//remove from ctest
+	cTestFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	_, err := sa.db.ctests.DeleteManyWithContext(sessionContext, cTestFilter, nil)
+	if err != nil {
+		log.Printf("error deleting ctests for a user - %s", err)
+		return err
+	}
+
+	//remove from history
+	historyFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	//from ehistory
+	_, err = sa.db.ehistory.DeleteManyWithContext(sessionContext, historyFilter, nil)
+	if err != nil {
+		log.Printf("error deleting ehistories for a user - %s", err)
+		return err
+	}
+
+	//remove from status
+	statusFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	//from estatus
+	_, err = sa.db.estatus.DeleteManyWithContext(sessionContext, statusFilter, nil)
+	if err != nil {
+		log.Printf("error deleting estatus for a user - %s", err)
+		return err
+	}
+
+	//remove from manual tests
+	mtFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	_, err = sa.db.emanualtests.DeleteOneWithContext(sessionContext, mtFilter, nil)
+	if err != nil {
+		log.Printf("error deleting manual tests for a user - %s", err)
+		return err
+	}
+
+	//remove from users
+	usersFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+	_, err = sa.db.users.DeleteOneWithContext(sessionContext, usersFilter, nil)
+	if err != nil {
+		log.Printf("error deleting user record for a user - %s", err)
+		return err
+	}
+
 	return nil
 }
 

@@ -277,9 +277,7 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetRosters)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/rosters/phone/{phone}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteRosterByPhone)).Methods("DELETE")
 	adminRestSubrouter.HandleFunc("/rosters/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteRosterByUIN)).Methods("DELETE")
-
-	//adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.ReplaceRoster)).Methods("POST")
-	//adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateRoster)).Methods("PUT")
+	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteAllRosters)).Methods("DELETE")
 
 	adminRestSubrouter.HandleFunc("/user", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUserByExternalID)).Methods("GET").Queries("external-id", "")
 

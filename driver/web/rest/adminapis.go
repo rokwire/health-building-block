@@ -4573,80 +4573,19 @@ func (h AdminApisHandler) DeleteRosterByUIN(current model.User, group string, w 
 	w.Write([]byte("Successfully deleted"))
 }
 
-/*
-//ReplaceRoster replaces all members on the existing roster with new data
-func (h AdminApisHandler) ReplaceRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
-	data, err := ioutil.ReadAll(r.Body)
+//DeleteAllRosters deletes all rosters
+func (h AdminApisHandler) DeleteAllRosters(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	err := h.app.Administration.DeleteAllRosters(current, group)
 	if err != nil {
-		log.Println("ReplaceRoster - could not read request body:", err.Error())
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-	var dataArray []map[string]interface{}
-	err = json.Unmarshal(data, &dataArray)
-	if err != nil {
-		log.Println("ReplaceRoster - invalid json body:", err.Error())
-		http.Error(w, "Invalid json body: "+err.Error(), http.StatusBadRequest)
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = h.app.Administration.ReplaceRoster(dataArray)
-	if err != nil {
-		log.Println("Unable to replace roster data:", err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Replace roster successful"))
+	w.Write([]byte("Successfully deleted"))
 }
-
-//UpdateRoster adds/updates roster members based on externalID field
-func (h AdminApisHandler) UpdateRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
-	data, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Println("UpdateRoster - could not read request body:", err.Error())
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-	var dataArray []map[string]interface{}
-	err = json.Unmarshal(data, &dataArray)
-	if err != nil {
-		log.Println("ReplaceRoster - invalid json body:", err.Error())
-		http.Error(w, "Invalid json body: "+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = h.app.Administration.UpdateRoster(dataArray)
-	if err != nil {
-		log.Println("Unable to update roster data:", err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Update roster successful"))
-}
-
-//DeleteRoster deletes all roster members matching filter. If no filter, entire roster is deleted
-func (h AdminApisHandler) DeleteRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
-	var filter utils.Filter
-	for key, value := range r.URL.Query() {
-		if len(value) < 1 {
-			continue
-		}
-		filter.Items = append(filter.Items, utils.FilterItem{Field: key, Value: value})
-	}
-
-	err := h.app.Administration.DeleteRoster(&filter)
-	if err != nil {
-		log.Println("Unable to delete roster:", err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Delete successful"))
-} */
 
 type createActionRequest struct {
 	Audit         *string `json:"audit"`

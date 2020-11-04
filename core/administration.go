@@ -1724,6 +1724,19 @@ func (app *Application) deleteRosterByUIN(current model.User, group string, uin 
 	return nil
 }
 
+func (app *Application) deleteAllRosters(current model.User, group string) error {
+	err := app.storage.DeleteAllRosters()
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "roster", "all")
+
+	return nil
+}
+
 func (app *Application) createAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false, nil)

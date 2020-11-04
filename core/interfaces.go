@@ -394,10 +394,7 @@ type Administration interface {
 	GetRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	DeleteRosterByPhone(current model.User, group string, phone string) error
 	DeleteRosterByUIN(current model.User, group string, uin string) error
-
-	//TODO
-	ReplaceRoster(rosterData []map[string]interface{}) error
-	UpdateRoster(rosterData []map[string]interface{}) error
+	DeleteAllRosters(current model.User, group string) error
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
@@ -733,13 +730,8 @@ func (s *administrationImpl) DeleteRosterByUIN(current model.User, group string,
 	return s.app.deleteRosterByUIN(current, group, uin)
 }
 
-func (s *administrationImpl) ReplaceRoster(rosterData []map[string]interface{}) error {
-	//TODO
-	return nil
-}
-
-func (s *administrationImpl) UpdateRoster(rosterData []map[string]interface{}) error {
-	return s.app.storage.UpdateRoster(rosterData)
+func (s *administrationImpl) DeleteAllRosters(current model.User, group string) error {
+	return s.app.deleteAllRosters(current, group)
 }
 
 func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
@@ -917,9 +909,7 @@ type Storage interface {
 	CreateRoster(phone string, uin string) error
 	DeleteRosterByPhone(phone string) error
 	DeleteRosterByUIN(uin string) error
-
-	//TODO
-	UpdateRoster(rosterData []map[string]interface{}) error
+	DeleteAllRosters() error
 }
 
 //StorageListener listenes for change data storage events

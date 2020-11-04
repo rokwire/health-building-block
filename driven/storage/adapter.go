@@ -4624,59 +4624,9 @@ func (sa *Adapter) DeleteRosterByUIN(uin string) error {
 	return nil
 }
 
-//UpdateRoster adds/updates roster members based on externalID field
-func (sa *Adapter) UpdateRoster(rosterData []map[string]interface{}) error {
-	if rosterData == nil || len(rosterData) == 0 {
-		return errors.New("Incoming roster data is empty")
-	}
-
-	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
-		err := sessionContext.StartTransaction()
-		if err != nil {
-			log.Printf("error unmarshaling bson - %s\n", err)
-			return err
-		}
-
-		for _, v := range rosterData {
-			for _, key := range []string{"externalID", "phone"} {
-				_, ok := v[key]
-				if !ok {
-					log.Printf("User missing required field: %s\n", key)
-
-					abortTransaction(sessionContext)
-
-					return errors.New("User missing required field: " + key)
-				}
-			}
-
-			doc := bson.D{}
-			for key, val := range v {
-				doc = append(doc, primitive.E{Key: key, Value: val})
-			}
-
-			var filter = bson.D{primitive.E{Key: "externalID", Value: v["externalID"]}}
-			opts := options.Replace().SetUpsert(true)
-			err = sa.db.rosters.ReplaceOneWithContext(sessionContext, filter, doc, opts)
-			if err != nil {
-				log.Printf("error updating roster - %s\n", err)
-
-				abortTransaction(sessionContext)
-
-				return err
-			}
-		}
-
-		err = sessionContext.CommitTransaction(sessionContext)
-		if err != nil {
-			log.Printf("error on commiting a transaction - %s", err)
-			return err
-		}
-		return nil
-	})
-	if err != nil {
-		return err
-	}
-
+//DeleteAllRosters deletes all rosters
+func (sa *Adapter) DeleteAllRosters() error {
+	//TODO
 	return nil
 }
 

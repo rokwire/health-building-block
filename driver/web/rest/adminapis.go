@@ -4431,8 +4431,22 @@ func (h AdminApisHandler) CreateRoster(current model.User, group string, w http.
 	audit := requestData.Audit
 	phone := requestData.Phone
 	uin := requestData.UIN
+	firstName := requestData.FirstName
+	middleName := requestData.MiddleName
+	lastName := requestData.LastName
+	birthDate := requestData.BirthDate
+	gender := requestData.Gender
+	address1 := requestData.Address1
+	address2 := requestData.Address2
+	address3 := requestData.Address3
+	city := requestData.City
+	state := requestData.State
+	zipCode := requestData.ZipCode
+	email := requestData.Email
+	badgeType := requestData.BadgeType
 
-	err = h.app.Administration.CreateRoster(current, group, audit, phone, uin)
+	err = h.app.Administration.CreateRoster(current, group, audit, phone, uin, firstName, middleName, lastName,
+		birthDate, gender, address1, address2, address3, city, state, zipCode, email, badgeType)
 	if err != nil {
 		log.Printf("Error on creating a roster - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

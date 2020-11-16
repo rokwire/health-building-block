@@ -510,10 +510,10 @@ func (app *Application) getSymptoms(appVersion *string) (*model.Symptoms, error)
 	return symptoms, nil
 }
 
-func (app *Application) getRosterIDByPhone(phone string) (*string, error) {
-	uin, err := app.storage.FindRosterIDByPhone(phone)
+func (app *Application) getRosterByPhone(phone string) (map[string]string, error) {
+	roster, err := app.storage.FindRosterByPhone(phone)
 	if err != nil {
 		return nil, err
 	}
-	return uin, nil
+	return roster, nil
 }

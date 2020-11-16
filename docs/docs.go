@@ -4412,7 +4412,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/getRosterIDByPhoneResponse"
+                            "$ref": "#/definitions/getRosterByPhoneResponse"
                         }
                     }
                 }
@@ -6572,17 +6572,56 @@ var doc = `{
                     "items": {
                         "type": "object",
                         "properties": {
+                            "address1": {
+                                "type": "string"
+                            },
+                            "address2": {
+                                "type": "string"
+                            },
+                            "address3": {
+                                "type": "string"
+                            },
+                            "badge_type": {
+                                "type": "string"
+                            },
+                            "birth_date": {
+                                "type": "string"
+                            },
+                            "city": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string"
+                            },
+                            "first_name": {
+                                "type": "string"
+                            },
+                            "gender": {
+                                "type": "string"
+                            },
+                            "last_name": {
+                                "type": "string"
+                            },
+                            "middle_name": {
+                                "type": "string"
+                            },
                             "phone": {
                                 "type": "string",
                                 "required": [
                                     "phone"
                                 ]
                             },
+                            "state": {
+                                "type": "string"
+                            },
                             "uin": {
                                 "type": "string",
                                 "required": [
                                     "uin"
                                 ]
+                            },
+                            "zip_code": {
+                                "type": "string"
                             }
                         }
                     }
@@ -6596,13 +6635,52 @@ var doc = `{
                 "uin"
             ],
             "properties": {
+                "address1": {
+                    "type": "string"
+                },
+                "address2": {
+                    "type": "string"
+                },
+                "address3": {
+                    "type": "string"
+                },
                 "audit": {
+                    "type": "string"
+                },
+                "badge_type": {
+                    "type": "string"
+                },
+                "birth_date": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "middle_name": {
                     "type": "string"
                 },
                 "phone": {
                     "type": "string"
                 },
+                "state": {
+                    "type": "string"
+                },
                 "uin": {
+                    "type": "string"
+                },
+                "zip_code": {
                     "type": "string"
                 }
             }
@@ -6772,9 +6850,18 @@ var doc = `{
                 }
             }
         },
-        "getRosterIDByPhoneResponse": {
+        "getRosterByPhoneResponse": {
             "type": "object",
             "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "middle_name": {
+                    "type": "string"
+                },
                 "uin": {
                     "type": "string"
                 }

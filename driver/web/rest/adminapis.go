@@ -4461,8 +4461,21 @@ func (h AdminApisHandler) CreateRoster(current model.User, group string, w http.
 type createRosterItemsRequest struct {
 	Audit *string `json:"audit"`
 	Items []struct {
-		Phone string `json:"phone" validate:"required"`
-		UIN   string `json:"uin" validate:"required"`
+		Phone      string `json:"phone" validate:"required"`
+		UIN        string `json:"uin" validate:"required"`
+		FirstName  string `json:"first_name"`
+		MiddleName string `json:"middle_name"`
+		LastName   string `json:"last_name"`
+		BirthDate  string `json:"birth_date"`
+		Gender     string `json:"gender"`
+		Address1   string `json:"address1"`
+		Address2   string `json:"address2"`
+		Address3   string `json:"address3"`
+		City       string `json:"city"`
+		State      string `json:"state"`
+		ZipCode    string `json:"zip_code"`
+		Email      string `json:"email"`
+		BadgeType  string `json:"badge_type"`
 	} `json:"items" validate:"required,min=1"`
 } // @name createRosterItemsRequest
 
@@ -4514,7 +4527,9 @@ func (h AdminApisHandler) CreateRosterItems(current model.User, group string, w 
 	//prepare the items
 	itemsList := make([]map[string]string, len(items))
 	for i, current := range items {
-		item := map[string]string{"phone": current.Phone, "uin": current.UIN}
+		item := map[string]string{"phone": current.Phone, "uin": current.UIN, "first_name": current.FirstName, "middle_name": current.MiddleName,
+			"last_name": current.LastName, "birth_date": current.BirthDate, "gender": current.Gender, "address1": current.Address1, "address2": current.Address2,
+			"address3": current.Address3, "city": current.City, "state": current.State, "zip_code": current.ZipCode, "email": current.Email, "badge_type": current.BadgeType}
 		itemsList[i] = item
 	}
 

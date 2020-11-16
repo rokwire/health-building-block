@@ -4376,11 +4376,11 @@ func (sa *Adapter) ReadAllRosters() ([]map[string]string, error) {
 	return result, nil
 }
 
-//FindRosterIDByPhone finds the UIN for the user with the given phone number
-func (sa *Adapter) FindRosterIDByPhone(phone string) (*string, error) {
+//FindRosterByPhone finds the roster for the user with the given phone number
+func (sa *Adapter) FindRosterByPhone(phone string) (map[string]string, error) {
 	filter := bson.D{primitive.E{Key: "phone", Value: phone}}
 
-	var result []map[string]interface{}
+	var result []map[string]string
 	err := sa.db.rosters.Find(filter, &result, nil)
 	if err != nil {
 		return nil, err
@@ -4390,13 +4390,7 @@ func (sa *Adapter) FindRosterIDByPhone(phone string) (*string, error) {
 		return nil, nil
 	}
 	item := result[0]
-
-	val, ok := item["uin"].(string)
-	if !ok {
-		log.Println("GetRosterIDByPhone: roster member missing 'uin' field")
-		return nil, errors.New("roster member missing 'uin' field")
-	}
-	return &val, nil
+	return item, nil
 }
 
 //FindRosters returns the roster members matching filters, sorted, and paginated

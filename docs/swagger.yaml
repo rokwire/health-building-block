@@ -1048,8 +1048,14 @@ definitions:
     - interval
     - uin
     type: object
-  getRosterIDByPhoneResponse:
+  getRosterByPhoneResponse:
     properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+      middle_name:
+        type: string
       uin:
         type: string
     type: object
@@ -4116,7 +4122,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/getRosterIDByPhoneResponse'
+            $ref: '#/definitions/getRosterByPhoneResponse'
       security:
       - RokwireAuth: []
       tags:

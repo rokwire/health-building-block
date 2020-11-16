@@ -4412,7 +4412,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/getRosterIDByPhoneResponse"
+                            "$ref": "#/definitions/getRosterByPhoneResponse"
                         }
                     }
                 }
@@ -6850,9 +6850,18 @@ var doc = `{
                 }
             }
         },
-        "getRosterIDByPhoneResponse": {
+        "getRosterByPhoneResponse": {
             "type": "object",
             "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "middle_name": {
+                    "type": "string"
+                },
                 "uin": {
                     "type": "string"
                 }

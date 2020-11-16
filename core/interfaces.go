@@ -92,7 +92,7 @@ type Services interface {
 	SetUINBuildingAccess(current model.User, date time.Time, access string) error
 	GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
 
-	GetRosterIDByPhone(phone string) (*string, error)
+	GetRosterByPhone(phone string) (map[string]string, error)
 }
 
 type servicesImpl struct {
@@ -284,8 +284,8 @@ func (s *servicesImpl) GetExtUINBuildingAccess(uin string) (*model.UINBuildingAc
 	return s.app.getExtUINBuildingAccess(uin)
 }
 
-func (s *servicesImpl) GetRosterIDByPhone(phone string) (*string, error) {
-	return s.app.getRosterIDByPhone(phone)
+func (s *servicesImpl) GetRosterByPhone(phone string) (map[string]string, error) {
+	return s.app.getRosterByPhone(phone)
 }
 
 //Administration exposes administration APIs for the driver adapters
@@ -390,7 +390,9 @@ type Administration interface {
 	UpdateUINOverride(current model.User, group string, audit *string, uin string, interval int, category *string, expiration *time.Time) (*string, error)
 	DeleteUINOverride(current model.User, group string, uin string) error
 
-	CreateRoster(current model.User, group string, audit *string, phone string, uin string) error
+	CreateRoster(current model.User, group string, audit *string, phone string, uin string, firstName string,
+		middleName string, lastName string, birthDate string, gender string, address1 string, address2 string,
+		address3 string, city string, state string, zipCode string, email string, badgeType string) error
 	CreateRosterItems(current model.User, group string, audit *string, items []map[string]string) error
 	GetRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	DeleteRosterByPhone(current model.User, group string, phone string) error
@@ -715,8 +717,11 @@ func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User
 	return s.app.getUserByExternalID(externalID)
 }
 
-func (s *administrationImpl) CreateRoster(current model.User, group string, audit *string, phone string, uin string) error {
-	return s.app.createRoster(current, group, audit, phone, uin)
+func (s *administrationImpl) CreateRoster(current model.User, group string, audit *string, phone string, uin string, firstName string,
+	middleName string, lastName string, birthDate string, gender string, address1 string, address2 string,
+	address3 string, city string, state string, zipCode string, email string, badgeType string) error {
+	return s.app.createRoster(current, group, audit, phone, uin, firstName, middleName, lastName, birthDate, gender,
+		address1, address2, address3, city, state, zipCode, email, badgeType)
 }
 
 func (s *administrationImpl) CreateRosterItems(current model.User, group string, audit *string, items []map[string]string) error {
@@ -909,9 +914,10 @@ type Storage interface {
 	CreateOrUpdateUINBuildingAccess(uin string, date time.Time, access string) error
 
 	ReadAllRosters() ([]map[string]string, error)
-	FindRosterIDByPhone(phone string) (*string, error)
+	FindRosterByPhone(phone string) (map[string]string, error)
 	FindRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
-	CreateRoster(phone string, uin string) error
+	CreateRoster(phone string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+		address1 string, address2 string, address3 string, city string, state string, zipCode string, email string, badgeType string) error
 	CreateRosterItems(items []map[string]string) error
 	DeleteRosterByPhone(phone string) error
 	DeleteRosterByUIN(uin string) error

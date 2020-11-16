@@ -911,7 +911,8 @@ type Storage interface {
 	ReadAllRosters() ([]map[string]string, error)
 	FindRosterIDByPhone(phone string) (*string, error)
 	FindRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
-	CreateRoster(phone string, uin string) error
+	CreateRoster(phone string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+		address1 string, address2 string, address3 string, city string, state string, zipCode string, email string, badgeType string) error
 	CreateRosterItems(items []map[string]string) error
 	DeleteRosterByPhone(phone string) error
 	DeleteRosterByUIN(uin string) error

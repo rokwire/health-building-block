@@ -4375,9 +4375,22 @@ func (h AdminApisHandler) GetUserByExternalID(current model.User, group string, 
 }
 
 type createRosterRequest struct {
-	Audit *string `json:"audit"`
-	Phone string  `json:"phone" validate:"required"`
-	UIN   string  `json:"uin" validate:"required"`
+	Audit      *string `json:"audit"`
+	Phone      string  `json:"phone" validate:"required"`
+	UIN        string  `json:"uin" validate:"required"`
+	FirstName  string  `json:"first_name"`
+	MiddleName string  `json:"middle_name"`
+	LastName   string  `json:"last_name"`
+	BirthDate  string  `json:"birth_date"`
+	Gender     string  `json:"gender"`
+	Address1   string  `json:"address1"`
+	Address2   string  `json:"address2"`
+	Address3   string  `json:"address3"`
+	City       string  `json:"city"`
+	State      string  `json:"state"`
+	ZipCode    string  `json:"zip_code"`
+	Email      string  `json:"email"`
+	BadgeType  string  `json:"badge_type"`
 } // @name createRosterRequest
 
 //CreateRoster creates a roster

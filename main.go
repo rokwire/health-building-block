@@ -96,7 +96,10 @@ func main() {
 	adminWebAppClientID := getEnvKey("HEALTH_OIDC_ADMIN_WEB_CLIENT_ID", true)
 	phoneSecret := getEnvKey("HEALTH_PHONE_SECRET", true)
 	providersKeys := getHSAPIKeys()
-	webAdapter := driver.NewWebAdapter(host, application, apiKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID, phoneSecret, providersKeys)
+	authKeys := getEnvKey("HEALTH_AUTH_KEYS", true)
+	authIssuer := getEnvKey("HEALTH_AUTH_ISSUER", true)
+	webAdapter := driver.NewWebAdapter(host, application, apiKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID,
+		phoneSecret, authKeys, authIssuer, providersKeys)
 
 	webAdapter.Start()
 }

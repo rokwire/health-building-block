@@ -87,9 +87,9 @@ func (auth *Auth) createAppUser(externalID string, uuid string, publicKey string
 
 //NewAuth creates new auth handler
 func NewAuth(app *core.Application, appKeys []string, oidcProvider string,
-	oidcAppClientID string, appClientID string, webAppClientID string, phoneAuthSecret string, providersAPIKeys []string) *Auth {
+	oidcAppClientID string, appClientID string, webAppClientID string, phoneAuthSecret string, authKeys string, authIssuer string, providersAPIKeys []string) *Auth {
 	apiKeysAuth := newAPIKeysAuth(appKeys)
-	userAuth2 := newUserAuth(app, oidcProvider, oidcAppClientID, phoneAuthSecret)
+	userAuth2 := newUserAuth(app, oidcProvider, oidcAppClientID, phoneAuthSecret, authKeys, authIssuer)
 	adminAuth := newAdminAuth(app, oidcProvider, appClientID, webAppClientID)
 	providersAuth := newProviderAuth(providersAPIKeys)
 
@@ -538,7 +538,7 @@ type UserAuth struct {
 	phoneAuthSecret string
 
 	//auth service
-	Keys   jwk.Set
+	Keys   *jwk.Set
 	Issuer string
 
 	cachedUsers     *syncmap.Map //cache users while active - 5 minutes timeout
@@ -919,13 +919,18 @@ func (auth *UserAuth) responseInternalServerError(w http.ResponseWriter) {
 }
 
 func newUserAuth(app *core.Application, oidcProvider string, oidcAppClientID string,
-	phoneAuthSecret string) *UserAuth {
+	phoneAuthSecret string, keys string, issuer string) *UserAuth {
+
 	provider, err := oidc.NewProvider(context.Background(), oidcProvider)
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	appIDTokenVerifier := provider.Verifier(&oidc.Config{ClientID: oidcAppClientID})
+
+	keysSet, err := jwk.ParseString(keys)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	cacheUsers := &syncmap.Map{}
 	lock := &sync.RWMutex{}
@@ -933,8 +938,7 @@ func newUserAuth(app *core.Application, oidcProvider string, oidcAppClientID str
 	cacheRosters := []map[string]string{}
 	rostersLock := &sync.RWMutex{}
 
-	auth := UserAuth{app: app, appIDTokenVerifier: appIDTokenVerifier,
-		phoneAuthSecret: phoneAuthSecret, cachedUsers: cacheUsers, cachedUsersLock: lock,
-		rosters: cacheRosters, rostersLock: rostersLock}
+	auth := UserAuth{app: app, appIDTokenVerifier: appIDTokenVerifier, phoneAuthSecret: phoneAuthSecret, Keys: keysSet, Issuer: issuer,
+		cachedUsers: cacheUsers, cachedUsersLock: lock, rosters: cacheRosters, rostersLock: rostersLock}
 	return &auth
 }

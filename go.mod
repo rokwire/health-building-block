@@ -17,7 +17,7 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.4
 	github.com/leodido/go-urn v1.2.0 // indirect
-	github.com/lestrrat-go/jwx v1.0.5 // indirect
+	github.com/lestrrat-go/jwx v1.0.5
 	github.com/pquerna/cachecontrol v0.0.0-20180517163645-1555304b9b35 // indirect
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect

@@ -31,6 +31,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/lestrrat-go/jwx/jwk"
 	"golang.org/x/sync/syncmap"
 	"gopkg.in/ericchiang/go-oidc.v2"
 )
@@ -530,11 +531,15 @@ type shData struct {
 type UserAuth struct {
 	app *core.Application
 
-	//shibboleth
+	//shibboleth - keep for back compatability
 	appIDTokenVerifier *oidc.IDTokenVerifier
 
-	//phone
+	//phone - keep for back compatability
 	phoneAuthSecret string
+
+	//auth service
+	Keys   jwk.Set
+	Issuer string
 
 	cachedUsers     *syncmap.Map //cache users while active - 5 minutes timeout
 	cachedUsersLock *sync.RWMutex

@@ -639,13 +639,14 @@ func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mode
 	}
 	rawIDToken := splitAuthorization[1]
 
-	// determine the token type - 1 for shibboleth, 2 for phone
+	// determine the token type: 1 for shibboleth, 2 for phone, 3 for auth access token
+	// 1 & 2 are deprecated but we support them for back compatability
 	tokenType, err := auth.getTokenType(rawIDToken)
 	if err != nil {
 		auth.responseUnauthorized(err.Error(), w)
 		return false, nil, nil, nil
 	}
-	if !(*tokenType == 1 || *tokenType == 2) {
+	if !(*tokenType == 1 || *tokenType == 2 || *tokenType == 3) {
 		auth.responseUnauthorized("not supported token type", w)
 		return false, nil, nil, nil
 	}
@@ -752,7 +753,8 @@ func (auth *UserAuth) processPhoneToken(token string) (*string, error) {
 	return nil, errors.New("there is no phoneNumber claim in the phone token")
 }
 
-// type: 1 for shibboleth, 2 for phone
+// type: 1 for shibboleth, 2 for phone, 3 for auth access token
+// 1 & 2 are deprecated but we support them for back compatability
 func (auth *UserAuth) getTokenType(token string) (*int, error) {
 	parser := new(jwt.Parser)
 	claims := jwt.MapClaims{}
@@ -768,6 +770,10 @@ func (auth *UserAuth) getTokenType(token string) (*int, error) {
 		}
 		if key == "phoneNumber" {
 			tokenType := 2
+			return &tokenType, nil
+		}
+		if key == "uid" {
+			tokenType := 3
 			return &tokenType, nil
 		}
 	}

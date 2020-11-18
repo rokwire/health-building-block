@@ -695,11 +695,9 @@ func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mode
 			return false, nil, nil, nil
 		}
 
-		log.Println(tokenData)
-
-		//TODO
-		//externalID = ??
-		//authType = ???
+		//TODO - add phone when it is ready in the auth service, handle only shibboleth for now!
+		externalID = tokenData.UID
+		authType = "shibboleth"
 	}
 
 	//TODO - refactor!!!

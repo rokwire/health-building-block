@@ -4477,7 +4477,35 @@ func (sa *Adapter) CreateRoster(phone string, uin string, firstName string, midd
 //UpdateRoster updates a roster
 func (sa *Adapter) UpdateRoster(uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
 	address1 string, address2 string, address3 string, city string, state string, zipCode string, email string, badgeType string) error {
-	//TODO
+
+	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "first_name", Value: firstName},
+			primitive.E{Key: "middle_name", Value: middleName},
+			primitive.E{Key: "last_name", Value: lastName},
+			primitive.E{Key: "birth_date", Value: birthDate},
+			primitive.E{Key: "gender", Value: gender},
+			primitive.E{Key: "address1", Value: address1},
+			primitive.E{Key: "address2", Value: address2},
+			primitive.E{Key: "address3", Value: address3},
+			primitive.E{Key: "city", Value: city},
+			primitive.E{Key: "state", Value: state},
+			primitive.E{Key: "zip_code", Value: zipCode},
+			primitive.E{Key: "email", Value: email},
+			primitive.E{Key: "badge_type", Value: badgeType},
+		}},
+	}
+
+	result, err := sa.db.rosters.UpdateOne(filter, update, nil)
+	if err != nil {
+		return err
+	}
+
+	if result.MatchedCount == 0 {
+		return errors.New("there is no an item for the provided uin")
+	}
+
 	return nil
 }
 

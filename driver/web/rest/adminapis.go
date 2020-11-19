@@ -4709,6 +4709,11 @@ func (h AdminApisHandler) DeleteAllRosters(current model.User, group string, w h
 	w.Write([]byte("Successfully deleted"))
 }
 
+//UpdateRoster updates a roster
+func (h AdminApisHandler) UpdateRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	//TODO
+}
+
 type createActionRequest struct {
 	Audit         *string `json:"audit"`
 	ProviderID    string  `json:"provider_id" validate:"required"`

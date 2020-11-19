@@ -4724,9 +4724,20 @@ type updateRosterRequest struct {
 	ZipCode    string  `json:"zip_code"`
 	Email      string  `json:"email"`
 	BadgeType  string  `json:"badge_type"`
-}
+} // @name updateRosterRequest
 
 //UpdateRoster updates a roster
+// @Description Updates a roster.
+// @Tags Admin
+// @ID UpdateRoster
+// @Accept json
+// @Produce json
+// @Param data body updateRosterRequest true "body data"
+// @Param uin path string true "UIN"
+// @Success 200 {string} Successfully updated
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters/uin/{id} [put]
 func (h AdminApisHandler) UpdateRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uin := params["uin"]

@@ -2355,6 +2355,55 @@
                 }
             }
         },
+        "/admin/rosters/uin/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Updates a roster.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "UpdateRoster",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/updateRosterRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/rosters/uin/{uin}": {
             "delete": {
                 "security": [
@@ -7283,6 +7332,53 @@
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "updateRosterRequest": {
+            "type": "object",
+            "properties": {
+                "address1": {
+                    "type": "string"
+                },
+                "address2": {
+                    "type": "string"
+                },
+                "address3": {
+                    "type": "string"
+                },
+                "audit": {
+                    "type": "string"
+                },
+                "badge_type": {
+                    "type": "string"
+                },
+                "birth_date": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "middle_name": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "zip_code": {
                     "type": "string"
                 }
             }

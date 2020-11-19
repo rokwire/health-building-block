@@ -393,6 +393,8 @@ type Administration interface {
 	CreateRoster(current model.User, group string, audit *string, phone string, uin string, firstName string,
 		middleName string, lastName string, birthDate string, gender string, address1 string, address2 string,
 		address3 string, city string, state string, zipCode string, email string, badgeType string) error
+	UpdateRoster(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+		address1 string, address2 string, address3 string, city string, state string, zipCode string, email string, badgeType string) error
 	CreateRosterItems(current model.User, group string, audit *string, items []map[string]string) error
 	GetRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	DeleteRosterByPhone(current model.User, group string, phone string) error
@@ -724,6 +726,12 @@ func (s *administrationImpl) CreateRoster(current model.User, group string, audi
 		address1, address2, address3, city, state, zipCode, email, badgeType)
 }
 
+func (s *administrationImpl) UpdateRoster(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, email string, badgeType string) error {
+	return s.app.updateRoster(current, group, audit, uin, firstName, middleName, lastName, birthDate, gender,
+		address1, address2, address3, city, state, zipCode, email, badgeType)
+}
+
 func (s *administrationImpl) CreateRosterItems(current model.User, group string, audit *string, items []map[string]string) error {
 	return s.app.createRosterItems(current, group, audit, items)
 }
@@ -917,6 +925,8 @@ type Storage interface {
 	FindRosterByPhone(phone string) (map[string]string, error)
 	FindRosters(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error)
 	CreateRoster(phone string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+		address1 string, address2 string, address3 string, city string, state string, zipCode string, email string, badgeType string) error
+	UpdateRoster(uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
 		address1 string, address2 string, address3 string, city string, state string, zipCode string, email string, badgeType string) error
 	CreateRosterItems(items []map[string]string) error
 	DeleteRosterByPhone(phone string) error

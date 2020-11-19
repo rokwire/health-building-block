@@ -1696,6 +1696,11 @@ func (app *Application) createRoster(current model.User, group string, audit *st
 	return nil
 }
 
+func (app *Application) updateRoster(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, email string, badgeType string) error {
+	return nil
+}
+
 func (app *Application) createRosterItems(current model.User, group string, audit *string, items []map[string]string) error {
 	err := app.storage.CreateRosterItems(items)
 	if err != nil {

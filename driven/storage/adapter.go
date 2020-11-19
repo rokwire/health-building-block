@@ -4474,6 +4474,13 @@ func (sa *Adapter) CreateRoster(phone string, uin string, firstName string, midd
 	return nil
 }
 
+//UpdateRoster updates a roster
+func (sa *Adapter) UpdateRoster(uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, email string, badgeType string) error {
+	//TODO
+	return nil
+}
+
 //CreateRosterItems creates roster items
 func (sa *Adapter) CreateRosterItems(items []map[string]string) error {
 	// transaction

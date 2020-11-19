@@ -1696,6 +1696,25 @@ func (app *Application) createRoster(current model.User, group string, audit *st
 	return nil
 }
 
+func (app *Application) updateRoster(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, email string, badgeType string) error {
+	err := app.storage.UpdateRoster(uin, firstName, middleName, lastName, birthDate, gender, address1,
+		address2, address3, city, state, zipCode, email, badgeType)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "uin", Value: uin}, {Key: "firstName", Value: firstName}, {Key: "middleName", Value: middleName},
+		{Key: "lastName", Value: lastName}, {Key: "birthDate", Value: birthDate}, {Key: "gender", Value: gender}, {Key: "address1", Value: address1},
+		{Key: "address2", Value: address2}, {Key: "address3", Value: address3}, {Key: "city", Value: city}, {Key: "state", Value: state},
+		{Key: "zipCode", Value: zipCode}, {Key: "email", Value: email}, {Key: "badgeType", Value: badgeType}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "roster", "", lData, audit)
+
+	return nil
+}
+
 func (app *Application) createRosterItems(current model.User, group string, audit *string, items []map[string]string) error {
 	err := app.storage.CreateRosterItems(items)
 	if err != nil {

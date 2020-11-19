@@ -4709,6 +4709,95 @@ func (h AdminApisHandler) DeleteAllRosters(current model.User, group string, w h
 	w.Write([]byte("Successfully deleted"))
 }
 
+type updateRosterRequest struct {
+	Audit      *string `json:"audit"`
+	FirstName  string  `json:"first_name"`
+	MiddleName string  `json:"middle_name"`
+	LastName   string  `json:"last_name"`
+	BirthDate  string  `json:"birth_date"`
+	Gender     string  `json:"gender"`
+	Address1   string  `json:"address1"`
+	Address2   string  `json:"address2"`
+	Address3   string  `json:"address3"`
+	City       string  `json:"city"`
+	State      string  `json:"state"`
+	ZipCode    string  `json:"zip_code"`
+	Email      string  `json:"email"`
+	BadgeType  string  `json:"badge_type"`
+} // @name updateRosterRequest
+
+//UpdateRoster updates a roster
+// @Description Updates a roster.
+// @Tags Admin
+// @ID UpdateRoster
+// @Accept json
+// @Produce json
+// @Param data body updateRosterRequest true "body data"
+// @Param uin path string true "UIN"
+// @Success 200 {string} Successfully updated
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters/uin/{id} [put]
+func (h AdminApisHandler) UpdateRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "Provider id is required", http.StatusBadRequest)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update roster item - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateRosterRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update roster item request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update roster data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	firstName := requestData.FirstName
+	middleName := requestData.MiddleName
+	lastName := requestData.LastName
+	birthDate := requestData.BirthDate
+	gender := requestData.Gender
+	address1 := requestData.Address1
+	address2 := requestData.Address2
+	address3 := requestData.Address3
+	city := requestData.City
+	state := requestData.State
+	zipCode := requestData.ZipCode
+	email := requestData.Email
+	badgeType := requestData.BadgeType
+	err = h.app.Administration.UpdateRoster(current, group, audit, uin, firstName, middleName, lastName, birthDate, gender,
+		address1, address2, address3, city, state, zipCode, email, badgeType)
+	if err != nil {
+		log.Printf("Error on updating roster - %s\n", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully updated"))
+}
+
 type createActionRequest struct {
 	Audit         *string `json:"audit"`
 	ProviderID    string  `json:"provider_id" validate:"required"`

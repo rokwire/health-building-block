@@ -49,7 +49,7 @@ type Adapter struct {
 
 // @title Rokwire Health Building Block API
 // @description Rokwire Health Building Block API Documentation.
-// @version 1.31.0
+// @version 1.32.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost
@@ -279,6 +279,7 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/rosters/phone/{phone}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteRosterByPhone)).Methods("DELETE")
 	adminRestSubrouter.HandleFunc("/rosters/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteRosterByUIN)).Methods("DELETE")
 	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteAllRosters)).Methods("DELETE")
+	adminRestSubrouter.HandleFunc("/rosters/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateRoster)).Methods("PUT")
 
 	adminRestSubrouter.HandleFunc("/user", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUserByExternalID)).Methods("GET").Queries("external-id", "")
 

@@ -35,6 +35,8 @@ type User struct {
 	EncryptedKey         *string `json:"encrypted_key" bson:"encrypted_key"`
 	EncryptedBlob        *string `json:"encrypted_blob" bson:"encrypted_blob"`
 
+	Accounts []Account `json:"accounts" bson:"accounts"`
+
 	DateCreated time.Time  `json:"date_created" bson:"date_created"`
 	DateUpdated *time.Time `json:"date_updated" bson:"date_updated"`
 }

@@ -247,6 +247,8 @@ func (m *database) start() error {
 		return err
 	}
 
+	//TODO - replicate the data into the new collections
+
 	//asign the db, db client and the collections
 	m.db = db
 	m.dbClient = client

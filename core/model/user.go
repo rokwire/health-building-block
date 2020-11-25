@@ -108,3 +108,24 @@ type ShibbolethAuth struct {
 	Email      string    `json:"email" bson:"email"`
 	IsMemberOf *[]string `json:"uiucedu_is_member_of" bson:"uiucedu_is_member_of"`
 }
+
+//Account represents account entity
+type Account struct {
+	ID         string `json:"id" bson:"id"`
+	ExternalID string `json:"external_id" bson:"external_id"`
+	Default    bool   `json:"default" bson:"default"`
+
+	FirstName  string `json:"first_name" bson:"first_name"`
+	MiddleName string `json:"middle_name" bson:"middle_name"`
+	LastName   string `json:"last_name" bson:"last_name"`
+	BirthDate  string `json:"birth_date" bson:"birth_date"`
+	Gender     string `json:"gender" bson:"gender"`
+	Address1   string `json:"address1" bson:"address1"`
+	Address2   string `json:"address2" bson:"address2"`
+	Address3   string `json:"address3" bson:"address3"`
+	City       string `json:"city" bson:"city"`
+	State      string `json:"state" bson:"state"`
+	ZipCode    string `json:"zip_code" bson:"zip_code"`
+	Phone      string `json:"phone" bson:"phone"`
+	Email      string `json:"email" bson:"email"`
+}

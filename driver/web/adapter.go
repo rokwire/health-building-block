@@ -503,7 +503,7 @@ func (we Adapter) getUser(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	response := rest.AppUserResponse{UUID: user.UUID, PublicKey: user.PublicKey,
+	response := rest.AppUserResponse{ID: user.ID, UUID: user.UUID, PublicKey: user.PublicKey,
 		Consent: user.Consent, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
 		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob}
 	data, err := json.Marshal(response)

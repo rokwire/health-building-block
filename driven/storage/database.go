@@ -41,13 +41,13 @@ type database struct {
 	users             *collectionWrapper
 	providers         *collectionWrapper
 	locations         *collectionWrapper
-	ctests            *collectionWrapper
-	emanualtests      *collectionWrapper
+	ctests            *collectionWrapper //old
+	emanualtests      *collectionWrapper //old
 	resources         *collectionWrapper
 	faq               *collectionWrapper
 	news              *collectionWrapper
-	estatus           *collectionWrapper
-	ehistory          *collectionWrapper
+	estatus           *collectionWrapper //old
+	ehistory          *collectionWrapper //old
 	counties          *collectionWrapper
 	testtypes         *collectionWrapper
 	rules             *collectionWrapper
@@ -61,6 +61,10 @@ type database struct {
 	uinbuildingaccess *collectionWrapper
 	appversions       *collectionWrapper
 	rosters           *collectionWrapper
+	acc_ctests        *collectionWrapper
+	acc_ehistory      *collectionWrapper
+	acc_emanualtests  *collectionWrapper
+	acc_estatus       *collectionWrapper
 
 	listener core.StorageListener
 }
@@ -222,6 +226,26 @@ func (m *database) start() error {
 	if err != nil {
 		return err
 	}
+	acc_ctests := &collectionWrapper{database: m, coll: db.Collection("acc_ctests")}
+	err = m.applyAccCTestsChecks(acc_ctests)
+	if err != nil {
+		return err
+	}
+	acc_ehistory := &collectionWrapper{database: m, coll: db.Collection("acc_ehistory")}
+	err = m.applyAccEHistoryChecks(acc_ehistory)
+	if err != nil {
+		return err
+	}
+	acc_emanualtests := &collectionWrapper{database: m, coll: db.Collection("acc_emanualtests")}
+	err = m.applyAccEManualTestsChecks(acc_emanualtests)
+	if err != nil {
+		return err
+	}
+	acc_estatus := &collectionWrapper{database: m, coll: db.Collection("acc_estatus")}
+	err = m.applyAccEStatusChecks(acc_estatus)
+	if err != nil {
+		return err
+	}
 
 	//asign the db, db client and the collections
 	m.db = db
@@ -251,6 +275,10 @@ func (m *database) start() error {
 	m.uinbuildingaccess = uinbuildingaccess
 	m.appversions = appversions
 	m.rosters = rosters
+	m.acc_ctests = acc_ctests
+	m.acc_ehistory = acc_ehistory
+	m.acc_emanualtests = acc_emanualtests
+	m.acc_estatus = acc_estatus
 
 	//watch for config changes
 	go m.configs.Watch(nil)
@@ -347,6 +375,27 @@ func (m *database) applyCTestsChecks(ctests *collectionWrapper) error {
 	return nil
 }
 
+func (m *database) applyAccCTestsChecks(acc_ctests *collectionWrapper) error {
+	log.Println("apply acc_ctests checks.....")
+
+	//add indexes
+	err := acc_ctests.AddIndex(bson.D{primitive.E{Key: "account_id", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+	err = acc_ctests.AddIndex(bson.D{primitive.E{Key: "provider_id", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+	err = acc_ctests.AddIndex(bson.D{primitive.E{Key: "order_number", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	log.Println("acc_ctests checks passed")
+	return nil
+}
+
 func (m *database) applyManualTestsChecks(manualtests *collectionWrapper) error {
 	log.Println("apply manualtests checks.....")
 
@@ -394,6 +443,31 @@ func (m *database) applyEManualTestsChecks(emanualtests *collectionWrapper) erro
 	}
 
 	log.Println("emanualtests checks passed")
+	return nil
+}
+
+func (m *database) applyAccEManualTestsChecks(acc_emanualtests *collectionWrapper) error {
+	log.Println("apply acc_emanualtests checks.....")
+
+	//add indexes
+	err := acc_emanualtests.AddIndex(bson.D{primitive.E{Key: "account_id", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+	err = acc_emanualtests.AddIndex(bson.D{primitive.E{Key: "location_id", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+	err = acc_emanualtests.AddIndex(bson.D{primitive.E{Key: "county_id", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+	err = acc_emanualtests.AddIndex(bson.D{primitive.E{Key: "status", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	log.Println("acc_emanualtests checks passed")
 	return nil
 }
 
@@ -456,6 +530,25 @@ func (m *database) applyEStatusChecks(estatus *collectionWrapper) error {
 	return nil
 }
 
+func (m *database) applyAccEStatusChecks(acc_estatus *collectionWrapper) error {
+	log.Println("apply acc_estatus checks.....")
+
+	//add user_id index
+	err := acc_estatus.AddIndex(bson.D{primitive.E{Key: "account_id", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	//add app_version index
+	err = acc_estatus.AddIndex(bson.D{primitive.E{Key: "app_version", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	log.Println("acc_estatus checks passed")
+	return nil
+}
+
 func (m *database) applyHistoryChecks(history *collectionWrapper) error {
 	log.Println("apply history checks.....")
 
@@ -491,6 +584,25 @@ func (m *database) applyEHistoryChecks(ehistory *collectionWrapper) error {
 	}
 
 	log.Println("ehistory checks passed")
+	return nil
+}
+
+func (m *database) applyAccEHistoryChecks(acc_ehistory *collectionWrapper) error {
+	log.Println("apply acc_ehistory checks.....")
+
+	//add index
+	err := acc_ehistory.AddIndex(bson.D{primitive.E{Key: "account_id", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	//add index
+	err = acc_ehistory.AddIndex(bson.D{primitive.E{Key: "date", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	log.Println("acc_ehistory checks passed")
 	return nil
 }
 

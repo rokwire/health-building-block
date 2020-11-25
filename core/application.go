@@ -26,6 +26,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	idgen "github.com/google/uuid"
 )
 
 //Application represents the core application code based on hexagonal architecture
@@ -548,7 +550,12 @@ func (app *Application) FindUserByExternalID(externalID string) (*model.User, er
 //CreateAppUser creates an app user
 func (app *Application) CreateAppUser(externalID string, uuid string, publicKey string,
 	consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
-	user, err := app.storage.CreateUser(nil, externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob)
+
+	//add default account
+	accountID, _ := idgen.NewUUID()
+	defaultAccount := &model.Account{ID: accountID.String(), ExternalID: externalID, Default: true}
+
+	user, err := app.storage.CreateUser(nil, externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob, defaultAccount)
 	if err != nil {
 		return nil, err
 	}
@@ -559,7 +566,7 @@ func (app *Application) CreateAppUser(externalID string, uuid string, publicKey 
 //CreateAdminAppUser creates an admin app user
 func (app *Application) CreateAdminAppUser(shibboAuth *model.ShibbolethAuth) (*model.User, error) {
 	externalID := "a_" + shibboAuth.Uin //TODO
-	user, err := app.storage.CreateUser(shibboAuth, externalID, "", "", false, false, false, nil, nil)
+	user, err := app.storage.CreateUser(shibboAuth, externalID, "", "", false, false, false, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

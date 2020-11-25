@@ -368,7 +368,8 @@ func (sa *Adapter) FindUsersByRePost(rePost bool) ([]*model.User, error) {
 
 //CreateUser creates an user
 func (sa *Adapter) CreateUser(shibboAuth *model.ShibbolethAuth, externalID string,
-	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
+	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string,
+	defaultAccount *model.Account) (*model.User, error) {
 	id, err := uuid.NewUUID()
 	if err != nil {
 		return nil, err
@@ -376,9 +377,16 @@ func (sa *Adapter) CreateUser(shibboAuth *model.ShibbolethAuth, externalID strin
 
 	dateCreated := time.Now()
 
+	//add default account if provided
+	var accounts []model.Account
+	if defaultAccount != nil {
+		accounts = make([]model.Account, 1)
+		accounts[0] = *defaultAccount
+	}
+
 	user := model.User{ID: id.String(), ShibbolethAuth: shibboAuth, ExternalID: externalID, UUID: userUUID,
 		PublicKey: publicKey, Consent: consent, ExposureNotification: exposureNotification, RePost: rePost,
-		EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, DateCreated: dateCreated}
+		EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Accounts: accounts, DateCreated: dateCreated}
 	_, err = sa.db.users.InsertOne(&user)
 	if err != nil {
 		return nil, err

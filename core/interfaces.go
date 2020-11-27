@@ -776,6 +776,7 @@ type Storage interface {
 	CreateUser(shibboAuth *model.ShibbolethAuth, externalID string,
 		uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string,
 		adminUser bool) (*model.User, error)
+	CreateDefaultAccount(userID string) (*model.User, error)
 	SaveUser(user *model.User) error
 
 	ReadCovid19Config() (*model.COVID19Config, error)

@@ -394,6 +394,74 @@ func (sa *Adapter) CreateUser(shibboAuth *model.ShibbolethAuth, externalID strin
 	return &user, nil
 }
 
+//CreateDefaultAccount creates a default account for the user
+func (sa *Adapter) CreateDefaultAccount(userID string) (*model.User, error) {
+	var user *model.User
+
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			log.Printf("error starting a transaction - %s", err)
+			return err
+		}
+
+		// find the user
+		findFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, findFilter, &usersResult, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if usersResult == nil || len(usersResult) == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is no an user for the provided id " + userID)
+		}
+		user = usersResult[0]
+
+		// error if already there are accounts
+		if len(user.Accounts) > 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there are already accounts for this user " + userID)
+		}
+
+		// update it
+		accounts := make([]model.Account, 1)
+		accounts[0] = model.Account{ID: user.ID, ExternalID: user.ExternalID, Default: true}
+		updateFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+		update := bson.D{
+			primitive.E{Key: "$set", Value: bson.D{
+				primitive.E{Key: "accounts", Value: accounts},
+			}},
+		}
+		updateResult, err := sa.db.users.UpdateOne(updateFilter, update, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if updateResult.ModifiedCount != 1 {
+			abortTransaction(sessionContext)
+			return errors.New("modifier count != 1")
+		}
+
+		user.Accounts = accounts
+
+		//commit the transaction
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 //SaveUser saves the user
 func (sa *Adapter) SaveUser(user *model.User) error {
 	filter := bson.D{primitive.E{Key: "_id", Value: user.ID}}

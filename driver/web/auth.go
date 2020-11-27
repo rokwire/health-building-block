@@ -688,7 +688,41 @@ func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mode
 		auth.responseInternalServerError(w)
 		return false, nil, nil, nil
 	}
+
+	// we do not have a such user yet but the ID token is valid so return ok
+	if user == nil {
+		return true, nil, &externalID, &authType
+	}
+
+	// once we have the user we must check if we need to create a defualt account, every user must have at least one default account
+	user, err = auth.createDefaultAccountIfNeeded(*user)
+	if err != nil {
+		log.Printf("error creating a default account for external id - %s\n", err)
+
+		auth.responseInternalServerError(w)
+		return false, nil, nil, nil
+	}
+
 	return true, user, &externalID, &authType
+}
+
+func (auth *UserAuth) createDefaultAccountIfNeeded(current model.User) (*model.User, error) {
+	if len(current.Accounts) > 0 {
+		//we have accounts, so do nothing
+		return &current, nil
+	}
+
+	log.Printf("createDefaultAccountIfNeeded -> we need to create default account")
+
+	//1. remove it from the cache
+	auth.deleteCacheUser(current.ExternalID)
+
+	//2. create default account
+	user, err := auth.app.CreateDefaultAccount(current.ID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (auth *UserAuth) processShibbolethToken(token string) (*string, error) {

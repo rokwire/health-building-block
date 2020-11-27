@@ -557,6 +557,16 @@ func (app *Application) CreateAppUser(externalID string, uuid string, publicKey 
 	return user, nil
 }
 
+//CreateDefaultAccount creates a default account for the user
+func (app *Application) CreateDefaultAccount(userID string) (*model.User, error) {
+	user, err := app.storage.CreateDefaultAccount(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 //CreateAdminAppUser creates an admin app user
 func (app *Application) CreateAdminAppUser(shibboAuth *model.ShibbolethAuth) (*model.User, error) {
 	externalID := "a_" + shibboAuth.Uin //TODO

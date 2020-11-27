@@ -775,7 +775,7 @@ type Storage interface {
 	FindUsersByRePost(rePost bool) ([]*model.User, error)
 	CreateUser(shibboAuth *model.ShibbolethAuth, externalID string,
 		uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string,
-		defaultAccount *model.Account) (*model.User, error)
+		adminUser bool) (*model.User, error)
 	SaveUser(user *model.User) error
 
 	ReadCovid19Config() (*model.COVID19Config, error)

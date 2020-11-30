@@ -703,6 +703,30 @@ func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mode
 		return false, nil, nil, nil
 	}
 
+	// determine the used user account
+	/// get the account id from the header
+	passedAccountID := r.Header.Get("ROKWIRE-ACC-ID")
+	/// if account id not passed then we use the default one, we support the old client version
+	if len(passedAccountID) == 0 {
+		defAccount := user.GetDefaultAccount()
+		if defAccount == nil {
+			//TODO log user id
+			log.Printf("error getting default account - %s\n", user.ID)
+
+			auth.responseInternalServerError(w)
+			return false, nil, nil, nil
+		}
+		passedAccountID = defAccount.ID
+	}
+	/// now get the user account for the provided account id
+	account := user.GetAccount(passedAccountID)
+	if account == nil {
+		auth.responseForbbiden(fmt.Sprintf("Security - %s is trying to use account %s", user.ID, passedAccountID), w)
+		return false, nil, nil, nil
+	}
+
+	log.Println(*account)
+
 	return true, user, &externalID, &authType
 }
 
@@ -945,6 +969,13 @@ func (auth *UserAuth) responseInternalServerError(w http.ResponseWriter) {
 
 	w.WriteHeader(http.StatusInternalServerError)
 	w.Write([]byte("Internal Server Error"))
+}
+
+func (auth *UserAuth) responseForbbiden(info string, w http.ResponseWriter) {
+	log.Printf("403 - Forbidden - %s", info)
+
+	w.WriteHeader(http.StatusForbidden)
+	w.Write([]byte("Forbidden"))
 }
 
 func newUserAuth(app *core.Application, oidcProvider string, oidcAppClientID string,

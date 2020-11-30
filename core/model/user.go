@@ -17,7 +17,9 @@
 
 package model
 
-import "time"
+import (
+	"time"
+)
 
 //User represents user entity
 type User struct {
@@ -39,6 +41,34 @@ type User struct {
 
 	DateCreated time.Time  `json:"date_created" bson:"date_created"`
 	DateUpdated *time.Time `json:"date_updated" bson:"date_updated"`
+}
+
+//GetAccount gives the user account for the provided account id
+func (user User) GetAccount(accountID string) *Account {
+	if len(user.Accounts) == 0 {
+		return nil
+	}
+
+	for _, current := range user.Accounts {
+		if current.ID == accountID {
+			return &current
+		}
+	}
+	return nil
+}
+
+//GetDefaultAccount gives the default user account
+func (user User) GetDefaultAccount() *Account {
+	if len(user.Accounts) == 0 {
+		return nil
+	}
+
+	for _, current := range user.Accounts {
+		if current.Default {
+			return &current
+		}
+	}
+	return nil
 }
 
 //IsAdmin says if the user is admin

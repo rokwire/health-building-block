@@ -117,7 +117,7 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/v2/app-version/{app-version}/statuses", we.userAuthWrapFunc(we.apisHandler.DeleteStatusV2)).Methods("DELETE")
 
 	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAccountsAuthWrapFunc(we.apisHandler.GetHistoriesV2)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAuthWrapFunc(we.apisHandler.CreateHistoryV2)).Methods("POST")
+	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAccountsAuthWrapFunc(we.apisHandler.CreateHistoryV2)).Methods("POST")
 	covid19RestSubrouter.HandleFunc("/v2/histories/{id}", we.userAuthWrapFunc(we.apisHandler.UpdateHistoryV2)).Methods("PUT")
 	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAuthWrapFunc(we.apisHandler.DeleteHistoriesV2)).Methods("DELETE")
 

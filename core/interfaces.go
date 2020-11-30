@@ -45,8 +45,8 @@ type Services interface {
 	DeleteEStatus(userID string, appVersion *string) error
 
 	GetEHistoriesByAccountID(accountID string) ([]*model.EHistory, error)
-	CreateЕHistory(userID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error)
-	CreateManualЕHistory(userID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
+	CreateЕHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error)
+	CreateManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 		countyID *string, locationID *string) (*model.EHistory, error)
 	DeleteEHitories(userID string) (int64, error)
 	UpdateEHistory(userID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error)
@@ -151,13 +151,13 @@ func (s *servicesImpl) GetEHistoriesByAccountID(accountID string) ([]*model.EHis
 	return s.app.getEHistoriesByAccountID(accountID)
 }
 
-func (s *servicesImpl) CreateЕHistory(userID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
-	return s.app.createЕHistory(userID, date, eType, encryptedKey, encryptedBlob)
+func (s *servicesImpl) CreateЕHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
+	return s.app.createЕHistory(accountID, date, eType, encryptedKey, encryptedBlob)
 }
 
-func (s *servicesImpl) CreateManualЕHistory(userID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
+func (s *servicesImpl) CreateManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 	countyID *string, locationID *string) (*model.EHistory, error) {
-	return s.app.createManualЕHistory(userID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
+	return s.app.createManualЕHistory(accountID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
 }
 
 func (s *servicesImpl) DeleteEHitories(userID string) (int64, error) {

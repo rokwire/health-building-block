@@ -603,17 +603,17 @@ func (app *Application) getEHistoriesByAccountID(accountID string) ([]*model.EHi
 	return histories, nil
 }
 
-func (app *Application) createЕHistory(userID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
-	history, err := app.storage.CreateEHistory(userID, date, eType, encryptedKey, encryptedBlob)
+func (app *Application) createЕHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
+	history, err := app.storage.CreateEHistory(accountID, date, eType, encryptedKey, encryptedBlob)
 	if err != nil {
 		return nil, err
 	}
 	return history, nil
 }
 
-func (app *Application) createManualЕHistory(userID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
+func (app *Application) createManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 	countyID *string, locationID *string) (*model.EHistory, error) {
-	history, err := app.storage.CreateManualЕHistory(userID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
+	history, err := app.storage.CreateManualЕHistory(accountID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
 	if err != nil {
 		return nil, err
 	}

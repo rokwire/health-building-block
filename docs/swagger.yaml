@@ -4619,6 +4619,7 @@ paths:
             $ref: '#/definitions/History'
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/v2/histories/{id}:

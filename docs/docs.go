@@ -5099,6 +5099,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "\"date\", \"type\", \"encrypted_key\" and \"encrypted_blob\" are mandatory fields. When the type is \"unverified_manual_test\" then the client must pass also \"encrypted_image_key\", \"encrypted_image_blob\" and (\"location_id\" or \"county_id\").",

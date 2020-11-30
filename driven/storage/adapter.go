@@ -825,13 +825,13 @@ func (sa *Adapter) DeleteEStatus(appVersion *string, userID string) error {
 }
 
 //CreateEHistory creates a history
-func (sa *Adapter) CreateEHistory(userID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
+func (sa *Adapter) CreateEHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
 	id, err := uuid.NewUUID()
 	if err != nil {
 		return nil, err
 	}
 
-	history := model.EHistory{ID: id.String(), UserID: userID, Date: date, Type: eType,
+	history := model.EHistory{ID: id.String(), UserID: accountID, Date: date, Type: eType,
 		EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob}
 	_, err = sa.db.ehistory.InsertOne(&history)
 	if err != nil {
@@ -843,7 +843,7 @@ func (sa *Adapter) CreateEHistory(userID string, date time.Time, eType string, e
 }
 
 //CreateManualЕHistory creates a history
-func (sa *Adapter) CreateManualЕHistory(userID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
+func (sa *Adapter) CreateManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 	countyID *string, locationID *string) (*model.EHistory, error) {
 	var history model.EHistory
 
@@ -857,7 +857,7 @@ func (sa *Adapter) CreateManualЕHistory(userID string, date time.Time, encrypte
 
 		//1. insert history item
 		historyID, _ := uuid.NewUUID()
-		history = model.EHistory{ID: historyID.String(), UserID: userID, Date: date, Type: "unverified_manual_test",
+		history = model.EHistory{ID: historyID.String(), UserID: accountID, Date: date, Type: "unverified_manual_test",
 			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob}
 		insertedID, err := sa.db.ehistory.InsertOneWithContext(sessionContext, &history)
 		if err != nil {
@@ -867,7 +867,7 @@ func (sa *Adapter) CreateManualЕHistory(userID string, date time.Time, encrypte
 
 		//2. insert manual test item
 		manualTestID, _ := uuid.NewUUID()
-		manualTest := eManualTest{ID: manualTestID.String(), UserID: userID, EHistoryID: insertedID.(string),
+		manualTest := eManualTest{ID: manualTestID.String(), UserID: accountID, EHistoryID: insertedID.(string),
 			LocationID: locationID, CountyID: countyID, EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob,
 			EncryptedImageKey: *encryptedImageKey, EncryptedImageBlob: *encryptedImageBlob, Status: "unverified", DateCreated: time.Now()}
 		_, err = sa.db.emanualtests.InsertOneWithContext(sessionContext, &manualTest)

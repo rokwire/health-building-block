@@ -1233,8 +1233,9 @@ type createЕHistory struct {
 // @Param data body createЕHistory true "body data"
 // @Success 200 {object} model.EHistory
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/histories [post]
-func (h ApisHandler) CreateHistoryV2(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) CreateHistoryV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a history - %s\n", err.Error())
@@ -1278,14 +1279,14 @@ func (h ApisHandler) CreateHistoryV2(current model.User, w http.ResponseWriter, 
 			return
 		}
 
-		history, err = h.app.Services.CreateManualЕHistory(current.ID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
+		history, err = h.app.Services.CreateManualЕHistory(account.ID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
 		if err != nil {
 			log.Println(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	} else {
-		history, err = h.app.Services.CreateЕHistory(current.ID, date, eType, encryptedKey, encryptedBlob)
+		history, err = h.app.Services.CreateЕHistory(account.ID, date, eType, encryptedKey, encryptedBlob)
 		if err != nil {
 			log.Println(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)

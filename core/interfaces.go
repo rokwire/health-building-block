@@ -49,7 +49,7 @@ type Services interface {
 	CreateManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 		countyID *string, locationID *string) (*model.EHistory, error)
 	DeleteEHitories(userID string) (int64, error)
-	UpdateEHistory(userID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error)
+	UpdateEHistory(accountID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error)
 
 	GetCTests(urrent model.User, processed bool) ([]*model.CTest, []*model.Provider, error)
 	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error

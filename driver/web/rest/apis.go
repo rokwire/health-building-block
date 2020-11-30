@@ -1355,8 +1355,9 @@ type updateЕHistory struct {
 // @Param id path string true "ID"
 // @Success 200 {object} model.EHistory
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/histories/{id} [put]
-func (h ApisHandler) UpdateHistoryV2(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) UpdateHistoryV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1392,7 +1393,7 @@ func (h ApisHandler) UpdateHistoryV2(current model.User, w http.ResponseWriter, 
 	date := requestData.Date
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
-	history, err := h.app.Services.UpdateEHistory(current.ID, ID, date, encryptedKey, encryptedBlob)
+	history, err := h.app.Services.UpdateEHistory(account.ID, ID, date, encryptedKey, encryptedBlob)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

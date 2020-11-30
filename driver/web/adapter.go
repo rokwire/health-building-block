@@ -64,6 +64,10 @@ type Adapter struct {
 // @in header (add Bearer prefix to the Authorization value)
 // @name Authorization
 
+// @securityDefinitions.apikey AppUserAccountAuth
+// @in header
+// @name ROKWIRE-ACC-ID
+
 // @securityDefinitions.apikey ProvidersAuth
 // @in header
 // @name ROKWIRE-HS-API-KEY

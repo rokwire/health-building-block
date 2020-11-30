@@ -5070,6 +5070,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Gets all histories for the current user user",
@@ -7537,6 +7540,11 @@ var doc = `{
             "type": "apiKey",
             "name": "Authorization",
             "in": "header (add Bearer prefix to the Authorization value)"
+        },
+        "AppUserAccountAuth": {
+            "type": "apiKey",
+            "name": "ROKWIRE-ACC-ID",
+            "in": "header"
         },
         "AppUserAuth": {
             "type": "apiKey",

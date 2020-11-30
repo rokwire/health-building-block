@@ -1416,6 +1416,7 @@ func (h ApisHandler) UpdateHistoryV2(current model.User, w http.ResponseWriter, 
 // @Accept  json
 // @Success 200 {array} model.EHistory
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/histories [get]
 func (h ApisHandler) GetHistoriesV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	historiesItems, err := h.app.Services.GetEHistoriesByAccountID(account.ID)

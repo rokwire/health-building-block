@@ -4593,6 +4593,7 @@ paths:
             type: array
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     post:
@@ -4730,6 +4731,10 @@ securityDefinitions:
   AdminUserAuth:
     in: header (add Bearer prefix to the Authorization value)
     name: Authorization
+    type: apiKey
+  AppUserAccountAuth:
+    in: header
+    name: ROKWIRE-ACC-ID
     type: apiKey
   AppUserAuth:
     in: header (add Bearer prefix to the Authorization value)

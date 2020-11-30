@@ -445,6 +445,7 @@ func (sa *Adapter) CreateDefaultAccount(userID string) (*model.User, error) {
 			return errors.New("modifier count != 1")
 		}
 
+		//the updated user is returned
 		user.Accounts = accounts
 
 		//commit the transaction

@@ -694,7 +694,7 @@ func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mode
 		return true, nil, &externalID, &authType
 	}
 
-	// once we have the user we must check if we need to create a defualt account, every user must have at least one default account
+	// once we have the user we must check if we need to create a default account, every user must have at least one default account
 	user, err = auth.createDefaultAccountIfNeeded(*user)
 	if err != nil {
 		log.Printf("error creating a default account for external id - %s\n", err)

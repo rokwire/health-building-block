@@ -701,7 +701,7 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 	// once we have the user we must check if we need to create a default account, every user must have at least one default account
 	user, err = auth.createDefaultAccountIfNeeded(*user)
 	if err != nil {
-		log.Printf("error creating a default account for external id - %s\n", err)
+		log.Printf("error creating a default account for user - %s - %s\n", utils.GetLogUUIDValue(user.ID), err)
 
 		auth.responseInternalServerError(w)
 		return false, nil, nil, nil
@@ -734,8 +734,7 @@ func (auth *UserAuth) userAccountsCheck(w http.ResponseWriter, r *http.Request) 
 	if len(passedAccountID) == 0 {
 		defAccount := user.GetDefaultAccount()
 		if defAccount == nil {
-			//TODO log user id
-			log.Printf("error getting default account - %s\n", user.ID)
+			log.Printf("error getting default account - %s\n", utils.GetLogUUIDValue(user.ID))
 
 			auth.responseInternalServerError(w)
 			return false, nil, nil
@@ -745,7 +744,7 @@ func (auth *UserAuth) userAccountsCheck(w http.ResponseWriter, r *http.Request) 
 	/// now get the user account for the provided account id
 	account := user.GetAccount(passedAccountID)
 	if account == nil {
-		auth.responseForbbiden(fmt.Sprintf("Security - %s is trying to use account %s", user.ID, passedAccountID), w)
+		auth.responseForbbiden(fmt.Sprintf("Security - %s is trying to use account %s", utils.GetLogUUIDValue(user.ID), passedAccountID), w)
 		return false, nil, nil
 	}
 

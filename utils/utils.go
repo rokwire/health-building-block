@@ -141,14 +141,14 @@ func LogRequest(req *http.Request) {
 	log.Printf("%s %s %s", method, path, header)
 }
 
-//LogIdentifier logs the provided identifier
-func LogIdentifier(identifier string) {
+//GetLogUUIDValue prepares UUID to be logged.
+func GetLogUUIDValue(identifier string) string {
 	if len(identifier) < 26 {
-		log.Printf("bad identifier - %s", identifier)
+		return fmt.Sprintf("bad identifier - %s", identifier)
 	}
 
 	sub := identifier[:26]
-	log.Printf("%s***", sub)
+	return fmt.Sprintf("%s***", sub)
 }
 
 //GetLogValue prepares a sensitive data to be logged.

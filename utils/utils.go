@@ -141,6 +141,16 @@ func LogRequest(req *http.Request) {
 	log.Printf("%s %s %s", method, path, header)
 }
 
+//LogIdentifier logs the provided identifier
+func LogIdentifier(identifier string) {
+	if len(identifier) < 26 {
+		log.Printf("bad identifier - %s", identifier)
+	}
+
+	sub := identifier[:26]
+	log.Printf("%s***", sub)
+}
+
 //GetLogValue prepares a sensitive data to be logged.
 func GetLogValue(value string) string {
 	if len(value) <= 3 {

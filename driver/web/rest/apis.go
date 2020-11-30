@@ -1461,9 +1461,10 @@ func (h ApisHandler) GetHistoriesV2(current model.User, account model.Account, w
 // @Accept plain
 // @Success 200 {object} string "Successfully deleted [n] items"
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/histories [delete]
-func (h ApisHandler) DeleteHistoriesV2(current model.User, w http.ResponseWriter, r *http.Request) {
-	deletedCount, err := h.app.Services.DeleteEHitories(current.ID)
+func (h ApisHandler) DeleteHistoriesV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	deletedCount, err := h.app.Services.DeleteEHitories(account.ID)
 	if err != nil {
 		log.Printf("Error on deleting the ehistories items - %s\n", err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

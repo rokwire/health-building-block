@@ -906,9 +906,9 @@ func (sa *Adapter) FindEHistories(accountID string) ([]*model.EHistory, error) {
 	return result, nil
 }
 
-//DeleteEHistories deletes all histories for an user
-func (sa *Adapter) DeleteEHistories(userID string) (int64, error) {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+//DeleteEHistories deletes all histories for an user account
+func (sa *Adapter) DeleteEHistories(accountID string) (int64, error) {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID}}
 
 	result, err := sa.db.ehistory.DeleteMany(filter, nil)
 	if err != nil {

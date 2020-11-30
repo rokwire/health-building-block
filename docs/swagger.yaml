@@ -4577,6 +4577,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     get:

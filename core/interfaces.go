@@ -48,7 +48,7 @@ type Services interface {
 	CreateЕHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error)
 	CreateManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 		countyID *string, locationID *string) (*model.EHistory, error)
-	DeleteEHitories(userID string) (int64, error)
+	DeleteEHitories(accountID string) (int64, error)
 	UpdateEHistory(accountID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error)
 
 	GetCTests(urrent model.User, processed bool) ([]*model.CTest, []*model.Provider, error)
@@ -160,8 +160,8 @@ func (s *servicesImpl) CreateManualЕHistory(accountID string, date time.Time, e
 	return s.app.createManualЕHistory(accountID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
 }
 
-func (s *servicesImpl) DeleteEHitories(userID string) (int64, error) {
-	return s.app.deleteEHitories(userID)
+func (s *servicesImpl) DeleteEHitories(accountID string) (int64, error) {
+	return s.app.deleteEHitories(accountID)
 }
 
 func (s *servicesImpl) UpdateEHistory(accountID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error) {
@@ -803,11 +803,11 @@ type Storage interface {
 	SaveEStatus(status *model.EStatus) error
 	DeleteEStatus(appVersion *string, userID string) error
 
-	CreateEHistory(userID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error)
-	CreateManualЕHistory(userID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
+	CreateEHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error)
+	CreateManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 		countyID *string, locationID *string) (*model.EHistory, error)
 	FindEHistories(accountID string) ([]*model.EHistory, error)
-	DeleteEHistories(userID string) (int64, error)
+	DeleteEHistories(accountD string) (int64, error)
 	FindEHistory(ID string) (*model.EHistory, error)
 	SaveEHistory(history *model.EHistory) error
 

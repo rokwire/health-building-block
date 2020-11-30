@@ -457,8 +457,8 @@ func (app *Application) getExtUINBuildingAccess(uin string) (*model.UINBuildingA
 	return uinBuildingAccess, nil
 }
 
-func (app *Application) deleteEHitories(userID string) (int64, error) {
-	deletedCount, err := app.storage.DeleteEHistories(userID)
+func (app *Application) deleteEHitories(accountID string) (int64, error) {
+	deletedCount, err := app.storage.DeleteEHistories(accountID)
 	if err != nil {
 		return -1, err
 	}

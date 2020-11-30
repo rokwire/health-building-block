@@ -100,6 +100,7 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/user", we.getUser).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/user/clear", we.userAuthWrapFunc(we.apisHandler.ClearUserData)).Methods("GET")
 
+	//TODO use userAccountsAuthWrapFunc
 	covid19RestSubrouter.HandleFunc("/ctests", we.userAuthWrapFunc(we.apisHandler.GetCTests)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/ctests/{id}", we.userAuthWrapFunc(we.apisHandler.UpdateCTest)).Methods("PUT")
 	covid19RestSubrouter.HandleFunc("/ctests", we.userAuthWrapFunc(we.apisHandler.DeleteCTests)).Methods("DELETE")
@@ -361,9 +362,9 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.Handle
 	}
 }
 
-type authFunc = func(model.User, http.ResponseWriter, *http.Request)
+type userAuthFunc = func(model.User, http.ResponseWriter, *http.Request)
 
-func (we Adapter) userAuthWrapFunc(handler authFunc) http.HandlerFunc {
+func (we Adapter) userAuthWrapFunc(handler userAuthFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
@@ -380,6 +381,28 @@ func (we Adapter) userAuthWrapFunc(handler authFunc) http.HandlerFunc {
 		}
 
 		handler(*user, w, req)
+	}
+}
+
+type userAccountsAuthFunc = func(model.User, model.Account, http.ResponseWriter, *http.Request)
+
+func (we Adapter) userAccountsAuthWrapFunc(handler userAccountsAuthFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		utils.LogRequest(req)
+
+		ok, user, account := we.auth.userAccountsCheck(w, req)
+		if !ok {
+			return
+		}
+		if user == nil {
+			//it is valid but the user is not logged in - return 200/null
+			log.Println("200 - Not logged in")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("null"))
+			return
+		}
+
+		handler(*user, *account, w, req)
 	}
 }
 

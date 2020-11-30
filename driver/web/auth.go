@@ -73,7 +73,11 @@ func (auth *Auth) providersCheck(w http.ResponseWriter, r *http.Request) bool {
 }
 
 func (auth *Auth) userCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
-	return auth.userAuth.check(w, r)
+	return auth.userAuth.userCheck(w, r)
+}
+
+func (auth *Auth) userAccountsCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *model.Account) {
+	return auth.userAuth.userAccountsCheck(w, r)
 }
 
 func (auth *Auth) updateAppUser(user model.User, uuid string, publicKey string, consent bool, exposureNotification bool, rePost *bool, encryptedKey *string, encryptedBlob *string) error {
@@ -616,7 +620,7 @@ func (auth *UserAuth) cleanCacheUser() {
 	auth.cleanCacheUser()
 }
 
-func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
+func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
 	authorizationHeader := r.Header.Get("Authorization")
 	if len(authorizationHeader) <= 0 {
 		auth.responseBadRequest(w)
@@ -703,6 +707,26 @@ func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mode
 		return false, nil, nil, nil
 	}
 
+	return true, user, &externalID, &authType
+}
+
+func (auth *UserAuth) userCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
+	//apply main check
+	ok, user, externalID, authType := auth.mainCheck(w, r)
+	if !ok {
+		return false, nil, nil, nil
+	}
+
+	return true, user, externalID, authType
+}
+
+func (auth *UserAuth) userAccountsCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *model.Account) {
+	//apply main check
+	ok, user, _, _ := auth.mainCheck(w, r)
+	if !ok {
+		return false, nil, nil
+	}
+
 	// determine the used user account
 	/// get the account id from the header
 	passedAccountID := r.Header.Get("ROKWIRE-ACC-ID")
@@ -714,7 +738,7 @@ func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mode
 			log.Printf("error getting default account - %s\n", user.ID)
 
 			auth.responseInternalServerError(w)
-			return false, nil, nil, nil
+			return false, nil, nil
 		}
 		passedAccountID = defAccount.ID
 	}
@@ -722,12 +746,10 @@ func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mode
 	account := user.GetAccount(passedAccountID)
 	if account == nil {
 		auth.responseForbbiden(fmt.Sprintf("Security - %s is trying to use account %s", user.ID, passedAccountID), w)
-		return false, nil, nil, nil
+		return false, nil, nil
 	}
 
-	log.Println(*account)
-
-	return true, user, &externalID, &authType
+	return true, user, account
 }
 
 func (auth *UserAuth) createDefaultAccountIfNeeded(current model.User) (*model.User, error) {

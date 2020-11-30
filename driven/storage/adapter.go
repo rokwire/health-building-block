@@ -891,9 +891,9 @@ func (sa *Adapter) CreateManualЕHistory(userID string, date time.Time, encrypte
 	return &history, nil
 }
 
-//FindEHistories finds all histories for an user
-func (sa *Adapter) FindEHistories(userID string) ([]*model.EHistory, error) {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+//FindEHistories finds all histories for an user account
+func (sa *Adapter) FindEHistories(accountID string) ([]*model.EHistory, error) {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID}}
 	var result []*model.EHistory
 
 	options := options.Find()

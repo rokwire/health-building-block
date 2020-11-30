@@ -595,8 +595,8 @@ func (app *Application) LoadAllRosters() ([]map[string]string, error) {
 	return rosters, nil
 }
 
-func (app *Application) getEHistoriesByUserID(userID string) ([]*model.EHistory, error) {
-	histories, err := app.storage.FindEHistories(userID)
+func (app *Application) getEHistoriesByAccountID(accountID string) ([]*model.EHistory, error) {
+	histories, err := app.storage.FindEHistories(accountID)
 	if err != nil {
 		return nil, err
 	}

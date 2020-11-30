@@ -5089,7 +5089,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/History"
+                                "$ref": "#/definitions/model.EHistory"
                             }
                         }
                     }
@@ -5130,7 +5130,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/History"
+                            "$ref": "#/definitions/model.EHistory"
                         }
                     }
                 }
@@ -5164,6 +5164,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "\"date\", \"encrypted_key\" and \"encrypted_blob\" are optional. If a field is omitted then it will not be updated.",
@@ -5199,7 +5202,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/History"
+                            "$ref": "#/definitions/model.EHistory"
                         }
                     }
                 }
@@ -5633,29 +5636,6 @@ var doc = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "History": {
-            "type": "object",
-            "properties": {
-                "date": {
-                    "type": "string"
-                },
-                "encrypted_blob": {
-                    "type": "string"
-                },
-                "encrypted_key": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -6990,6 +6970,29 @@ var doc = `{
                     "type": "boolean"
                 },
                 "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EHistory": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "encrypted_blob": {
+                    "type": "string"
+                },
+                "encrypted_key": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

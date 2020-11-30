@@ -164,8 +164,8 @@ func (s *servicesImpl) DeleteEHitories(userID string) (int64, error) {
 	return s.app.deleteEHitories(userID)
 }
 
-func (s *servicesImpl) UpdateEHistory(userID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error) {
-	return s.app.updateEHistory(userID, ID, date, encryptedKey, encryptedBlob)
+func (s *servicesImpl) UpdateEHistory(accountID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error) {
+	return s.app.updateEHistory(accountID, ID, date, encryptedKey, encryptedBlob)
 }
 
 func (s *servicesImpl) GetCTests(current model.User, processed bool) ([]*model.CTest, []*model.Provider, error) {

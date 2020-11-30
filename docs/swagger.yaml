@@ -207,21 +207,6 @@ definitions:
       type:
         type: string
     type: object
-  History:
-    properties:
-      date:
-        type: string
-      encrypted_blob:
-        type: string
-      encrypted_key:
-        type: string
-      id:
-        type: string
-      type:
-        type: string
-      user_id:
-        type: string
-    type: object
   Location:
     properties:
       address_1:
@@ -1106,6 +1091,21 @@ definitions:
     - exposure_notification
     - public_key
     - uuid
+    type: object
+  model.EHistory:
+    properties:
+      date:
+        type: string
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      id:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
     type: object
   processManualTestRequest:
     properties:
@@ -4589,7 +4589,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/History'
+              $ref: '#/definitions/model.EHistory'
             type: array
       security:
       - AppUserAuth: []
@@ -4616,7 +4616,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/History'
+            $ref: '#/definitions/model.EHistory'
       security:
       - AppUserAuth: []
       - AppUserAccountAuth: []
@@ -4647,9 +4647,10 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/History'
+            $ref: '#/definitions/model.EHistory'
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/v2/statuses:

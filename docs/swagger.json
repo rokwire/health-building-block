@@ -5077,7 +5077,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/History"
+                                "$ref": "#/definitions/model.EHistory"
                             }
                         }
                     }
@@ -5118,7 +5118,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/History"
+                            "$ref": "#/definitions/model.EHistory"
                         }
                     }
                 }
@@ -5152,6 +5152,9 @@
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "\"date\", \"encrypted_key\" and \"encrypted_blob\" are optional. If a field is omitted then it will not be updated.",
@@ -5187,7 +5190,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/History"
+                            "$ref": "#/definitions/model.EHistory"
                         }
                     }
                 }
@@ -5621,29 +5624,6 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "History": {
-            "type": "object",
-            "properties": {
-                "date": {
-                    "type": "string"
-                },
-                "encrypted_blob": {
-                    "type": "string"
-                },
-                "encrypted_key": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -6978,6 +6958,29 @@
                     "type": "boolean"
                 },
                 "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EHistory": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "encrypted_blob": {
+                    "type": "string"
+                },
+                "encrypted_key": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

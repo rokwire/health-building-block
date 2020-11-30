@@ -1294,7 +1294,9 @@ func (h ApisHandler) CreateHistoryV2(current model.User, account model.Account, 
 		}
 	}
 
-	data, err = json.Marshal(history)
+	response := historyResponse{ID: history.ID, AccountID: history.UserID, Date: history.Date,
+		Type: history.Type, EncryptedKey: history.EncryptedKey, EncryptedBlob: history.EncryptedBlob}
+	data, err = json.Marshal(response)
 	if err != nil {
 		log.Println("Error on marshal a history")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1399,7 +1401,10 @@ func (h ApisHandler) UpdateHistoryV2(current model.User, account model.Account, 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	data, err = json.Marshal(history)
+
+	response := historyResponse{ID: history.ID, AccountID: history.UserID, Date: history.Date,
+		Type: history.Type, EncryptedKey: history.EncryptedKey, EncryptedBlob: history.EncryptedBlob}
+	data, err = json.Marshal(response)
 	if err != nil {
 		log.Println("Error on marshal the ehistory item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1428,11 +1433,16 @@ func (h ApisHandler) GetHistoriesV2(current model.User, account model.Account, w
 		return
 	}
 
-	if len(historiesItems) == 0 {
-		historiesItems = make([]*model.EHistory, 0)
+	historiesResponse := make([]historyResponse, len(historiesItems))
+
+	if historiesItems != nil {
+		for i, current := range historiesItems {
+			historiesResponse[i] = historyResponse{ID: current.ID, AccountID: current.UserID, Date: current.Date,
+				Type: current.Type, EncryptedKey: current.EncryptedKey, EncryptedBlob: current.EncryptedBlob}
+		}
 	}
 
-	data, err := json.Marshal(historiesItems)
+	data, err := json.Marshal(historiesResponse)
 	if err != nil {
 		log.Println("Error on marshal the histories items")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

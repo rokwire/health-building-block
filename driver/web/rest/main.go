@@ -134,6 +134,15 @@ type PUserResponse struct {
 	Consent   bool   `json:"consent"`
 } //@name PUser
 
+type historyResponse struct {
+	ID            string    `json:"id"`
+	AccountID     string    `json:"account_id"`
+	Date          time.Time `json:"date"`
+	Type          string    `json:"type"`
+	EncryptedKey  string    `json:"encrypted_key"`
+	EncryptedBlob string    `json:"encrypted_blob"`
+} // @name History
+
 func convertToDaysOfOperations(list []locationOperationDayRequest) []model.OperationDay {
 	var doo []model.OperationDay
 	if list != nil {

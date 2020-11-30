@@ -465,7 +465,7 @@ func (app *Application) deleteEHitories(userID string) (int64, error) {
 	return deletedCount, nil
 }
 
-func (app *Application) updateEHistory(userID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error) {
+func (app *Application) updateEHistory(accountID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error) {
 	history, err := app.storage.FindEHistory(ID)
 	if err != nil {
 		return nil, err
@@ -473,7 +473,7 @@ func (app *Application) updateEHistory(userID string, ID string, date *time.Time
 	if history == nil {
 		return nil, errors.New("history is nil for id " + ID)
 	}
-	if history.UserID != userID {
+	if history.UserID != accountID {
 		return nil, errors.New("not allowed to modify history with id " + ID)
 	}
 

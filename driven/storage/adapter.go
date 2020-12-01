@@ -4430,47 +4430,16 @@ func (sa *Adapter) FindRosters(f *utils.Filter, sortBy string, sortOrder int, li
 //CreateRoster creates a roster
 func (sa *Adapter) CreateRoster(phone string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
 	address1 string, address2 string, address3 string, city string, state string, zipCode string, email string, badgeType string) error {
-	// transaction
-	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
-		err := sessionContext.StartTransaction()
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
 
-		//first check if there is already a user with the provided uin
-		filter := bson.D{primitive.E{Key: "external_id", Value: uin}}
-		var usersResult []*model.User
-		err = sa.db.users.FindWithContext(sessionContext, filter, &usersResult, nil)
-		if err != nil {
-			abortTransaction(sessionContext)
-			return err
-		}
-		if len(usersResult) > 0 {
-			abortTransaction(sessionContext)
-			return errors.New("there is a user in the system with the provided uin")
-		}
-
-		//insert the roster
-		item := map[string]string{"phone": phone, "uin": uin, "first_name": firstName, "middle_name": middleName,
-			"last_name": lastName, "birth_date": birthDate, "gender": gender, "address1": address1, "address2": address2,
-			"address3": address3, "city": city, "state": state, "zip_code": zipCode, "email": email, "badge_type": badgeType}
-		_, err = sa.db.rosters.InsertOneWithContext(sessionContext, &item)
-		if err != nil {
-			abortTransaction(sessionContext)
-			return err
-		}
-
-		err = sessionContext.CommitTransaction(sessionContext)
-		if err != nil {
-			log.Printf("error on commiting a transaction - %s", err)
-			return err
-		}
-		return nil
-	})
+	//insert the roster
+	item := map[string]string{"phone": phone, "uin": uin, "first_name": firstName, "middle_name": middleName,
+		"last_name": lastName, "birth_date": birthDate, "gender": gender, "address1": address1, "address2": address2,
+		"address3": address3, "city": city, "state": state, "zip_code": zipCode, "email": email, "badge_type": badgeType}
+	_, err := sa.db.rosters.InsertOne(&item)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

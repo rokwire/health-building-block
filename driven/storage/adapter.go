@@ -4623,72 +4623,13 @@ func (sa *Adapter) DeleteRosterByUIN(uin string) error {
 
 //DeleteAllRosters deletes all rosters
 func (sa *Adapter) DeleteAllRosters() error {
-	// transaction
-	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
-		err := sessionContext.StartTransaction()
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
-
-		//first read all rosters items
-		allRostersFilter := bson.D{}
-		var rostersList []map[string]string
-		err = sa.db.rosters.Find(allRostersFilter, &rostersList, nil)
-		if err != nil {
-			log.Printf("error reading all rosters items for removing - %s", err)
-			abortTransaction(sessionContext)
-			return err
-		}
-
-		//loop every item - we need to remove all users for the rosters
-		if len(rostersList) > 0 {
-			for _, roster := range rostersList {
-				uin := roster["uin"]
-
-				//process every item
-
-				//first find if there is logged in user in the system for this uin
-				filter := bson.D{primitive.E{Key: "external_id", Value: uin}}
-				var usersResult []*model.User
-				err = sa.db.users.FindWithContext(sessionContext, filter, &usersResult, nil)
-				if err != nil {
-					abortTransaction(sessionContext)
-					return err
-				}
-
-				if len(usersResult) > 0 {
-					//there is a user, so we need to remove it and all related data
-					user := usersResult[0]
-
-					// delete the user data
-					err = sa.deleteUserData(sessionContext, user.ID)
-					if err != nil {
-						abortTransaction(sessionContext)
-						return err
-					}
-				}
-			}
-		}
-
-		//delete all rosters
-		deleteRostersFilter := bson.D{}
-		_, err = sa.db.rosters.DeleteManyWithContext(sessionContext, deleteRostersFilter, nil)
-		if err != nil {
-			abortTransaction(sessionContext)
-			return err
-		}
-
-		err = sessionContext.CommitTransaction(sessionContext)
-		if err != nil {
-			log.Printf("error on commiting a transaction - %s", err)
-			return err
-		}
-		return nil
-	})
+	//delete all rosters
+	deleteRostersFilter := bson.D{}
+	_, err := sa.db.rosters.DeleteMany(deleteRostersFilter, nil)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

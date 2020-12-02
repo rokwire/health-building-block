@@ -1035,13 +1035,35 @@ definitions:
     type: object
   getRosterByPhoneResponse:
     properties:
+      address1:
+        type: string
+      address2:
+        type: string
+      address3:
+        type: string
+      badge_type:
+        type: string
+      birth_date:
+        type: string
+      city:
+        type: string
+      email:
+        type: string
       first_name:
+        type: string
+      gender:
         type: string
       last_name:
         type: string
       middle_name:
         type: string
+      phone:
+        type: string
+      state:
+        type: string
       uin:
+        type: string
+      zip_code:
         type: string
     type: object
   gubonResponse:
@@ -1471,7 +1493,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 1.32.0
+  version: 1.34.0
 paths:
   /admin/access-rules:
     get:

@@ -6891,7 +6891,31 @@ var doc = `{
         "getRosterByPhoneResponse": {
             "type": "object",
             "properties": {
+                "address1": {
+                    "type": "string"
+                },
+                "address2": {
+                    "type": "string"
+                },
+                "address3": {
+                    "type": "string"
+                },
+                "badge_type": {
+                    "type": "string"
+                },
+                "birth_date": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
                 "first_name": {
+                    "type": "string"
+                },
+                "gender": {
                     "type": "string"
                 },
                 "last_name": {
@@ -6900,7 +6924,16 @@ var doc = `{
                 "middle_name": {
                     "type": "string"
                 },
+                "phone": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
                 "uin": {
+                    "type": "string"
+                },
+                "zip_code": {
                     "type": "string"
                 }
             }
@@ -7584,7 +7617,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.32.0",
+	Version:     "1.34.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

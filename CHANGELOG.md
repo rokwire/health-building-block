@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Sub accounts feature. [#92](https://github.com/rokwire/health-building-block/issues/92)
 
+## [1.34.0] - 2020-12-02
+### Changed
+- Allow to search rosters by substring. [#96](https://github.com/rokwire/health-building-block/issues/96)
+
+## [1.33.0] - 2020-12-01
+### Changed
+- Rosters update. [#93](https://github.com/rokwire/health-building-block/issues/93)
+
 ## [1.32.0] - 2020-11-19
 ### Added
 - Implement admin API for updating single roster. [#89](https://github.com/rokwire/health-building-block/issues/89)
@@ -182,7 +190,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.32.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.34.0...HEAD
+[1.34.0]: https://github.com/rokwire/health-building-block/compare/v1.33.0...v1.34.0
+[1.33.0]: https://github.com/rokwire/health-building-block/compare/v1.32.0...v1.33.0
 [1.32.0]: https://github.com/rokwire/health-building-block/compare/v1.31.0...v1.32.0
 [1.31.0]: https://github.com/rokwire/health-building-block/compare/v1.30.0...v1.31.0
 [1.30.0]: https://github.com/rokwire/health-building-block/compare/v1.29.0...v1.30.0

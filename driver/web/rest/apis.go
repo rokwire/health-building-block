@@ -2528,6 +2528,17 @@ type getRosterByPhoneResponse struct {
 	FirstName  string `json:"first_name"`
 	MiddleName string `json:"middle_name"`
 	LastName   string `json:"last_name"`
+	Address1   string `json:"address1"`
+	Address2   string `json:"address2"`
+	Address3   string `json:"address3"`
+	BadgeType  string `json:"badge_type"`
+	BirthDate  string `json:"birth_date"`
+	City       string `json:"city"`
+	Email      string `json:"email"`
+	Gender     string `json:"gender"`
+	Phone      string `json:"phone"`
+	State      string `json:"state"`
+	ZipCode    string `json:"zip_code"`
 } // @name getRosterByPhoneResponse
 
 //GetRosterByPhone returns uin of the roster member with a given phone number
@@ -2560,7 +2571,21 @@ func (h ApisHandler) GetRosterByPhone(appVersion *string, w http.ResponseWriter,
 		firstName := roster["first_name"]
 		middleName := roster["middle_name"]
 		lastName := roster["last_name"]
-		response = &getRosterByPhoneResponse{UIN: uin, FirstName: firstName, MiddleName: middleName, LastName: lastName}
+		address1 := roster["address1"]
+		address2 := roster["address2"]
+		address3 := roster["address3"]
+		badgeType := roster["badge_type"]
+		birthDate := roster["birth_date"]
+		city := roster["city"]
+		email := roster["email"]
+		gender := roster["gender"]
+		phone := roster["phone"]
+		state := roster["state"]
+		zipCode := roster["zip_code"]
+
+		response = &getRosterByPhoneResponse{UIN: uin, FirstName: firstName, MiddleName: middleName, LastName: lastName,
+			Address1: address1, Address2: address2, Address3: address3, BadgeType: badgeType, BirthDate: birthDate, City: city,
+			Email: email, Gender: gender, Phone: phone, State: state, ZipCode: zipCode}
 	}
 
 	data, err := json.Marshal(response)

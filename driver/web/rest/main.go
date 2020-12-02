@@ -45,7 +45,30 @@ type AppUserResponse struct {
 	RePost               bool    `json:"re_post"`
 	EncryptedKey         *string `json:"encrypted_key"`
 	EncryptedBlob        *string `json:"encrypted_blob"`
+
+	Accounts []AppUserAccountResponse `json:"accounts"`
 } //@name User
+
+//AppUserResponse represents user response entity
+type AppUserAccountResponse struct {
+	ID         string `json:"id"`
+	ExternalID string `json:"external_id"`
+	Default    bool   `json:"default"`
+	Active     bool   `json:"active"`
+	FirstName  string `json:"first_name"`
+	MiddleName string `json:"middle_name"`
+	LastName   string `json:"last_name"`
+	BirthDate  string `json:"birth_date"`
+	Gender     string `json:"gender"`
+	Address1   string `json:"address1"`
+	Address2   string `json:"address2"`
+	Address3   string `json:"address3"`
+	City       string `json:"city"`
+	State      string `json:"state"`
+	ZipCode    string `json:"zip_code"`
+	Phone      string `json:"phone"`
+	Email      string `json:"email"`
+} //@name Account
 
 type manualTestImageResponse struct {
 	EncryptedImageKey  string `json:"encrypted_image_key"`

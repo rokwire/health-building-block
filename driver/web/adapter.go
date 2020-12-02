@@ -530,9 +530,18 @@ func (we Adapter) getUser(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	accounts := make([]rest.AppUserAccountResponse, len(user.Accounts))
+	if len(user.Accounts) > 0 {
+		for i, c := range user.Accounts {
+			accounts[i] = rest.AppUserAccountResponse{ID: c.ID, ExternalID: c.ExternalID, Default: c.Default, Active: c.Active,
+				FirstName: c.FirstName, MiddleName: c.MiddleName, LastName: c.LastName, BirthDate: c.BirthDate, Gender: c.Gender, Address1: c.Address1,
+				Address2: c.Address2, Address3: c.Address3, City: c.City, State: c.State, ZipCode: c.ZipCode, Phone: c.Phone, Email: c.Email}
+		}
+	}
+
 	response := rest.AppUserResponse{ID: user.ID, UUID: user.UUID, PublicKey: user.PublicKey,
 		Consent: user.Consent, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
-		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob}
+		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, Accounts: accounts}
 	data, err := json.Marshal(response)
 	if err != nil {
 		log.Println("Error on marshal the user")

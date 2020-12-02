@@ -146,6 +146,7 @@ type Account struct {
 	ID         string `json:"id" bson:"id"`
 	ExternalID string `json:"external_id" bson:"external_id"`
 	Default    bool   `json:"default" bson:"default"`
+	Active     bool   `json:"active" bson:"active"`
 
 	FirstName  string `json:"first_name" bson:"first_name"`
 	MiddleName string `json:"middle_name" bson:"middle_name"`

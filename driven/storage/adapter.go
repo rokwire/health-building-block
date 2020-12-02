@@ -377,7 +377,7 @@ func (sa *Adapter) CreateUser(shibboAuth *model.ShibbolethAuth, externalID strin
 	if !adminUser {
 		//add default account
 		accounts = make([]model.Account, 1)
-		accounts[0] = model.Account{ID: id.String(), ExternalID: externalID, Default: true}
+		accounts[0] = model.Account{ID: id.String(), ExternalID: externalID, Default: true, Active: true}
 	}
 
 	dateCreated := time.Now()
@@ -428,7 +428,7 @@ func (sa *Adapter) CreateDefaultAccount(userID string) (*model.User, error) {
 
 		// update it
 		accounts := make([]model.Account, 1)
-		accounts[0] = model.Account{ID: user.ID, ExternalID: user.ExternalID, Default: true}
+		accounts[0] = model.Account{ID: user.ID, ExternalID: user.ExternalID, Default: true, Active: true}
 		updateFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
 		update := bson.D{
 			primitive.E{Key: "$set", Value: bson.D{

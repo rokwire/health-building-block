@@ -25,6 +25,7 @@ import (
 	"health/core/model"
 	"health/utils"
 	"log"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -4673,11 +4674,13 @@ func constructDataFilter(f *utils.Filter) interface{} {
 	var filter bson.D
 	for _, item := range f.Items {
 		if len(item.Value) == 1 {
-			filter = append(filter, bson.E{Key: item.Field, Value: item.Value[0]})
+			quoteMeta := regexp.QuoteMeta(item.Value[0])
+			filter = append(filter, bson.E{Key: item.Field, Value: bson.D{{"$regex", primitive.Regex{Pattern: quoteMeta, Options: "i"}}}})
 		} else if len(item.Value) > 1 {
 			var vals []interface{}
 			for _, value := range item.Value {
-				vals = append(vals, bson.D{bson.E{Key: item.Field, Value: value}})
+				quoteMeta := regexp.QuoteMeta(value)
+				vals = append(vals, bson.D{bson.E{Key: item.Field, Value: bson.D{{"$regex", primitive.Regex{Pattern: quoteMeta, Options: "i"}}}}})
 			}
 			filter = append(filter, bson.E{Key: "$or", Value: vals})
 		}

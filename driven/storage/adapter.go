@@ -25,6 +25,7 @@ import (
 	"health/core/model"
 	"health/utils"
 	"log"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -1426,7 +1427,7 @@ func (sa *Adapter) FindCounties(f *utils.Filter) ([]*model.County, error) {
 	//add filter
 	var filter interface{}
 	if f != nil {
-		filter = constructFilter(f)
+		filter = constructDataFilter(f)
 	}
 
 	var result []*county
@@ -4396,7 +4397,7 @@ func (sa *Adapter) FindRosterByPhone(phone string) (map[string]string, error) {
 func (sa *Adapter) FindRosters(f *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]map[string]interface{}, error) {
 	var filter bson.D
 	if f != nil {
-		filter = constructFilter(f).(bson.D)
+		filter = constructDataFilter(f).(bson.D)
 	}
 
 	options := options.Find()
@@ -4666,18 +4667,20 @@ func NewStorageAdapter(mongoDBAuth string, mongoDBName string, mongoTimeout stri
 	return &Adapter{db: db}
 }
 
-func constructFilter(f *utils.Filter) interface{} {
+func constructDataFilter(f *utils.Filter) interface{} {
 	if f == nil || len(f.Items) == 0 {
 		return bson.D{}
 	}
 	var filter bson.D
 	for _, item := range f.Items {
 		if len(item.Value) == 1 {
-			filter = append(filter, bson.E{Key: item.Field, Value: item.Value[0]})
+			quoteMeta := regexp.QuoteMeta(item.Value[0])
+			filter = append(filter, bson.E{Key: item.Field, Value: bson.D{{"$regex", primitive.Regex{Pattern: quoteMeta, Options: "i"}}}})
 		} else if len(item.Value) > 1 {
 			var vals []interface{}
 			for _, value := range item.Value {
-				vals = append(vals, bson.D{bson.E{Key: item.Field, Value: value}})
+				quoteMeta := regexp.QuoteMeta(value)
+				vals = append(vals, bson.D{bson.E{Key: item.Field, Value: bson.D{{"$regex", primitive.Regex{Pattern: quoteMeta, Options: "i"}}}}})
 			}
 			filter = append(filter, bson.E{Key: "$or", Value: vals})
 		}

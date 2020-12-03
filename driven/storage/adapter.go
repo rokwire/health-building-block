@@ -1352,9 +1352,9 @@ func (sa *Adapter) FindCTestsByExternalUserIDs(externalUserIDs []string) (map[st
 	return mapData, nil
 }
 
-//DeleteCTests deletes all ctest for a user
-func (sa *Adapter) DeleteCTests(userID string) (int64, error) {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+//DeleteCTests deletes all ctest for a user account
+func (sa *Adapter) DeleteCTests(accountID string) (int64, error) {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID}}
 
 	result, err := sa.db.ctests.DeleteMany(filter, nil)
 	if err != nil {

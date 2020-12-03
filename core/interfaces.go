@@ -53,7 +53,7 @@ type Services interface {
 
 	GetCTests(account model.Account, processed bool) ([]*model.CTest, []*model.Provider, error)
 	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error
-	DeleteCTests(userID string) (int64, error)
+	DeleteCTests(accountID string) (int64, error)
 	UpdateCTest(account model.Account, ID string, processed bool) (*model.CTest, error)
 
 	GetProviders() ([]*model.Provider, error)
@@ -176,8 +176,8 @@ func (s *servicesImpl) CreateExternalCTest(providerID string, uin string, encryp
 	return s.app.createExternalCTest(providerID, uin, encryptedKey, encryptedBlob, orderNumber)
 }
 
-func (s *servicesImpl) DeleteCTests(userID string) (int64, error) {
-	return s.app.deleteCTests(userID)
+func (s *servicesImpl) DeleteCTests(accountID string) (int64, error) {
+	return s.app.deleteCTests(accountID)
 }
 
 func (s *servicesImpl) UpdateCTest(account model.Account, ID string, processed bool) (*model.CTest, error) {
@@ -822,7 +822,7 @@ type Storage interface {
 	FindCTest(ID string) (*model.CTest, error)
 	FindCTests(accountID string, processed bool) ([]*model.CTest, error)
 	FindCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error)
-	DeleteCTests(userID string) (int64, error)
+	DeleteCTests(accountID string) (int64, error)
 	SaveCTest(ctest *model.CTest) error
 
 	FindCounties(f *utils.Filter) ([]*model.County, error)

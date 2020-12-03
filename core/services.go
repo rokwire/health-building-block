@@ -154,8 +154,8 @@ func (app *Application) createExternalCTest(providerID string, uin string, encry
 	return nil
 }
 
-func (app *Application) deleteCTests(userID string) (int64, error) {
-	deletedCount, err := app.storage.DeleteCTests(userID)
+func (app *Application) deleteCTests(accountID string) (int64, error) {
+	deletedCount, err := app.storage.DeleteCTests(accountID)
 	if err != nil {
 		return -1, err
 	}

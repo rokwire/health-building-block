@@ -933,9 +933,10 @@ func (h ApisHandler) UpdateCTest(current model.User, account model.Account, w ht
 // @Accept plain
 // @Success 200 {object} string "Successfuly deleted [n] items"
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/ctests [delete]
-func (h ApisHandler) DeleteCTests(current model.User, w http.ResponseWriter, r *http.Request) {
-	deletedCount, err := h.app.Services.DeleteCTests(current.ID)
+func (h ApisHandler) DeleteCTests(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	deletedCount, err := h.app.Services.DeleteCTests(account.ID)
 	if err != nil {
 		log.Printf("Error on deleting the ctests items - %s\n", err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

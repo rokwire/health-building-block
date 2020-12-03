@@ -104,11 +104,11 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/user", we.getUser).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/user/clear", we.userAuthWrapFunc(we.apisHandler.ClearUserData)).Methods("GET")
 
-	//TODO use userAccountsAuthWrapFunc
 	covid19RestSubrouter.HandleFunc("/ctests", we.userAccountsAuthWrapFunc(we.apisHandler.GetCTests)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/ctests/{id}", we.userAccountsAuthWrapFunc(we.apisHandler.UpdateCTest)).Methods("PUT")
-	covid19RestSubrouter.HandleFunc("/ctests", we.userAuthWrapFunc(we.apisHandler.DeleteCTests)).Methods("DELETE")
+	covid19RestSubrouter.HandleFunc("/ctests", we.userAccountsAuthWrapFunc(we.apisHandler.DeleteCTests)).Methods("DELETE")
 
+	//TODO use userAccountsAuthWrapFunc
 	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAuthWrapFunc(we.apisHandler.GetStatusV2Deprecated)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAuthWrapFunc(we.apisHandler.CreateOrUpdateStatusV2Deprecated)).Methods("PUT")
 	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAuthWrapFunc(we.apisHandler.DeleteStatusV2Deprecated)).Methods("DELETE")

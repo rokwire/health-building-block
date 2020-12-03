@@ -54,7 +54,7 @@ type Services interface {
 	GetCTests(account model.Account, processed bool) ([]*model.CTest, []*model.Provider, error)
 	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error
 	DeleteCTests(userID string) (int64, error)
-	UpdateCTest(current model.User, ID string, processed bool) (*model.CTest, error)
+	UpdateCTest(account model.Account, ID string, processed bool) (*model.CTest, error)
 
 	GetProviders() ([]*model.Provider, error)
 
@@ -180,8 +180,8 @@ func (s *servicesImpl) DeleteCTests(userID string) (int64, error) {
 	return s.app.deleteCTests(userID)
 }
 
-func (s *servicesImpl) UpdateCTest(current model.User, ID string, processed bool) (*model.CTest, error) {
-	return s.app.updateCTest(current, ID, processed)
+func (s *servicesImpl) UpdateCTest(account model.Account, ID string, processed bool) (*model.CTest, error) {
+	return s.app.updateCTest(account, ID, processed)
 }
 
 func (s *servicesImpl) GetProviders() ([]*model.Provider, error) {

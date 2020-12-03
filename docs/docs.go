@@ -3922,6 +3922,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Mark ctest as processed.",

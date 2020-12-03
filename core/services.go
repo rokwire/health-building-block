@@ -162,7 +162,7 @@ func (app *Application) deleteCTests(userID string) (int64, error) {
 	return deletedCount, nil
 }
 
-func (app *Application) updateCTest(current model.User, ID string, processed bool) (*model.CTest, error) {
+func (app *Application) updateCTest(account model.Account, ID string, processed bool) (*model.CTest, error) {
 	//check if we have a such ctest entity
 	ctest, err := app.storage.FindCTest(ID)
 	if err != nil {
@@ -172,9 +172,9 @@ func (app *Application) updateCTest(current model.User, ID string, processed boo
 		return nil, errors.New("ctest is nil for id " + ID)
 	}
 
-	//check if the user owns the ctest
-	if current.ID != ctest.UserID {
-		return nil, errors.New("the user does not owns this ctest")
+	//check if the user account owns the ctest
+	if account.ID != ctest.UserID {
+		return nil, errors.New("the account does not owns this ctest")
 	}
 
 	//add the new values

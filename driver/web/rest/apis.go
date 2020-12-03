@@ -854,8 +854,9 @@ type updateCTestRequest struct {
 // @Param id path string true "ID"
 // @Success 200 {object} model.CTest
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/ctests/{id} [put]
-func (h ApisHandler) UpdateCTest(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) UpdateCTest(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -887,13 +888,33 @@ func (h ApisHandler) UpdateCTest(current model.User, w http.ResponseWriter, r *h
 		return
 	}
 
-	ctest, err := h.app.Services.UpdateCTest(current, ID, requestData.Processed)
+	ctest, err := h.app.Services.UpdateCTest(account, ID, requestData.Processed)
 	if err != nil {
 		log.Printf("Error on updating the ctest item - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	data, err = json.Marshal(ctest)
+
+	//TODO refactor!!!
+	type updateCTestResponse struct {
+		ID string `json:"id"`
+
+		ProviderID string `json:"provider_id"`
+		AccountID  string `json:"account_id"`
+
+		EncryptedKey  string `json:"encrypted_key"`
+		EncryptedBlob string `json:"encrypted_blob"`
+
+		OrderNumber *string `json:"order_number"`
+
+		Processed bool `json:"processed"`
+
+		DateCreated time.Time  `json:"date_created"`
+		DateUpdated *time.Time `json:"date_updated"`
+	}
+	result := updateCTestResponse{ID: ctest.ID, ProviderID: ctest.ProviderID, AccountID: ctest.UserID, EncryptedKey: ctest.EncryptedKey,
+		EncryptedBlob: ctest.EncryptedBlob, OrderNumber: ctest.OrderNumber, Processed: ctest.Processed, DateCreated: ctest.DateCreated, DateUpdated: ctest.DateUpdated}
+	data, err = json.Marshal(result)
 	if err != nil {
 		log.Println("Error on marshal the ctest item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

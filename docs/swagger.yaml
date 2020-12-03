@@ -3930,6 +3930,7 @@ paths:
             $ref: '#/definitions/CTest'
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/ext/building-access:

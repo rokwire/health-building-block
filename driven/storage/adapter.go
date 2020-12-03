@@ -289,10 +289,40 @@ func (sa *Adapter) ClearUserData(userID string) error {
 			return err
 		}
 
-		// delete the user data
-		err = sa.deleteUserData(sessionContext, userID)
+		//get the user
+		uFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
 		if err != nil {
 			abortTransaction(sessionContext)
+			return err
+		}
+		if len(usersResult) == 0 {
+			abortTransaction(sessionContext)
+			log.Printf("there is no a user for the provided user id - %s %s", userID, err)
+			return err
+		}
+		user := usersResult[0]
+
+		//remove the user accounts data
+		if len(user.Accounts) > 0 {
+			for _, account := range user.Accounts {
+
+				// delete the account data
+				err = sa.deleteAccountData(sessionContext, account)
+				if err != nil {
+					abortTransaction(sessionContext)
+					return err
+				}
+			}
+		}
+
+		//remove from users
+		usersFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+		_, err = sa.db.users.DeleteOneWithContext(sessionContext, usersFilter, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			log.Printf("error deleting user record for a user - %s", err)
 			return err
 		}
 
@@ -4652,32 +4682,18 @@ func (sa *Adapter) deleteAllStatuses(sessionContext mongo.SessionContext) error 
 	return nil
 }
 
-func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID string) error {
-
-	//first read the user as we need the external id too
-	uFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
-	var usersResult []*model.User
-	err := sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
-	if err != nil {
-		return err
-	}
-	if len(usersResult) == 0 {
-		log.Printf("there is no a user for the provided user id - %s %s", userID, err)
-		return err
-	}
-	user := usersResult[0]
-	externalID := user.ExternalID
+func (sa *Adapter) deleteAccountData(sessionContext mongo.SessionContext, account model.Account) error {
 
 	//remove from uinoverrides
-	uinOverridesFilter := bson.D{primitive.E{Key: "uin", Value: externalID}}
-	_, err = sa.db.uinoverrides.DeleteOneWithContext(sessionContext, uinOverridesFilter, nil)
+	uinOverridesFilter := bson.D{primitive.E{Key: "uin", Value: account.ExternalID}}
+	_, err := sa.db.uinoverrides.DeleteOneWithContext(sessionContext, uinOverridesFilter, nil)
 	if err != nil {
 		log.Printf("error deleting uinoverride record for a user - %s", err)
 		return err
 	}
 
 	//remove from uinbuildingaccess
-	uinBuildingAccessFilter := bson.D{primitive.E{Key: "uin", Value: externalID}}
+	uinBuildingAccessFilter := bson.D{primitive.E{Key: "uin", Value: account.ExternalID}}
 	_, err = sa.db.uinbuildingaccess.DeleteOneWithContext(sessionContext, uinBuildingAccessFilter, nil)
 	if err != nil {
 		log.Printf("error deleting uinbuildingaccess record for a user - %s", err)
@@ -4685,7 +4701,7 @@ func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID st
 	}
 
 	//remove from ctest
-	cTestFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	cTestFilter := bson.D{primitive.E{Key: "user_id", Value: account.ID}}
 	_, err = sa.db.ctests.DeleteManyWithContext(sessionContext, cTestFilter, nil)
 	if err != nil {
 		log.Printf("error deleting ctests for a user - %s", err)
@@ -4693,7 +4709,7 @@ func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID st
 	}
 
 	//remove from history
-	historyFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	historyFilter := bson.D{primitive.E{Key: "user_id", Value: account.ID}}
 	//from ehistory
 	_, err = sa.db.ehistory.DeleteManyWithContext(sessionContext, historyFilter, nil)
 	if err != nil {
@@ -4702,7 +4718,7 @@ func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID st
 	}
 
 	//remove from status
-	statusFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	statusFilter := bson.D{primitive.E{Key: "user_id", Value: account.ID}}
 	//from estatus
 	_, err = sa.db.estatus.DeleteManyWithContext(sessionContext, statusFilter, nil)
 	if err != nil {
@@ -4711,18 +4727,10 @@ func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID st
 	}
 
 	//remove from manual tests
-	mtFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	mtFilter := bson.D{primitive.E{Key: "user_id", Value: account.ID}}
 	_, err = sa.db.emanualtests.DeleteOneWithContext(sessionContext, mtFilter, nil)
 	if err != nil {
 		log.Printf("error deleting manual tests for a user - %s", err)
-		return err
-	}
-
-	//remove from users
-	usersFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
-	_, err = sa.db.users.DeleteOneWithContext(sessionContext, usersFilter, nil)
-	if err != nil {
-		log.Printf("error deleting user record for a user - %s", err)
 		return err
 	}
 

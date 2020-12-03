@@ -40,7 +40,7 @@ type Services interface {
 
 	GetNews(limit int64) ([]*model.News, error)
 
-	GetEStatusByUserID(userID string, appVersion *string) (*model.EStatus, error)
+	GetEStatusByAccountID(accountID string, appVersion *string) (*model.EStatus, error)
 	CreateOrUpdateEStatus(accountID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error)
 	DeleteEStatus(userID string, appVersion *string) error
 
@@ -135,8 +135,8 @@ func (s *servicesImpl) GetNews(limit int64) ([]*model.News, error) {
 	return s.app.getNews(limit)
 }
 
-func (s *servicesImpl) GetEStatusByUserID(userID string, appVersion *string) (*model.EStatus, error) {
-	return s.app.getEStatusByUserID(userID, appVersion)
+func (s *servicesImpl) GetEStatusByAccountID(accountID string, appVersion *string) (*model.EStatus, error) {
+	return s.app.getEStatusByAccountID(accountID, appVersion)
 }
 
 func (s *servicesImpl) CreateOrUpdateEStatus(accountID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {

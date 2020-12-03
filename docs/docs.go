@@ -4966,6 +4966,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Gets the status for the current user for a specific app version",
@@ -4988,7 +4991,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.EStatus"
+                            "$ref": "#/definitions/Status"
                         }
                     },
                     "404": {
@@ -5228,6 +5231,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Gets the status for the current user",
@@ -5243,7 +5249,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.EStatus"
+                            "$ref": "#/definitions/Status"
                         }
                     },
                     "404": {
@@ -7103,32 +7109,6 @@ var doc = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.EStatus": {
-            "type": "object",
-            "properties": {
-                "app_version": {
-                    "type": "string"
-                },
-                "date": {
-                    "type": "string"
-                },
-                "date_updated": {
-                    "type": "string"
-                },
-                "encrypted_blob": {
-                    "type": "string"
-                },
-                "encrypted_key": {
-                    "type": "string"
-                },
-                "id": {
                     "type": "string"
                 },
                 "user_id": {

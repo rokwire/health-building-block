@@ -249,14 +249,12 @@ func (app *Application) createOrUpdateEStatus(accountID string, appVersion *stri
 	return status, nil
 }
 
-func (app *Application) getEStatusByUserID(userID string, appVersion *string) (*model.EStatus, error) {
-	/*	status, err := app.storage.FindEStatusByUserID(appVersion, userID)
-		if err != nil {
-			return nil, err
-		}
-		return status, nil */
-	//TODO
-	return nil, nil
+func (app *Application) getEStatusByAccountID(accountID string, appVersion *string) (*model.EStatus, error) {
+	status, err := app.storage.FindEStatusByAccountID(appVersion, accountID)
+	if err != nil {
+		return nil, err
+	}
+	return status, nil
 }
 
 func (app *Application) deleteEStatus(userID string, appVersion *string) error {

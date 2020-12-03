@@ -1067,12 +1067,13 @@ type getStatusByCountyResponse struct {
 // @Tags Covid19
 // @ID GetStatusV2Deprecated
 // @Accept  json
-// @Success 200 {object} model.EStatus
+// @Success 200 {object} rest.statusResponse
 // @Success 404 {string} Not Found
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/statuses [get]
-func (h ApisHandler) GetStatusV2Deprecated(current model.User, w http.ResponseWriter, r *http.Request) {
-	h.processGetStatusV2(current, nil, w, r)
+func (h ApisHandler) GetStatusV2Deprecated(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	h.processGetStatusV2(current, account, nil, w, r)
 }
 
 //GetStatusV2 gets the status for the current user for a specific app version
@@ -1081,18 +1082,19 @@ func (h ApisHandler) GetStatusV2Deprecated(current model.User, w http.ResponseWr
 // @ID GetStatusV2
 // @Accept json
 // @Param app-version path string false "App version"
-// @Success 200 {object} model.EStatus
+// @Success 200 {object} rest.statusResponse
 // @Success 404 {string} Not Found
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/app-version/{app-version}/statuses [get]
-func (h ApisHandler) GetStatusV2(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetStatusV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	appVersion := params["app-version"]
-	h.processGetStatusV2(current, &appVersion, w, r)
+	h.processGetStatusV2(current, account, &appVersion, w, r)
 }
 
-func (h ApisHandler) processGetStatusV2(current model.User, appVersion *string, w http.ResponseWriter, r *http.Request) {
-	status, err := h.app.Services.GetEStatusByUserID(current.ID, appVersion)
+func (h ApisHandler) processGetStatusV2(current model.User, account model.Account, appVersion *string, w http.ResponseWriter, r *http.Request) {
+	status, err := h.app.Services.GetEStatusByAccountID(account.ID, appVersion)
 	if err != nil {
 		log.Println("Error on getting a status")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1104,7 +1106,9 @@ func (h ApisHandler) processGetStatusV2(current model.User, appVersion *string, 
 		return
 	}
 
-	data, err := json.Marshal(status)
+	rItem := statusResponse{ID: status.ID, AccountID: status.UserID, Date: status.Date, EncryptedKey: status.EncryptedKey,
+		EncryptedBlob: status.EncryptedBlob, DateUpdated: status.DateUpdated, AppVersion: status.AppVersion}
+	data, err := json.Marshal(rItem)
 	if err != nil {
 		log.Println("Error on marshal a status")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

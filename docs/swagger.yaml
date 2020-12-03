@@ -1170,23 +1170,6 @@ definitions:
       user_id:
         type: string
     type: object
-  model.EStatus:
-    properties:
-      app_version:
-        type: string
-      date:
-        type: string
-      date_updated:
-        type: string
-      encrypted_blob:
-        type: string
-      encrypted_key:
-        type: string
-      id:
-        type: string
-      user_id:
-        type: string
-    type: object
   processManualTestRequest:
     properties:
       encrypted_blob:
@@ -4610,13 +4593,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.EStatus'
+            $ref: '#/definitions/Status'
         "404":
           description: Not Found
           schema:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     put:
@@ -4764,13 +4748,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.EStatus'
+            $ref: '#/definitions/Status'
         "404":
           description: Not Found
           schema:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     put:

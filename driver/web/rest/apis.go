@@ -779,7 +779,7 @@ type getCTestsResponse struct {
 
 	ProviderID   string `json:"provider_id"`
 	ProviderName string `json:"provider"`
-	UserID       string `json:"user_id"`
+	AccountID    string `json:"account_id"`
 
 	EncryptedKey  string `json:"encrypted_key"`
 	EncryptedBlob string `json:"encrypted_blob"`
@@ -823,7 +823,7 @@ func (h ApisHandler) GetCTests(current model.User, account model.Account, w http
 			provider := h.findProvider(ctest.ProviderID, providers)
 
 			r := getCTestsResponse{ID: ctest.ID, ProviderID: provider.ID, ProviderName: provider.Name,
-				UserID: ctest.UserID, EncryptedKey: ctest.EncryptedKey, EncryptedBlob: ctest.EncryptedBlob,
+				AccountID: ctest.UserID, EncryptedKey: ctest.EncryptedKey, EncryptedBlob: ctest.EncryptedBlob,
 				Processed: ctest.Processed, DateCreated: ctest.DateCreated, DateUpdated: ctest.DateUpdated}
 			resultList[i] = r
 		}

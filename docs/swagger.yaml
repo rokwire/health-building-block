@@ -3877,6 +3877,7 @@ paths:
             type: array
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     post:

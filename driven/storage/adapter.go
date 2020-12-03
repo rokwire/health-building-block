@@ -450,19 +450,23 @@ func (sa *Adapter) CreateDefaultAccount(userID string) (*model.User, error) {
 		}
 		user = usersResult[0]
 
-		// error if already there are accounts
-		if len(user.Accounts) > 0 {
+		// error if already there is a default account
+		if user.HasDefaultAccount() {
 			abortTransaction(sessionContext)
-			return errors.New("there are already accounts for this user " + userID)
+			return errors.New("there is already a default account for this user " + userID)
 		}
 
 		// update it
-		accounts := make([]model.Account, 1)
-		accounts[0] = model.Account{ID: user.ID, ExternalID: user.ExternalID, Default: true, Active: true}
+		newAccounts := user.Accounts
+		if newAccounts == nil {
+			//there are no any accounts yet
+			newAccounts = make([]model.Account, 0)
+		}
+		newAccounts = append(newAccounts, model.Account{ID: user.ID, ExternalID: user.ExternalID, Default: true, Active: true})
 		updateFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
 		update := bson.D{
 			primitive.E{Key: "$set", Value: bson.D{
-				primitive.E{Key: "accounts", Value: accounts},
+				primitive.E{Key: "accounts", Value: newAccounts},
 			}},
 		}
 		updateResult, err := sa.db.users.UpdateOne(updateFilter, update, nil)
@@ -476,7 +480,7 @@ func (sa *Adapter) CreateDefaultAccount(userID string) (*model.User, error) {
 		}
 
 		//the updated user is returned
-		user.Accounts = accounts
+		user.Accounts = newAccounts
 
 		//commit the transaction
 		err = sessionContext.CommitTransaction(sessionContext)

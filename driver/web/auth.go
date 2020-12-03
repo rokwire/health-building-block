@@ -752,12 +752,12 @@ func (auth *UserAuth) userAccountsCheck(w http.ResponseWriter, r *http.Request) 
 }
 
 func (auth *UserAuth) createDefaultAccountIfNeeded(current model.User) (*model.User, error) {
-	if len(current.Accounts) > 0 {
-		//we have accounts, so do nothing
+	if current.HasDefaultAccount() {
+		//we have a default account, so do nothing
 		return &current, nil
 	}
 
-	log.Printf("createDefaultAccountIfNeeded -> we need to create default account")
+	log.Printf("createDefaultAccountIfNeeded -> we need to create default account!")
 
 	//1. remove it from the cache
 	auth.deleteCacheUser(current.ExternalID)

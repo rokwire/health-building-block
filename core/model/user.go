@@ -71,6 +71,15 @@ func (user User) GetDefaultAccount() *Account {
 	return nil
 }
 
+//HasDefaultAccount says if the user has a default account
+func (user User) HasDefaultAccount() bool {
+	defaultAccount := user.GetDefaultAccount()
+	if defaultAccount != nil {
+		return true
+	}
+	return false
+}
+
 //IsAdmin says if the user is admin
 func (user User) IsAdmin() bool {
 	if user.ShibbolethAuth == nil {

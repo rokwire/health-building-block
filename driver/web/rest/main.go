@@ -49,7 +49,7 @@ type AppUserResponse struct {
 	Accounts []AppUserAccountResponse `json:"accounts"`
 } //@name User
 
-//AppUserResponse represents user response entity
+//AppUserAccountResponse represents user account response entity
 type AppUserAccountResponse struct {
 	ID         string `json:"id"`
 	ExternalID string `json:"external_id"`

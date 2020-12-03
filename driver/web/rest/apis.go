@@ -798,8 +798,9 @@ type getCTestsResponse struct {
 // @Param processed query bool false "select false value"
 // @Success 200 {array} model.CTest
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/ctests [get]
-func (h ApisHandler) GetCTests(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetCTests(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	keys, ok := r.URL.Query()["processed"]
 	if !ok || len(keys[0]) < 1 {
 		log.Println("url param 'processed' is missing")
@@ -808,7 +809,7 @@ func (h ApisHandler) GetCTests(current model.User, w http.ResponseWriter, r *htt
 	}
 	processed, _ := strconv.ParseBool(keys[0])
 
-	ctests, providers, err := h.app.Services.GetCTests(current, processed)
+	ctests, providers, err := h.app.Services.GetCTests(account, processed)
 	if err != nil {
 		log.Println("Error on getting the ctests items")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

@@ -51,7 +51,7 @@ type Services interface {
 	DeleteEHitories(accountID string) (int64, error)
 	UpdateEHistory(accountID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error)
 
-	GetCTests(urrent model.User, processed bool) ([]*model.CTest, []*model.Provider, error)
+	GetCTests(account model.Account, processed bool) ([]*model.CTest, []*model.Provider, error)
 	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error
 	DeleteCTests(userID string) (int64, error)
 	UpdateCTest(current model.User, ID string, processed bool) (*model.CTest, error)
@@ -168,8 +168,8 @@ func (s *servicesImpl) UpdateEHistory(accountID string, ID string, date *time.Ti
 	return s.app.updateEHistory(accountID, ID, date, encryptedKey, encryptedBlob)
 }
 
-func (s *servicesImpl) GetCTests(current model.User, processed bool) ([]*model.CTest, []*model.Provider, error) {
-	return s.app.getCTests(current, processed)
+func (s *servicesImpl) GetCTests(account model.Account, processed bool) ([]*model.CTest, []*model.Provider, error) {
+	return s.app.getCTests(account, processed)
 }
 
 func (s *servicesImpl) CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error {
@@ -820,7 +820,7 @@ type Storage interface {
 	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
 	CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
 	FindCTest(ID string) (*model.CTest, error)
-	FindCTests(userID string, processed bool) ([]*model.CTest, error)
+	FindCTests(accountID string, processed bool) ([]*model.CTest, error)
 	FindCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error)
 	DeleteCTests(userID string) (int64, error)
 	SaveCTest(ctest *model.CTest) error

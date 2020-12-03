@@ -99,11 +99,11 @@ func (app *Application) getNews(limit int64) ([]*model.News, error) {
 	return news, nil
 }
 
-func (app *Application) getCTests(current model.User, processed bool) ([]*model.CTest, []*model.Provider, error) {
+func (app *Application) getCTests(account model.Account, processed bool) ([]*model.CTest, []*model.Provider, error) {
 	//We get the data with two requests to the database - NoSQL approach in some cases!
 
 	//1. first get the ctest
-	ctests, err := app.storage.FindCTests(current.ID, processed)
+	ctests, err := app.storage.FindCTests(account.ID, processed)
 	if err != nil {
 		return nil, nil, err
 	}

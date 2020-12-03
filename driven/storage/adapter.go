@@ -1278,9 +1278,9 @@ func (sa *Adapter) FindCTest(ID string) (*model.CTest, error) {
 	return ctest, nil
 }
 
-//FindCTests finds ctests for user and processed
-func (sa *Adapter) FindCTests(userID string, processed bool) ([]*model.CTest, error) {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID},
+//FindCTests finds ctests for user account and processed
+func (sa *Adapter) FindCTests(accountID string, processed bool) ([]*model.CTest, error) {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID},
 		primitive.E{Key: "processed", Value: processed}}
 
 	options := options.Find()

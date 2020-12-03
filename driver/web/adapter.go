@@ -105,7 +105,7 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/user/clear", we.userAuthWrapFunc(we.apisHandler.ClearUserData)).Methods("GET")
 
 	//TODO use userAccountsAuthWrapFunc
-	covid19RestSubrouter.HandleFunc("/ctests", we.userAuthWrapFunc(we.apisHandler.GetCTests)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/ctests", we.userAccountsAuthWrapFunc(we.apisHandler.GetCTests)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/ctests/{id}", we.userAuthWrapFunc(we.apisHandler.UpdateCTest)).Methods("PUT")
 	covid19RestSubrouter.HandleFunc("/ctests", we.userAuthWrapFunc(we.apisHandler.DeleteCTests)).Methods("DELETE")
 

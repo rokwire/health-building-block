@@ -1518,9 +1518,10 @@ func (h ApisHandler) DeleteHistoriesV2(current model.User, account model.Account
 // @Accept json
 // @Success 200 {object} model.UINOverride
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/uin-override [get]
-func (h ApisHandler) GetUINOverride(current model.User, w http.ResponseWriter, r *http.Request) {
-	uinOverride, err := h.app.Services.GetUINOverride(current)
+func (h ApisHandler) GetUINOverride(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	uinOverride, err := h.app.Services.GetUINOverride(account)
 	if err != nil {
 		log.Printf("Error on getting the uin override item - %s\n", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

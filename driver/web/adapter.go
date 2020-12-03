@@ -121,7 +121,7 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAccountsAuthWrapFunc(we.apisHandler.DeleteHistoriesV2)).Methods("DELETE")
 
 	//TODO use userAccountsAuthWrapFunc
-	covid19RestSubrouter.HandleFunc("/uin-override", we.userAuthWrapFunc(we.apisHandler.GetUINOverride)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/uin-override", we.userAccountsAuthWrapFunc(we.apisHandler.GetUINOverride)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/uin-override", we.userAuthWrapFunc(we.apisHandler.CreateOrUpdateUINOverride)).Methods("PUT")
 
 	covid19RestSubrouter.HandleFunc("/building-access", we.userAuthWrapFunc(we.apisHandler.SetUINBuildingAccess)).Methods("PUT")

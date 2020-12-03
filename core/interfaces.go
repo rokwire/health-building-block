@@ -81,7 +81,7 @@ type Services interface {
 	AddTraceReport(items []model.TraceExposure) (int, error)
 	GetExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)
 
-	GetUINOverride(current model.User) (*model.UINOverride, error)
+	GetUINOverride(account model.Account) (*model.UINOverride, error)
 	CreateOrUpdateUINOverride(current model.User, interval int, category *string, expiration *time.Time) error
 
 	GetExtUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
@@ -252,8 +252,8 @@ func (s *servicesImpl) GetExposures(timestamp *int64, dateAdded *int64) ([]model
 	return s.app.getExposures(timestamp, dateAdded)
 }
 
-func (s *servicesImpl) GetUINOverride(current model.User) (*model.UINOverride, error) {
-	return s.app.getUINOverride(current)
+func (s *servicesImpl) GetUINOverride(account model.Account) (*model.UINOverride, error) {
+	return s.app.getUINOverride(account)
 }
 
 func (s *servicesImpl) CreateOrUpdateUINOverride(current model.User, interval int, category *string, expiration *time.Time) error {

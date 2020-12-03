@@ -123,8 +123,7 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/uin-override", we.userAccountsAuthWrapFunc(we.apisHandler.GetUINOverride)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/uin-override", we.userAccountsAuthWrapFunc(we.apisHandler.CreateOrUpdateUINOverride)).Methods("PUT")
 
-	//TODO use userAccountsAuthWrapFunc
-	covid19RestSubrouter.HandleFunc("/building-access", we.userAuthWrapFunc(we.apisHandler.SetUINBuildingAccess)).Methods("PUT")
+	covid19RestSubrouter.HandleFunc("/building-access", we.userAccountsAuthWrapFunc(we.apisHandler.SetUINBuildingAccess)).Methods("PUT")
 
 	//provider auth
 	covid19RestSubrouter.HandleFunc("/users/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.GetUserByShibbolethUIN)).Methods("GET")

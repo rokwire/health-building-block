@@ -89,7 +89,7 @@ type Services interface {
 	UpdateExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error)
 	DeleteExtUINOverride(uin string) error
 
-	SetUINBuildingAccess(current model.User, date time.Time, access string) error
+	SetUINBuildingAccess(account model.Account, date time.Time, access string) error
 	GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
 
 	GetRosterByPhone(phone string) (map[string]string, error)
@@ -276,8 +276,8 @@ func (s *servicesImpl) DeleteExtUINOverride(uin string) error {
 	return s.app.deleteExtUINOverride(uin)
 }
 
-func (s *servicesImpl) SetUINBuildingAccess(current model.User, date time.Time, access string) error {
-	return s.app.setUINBuildingAccess(current, date, access)
+func (s *servicesImpl) SetUINBuildingAccess(account model.Account, date time.Time, access string) error {
+	return s.app.setUINBuildingAccess(account, date, access)
 }
 
 func (s *servicesImpl) GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error) {

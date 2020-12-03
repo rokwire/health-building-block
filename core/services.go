@@ -439,9 +439,9 @@ func (app *Application) deleteExtUINOverride(uin string) error {
 	return nil
 }
 
-func (app *Application) setUINBuildingAccess(current model.User, date time.Time, access string) error {
+func (app *Application) setUINBuildingAccess(account model.Account, date time.Time, access string) error {
 	//supported only for Shibboleth users - uin
-	uin := current.ExternalID
+	uin := account.ExternalID
 	err := app.storage.CreateOrUpdateUINBuildingAccess(uin, date, access)
 	if err != nil {
 		return err

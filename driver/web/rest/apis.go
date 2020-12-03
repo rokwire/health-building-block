@@ -1609,8 +1609,9 @@ type setBuildingAccessRequest struct {
 // @Param data body setBuildingAccessRequest true "body data"
 // @Success 200 {object} string
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/building-access [put]
-func (h ApisHandler) SetUINBuildingAccess(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) SetUINBuildingAccess(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal the set building access item - %s\n", err.Error())
@@ -1638,7 +1639,7 @@ func (h ApisHandler) SetUINBuildingAccess(current model.User, w http.ResponseWri
 	date := requestData.Date
 	access := requestData.Access
 
-	err = h.app.Services.SetUINBuildingAccess(current, date, access)
+	err = h.app.Services.SetUINBuildingAccess(account, date, access)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

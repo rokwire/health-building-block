@@ -1211,9 +1211,10 @@ func (h ApisHandler) processCreateOrUpdateStatusV2(current model.User, account m
 // @Accept plain
 // @Success 200 {object} string "Successfully deleted"
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/statuses [delete]
-func (h ApisHandler) DeleteStatusV2Deprecated(current model.User, w http.ResponseWriter, r *http.Request) {
-	h.processDeleteStatusV2(current, nil, w, r)
+func (h ApisHandler) DeleteStatusV2Deprecated(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	h.processDeleteStatusV2(current, account, nil, w, r)
 }
 
 //DeleteStatusV2 deletes the status for a specific app version.
@@ -1224,15 +1225,16 @@ func (h ApisHandler) DeleteStatusV2Deprecated(current model.User, w http.Respons
 // @Param app-version path string false "App version"
 // @Success 200 {object} string "Successfully deleted"
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/app-version/{app-version}/statuses [delete]
-func (h ApisHandler) DeleteStatusV2(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) DeleteStatusV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	appVersion := params["app-version"]
-	h.processDeleteStatusV2(current, &appVersion, w, r)
+	h.processDeleteStatusV2(current, account, &appVersion, w, r)
 }
 
-func (h ApisHandler) processDeleteStatusV2(current model.User, appVersion *string, w http.ResponseWriter, r *http.Request) {
-	err := h.app.Services.DeleteEStatus(current.ID, appVersion)
+func (h ApisHandler) processDeleteStatusV2(current model.User, account model.Account, appVersion *string, w http.ResponseWriter, r *http.Request) {
+	err := h.app.Services.DeleteEStatus(account.ID, appVersion)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

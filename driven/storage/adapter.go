@@ -802,9 +802,9 @@ func (sa *Adapter) SaveEStatus(status *model.EStatus) error {
 	return nil
 }
 
-//DeleteEStatus deletes the status for the user
-func (sa *Adapter) DeleteEStatus(appVersion *string, userID string) error {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID},
+//DeleteEStatus deletes the status for the user account
+func (sa *Adapter) DeleteEStatus(appVersion *string, accountID string) error {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID},
 		primitive.E{Key: "app_version", Value: appVersion}}
 	result, err := sa.db.estatus.DeleteOne(filter, nil)
 	if err != nil {
@@ -812,14 +812,14 @@ func (sa *Adapter) DeleteEStatus(appVersion *string, userID string) error {
 		return err
 	}
 	if result == nil {
-		return errors.New("result is nil forestatus with user id " + userID)
+		return errors.New("result is nil forestatus with account id " + accountID)
 	}
 	deletedCount := result.DeletedCount
 	if deletedCount == 0 {
-		return errors.New("there is no a estatus for user id " + userID)
+		return errors.New("there is no a estatus for account id " + accountID)
 	}
 	if deletedCount > 1 {
-		return errors.New("deleted more than one records for user id " + userID)
+		return errors.New("deleted more than one records for account id " + accountID)
 	}
 	return nil
 }

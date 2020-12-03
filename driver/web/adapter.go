@@ -108,19 +108,19 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/ctests/{id}", we.userAccountsAuthWrapFunc(we.apisHandler.UpdateCTest)).Methods("PUT")
 	covid19RestSubrouter.HandleFunc("/ctests", we.userAccountsAuthWrapFunc(we.apisHandler.DeleteCTests)).Methods("DELETE")
 
-	//TODO use userAccountsAuthWrapFunc
 	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.GetStatusV2Deprecated)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.CreateOrUpdateStatusV2Deprecated)).Methods("PUT")
-	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAuthWrapFunc(we.apisHandler.DeleteStatusV2Deprecated)).Methods("DELETE")
+	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.DeleteStatusV2Deprecated)).Methods("DELETE")
 	covid19RestSubrouter.HandleFunc("/v2/app-version/{app-version}/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.GetStatusV2)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/v2/app-version/{app-version}/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.CreateOrUpdateStatusV2)).Methods("PUT")
-	covid19RestSubrouter.HandleFunc("/v2/app-version/{app-version}/statuses", we.userAuthWrapFunc(we.apisHandler.DeleteStatusV2)).Methods("DELETE")
+	covid19RestSubrouter.HandleFunc("/v2/app-version/{app-version}/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.DeleteStatusV2)).Methods("DELETE")
 
 	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAccountsAuthWrapFunc(we.apisHandler.GetHistoriesV2)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAccountsAuthWrapFunc(we.apisHandler.CreateHistoryV2)).Methods("POST")
 	covid19RestSubrouter.HandleFunc("/v2/histories/{id}", we.userAccountsAuthWrapFunc(we.apisHandler.UpdateHistoryV2)).Methods("PUT")
 	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAccountsAuthWrapFunc(we.apisHandler.DeleteHistoriesV2)).Methods("DELETE")
 
+	//TODO use userAccountsAuthWrapFunc
 	covid19RestSubrouter.HandleFunc("/uin-override", we.userAuthWrapFunc(we.apisHandler.GetUINOverride)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/uin-override", we.userAuthWrapFunc(we.apisHandler.CreateOrUpdateUINOverride)).Methods("PUT")
 

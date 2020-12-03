@@ -42,7 +42,7 @@ type Services interface {
 
 	GetEStatusByAccountID(accountID string, appVersion *string) (*model.EStatus, error)
 	CreateOrUpdateEStatus(accountID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error)
-	DeleteEStatus(userID string, appVersion *string) error
+	DeleteEStatus(accountID string, appVersion *string) error
 
 	GetEHistoriesByAccountID(accountID string) ([]*model.EHistory, error)
 	CreateЕHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error)
@@ -143,8 +143,8 @@ func (s *servicesImpl) CreateOrUpdateEStatus(accountID string, appVersion *strin
 	return s.app.createOrUpdateEStatus(accountID, appVersion, date, encryptedKey, encryptedBlob)
 }
 
-func (s *servicesImpl) DeleteEStatus(userID string, appVersion *string) error {
-	return s.app.deleteEStatus(userID, appVersion)
+func (s *servicesImpl) DeleteEStatus(accountID string, appVersion *string) error {
+	return s.app.deleteEStatus(accountID, appVersion)
 }
 
 func (s *servicesImpl) GetEHistoriesByAccountID(accountID string) ([]*model.EHistory, error) {
@@ -801,7 +801,7 @@ type Storage interface {
 	CreateEStatus(appVersion *string, accountID string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error)
 	FindEStatusByAccountID(appVersion *string, accountID string) (*model.EStatus, error)
 	SaveEStatus(status *model.EStatus) error
-	DeleteEStatus(appVersion *string, userID string) error
+	DeleteEStatus(appVersion *string, accountID string) error
 
 	CreateEHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error)
 	CreateManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,

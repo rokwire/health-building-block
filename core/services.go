@@ -393,9 +393,9 @@ func (app *Application) getUINOverride(account model.Account) (*model.UINOverrid
 	return uinOverride, nil
 }
 
-func (app *Application) createOrUpdateUINOverride(current model.User, interval int, category *string, expiration *time.Time) error {
+func (app *Application) createOrUpdateUINOverride(account model.Account, interval int, category *string, expiration *time.Time) error {
 	//supported only for Shibboleth users - uin
-	uin := current.ExternalID
+	uin := account.ExternalID
 	err := app.storage.CreateOrUpdateUINOverride(uin, interval, category, expiration)
 	if err != nil {
 		return err

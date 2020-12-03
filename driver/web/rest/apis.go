@@ -1554,8 +1554,9 @@ type createOrUpdateUINOverride struct {
 // @Param data body createOrUpdateUINOverride true "body data"
 // @Success 200 {object} string
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/uin-override [put]
-func (h ApisHandler) CreateOrUpdateUINOverride(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) CreateOrUpdateUINOverride(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	bodyData, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal the create or update uin override  - %s\n", err.Error())
@@ -1584,7 +1585,7 @@ func (h ApisHandler) CreateOrUpdateUINOverride(current model.User, w http.Respon
 	category := requestData.Category
 	expiration := requestData.Expiration
 
-	err = h.app.Services.CreateOrUpdateUINOverride(current, interval, category, expiration)
+	err = h.app.Services.CreateOrUpdateUINOverride(account, interval, category, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

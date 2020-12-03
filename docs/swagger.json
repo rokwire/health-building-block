@@ -4783,6 +4783,9 @@
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Gives the uin override for the user",
@@ -4806,6 +4809,9 @@
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Creates an uin override or updates it if already created",
@@ -5040,6 +5046,9 @@
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Deletes the status for the user for a specific app version.",
@@ -5293,6 +5302,9 @@
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Deletes the status for the user.",

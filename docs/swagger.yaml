@@ -4467,6 +4467,7 @@ paths:
             $ref: '#/definitions/UINOverride'
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     put:
@@ -4488,6 +4489,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/user:
@@ -4577,6 +4579,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     get:
@@ -4736,6 +4739,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     get:

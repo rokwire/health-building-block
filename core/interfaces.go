@@ -41,7 +41,7 @@ type Services interface {
 	GetNews(limit int64) ([]*model.News, error)
 
 	GetEStatusByUserID(userID string, appVersion *string) (*model.EStatus, error)
-	CreateOrUpdateEStatus(userID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error)
+	CreateOrUpdateEStatus(accountID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error)
 	DeleteEStatus(userID string, appVersion *string) error
 
 	GetEHistoriesByAccountID(accountID string) ([]*model.EHistory, error)
@@ -139,8 +139,8 @@ func (s *servicesImpl) GetEStatusByUserID(userID string, appVersion *string) (*m
 	return s.app.getEStatusByUserID(userID, appVersion)
 }
 
-func (s *servicesImpl) CreateOrUpdateEStatus(userID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
-	return s.app.createOrUpdateEStatus(userID, appVersion, date, encryptedKey, encryptedBlob)
+func (s *servicesImpl) CreateOrUpdateEStatus(accountID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
+	return s.app.createOrUpdateEStatus(accountID, appVersion, date, encryptedKey, encryptedBlob)
 }
 
 func (s *servicesImpl) DeleteEStatus(userID string, appVersion *string) error {
@@ -798,8 +798,8 @@ type Storage interface {
 	FindNews(ID string) (*model.News, error)
 	SaveNews(news *model.News) error
 
-	CreateEStatus(appVersion *string, userID string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error)
-	FindEStatusByUserID(appVersion *string, userID string) (*model.EStatus, error)
+	CreateEStatus(appVersion *string, accountID string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error)
+	FindEStatusByAccountID(appVersion *string, accountID string) (*model.EStatus, error)
 	SaveEStatus(status *model.EStatus) error
 	DeleteEStatus(appVersion *string, userID string) error
 

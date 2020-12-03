@@ -1130,11 +1130,12 @@ type createOrUpdateStatusRequestV2 struct {
 // @Accept json
 // @Produce json
 // @Param data body createOrUpdateStatusRequestV2 true "body data"
-// @Success 200 {object} model.EStatus
+// @Success 200 {object} rest.statusResponse
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/statuses [put]
-func (h ApisHandler) CreateOrUpdateStatusV2Deprecated(current model.User, w http.ResponseWriter, r *http.Request) {
-	h.processCreateOrUpdateStatusV2(current, nil, w, r)
+func (h ApisHandler) CreateOrUpdateStatusV2Deprecated(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	h.processCreateOrUpdateStatusV2(current, account, nil, w, r)
 }
 
 //CreateOrUpdateStatusV2 creates or updates the status for the current user for a specific app version
@@ -1145,16 +1146,17 @@ func (h ApisHandler) CreateOrUpdateStatusV2Deprecated(current model.User, w http
 // @Produce json
 // @Param app-version path string false "App version"
 // @Param data body createOrUpdateStatusRequestV2 true "body data"
-// @Success 200 {object} model.EStatus
+// @Success 200 {object} rest.statusResponse
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/app-version/{app-version}/statuses [put]
-func (h ApisHandler) CreateOrUpdateStatusV2(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) CreateOrUpdateStatusV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	appVersion := params["app-version"]
-	h.processCreateOrUpdateStatusV2(current, &appVersion, w, r)
+	h.processCreateOrUpdateStatusV2(current, account, &appVersion, w, r)
 }
 
-func (h ApisHandler) processCreateOrUpdateStatusV2(current model.User, appVersion *string, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) processCreateOrUpdateStatusV2(current model.User, account model.Account, appVersion *string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create or update a status - %s\n", err.Error())
@@ -1182,13 +1184,16 @@ func (h ApisHandler) processCreateOrUpdateStatusV2(current model.User, appVersio
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
 
-	status, err := h.app.Services.CreateOrUpdateEStatus(current.ID, appVersion, date, encryptedKey, encryptedBlob)
+	status, err := h.app.Services.CreateOrUpdateEStatus(account.ID, appVersion, date, encryptedKey, encryptedBlob)
 	if err != nil {
 		log.Printf("Error on marshal a status - %s\n", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response, err := json.Marshal(status)
+
+	rItem := statusResponse{ID: status.ID, AccountID: status.UserID, Date: status.Date, EncryptedKey: status.EncryptedKey,
+		EncryptedBlob: status.EncryptedBlob, DateUpdated: status.DateUpdated, AppVersion: status.AppVersion}
+	response, err := json.Marshal(rItem)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(response)

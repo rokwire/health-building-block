@@ -166,6 +166,16 @@ type historyResponse struct {
 	EncryptedBlob string    `json:"encrypted_blob"`
 } // @name History
 
+type statusResponse struct {
+	ID            string     `json:"id"`
+	AccountID     string     `json:"account_id"`
+	Date          *time.Time `json:"date"`
+	EncryptedKey  string     `json:"encrypted_key"`
+	EncryptedBlob string     `json:"encrypted_blob"`
+	DateUpdated   *time.Time `json:"date_updated"`
+	AppVersion    *string    `json:"app_version"`
+} // @name Status
+
 func convertToDaysOfOperations(list []locationOperationDayRequest) []model.OperationDay {
 	var doo []model.OperationDay
 	if list != nil {

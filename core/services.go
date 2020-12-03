@@ -219,16 +219,16 @@ func (app *Application) getRulesByCounty(countyID string) ([]*model.Rule, []*mod
 	return rules, countyStatuses, testTypes, nil
 }
 
-func (app *Application) createOrUpdateEStatus(userID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
+func (app *Application) createOrUpdateEStatus(accountID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
 	//determine if we need to create or update it
-	status, err := app.storage.FindEStatusByUserID(appVersion, userID)
+	status, err := app.storage.FindEStatusByAccountID(appVersion, accountID)
 	if err != nil {
 		return nil, err
 	}
 
 	if status == nil {
 		//we need to create it
-		status, err = app.storage.CreateEStatus(appVersion, userID, date, encryptedKey, encryptedBlob)
+		status, err = app.storage.CreateEStatus(appVersion, accountID, date, encryptedKey, encryptedBlob)
 		if err != nil {
 			return nil, err
 		}
@@ -250,11 +250,13 @@ func (app *Application) createOrUpdateEStatus(userID string, appVersion *string,
 }
 
 func (app *Application) getEStatusByUserID(userID string, appVersion *string) (*model.EStatus, error) {
-	status, err := app.storage.FindEStatusByUserID(appVersion, userID)
-	if err != nil {
-		return nil, err
-	}
-	return status, nil
+	/*	status, err := app.storage.FindEStatusByUserID(appVersion, userID)
+		if err != nil {
+			return nil, err
+		}
+		return status, nil */
+	//TODO
+	return nil, nil
 }
 
 func (app *Application) deleteEStatus(userID string, appVersion *string) error {

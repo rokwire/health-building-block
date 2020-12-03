@@ -3897,6 +3897,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Deletes all ctests for a user",
@@ -4985,7 +4988,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/Status"
+                            "$ref": "#/definitions/model.EStatus"
                         }
                     },
                     "404": {
@@ -5000,6 +5003,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Updates the status for the user for a specific app version. it creates it if not already created.",
@@ -5237,7 +5243,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/Status"
+                            "$ref": "#/definitions/model.EStatus"
                         }
                     },
                     "404": {
@@ -5252,6 +5258,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Updates the status for the user. it creates it if not already created.",
@@ -5931,6 +5940,9 @@ var doc = `{
         "Status": {
             "type": "object",
             "properties": {
+                "account_id": {
+                    "type": "string"
+                },
                 "app_version": {
                     "type": "string"
                 },
@@ -5947,9 +5959,6 @@ var doc = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -7094,6 +7103,32 @@ var doc = `{
                     "type": "string"
                 },
                 "type": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EStatus": {
+            "type": "object",
+            "properties": {
+                "app_version": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "date_updated": {
+                    "type": "string"
+                },
+                "encrypted_blob": {
+                    "type": "string"
+                },
+                "encrypted_key": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 },
                 "user_id": {

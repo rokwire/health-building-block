@@ -756,13 +756,13 @@ func (sa *Adapter) SaveNews(news *model.News) error {
 }
 
 //CreateEStatus creates a new covid19 passport status
-func (sa *Adapter) CreateEStatus(appVersion *string, userID string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
+func (sa *Adapter) CreateEStatus(appVersion *string, accountID string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
 	id, err := uuid.NewUUID()
 	if err != nil {
 		return nil, err
 	}
 
-	status := model.EStatus{ID: id.String(), AppVersion: appVersion, UserID: userID, Date: date, EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob}
+	status := model.EStatus{ID: id.String(), AppVersion: appVersion, UserID: accountID, Date: date, EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob}
 	_, err = sa.db.estatus.InsertOne(&status)
 	if err != nil {
 		return nil, err
@@ -772,9 +772,9 @@ func (sa *Adapter) CreateEStatus(appVersion *string, userID string, date *time.T
 	return &status, nil
 }
 
-//FindEStatusByUserID finds a status by user id
-func (sa *Adapter) FindEStatusByUserID(appVersion *string, userID string) (*model.EStatus, error) {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID},
+//FindEStatusByAccountID finds a status by account id
+func (sa *Adapter) FindEStatusByAccountID(appVersion *string, accountID string) (*model.EStatus, error) {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID},
 		primitive.E{Key: "app_version", Value: appVersion}}
 	var result []*model.EStatus
 	err := sa.db.estatus.Find(filter, &result, nil)

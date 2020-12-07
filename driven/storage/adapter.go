@@ -1364,22 +1364,29 @@ func (sa *Adapter) FindCTests(accountID string, processed bool) ([]*model.CTest,
 	return result, nil
 }
 
-type ctu2Join struct {
-	ID            string     `bson:"_id"`
-	ProviderID    string     `bson:"provider_id"`
-	OrderNumber   *string    `bson:"order_number"`
-	EncryptedKey  string     `bson:"encrypted_key"`
-	EncryptedBlob string     `bson:"encrypted_blob"`
-	Processed     bool       `bson:"processed"`
-	DateCreated   time.Time  `bson:"date_created"`
-	DateUpdated   *time.Time `bson:"date_updated"`
-
-	UserID         string `bson:"user_id"`
-	UserExternalID string `bson:"user_external_id"`
-}
-
 //FindCTestsByExternalUserIDs finds ctests lists for the provided external user IDs
 func (sa *Adapter) FindCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error) {
+	//1. get based on the user
+	ubList, err := sa.findCTBEIDBaesOnUser(externalUserIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	//2. get based on the user accounts
+	uabList, err := sa.findCTBEIDBaesOnUserAccounts(externalUserIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	//3. merge the maps
+	for key, value := range uabList {
+		ubList[key] = value
+	}
+
+	return ubList, nil
+}
+
+func (sa *Adapter) findCTBEIDBaesOnUser(externalUserIDs []string) (map[string][]*model.CTest, error) {
 	pipeline := []bson.M{
 		{"$lookup": bson.M{
 			"from":         "users",
@@ -1395,7 +1402,21 @@ func (sa *Adapter) FindCTestsByExternalUserIDs(externalUserIDs []string) (map[st
 			"user_id": "$user._id", "user_external_id": "$user.external_id",
 		}}}
 
-	var result []*ctu2Join
+	type ctuJoin struct {
+		ID            string     `bson:"_id"`
+		ProviderID    string     `bson:"provider_id"`
+		OrderNumber   *string    `bson:"order_number"`
+		EncryptedKey  string     `bson:"encrypted_key"`
+		EncryptedBlob string     `bson:"encrypted_blob"`
+		Processed     bool       `bson:"processed"`
+		DateCreated   time.Time  `bson:"date_created"`
+		DateUpdated   *time.Time `bson:"date_updated"`
+
+		UserID         string `bson:"user_id"`
+		UserExternalID string `bson:"user_external_id"`
+	}
+
+	var result []*ctuJoin
 	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
 	if err != nil {
 		return nil, err
@@ -1418,6 +1439,79 @@ func (sa *Adapter) FindCTestsByExternalUserIDs(externalUserIDs []string) (map[st
 			DateCreated: v.DateCreated, DateUpdated: v.DateUpdated})
 
 		mapData[userExternalID] = list
+	}
+	return mapData, nil
+}
+
+func (sa *Adapter) findCTBEIDBaesOnUserAccounts(externalUserIDs []string) (map[string][]*model.CTest, error) {
+	pipeline := []bson.M{
+		{"$lookup": bson.M{
+			"from":         "users",
+			"localField":   "user_id",
+			"foreignField": "accounts.id",
+			"as":           "user",
+		}},
+		{"$match": bson.M{"user.accounts.external_id": bson.M{"$in": externalUserIDs}}},
+		{"$unwind": "$user"},
+		{"$project": bson.M{
+			"_id": 1, "provider_id": 1, "order_number": 1, "encrypted_key": 1, "encrypted_blob": 1,
+			"processed": 1, "date_created": 1, "date_updated": 1,
+			"user_account": bson.M{
+				"$filter": bson.M{
+					"input": "$user.accounts",
+					"as":    "ac",
+					"cond": bson.M{
+						"$and": []bson.M{
+							{"$eq": []interface{}{"$$ac.id", "$user_id"}},
+						},
+					},
+				},
+			},
+		}}}
+
+	type ctuJoin struct {
+		ID            string     `bson:"_id"`
+		ProviderID    string     `bson:"provider_id"`
+		OrderNumber   *string    `bson:"order_number"`
+		EncryptedKey  string     `bson:"encrypted_key"`
+		EncryptedBlob string     `bson:"encrypted_blob"`
+		Processed     bool       `bson:"processed"`
+		DateCreated   time.Time  `bson:"date_created"`
+		DateUpdated   *time.Time `bson:"date_updated"`
+
+		UserAccount []struct {
+			ID         string `bson:"id"`
+			ExternalID string `bson:"external_id"`
+		} `bson:"user_account"`
+	}
+
+	var result []ctuJoin
+	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil || len(result) == 0 {
+		//not found
+		return nil, nil
+	}
+
+	//construct the result
+	mapData := make(map[string][]*model.CTest, len(externalUserIDs))
+	for _, v := range result {
+		log.Println(v)
+		if len(v.UserAccount) > 0 {
+			accountExternalID := v.UserAccount[0].ExternalID
+			accountID := v.UserAccount[0].ID
+			list := mapData[accountExternalID]
+			if list == nil {
+				list = []*model.CTest{}
+			}
+			list = append(list, &model.CTest{ID: v.ID, ProviderID: v.ProviderID, UserID: accountID,
+				EncryptedKey: v.EncryptedKey, EncryptedBlob: v.EncryptedBlob, OrderNumber: v.OrderNumber, Processed: v.Processed,
+				DateCreated: v.DateCreated, DateUpdated: v.DateUpdated})
+
+			mapData[accountExternalID] = list
+		}
 	}
 	return mapData, nil
 }

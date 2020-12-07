@@ -1498,7 +1498,6 @@ func (sa *Adapter) findCTBEIDBaesOnUserAccounts(externalUserIDs []string) (map[s
 	//construct the result
 	mapData := make(map[string][]*model.CTest, len(externalUserIDs))
 	for _, v := range result {
-		log.Println(v)
 		if len(v.UserAccount) > 0 {
 			accountExternalID := v.UserAccount[0].ExternalID
 			accountID := v.UserAccount[0].ID

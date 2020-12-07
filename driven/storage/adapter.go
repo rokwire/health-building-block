@@ -4359,61 +4359,32 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 		}},
 		{"$match": bson.M{"order_number": bson.M{"$in": orderNumbers}}},
 		{"$unwind": "$user"},
-		//	{"$unwind": "$user.accounts"},
 		{"$project": bson.M{
 			"_id": 1, "order_number": 1, "user_id": 1,
-			/*"user.accounts": 1, bson.D{
-				{"$filter", bson.D{
-					{"input", "$$user.accounts"},
-					{"as", "accounts"},
-					{"cond", 1},
-				}},
-			},*/
-			"user.accounts": bson.M{
+			"user_blsss": bson.M{
 				"$filter": bson.M{
 					"input": "$user.accounts",
 					"as":    "ac",
 					"cond": bson.M{
 						"$and": []bson.M{
-							{"$eq": []interface{}{"$$ac.id", "77770bc2-3541-11eb-8b72-60f81db5ecc0"}},
+							{"$eq": []interface{}{"$$ac.id", "$user_id"}},
 						},
 					},
 				},
 			},
 		}}}
 
-	/*	projectStage := bson.D{
-		{"$project", bson.D{
-			{"locations", bson.D{
-				{"$filter", bson.D{
-					{"input", "$locations"},
-					{"as", "locations"},
-					{"cond", bson.D{
-						{"$and", bson.A{
-								bson.D{{"$lte", bson.A{"$$locations.establish", lteDate}}},
-								bson.D{{"$gte", bson.A{"$$locations.establish", gteDate}}},
-						}},
-					}},
-				}},
-			}},
-		}},
-	} */
+	type ctuJoin2 struct {
+		ID          string `bson:"_id"`
+		OrderNumber string `bson:"order_number"`
+		UserID      string `bson:"user_id"`
 
-	/*	db.sales.aggregate([
-		{
-		   $project: {
-			  items: {
-				 $filter: {
-					input: "$items",
-					as: "item",
-					cond: { $gte: [ "$$item.price", 100 ] }
-				 }
-			  }
-		   }
-		}
-	 ]) */
+		Bla []struct {
+			ExternalID string `bson:"external_id"`
+		} `bson:"user_blsss"`
+	}
 
-	var result []interface{}
+	var result []ctuJoin2
 	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
 	if err != nil {
 		return nil, err
@@ -4422,12 +4393,16 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 		//not found
 		return nil, nil
 	}
-	mapData := make(map[string]*string, len(result))
+	//mapData := make(map[string]*string, len(result))
 	/*for _, v := range result {
 		mapData[v.OrderNumber] = &v.UserExternalID
 	} */
-	log.Println(result)
-	return mapData, nil
+
+	for _, f := range result {
+		log.Println(f)
+	}
+	//TODO
+	return nil, nil
 }
 
 //CreateOrUpdateUINOverride creates a new uin override entity or updates it if already created

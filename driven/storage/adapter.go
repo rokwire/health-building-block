@@ -4321,7 +4321,7 @@ type ctuJoin struct {
 
 //FindExternalUserIDsByTestsOrderNumbers finds the external users ids for the tests orders numbers
 func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error) {
-	pipeline := []bson.M{
+	/*pipeline := []bson.M{
 		{"$lookup": bson.M{
 			"from":         "users",
 			"localField":   "user_id",
@@ -4348,6 +4348,85 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 	for _, v := range result {
 		mapData[v.OrderNumber] = &v.UserExternalID
 	}
+	return mapData, nil */
+
+	pipeline := []bson.M{
+		{"$lookup": bson.M{
+			"from":         "users",
+			"localField":   "user_id",
+			"foreignField": "accounts.id",
+			"as":           "user",
+		}},
+		{"$match": bson.M{"order_number": bson.M{"$in": orderNumbers}}},
+		{"$unwind": "$user"},
+		//	{"$unwind": "$user.accounts"},
+		{"$project": bson.M{
+			"_id": 1, "order_number": 1, "user_id": 1,
+			/*"user.accounts": 1, bson.D{
+				{"$filter", bson.D{
+					{"input", "$$user.accounts"},
+					{"as", "accounts"},
+					{"cond", 1},
+				}},
+			},*/
+			"user.accounts": bson.M{
+				"$filter": bson.M{
+					"input": "$user.accounts",
+					"as":    "ac",
+					"cond": bson.M{
+						"$and": []bson.M{
+							{"$eq": []interface{}{"$$ac.id", "77770bc2-3541-11eb-8b72-60f81db5ecc0"}},
+						},
+					},
+				},
+			},
+		}}}
+
+	/*	projectStage := bson.D{
+		{"$project", bson.D{
+			{"locations", bson.D{
+				{"$filter", bson.D{
+					{"input", "$locations"},
+					{"as", "locations"},
+					{"cond", bson.D{
+						{"$and", bson.A{
+								bson.D{{"$lte", bson.A{"$$locations.establish", lteDate}}},
+								bson.D{{"$gte", bson.A{"$$locations.establish", gteDate}}},
+						}},
+					}},
+				}},
+			}},
+		}},
+	} */
+
+	/*	db.sales.aggregate([
+		{
+		   $project: {
+			  items: {
+				 $filter: {
+					input: "$items",
+					as: "item",
+					cond: { $gte: [ "$$item.price", 100 ] }
+				 }
+			  }
+		   }
+		}
+	 ]) */
+
+	var result []interface{}
+	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil || len(result) == 0 {
+		//not found
+		return nil, nil
+	}
+	mapData := make(map[string]*string, len(result))
+	/*for _, v := range result {
+		mapData[v.OrderNumber] = &v.UserExternalID
+	} */
+	log.Println(result)
 	return mapData, nil
 }
 

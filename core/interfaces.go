@@ -770,7 +770,10 @@ type Storage interface {
 
 	ClearUserData(userID string) error
 	FindUser(userID string) (*model.User, error)
+	//it does not look the accounts, it looks just the primary user
 	FindUserByExternalID(externalID string) (*model.User, error)
+	//it looks primary user + accounts
+	FindUserAccountsByExternalID(externalID string) (*model.User, error)
 	FindUserByShibbolethID(shibbolethID string) (*model.User, error)
 	FindUsersByRePost(rePost bool) ([]*model.User, error)
 	CreateUser(shibboAuth *model.ShibbolethAuth, externalID string,

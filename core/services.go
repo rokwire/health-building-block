@@ -40,7 +40,7 @@ func (app *Application) clearUserData(current model.User) error {
 }
 
 func (app *Application) getUserByShibbolethUIN(shibbolethUIN string) (*model.User, error) {
-	user, err := app.storage.FindUserByExternalID(shibbolethUIN)
+	user, err := app.storage.FindUserAccountsByExternalID(shibbolethUIN)
 	if err != nil {
 		return nil, err
 	}

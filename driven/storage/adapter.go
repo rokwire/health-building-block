@@ -355,9 +355,27 @@ func (sa *Adapter) FindUser(ID string) (*model.User, error) {
 	return result[0], nil
 }
 
-//FindUserByExternalID finds the user for the provided external id
+//FindUserByExternalID finds the user for the provided external id. It does not look in the accounts
 func (sa *Adapter) FindUserByExternalID(externalID string) (*model.User, error) {
 	filter := bson.D{primitive.E{Key: "external_id", Value: externalID}}
+	var result []*model.User
+	err := sa.db.users.Find(filter, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil || len(result) == 0 {
+		//not found
+		return nil, nil
+	}
+	return result[0], nil
+}
+
+//FindUserAccountsByExternalID looks in primary user + accounts
+func (sa *Adapter) FindUserAccountsByExternalID(externalID string) (*model.User, error) {
+	filter := bson.D{primitive.E{Key: "$or", Value: []interface{}{
+		bson.D{primitive.E{Key: "external_id", Value: externalID}},
+		bson.D{primitive.E{Key: "accounts.external_id", Value: externalID}},
+	}}}
 	var result []*model.User
 	err := sa.db.users.Find(filter, &result, nil)
 	if err != nil {

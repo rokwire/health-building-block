@@ -1168,8 +1168,11 @@ func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedK
 			return errors.New("there is no a provider for the provided identifier")
 		}
 
-		//2. check if there is a user with the provided uin
-		userFilter := bson.D{primitive.E{Key: "external_id", Value: uin}}
+		//2. check if there is a user with the provided uin - handle the accounts case
+		userFilter := bson.D{primitive.E{Key: "$or", Value: []interface{}{
+			bson.D{primitive.E{Key: "external_id", Value: uin}},
+			bson.D{primitive.E{Key: "accounts.external_id", Value: uin}},
+		}}}
 		var userResult []*model.User
 		err = sa.db.users.FindWithContext(sessionContext, userFilter, &userResult, nil)
 		if err != nil {
@@ -1183,14 +1186,29 @@ func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedK
 		}
 		user = *userResult[0]
 
-		//3. create a ctest
+		//3. find the account id
+		var accountID string
+		if len(user.Accounts) > 0 {
+			for _, acc := range user.Accounts {
+				if acc.ExternalID == uin {
+					accountID = acc.ID
+					break
+				}
+			}
+		}
+		if len(accountID) == 0 {
+			//we can go in a situation where the user does not have any acccount yet.
+			accountID = user.ID
+		}
+
+		//4. create a ctest
 		id, err := uuid.NewUUID()
 		if err != nil {
 			abortTransaction(sessionContext)
 			return err
 		}
 		dateCreated := time.Now()
-		cTest = model.CTest{ID: id.String(), ProviderID: providerID, UserID: user.ID,
+		cTest = model.CTest{ID: id.String(), ProviderID: providerID, UserID: accountID,
 			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Processed: processed, OrderNumber: orderNumber, DateCreated: dateCreated}
 		_, err = sa.db.ctests.InsertOneWithContext(sessionContext, &cTest)
 		if err != nil {
@@ -1198,7 +1216,7 @@ func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedK
 			return err
 		}
 
-		//4. Set the user re-post field as "false"
+		//5. Set the user re-post field as "false"
 		sUserfilter := bson.D{primitive.E{Key: "_id", Value: user.ID}}
 		dateUpdated := time.Now()
 		user.DateUpdated = &dateUpdated

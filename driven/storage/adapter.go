@@ -4311,17 +4311,31 @@ func (sa *Adapter) DeleteAccessRule(ID string) error {
 	return nil
 }
 
-type ctuJoin struct {
-	ID          string `bson:"_id"`
-	OrderNumber string `bson:"order_number"`
-
-	UserID         string `bson:"user_id"`
-	UserExternalID string `bson:"user_external_id"`
-}
-
 //FindExternalUserIDsByTestsOrderNumbers finds the external users ids for the tests orders numbers
 func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error) {
-	/*pipeline := []bson.M{
+
+	//1. get based on the user
+	ubList, err := sa.findEUIDsBasedOnUser(orderNumbers)
+	if err != nil {
+		return nil, err
+	}
+
+	//2. get based on the user accounts
+	uabList, err := sa.findEUIDsBasedOnUserAccounts(orderNumbers)
+	if err != nil {
+		return nil, err
+	}
+
+	//3. merge the maps
+	for key, value := range uabList {
+		ubList[key] = value
+	}
+
+	return ubList, nil
+}
+
+func (sa *Adapter) findEUIDsBasedOnUser(orderNumbers []string) (map[string]*string, error) {
+	pipeline := []bson.M{
 		{"$lookup": bson.M{
 			"from":         "users",
 			"localField":   "user_id",
@@ -4335,6 +4349,13 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 			"user_id": "$user._id", "user_external_id": "$user.external_id",
 		}}}
 
+	type ctuJoin struct {
+		ID          string `bson:"_id"`
+		OrderNumber string `bson:"order_number"`
+
+		UserID         string `bson:"user_id"`
+		UserExternalID string `bson:"user_external_id"`
+	}
 	var result []*ctuJoin
 	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
 	if err != nil {
@@ -4342,14 +4363,16 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 	}
 	if result == nil || len(result) == 0 {
 		//not found
-		return nil, nil
+		return make(map[string]*string, 0), nil
 	}
 	mapData := make(map[string]*string, len(result))
 	for _, v := range result {
 		mapData[v.OrderNumber] = &v.UserExternalID
 	}
-	return mapData, nil */
+	return mapData, nil
+}
 
+func (sa *Adapter) findEUIDsBasedOnUserAccounts(orderNumbers []string) (map[string]*string, error) {
 	pipeline := []bson.M{
 		{"$lookup": bson.M{
 			"from":         "users",
@@ -4361,7 +4384,7 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 		{"$unwind": "$user"},
 		{"$project": bson.M{
 			"_id": 1, "order_number": 1, "user_id": 1,
-			"user_blsss": bson.M{
+			"user_account": bson.M{
 				"$filter": bson.M{
 					"input": "$user.accounts",
 					"as":    "ac",
@@ -4374,35 +4397,32 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 			},
 		}}}
 
-	type ctuJoin2 struct {
+	type ctuJoin struct {
 		ID          string `bson:"_id"`
 		OrderNumber string `bson:"order_number"`
 		UserID      string `bson:"user_id"`
 
-		Bla []struct {
+		UserAccount []struct {
 			ExternalID string `bson:"external_id"`
-		} `bson:"user_blsss"`
+		} `bson:"user_account"`
 	}
 
-	var result []ctuJoin2
+	var result []ctuJoin
 	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
 	if err != nil {
 		return nil, err
 	}
 	if result == nil || len(result) == 0 {
 		//not found
-		return nil, nil
+		return make(map[string]*string, 0), nil
 	}
-	//mapData := make(map[string]*string, len(result))
-	/*for _, v := range result {
-		mapData[v.OrderNumber] = &v.UserExternalID
-	} */
-
-	for _, f := range result {
-		log.Println(f)
+	mapData := make(map[string]*string, len(result))
+	for _, v := range result {
+		if len(v.UserAccount) > 0 {
+			mapData[v.OrderNumber] = &v.UserAccount[0].ExternalID
+		}
 	}
-	//TODO
-	return nil, nil
+	return mapData, nil
 }
 
 //CreateOrUpdateUINOverride creates a new uin override entity or updates it if already created

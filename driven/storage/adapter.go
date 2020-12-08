@@ -1431,16 +1431,18 @@ func (sa *Adapter) findCTBEIDBaesOnUser(externalUserIDs []string) (map[string][]
 	//construct the result
 	mapData := make(map[string][]*model.CTest, len(externalUserIDs))
 	for _, v := range result {
-		userExternalID := v.UserExternalID
-		list := mapData[userExternalID]
-		if list == nil {
-			list = []*model.CTest{}
-		}
-		list = append(list, &model.CTest{ID: v.ID, ProviderID: v.ProviderID, UserID: v.UserID,
-			EncryptedKey: v.EncryptedKey, EncryptedBlob: v.EncryptedBlob, OrderNumber: v.OrderNumber, Processed: v.Processed,
-			DateCreated: v.DateCreated, DateUpdated: v.DateUpdated})
+		if v.OrderNumber != nil {
+			userExternalID := v.UserExternalID
+			list := mapData[userExternalID]
+			if list == nil {
+				list = []*model.CTest{}
+			}
+			list = append(list, &model.CTest{ID: v.ID, ProviderID: v.ProviderID, UserID: v.UserID,
+				EncryptedKey: v.EncryptedKey, EncryptedBlob: v.EncryptedBlob, OrderNumber: v.OrderNumber, Processed: v.Processed,
+				DateCreated: v.DateCreated, DateUpdated: v.DateUpdated})
 
-		mapData[userExternalID] = list
+			mapData[userExternalID] = list
+		}
 	}
 	return mapData, nil
 }
@@ -1514,9 +1516,11 @@ func (sa *Adapter) findCTBEIDBaesOnUserAccounts(externalUserIDs []string) (map[s
 
 		if acc.CTests != nil {
 			for _, current := range acc.CTests {
-				list = append(list, &model.CTest{ID: current.ID, ProviderID: current.ProviderID, UserID: accountID,
-					EncryptedKey: current.EncryptedKey, EncryptedBlob: current.EncryptedBlob, OrderNumber: current.OrderNumber, Processed: current.Processed,
-					DateCreated: current.DateCreated, DateUpdated: current.DateUpdated})
+				if current.OrderNumber != nil {
+					list = append(list, &model.CTest{ID: current.ID, ProviderID: current.ProviderID, UserID: accountID,
+						EncryptedKey: current.EncryptedKey, EncryptedBlob: current.EncryptedBlob, OrderNumber: current.OrderNumber, Processed: current.Processed,
+						DateCreated: current.DateCreated, DateUpdated: current.DateUpdated})
+				}
 			}
 		}
 

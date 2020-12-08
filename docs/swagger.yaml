@@ -270,6 +270,8 @@ definitions:
     type: object
   ManualTest:
     properties:
+      account_id:
+        type: string
       county_id:
         type: string
       date:

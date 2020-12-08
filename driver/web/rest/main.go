@@ -38,6 +38,7 @@ type guidelinesItemsResponse struct {
 //AppUserResponse represents user response entity
 type AppUserResponse struct {
 	ID                   string  `json:"id"`
+	ExternalID           string  `json:"external_id"`
 	UUID                 string  `json:"uuid"`
 	PublicKey            string  `json:"public_key"`
 	Consent              bool    `json:"consent"`

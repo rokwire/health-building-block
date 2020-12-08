@@ -3998,6 +3998,7 @@ type manualTestUserJoin struct {
 	DateCreated   time.Time `bson:"date_created"`
 
 	UserID                   string  `bson:"user_id"`
+	UserExternalID           string  `bson:"user_external_id"`
 	UserUUID                 string  `bson:"user_uuid"`
 	UserPublicKey            string  `bson:"user_public_key"`
 	UserConsent              bool    `bson:"user_consent"`
@@ -4041,7 +4042,7 @@ func (sa *Adapter) FindManualTestsByCountyIDDeep(countyID string, status *string
 	pipeline = append(pipeline, bson.M{"$unwind": "$user"},
 		bson.M{"$project": bson.M{
 			"_id": 1, "ehistory_id": 1, "location_id": 1, "county_id": 1, "encrypted_key": 1, "encrypted_blob": 1, "status": 1, "date_created": 1,
-			"user_id": "$user._id", "user_uuid": "$user.uuid", "user_public_key": "$user.public_key",
+			"user_id": "$user._id", "user_external_id": "$user.external_id", "user_uuid": "$user.uuid", "user_public_key": "$user.public_key",
 			"user_consent": "$user.consent", "user_exposure_notification": "$user._exposure_notification",
 			"user_info": "$user.info", "user_encrypted_key": "$user.encrypted_key", "user_encrypted_blob": "$user.encrypted_blob",
 		}},
@@ -4060,7 +4061,7 @@ func (sa *Adapter) FindManualTestsByCountyIDDeep(countyID string, status *string
 
 	var resultList []*model.EManualTest
 	for _, item := range result {
-		user := model.User{ID: item.UserID, UUID: item.UserUUID, PublicKey: item.UserPublicKey,
+		user := model.User{ID: item.UserID, ExternalID: item.UserExternalID, UUID: item.UserUUID, PublicKey: item.UserPublicKey,
 			Consent: item.UserConsent, ExposureNotification: item.UserExposureNotification,
 			EncryptedKey: item.UserEncryptedKey, EncryptedBlob: item.UserEncryptedBlob}
 

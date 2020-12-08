@@ -3491,7 +3491,7 @@ func (h AdminApisHandler) GetManualTestsByCountyID(current model.User, group str
 	if manualTests != nil {
 		for _, item := range manualTests {
 			user := item.User
-			userResponse := AppUserResponse{UUID: user.UUID, PublicKey: user.PublicKey,
+			userResponse := AppUserResponse{ID: user.ID, ExternalID: user.ExternalID, UUID: user.UUID, PublicKey: user.PublicKey,
 				Consent: user.Consent, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
 				EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob}
 

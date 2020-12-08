@@ -41,6 +41,7 @@ type CTest struct {
 type EManualTest struct {
 	ID        string
 	User      User
+	AccountID string
 	HistoryID string
 
 	LocationID *string

@@ -41,8 +41,8 @@ type database struct {
 	users             *collectionWrapper
 	providers         *collectionWrapper
 	locations         *collectionWrapper
-	ctests            *collectionWrapper //old
-	emanualtests      *collectionWrapper //old
+	ctests            *collectionWrapper
+	emanualtests      *collectionWrapper
 	resources         *collectionWrapper
 	faq               *collectionWrapper
 	news              *collectionWrapper

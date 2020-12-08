@@ -3507,7 +3507,7 @@ func (h AdminApisHandler) GetManualTestsByCountyID(current model.User, group str
 
 			r := eManualTestResponse{ID: item.ID, HistoryID: item.HistoryID, LocationID: item.LocationID,
 				CountyID: item.CountyID, EncryptedKey: item.EncryptedKey, EncryptedBlob: item.EncryptedBlob,
-				Status: item.Status, Date: item.Date, User: userResponse}
+				Status: item.Status, Date: item.Date, User: userResponse, AccountID: item.AccountID}
 			resultList = append(resultList, r)
 		}
 	} else {

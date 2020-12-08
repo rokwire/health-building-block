@@ -100,6 +100,7 @@ type manualTestResponse struct {
 type eManualTestResponse struct {
 	ID            string          `json:"id"`
 	User          AppUserResponse `json:"user"`
+	AccountID     string          `json:"account_id"`
 	HistoryID     string          `json:"history_id"`
 	LocationID    *string         `json:"location_id"`
 	CountyID      *string         `json:"county_id"`

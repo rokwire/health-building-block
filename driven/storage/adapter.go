@@ -4098,7 +4098,7 @@ func (sa *Adapter) FindManualTestsByCountyIDDeep(countyID string, status *string
 
 		mt := model.EManualTest{ID: item.ID, HistoryID: item.HistoryID, LocationID: item.LocationID, CountyID: item.CountyID,
 			EncryptedKey: item.EncryptedKey, EncryptedBlob: item.EncryptedBlob,
-			Status: item.Status, Date: item.DateCreated, User: user}
+			Status: item.Status, Date: item.DateCreated, User: user, AccountID: item.UserID}
 
 		resultList = append(resultList, &mt)
 	}

@@ -177,6 +177,23 @@ type statusResponse struct {
 	AppVersion    *string    `json:"app_version"`
 } // @name Status
 
+type cTestResponse struct {
+	ID string `json:"id"`
+
+	ProviderID string `json:"provider_id"`
+	AccountID  string `json:"account_id"`
+
+	EncryptedKey  string `json:"encrypted_key"`
+	EncryptedBlob string `json:"encrypted_blob"`
+
+	OrderNumber *string `json:"order_number"`
+
+	Processed bool `json:"processed"`
+
+	DateCreated time.Time  `json:"date_created"`
+	DateUpdated *time.Time `json:"date_updated"`
+} // @name CTest
+
 func convertToDaysOfOperations(list []locationOperationDayRequest) []model.OperationDay {
 	var doo []model.OperationDay
 	if list != nil {

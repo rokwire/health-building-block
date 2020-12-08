@@ -225,7 +225,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/CTest"
+                            "$ref": "#/definitions/model.CTest"
                         }
                     }
                 }
@@ -3841,7 +3841,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/CTest"
+                                "$ref": "#/definitions/model.CTest"
                             }
                         }
                     }
@@ -3954,7 +3954,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/CTest"
+                            "$ref": "#/definitions/model.CTest"
                         }
                     }
                 }
@@ -5529,38 +5529,6 @@
                 }
             }
         },
-        "CTest": {
-            "type": "object",
-            "properties": {
-                "date_created": {
-                    "type": "string"
-                },
-                "date_updated": {
-                    "type": "string"
-                },
-                "encrypted_blob": {
-                    "type": "string"
-                },
-                "encrypted_key": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "order_number": {
-                    "type": "string"
-                },
-                "processed": {
-                    "type": "boolean"
-                },
-                "provider_id": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
         "County": {
             "type": "object",
             "properties": {
@@ -6163,6 +6131,9 @@
                 "exposure_notification": {
                     "type": "boolean"
                 },
+                "external_id": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -6237,12 +6208,15 @@
         "createActionRequest": {
             "type": "object",
             "required": [
+                "account_id",
                 "encrypted_blob",
                 "encrypted_key",
-                "provider_id",
-                "user_id"
+                "provider_id"
             ],
             "properties": {
+                "account_id": {
+                    "type": "string"
+                },
                 "audit": {
                     "type": "string"
                 },
@@ -6253,9 +6227,6 @@
                     "type": "string"
                 },
                 "provider_id": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -7092,6 +7063,38 @@
                     "type": "boolean"
                 },
                 "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CTest": {
+            "type": "object",
+            "properties": {
+                "date_created": {
+                    "type": "string"
+                },
+                "date_updated": {
+                    "type": "string"
+                },
+                "encrypted_blob": {
+                    "type": "string"
+                },
+                "encrypted_key": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "order_number": {
+                    "type": "string"
+                },
+                "processed": {
+                    "type": "boolean"
+                },
+                "provider_id": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

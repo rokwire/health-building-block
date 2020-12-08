@@ -4811,7 +4811,7 @@ func (h AdminApisHandler) UpdateRoster(current model.User, group string, w http.
 type createActionRequest struct {
 	Audit         *string `json:"audit"`
 	ProviderID    string  `json:"provider_id" validate:"required"`
-	UserID        string  `json:"user_id" validate:"required"`
+	AccountID     string  `json:"account_id" validate:"required"`
 	EncryptedKey  string  `json:"encrypted_key" validate:"required"`
 	EncryptedBlob string  `json:"encrypted_blob" validate:"required"`
 } // @name createActionRequest
@@ -4854,18 +4854,21 @@ func (h ApisHandler) CreateAction(current model.User, group string, w http.Respo
 
 	audit := requestData.Audit
 	providerID := requestData.ProviderID
-	userID := requestData.UserID
+	accountID := requestData.AccountID
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
 
-	item, err := h.app.Administration.CreateAction(current, group, audit, providerID, userID, encryptedKey, encryptedBlob)
+	item, err := h.app.Administration.CreateAction(current, group, audit, providerID, accountID, encryptedKey, encryptedBlob)
 	if err != nil {
 		log.Printf("Error on creating an action - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	data, err = json.Marshal(item)
+	responseItem := cTestResponse{ID: item.ID, ProviderID: item.ProviderID, AccountID: item.UserID, EncryptedKey: item.EncryptedKey,
+		EncryptedBlob: item.EncryptedBlob, OrderNumber: item.OrderNumber, Processed: item.Processed, DateCreated: item.DateCreated, DateUpdated: item.DateUpdated}
+
+	data, err = json.Marshal(responseItem)
 	if err != nil {
 		log.Println("Error on marshal an action")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

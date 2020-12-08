@@ -237,7 +237,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/CTest"
+                            "$ref": "#/definitions/model.CTest"
                         }
                     }
                 }
@@ -3853,7 +3853,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/CTest"
+                                "$ref": "#/definitions/model.CTest"
                             }
                         }
                     }
@@ -3966,7 +3966,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/CTest"
+                            "$ref": "#/definitions/model.CTest"
                         }
                     }
                 }
@@ -5541,38 +5541,6 @@ var doc = `{
                 }
             }
         },
-        "CTest": {
-            "type": "object",
-            "properties": {
-                "date_created": {
-                    "type": "string"
-                },
-                "date_updated": {
-                    "type": "string"
-                },
-                "encrypted_blob": {
-                    "type": "string"
-                },
-                "encrypted_key": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "order_number": {
-                    "type": "string"
-                },
-                "processed": {
-                    "type": "boolean"
-                },
-                "provider_id": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
         "County": {
             "type": "object",
             "properties": {
@@ -6175,6 +6143,9 @@ var doc = `{
                 "exposure_notification": {
                     "type": "boolean"
                 },
+                "external_id": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -6249,12 +6220,15 @@ var doc = `{
         "createActionRequest": {
             "type": "object",
             "required": [
+                "account_id",
                 "encrypted_blob",
                 "encrypted_key",
-                "provider_id",
-                "user_id"
+                "provider_id"
             ],
             "properties": {
+                "account_id": {
+                    "type": "string"
+                },
                 "audit": {
                     "type": "string"
                 },
@@ -6265,9 +6239,6 @@ var doc = `{
                     "type": "string"
                 },
                 "provider_id": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -7104,6 +7075,38 @@ var doc = `{
                     "type": "boolean"
                 },
                 "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CTest": {
+            "type": "object",
+            "properties": {
+                "date_created": {
+                    "type": "string"
+                },
+                "date_updated": {
+                    "type": "string"
+                },
+                "encrypted_blob": {
+                    "type": "string"
+                },
+                "encrypted_key": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "order_number": {
+                    "type": "string"
+                },
+                "processed": {
+                    "type": "boolean"
+                },
+                "provider_id": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

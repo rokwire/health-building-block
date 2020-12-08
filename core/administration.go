@@ -1776,9 +1776,9 @@ func (app *Application) deleteAllRosters(current model.User, group string) error
 	return nil
 }
 
-func (app *Application) createAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
+func (app *Application) createAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
-	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false, nil)
+	item, user, err := app.storage.CreateAdminCTest(providerID, accountID, encryptedKey, encryptedBlob, false, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1809,7 +1809,7 @@ func (app *Application) createAction(current model.User, group string, audit *st
 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
-	lData := []AuditDataEntry{{Key: "providerID", Value: providerID}, {Key: "userID", Value: userID},
+	lData := []AuditDataEntry{{Key: "providerID", Value: providerID}, {Key: "accountID", Value: accountID},
 		{Key: "encryptedKey", Value: encryptedKey}, {Key: "encryptedBlob", Value: encryptedBlob}}
 	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "action", item.ID, lData, audit)
 

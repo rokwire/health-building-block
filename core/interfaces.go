@@ -403,7 +403,7 @@ type Administration interface {
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
-	CreateAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
+	CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
 
 	GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string, clientData *string,
 		createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error)
@@ -752,8 +752,8 @@ func (s *administrationImpl) DeleteAllRosters(current model.User, group string) 
 	return s.app.deleteAllRosters(current, group)
 }
 
-func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
-	return s.app.createAction(current, group, audit, providerID, userID, encryptedKey, encryptedBlob)
+func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
+	return s.app.createAction(current, group, audit, providerID, accountID, encryptedKey, encryptedBlob)
 }
 
 func (s *administrationImpl) GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,
@@ -821,7 +821,7 @@ type Storage interface {
 	DeleteProvider(ID string) error
 
 	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
-	CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
+	CreateAdminCTest(providerID string, accountID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
 	FindCTest(ID string) (*model.CTest, error)
 	FindCTests(accountID string, processed bool) ([]*model.CTest, error)
 	FindCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error)

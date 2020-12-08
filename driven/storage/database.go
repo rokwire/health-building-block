@@ -61,6 +61,7 @@ type database struct {
 	uinbuildingaccess *collectionWrapper
 	appversions       *collectionWrapper
 	rosters           *collectionWrapper
+	rawsubaccounts    *collectionWrapper
 
 	listener core.StorageListener
 }
@@ -222,6 +223,11 @@ func (m *database) start() error {
 	if err != nil {
 		return err
 	}
+	rawsubaccounts := &collectionWrapper{database: m, coll: db.Collection("rawsubaccounts")}
+	err = m.applyRawSubAccountsChecks(rawsubaccounts)
+	if err != nil {
+		return err
+	}
 
 	//asign the db, db client and the collections
 	m.db = db
@@ -251,6 +257,7 @@ func (m *database) start() error {
 	m.uinbuildingaccess = uinbuildingaccess
 	m.appversions = appversions
 	m.rosters = rosters
+	m.rawsubaccounts = rawsubaccounts
 
 	//watch for config changes
 	go m.configs.Watch(nil)
@@ -701,6 +708,15 @@ func (m *database) applyRostersChecks(rosters *collectionWrapper) error {
 	}
 
 	log.Println("rosters checks passed")
+	return nil
+}
+
+func (m *database) applyRawSubAccountsChecks(rawsubaccounts *collectionWrapper) error {
+	log.Println("apply rawsubaccounts checks.....")
+
+	//TODO
+
+	log.Println("rawsubaccounts checks passed")
 	return nil
 }
 

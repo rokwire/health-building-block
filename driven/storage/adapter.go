@@ -4005,6 +4005,26 @@ type manualTestUserJoin struct {
 	UserExposureNotification bool    `bson:"user_exposure_notification"`
 	UserEncryptedKey         *string `bson:"user_encrypted_key"`
 	UserEncryptedBlob        *string `bson:"user_encrypted_blob"`
+	UserAccounts             []struct {
+		ID         string `bson:"id"`
+		ExternalID string `bson:"external_id"`
+		Default    bool   `bson:"default"`
+		Active     bool   `bson:"active"`
+
+		FirstName  string `bson:"first_name"`
+		MiddleName string `bson:"middle_name"`
+		LastName   string `bson:"last_name"`
+		BirthDate  string `bson:"birth_date"`
+		Gender     string `bson:"gender"`
+		Address1   string `bson:"address1"`
+		Address2   string `bson:"address2"`
+		Address3   string `bson:"address3"`
+		City       string `bson:"city"`
+		State      string `bson:"state"`
+		ZipCode    string `bson:"zip_code"`
+		Phone      string `bson:"phone"`
+		Email      string `bson:"email"`
+	} `bson:"user_accounts"`
 }
 
 //FindManualTestsByCountyIDDeep find the manual test for a county
@@ -4045,6 +4065,7 @@ func (sa *Adapter) FindManualTestsByCountyIDDeep(countyID string, status *string
 			"user_id": "$user._id", "user_external_id": "$user.external_id", "user_uuid": "$user.uuid", "user_public_key": "$user.public_key",
 			"user_consent": "$user.consent", "user_exposure_notification": "$user._exposure_notification",
 			"user_info": "$user.info", "user_encrypted_key": "$user.encrypted_key", "user_encrypted_blob": "$user.encrypted_blob",
+			"user_accounts": "$user.accounts",
 		}},
 		bson.M{"$sort": bson.D{primitive.E{Key: "date_created", Value: -1}}})
 
@@ -4061,9 +4082,19 @@ func (sa *Adapter) FindManualTestsByCountyIDDeep(countyID string, status *string
 
 	var resultList []*model.EManualTest
 	for _, item := range result {
+
+		accounts := make([]model.Account, len(item.UserAccounts))
+		if item.UserAccounts != nil {
+			for i, acc := range item.UserAccounts {
+				accounts[i] = model.Account{ID: acc.ID, ExternalID: acc.ExternalID, Default: acc.Default, Active: acc.Active, FirstName: acc.FirstName,
+					MiddleName: acc.MiddleName, LastName: acc.LastName, BirthDate: acc.BirthDate, Gender: acc.Gender, Address1: acc.Address1,
+					Address2: acc.Address2, Address3: acc.Address3, City: acc.City, State: acc.State, ZipCode: acc.ZipCode, Phone: acc.Phone, Email: acc.Email}
+			}
+		}
+
 		user := model.User{ID: item.UserID, ExternalID: item.UserExternalID, UUID: item.UserUUID, PublicKey: item.UserPublicKey,
 			Consent: item.UserConsent, ExposureNotification: item.UserExposureNotification,
-			EncryptedKey: item.UserEncryptedKey, EncryptedBlob: item.UserEncryptedBlob}
+			EncryptedKey: item.UserEncryptedKey, EncryptedBlob: item.UserEncryptedBlob, Accounts: accounts}
 
 		mt := model.EManualTest{ID: item.ID, HistoryID: item.HistoryID, LocationID: item.LocationID, CountyID: item.CountyID,
 			EncryptedKey: item.EncryptedKey, EncryptedBlob: item.EncryptedBlob,

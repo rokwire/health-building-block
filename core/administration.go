@@ -1669,7 +1669,7 @@ func (app *Application) deleteAccessRule(current model.User, group string, ID st
 }
 
 func (app *Application) getUserByExternalID(externalID string) (*model.User, error) {
-	user, err := app.storage.FindUserByExternalID(externalID)
+	user, err := app.storage.FindUserAccountsByExternalID(externalID)
 	if err != nil {
 		return nil, err
 	}

@@ -240,6 +240,8 @@ func (app *Application) notifyListeners(message string, data interface{}) {
 				listener.OnUserUpdated(data.(model.User))
 			} else if message == "onRostersUpdated" {
 				listener.OnRostersUpdated()
+			} else if message == "onRawSubAccountsUpdated" {
+				listener.OnSubAccountsUpdated()
 			}
 		}
 	}()

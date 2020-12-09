@@ -610,3 +610,13 @@ func (al *AppListener) OnRostersUpdated() {
 		al.adapter.auth.userAuth.loadRosters()
 	}()
 }
+
+//OnSubAccountsUpdated notifies that the sub accounts are updated
+func (al *AppListener) OnSubAccountsUpdated() {
+	log.Println("AppListener -> OnSubAccountsUpdated")
+
+	//clear the cached users
+	go func() {
+		al.adapter.auth.userAuth.clearCacheUsers()
+	}()
+}

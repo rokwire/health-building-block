@@ -4818,6 +4818,86 @@ func (h AdminApisHandler) UpdateRoster(current model.User, group string, w http.
 	w.Write([]byte("Successfully updated"))
 }
 
+type createRawSubAccountItemsRequest struct {
+	Audit *string `json:"audit"`
+	Items []struct {
+		UIN        string `json:"uin" validate:"required"`
+		FirstName  string `json:"first_name"`
+		MiddleName string `json:"middle_name"`
+		LastName   string `json:"last_name"`
+		BirthDate  string `json:"birth_date"`
+		Gender     string `json:"gender"`
+		Address1   string `json:"address1"`
+		Address2   string `json:"address2"`
+		Address3   string `json:"address3"`
+		City       string `json:"city"`
+		State      string `json:"state"`
+		ZipCode    string `json:"zip_code"`
+		Phone      string `json:"phone"  validate:"required"`
+		NetID      string `json:"net_id"`
+		Email      string `json:"email"`
+
+		PrimaryAccount string `json:"primary_account" validate:"required"`
+	} `json:"items" validate:"required,min=1"`
+}
+
+//CreateSubAccountItems creates sub account items
+func (h AdminApisHandler) CreateSubAccountItems(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create raw sub accounts items - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createRawSubAccountItemsRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create raw sub account items request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create raw sub account items data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = validate.Var(requestData.Items, "required,dive")
+	if err != nil {
+		log.Printf("Error on validating create raw sub account items - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	items := requestData.Items
+
+	//prepare the items
+	itemsList := make([]model.RawSubAccount, len(items))
+	for i, current := range items {
+		item := model.RawSubAccount{UIN: current.UIN, FirstName: current.FirstName, MiddleName: current.MiddleName,
+			LastName: current.LastName, BirthDate: current.BirthDate, Gender: current.Gender, Address1: current.Address1,
+			Address2: current.Address2, Address3: current.Address3, City: current.City, State: current.State, ZipCode: current.ZipCode,
+			Phone: current.Phone, NetID: current.NetID, Email: current.Email, PrimaryAccount: current.PrimaryAccount}
+		itemsList[i] = item
+	}
+
+	err = h.app.Administration.CreateRawSubAccountItems(current, group, audit, itemsList)
+	if err != nil {
+		log.Printf("Error on creating raw sub account items - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully created"))
+}
+
 type createActionRequest struct {
 	Audit         *string `json:"audit"`
 	ProviderID    string  `json:"provider_id" validate:"required"`

@@ -285,6 +285,8 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteAllRosters)).Methods("DELETE")
 	adminRestSubrouter.HandleFunc("/rosters/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateRoster)).Methods("PUT")
 
+	adminRestSubrouter.HandleFunc("/raw-sub-account-items", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateSubAccountItems)).Methods("POST")
+
 	adminRestSubrouter.HandleFunc("/user", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUserByExternalID)).Methods("GET").Queries("external-id", "")
 
 	adminRestSubrouter.HandleFunc("/actions", we.adminAppIDTokenAuthWrapFunc(we.apisHandler.CreateAction)).Methods("POST")

@@ -1776,6 +1776,20 @@ func (app *Application) deleteAllRosters(current model.User, group string) error
 	return nil
 }
 
+func (app *Application) createRawSubAccountItems(current model.User, group string, audit *string, items []model.RawSubAccount) error {
+	err := app.storage.CreateRawSubAccountItems(items)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "items", Value: fmt.Sprintf("%+v", items)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "raw-sub-account", "", lData, audit)
+
+	return nil
+}
+
 func (app *Application) createAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, accountID, encryptedKey, encryptedBlob, false, nil)

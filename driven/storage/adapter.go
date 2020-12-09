@@ -4913,6 +4913,12 @@ func (sa *Adapter) DeleteAllRosters() error {
 	return nil
 }
 
+//CreateRawSubAccountItems creates raw sub account items
+func (sa *Adapter) CreateRawSubAccountItems(items []model.RawSubAccount) error {
+	//TODO
+	return nil
+}
+
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {
 	if list == nil {
 		return false

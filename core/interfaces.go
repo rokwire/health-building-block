@@ -401,6 +401,8 @@ type Administration interface {
 	DeleteRosterByUIN(current model.User, group string, uin string) error
 	DeleteAllRosters(current model.User, group string) error
 
+	CreateRawSubAccountItems(current model.User, group string, audit *string, items []model.RawSubAccount) error
+
 	GetUserByExternalID(externalID string) (*model.User, error)
 
 	CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
@@ -752,6 +754,10 @@ func (s *administrationImpl) DeleteAllRosters(current model.User, group string) 
 	return s.app.deleteAllRosters(current, group)
 }
 
+func (s *administrationImpl) CreateRawSubAccountItems(current model.User, group string, audit *string, items []model.RawSubAccount) error {
+	return s.app.createRawSubAccountItems(current, group, audit, items)
+}
+
 func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	return s.app.createAction(current, group, audit, providerID, accountID, encryptedKey, encryptedBlob)
 }
@@ -937,6 +943,8 @@ type Storage interface {
 	DeleteRosterByPhone(phone string) error
 	DeleteRosterByUIN(uin string) error
 	DeleteAllRosters() error
+
+	CreateRawSubAccountItems(items []model.RawSubAccount) error
 }
 
 //StorageListener listenes for change data storage events

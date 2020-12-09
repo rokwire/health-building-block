@@ -57,6 +57,20 @@ func (user User) GetAccount(accountID string) *Account {
 	return nil
 }
 
+//GetAccountByExternalID gives the user account for the provided external id
+func (user User) GetAccountByExternalID(externalID string) *Account {
+	if len(user.Accounts) == 0 {
+		return nil
+	}
+
+	for _, current := range user.Accounts {
+		if current.ExternalID == externalID {
+			return &current
+		}
+	}
+	return nil
+}
+
 //GetDefaultAccount gives the default user account
 func (user User) GetDefaultAccount() *Account {
 	if len(user.Accounts) == 0 {

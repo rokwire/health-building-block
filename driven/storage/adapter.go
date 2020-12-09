@@ -4915,7 +4915,145 @@ func (sa *Adapter) DeleteAllRosters() error {
 
 //CreateRawSubAccountItems creates raw sub account items
 func (sa *Adapter) CreateRawSubAccountItems(items []model.RawSubAccount) error {
-	//TODO
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			log.Printf("error starting a transaction - %s", err)
+			return err
+		}
+
+		//apply logic for every raw sub account
+		for _, current := range items {
+			/*// check if there is a primary account added
+			uFilter := bson.D{primitive.E{Key: "external_id", Value: current.PrimaryAccount}}
+			var usersResult []*model.User
+			err = sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+			if len(usersResult) == 0 {
+				//there is no primary user for this external id, so we need to create just raw sub account and to wait the user to login
+				log.Printf("no primary user for %s", current.PrimaryAccount)
+			} else {
+				//there is a primary account
+				log.Printf("there is primary user for %s", current.PrimaryAccount)
+
+				//check if there is already created sub account for this external id
+				user := usersResult[0]
+				subAccount := user.GetAccountByExternalID(current.UIN)
+				if subAccount != nil {
+					//there is sub account, we need to update it
+					log.Printf("\tthere is sub account for %s", current.UIN)
+				} else {
+					//there is no sub account, we need to create it
+					log.Printf("\tthere is not sub account for %s", current.UIN)
+				}
+			} */
+
+			var accountID *string
+
+			// check if there is a primary account added
+			uFilter := bson.D{primitive.E{Key: "external_id", Value: current.PrimaryAccount}}
+			var usersResult []*model.User
+			err = sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+			if len(usersResult) > 0 {
+				//there is a primary user for this account
+
+				user := usersResult[0]
+				subAccount := user.GetAccountByExternalID(current.UIN)
+
+				if subAccount != nil {
+					//there is a sub account, so we need to update it
+
+					//we know the account id
+					accountID = &subAccount.ID
+
+					updateSubAccountFilter := bson.D{primitive.E{Key: "accounts.id", Value: subAccount.ID}}
+					updateSubAccount := bson.D{
+						primitive.E{Key: "$set", Value: bson.D{
+							primitive.E{Key: "accounts.$.active", Value: true},
+							primitive.E{Key: "accounts.$.first_name", Value: current.FirstName},
+							primitive.E{Key: "accounts.$.middle_name", Value: current.MiddleName},
+							primitive.E{Key: "accounts.$.last_name", Value: current.LastName},
+							primitive.E{Key: "accounts.$.birth_date", Value: current.BirthDate},
+							primitive.E{Key: "accounts.$.gender", Value: current.Gender},
+							primitive.E{Key: "accounts.$.address1", Value: current.Address1},
+							primitive.E{Key: "accounts.$.address2", Value: current.Address2},
+							primitive.E{Key: "accounts.$.address3", Value: current.Address3},
+							primitive.E{Key: "accounts.$.city", Value: current.City},
+							primitive.E{Key: "accounts.$.state", Value: current.State},
+							primitive.E{Key: "accounts.$.zip_code", Value: current.ZipCode},
+							primitive.E{Key: "accounts.$.phone", Value: current.Phone},
+							primitive.E{Key: "accounts.$.email", Value: current.Email},
+						}},
+					}
+
+					_, err := sa.db.users.UpdateOneWithContext(sessionContext, updateSubAccountFilter, updateSubAccount, nil)
+					if err != nil {
+						abortTransaction(sessionContext)
+						return err
+					}
+				} else {
+					//there is no a sub account, so we need to create it
+				}
+			}
+
+			//save the raw sub account
+			current.AccountID = accountID
+			_, err = sa.db.rawsubaccounts.InsertOneWithContext(sessionContext, &current)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+
+		}
+		/*
+			//1. delete
+			filter := bson.D{primitive.E{Key: "_id", Value: ID}}
+			result, err := sa.db.symptomrules.DeleteOneWithContext(sessionContext, filter, nil)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+			if result == nil {
+				abortTransaction(sessionContext)
+				return errors.New("result is nil for symptom rule item with id " + ID)
+			}
+			deletedCount := result.DeletedCount
+			if deletedCount == 0 {
+				abortTransaction(sessionContext)
+				return errors.New("there is no a symptom rule for id " + ID)
+			}
+			if deletedCount > 1 {
+				abortTransaction(sessionContext)
+				return errors.New("deleted more than one records for id " + ID)
+			}
+
+			//2. delete all statuses of the users
+			err = sa.deleteAllStatuses(sessionContext)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			} */
+
+		//commit the transaction
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

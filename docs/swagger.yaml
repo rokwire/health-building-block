@@ -853,6 +853,54 @@ definitions:
     - manual_test
     - provider_name
     type: object
+  createRawSubAccountItemsRequest:
+    properties:
+      audit:
+        type: string
+      items:
+        items:
+          properties:
+            address1:
+              type: string
+            address2:
+              type: string
+            address3:
+              type: string
+            birth_date:
+              type: string
+            city:
+              type: string
+            email:
+              type: string
+            first_name:
+              type: string
+            gender:
+              type: string
+            last_name:
+              type: string
+            middle_name:
+              type: string
+            net_id:
+              type: string
+            phone:
+              required:
+              - phone
+              type: string
+            primary_account:
+              required:
+              - primary_account
+              type: string
+            state:
+              type: string
+            uin:
+              required:
+              - uin
+              type: string
+            zip_code:
+              type: string
+          type: object
+        type: array
+    type: object
   createResourceRequest:
     properties:
       audit:
@@ -2704,6 +2752,31 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Provider'
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/raw-sub-account-items:
+    post:
+      consumes:
+      - application/json
+      description: Creates sub account items
+      operationId: CreateSubAccountItems
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createRawSubAccountItemsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []

@@ -4839,9 +4839,19 @@ type createRawSubAccountItemsRequest struct {
 
 		PrimaryAccount string `json:"primary_account" validate:"required"`
 	} `json:"items" validate:"required,min=1"`
-}
+} // @name createRawSubAccountItemsRequest
 
 //CreateSubAccountItems creates sub account items
+// @Description Creates sub account items
+// @Tags Admin
+// @ID CreateSubAccountItems
+// @Accept json
+// @Produce json
+// @Param data body createRawSubAccountItemsRequest true "body data"
+// @Success 200 {string} Successfully created
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/raw-sub-account-items [post]
 func (h AdminApisHandler) CreateSubAccountItems(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {

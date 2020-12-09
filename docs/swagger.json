@@ -1937,6 +1937,48 @@
                 }
             }
         },
+        "/admin/raw-sub-account-items": {
+            "post": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Creates sub account items",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "CreateSubAccountItems",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createRawSubAccountItemsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/resources": {
             "get": {
                 "security": [
@@ -6639,6 +6681,79 @@
                 },
                 "provider_name": {
                     "type": "string"
+                }
+            }
+        },
+        "createRawSubAccountItemsRequest": {
+            "type": "object",
+            "properties": {
+                "audit": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "address1": {
+                                "type": "string"
+                            },
+                            "address2": {
+                                "type": "string"
+                            },
+                            "address3": {
+                                "type": "string"
+                            },
+                            "birth_date": {
+                                "type": "string"
+                            },
+                            "city": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string"
+                            },
+                            "first_name": {
+                                "type": "string"
+                            },
+                            "gender": {
+                                "type": "string"
+                            },
+                            "last_name": {
+                                "type": "string"
+                            },
+                            "middle_name": {
+                                "type": "string"
+                            },
+                            "net_id": {
+                                "type": "string"
+                            },
+                            "phone": {
+                                "type": "string",
+                                "required": [
+                                    "phone"
+                                ]
+                            },
+                            "primary_account": {
+                                "type": "string",
+                                "required": [
+                                    "primary_account"
+                                ]
+                            },
+                            "state": {
+                                "type": "string"
+                            },
+                            "uin": {
+                                "type": "string",
+                                "required": [
+                                    "uin"
+                                ]
+                            },
+                            "zip_code": {
+                                "type": "string"
+                            }
+                        }
+                    }
                 }
             }
         },

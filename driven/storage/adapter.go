@@ -417,26 +417,80 @@ func (sa *Adapter) FindUsersByRePost(rePost bool) ([]*model.User, error) {
 //CreateAppUser creates an app user
 func (sa *Adapter) CreateAppUser(externalID string,
 	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
+	var user *model.User
 
-	id, _ := uuid.NewUUID()
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			log.Printf("error starting a transaction - %s", err)
+			return err
+		}
 
-	var accounts []model.Account
-	//add default account
-	accounts = make([]model.Account, 1)
-	accounts[0] = model.Account{ID: id.String(), ExternalID: externalID, Default: true, Active: true}
+		userID, _ := uuid.NewUUID()
 
-	dateCreated := time.Now()
+		var accounts []model.Account
 
-	user := model.User{ID: id.String(), ExternalID: externalID, UUID: userUUID,
-		PublicKey: publicKey, Consent: consent, ExposureNotification: exposureNotification, RePost: rePost,
-		EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Accounts: accounts, DateCreated: dateCreated}
-	_, err := sa.db.users.InsertOne(&user)
+		//add default account
+		accounts = append(accounts, model.Account{ID: userID.String(), ExternalID: externalID, Default: true, Active: true})
+
+		//check if there are added sub accounts for this user
+		rawSubAccountsFilter := bson.D{primitive.E{Key: "primary_account", Value: externalID}}
+		var rawSubAccounts []*model.RawSubAccount
+		err = sa.db.rawsubaccounts.FindWithContext(sessionContext, rawSubAccountsFilter, &rawSubAccounts, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(rawSubAccounts) > 0 {
+			//if there are, then hook them up
+			for _, rsa := range rawSubAccounts {
+				subAccID, _ := uuid.NewUUID()
+				newSubAccount := model.Account{ID: subAccID.String(), ExternalID: rsa.UIN, Default: false, Active: true, FirstName: rsa.FirstName,
+					MiddleName: rsa.MiddleName, LastName: rsa.LastName, BirthDate: rsa.BirthDate, Gender: rsa.Gender, Address1: rsa.Address1,
+					Address2: rsa.Address2, Address3: rsa.Address3, City: rsa.City, State: rsa.State, ZipCode: rsa.ZipCode, Phone: rsa.Phone,
+					Email: rsa.Email}
+
+				accounts = append(accounts, newSubAccount)
+
+				//update the raw sub account with the inserted account id
+				rawSubAccountUpdateFilter := bson.D{primitive.E{Key: "uin", Value: rsa.UIN}}
+				rawSubAccountUpdate := bson.D{
+					primitive.E{Key: "$set", Value: bson.D{
+						primitive.E{Key: "account_id", Value: subAccID.String()},
+					}},
+				}
+				_, err := sa.db.rawsubaccounts.UpdateOneWithContext(sessionContext, rawSubAccountUpdateFilter, rawSubAccountUpdate, nil)
+				if err != nil {
+					abortTransaction(sessionContext)
+					return err
+				}
+			}
+		}
+
+		//insert the created user
+		user = &model.User{ID: userID.String(), ExternalID: externalID, UUID: userUUID,
+			PublicKey: publicKey, Consent: consent, ExposureNotification: exposureNotification, RePost: rePost,
+			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Accounts: accounts, DateCreated: time.Now()}
+		_, err = sa.db.users.InsertOneWithContext(sessionContext, user)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		//commit the transaction
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	//return the inserted item
-	return &user, nil
+	return user, nil
 }
 
 //CreateAdminUser creates an admin user

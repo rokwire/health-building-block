@@ -345,6 +345,43 @@ definitions:
       provider_name:
         type: string
     type: object
+  RawSubAccount:
+    properties:
+      account_id:
+        type: string
+      address1:
+        type: string
+      address2:
+        type: string
+      address3:
+        type: string
+      birth_date:
+        type: string
+      city:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      last_name:
+        type: string
+      middle_name:
+        type: string
+      net_id:
+        type: string
+      phone:
+        type: string
+      primary_account:
+        type: string
+      state:
+        type: string
+      uin:
+        type: string
+      zip_code:
+        type: string
+    type: object
   Resource:
     properties:
       display_order:
@@ -2777,6 +2814,49 @@ paths:
           description: OK
           schema:
             type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/raw-sub-accounts:
+    get:
+      consumes:
+      - application/json
+      description: Gives the sub accounts matching filters, sorted, and paginated
+      operationId: GetSubAccounts
+      parameters:
+      - description: Phone
+        in: query
+        name: phone
+        type: string
+      - description: UIN
+        in: query
+        name: uin
+        type: string
+      - description: Sort By
+        in: query
+        name: sortBy
+        type: string
+      - description: Order By
+        in: query
+        name: orderBy
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Offset
+        in: query
+        name: offset
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/RawSubAccount'
+            type: array
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []

@@ -4908,7 +4908,21 @@ func (h AdminApisHandler) CreateSubAccountItems(current model.User, group string
 	w.Write([]byte("Successfully created"))
 }
 
-//GetSubAccounts gets sub accounts
+//GetSubAccounts gives sub accounts
+// @Description Gives the sub accounts matching filters, sorted, and paginated
+// @Tags Admin
+// @ID GetSubAccounts
+// @Accept json
+// @Param phone query string false "Phone"
+// @Param uin query string false "UIN"
+// @Param sortBy query string false "Sort By"
+// @Param orderBy query string false "Order By"
+// @Param limit query string false "Limit"
+// @Param offset query string false "Offset"
+// @Success 200 {array} model.RawSubAccount
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/raw-sub-accounts [get]
 func (h AdminApisHandler) GetSubAccounts(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	//TODO
 	sortBy := "uin"

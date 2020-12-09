@@ -207,4 +207,4 @@ type RawSubAccount struct {
 	PrimaryAccount string `json:"primary_account" bson:"primary_account"`
 
 	AccountID *string `json:"account_id" bson:"account_id"`
-}
+} // @name RawSubAccount

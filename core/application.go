@@ -551,7 +551,7 @@ func (app *Application) FindUserByExternalID(externalID string) (*model.User, er
 func (app *Application) CreateAppUser(externalID string, uuid string, publicKey string,
 	consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
 
-	user, err := app.storage.CreateUser(nil, externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob, false)
+	user, err := app.storage.CreateAppUser(externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob)
 	if err != nil {
 		return nil, err
 	}
@@ -572,7 +572,7 @@ func (app *Application) CreateDefaultAccount(userID string) (*model.User, error)
 //CreateAdminAppUser creates an admin app user
 func (app *Application) CreateAdminAppUser(shibboAuth *model.ShibbolethAuth) (*model.User, error) {
 	externalID := "a_" + shibboAuth.Uin //TODO
-	user, err := app.storage.CreateUser(shibboAuth, externalID, "", "", false, false, false, nil, nil, true)
+	user, err := app.storage.CreateAdminUser(shibboAuth, externalID, "", "", false, false, false, nil, nil)
 	if err != nil {
 		return nil, err
 	}

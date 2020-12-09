@@ -414,25 +414,42 @@ func (sa *Adapter) FindUsersByRePost(rePost bool) ([]*model.User, error) {
 	return result, nil
 }
 
-//CreateUser creates an user
-func (sa *Adapter) CreateUser(shibboAuth *model.ShibbolethAuth, externalID string,
-	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string,
-	adminUser bool) (*model.User, error) {
+//CreateAppUser creates an app user
+func (sa *Adapter) CreateAppUser(externalID string,
+	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
 
 	id, _ := uuid.NewUUID()
 
 	var accounts []model.Account
-	if !adminUser {
-		//add default account
-		accounts = make([]model.Account, 1)
-		accounts[0] = model.Account{ID: id.String(), ExternalID: externalID, Default: true, Active: true}
+	//add default account
+	accounts = make([]model.Account, 1)
+	accounts[0] = model.Account{ID: id.String(), ExternalID: externalID, Default: true, Active: true}
+
+	dateCreated := time.Now()
+
+	user := model.User{ID: id.String(), ExternalID: externalID, UUID: userUUID,
+		PublicKey: publicKey, Consent: consent, ExposureNotification: exposureNotification, RePost: rePost,
+		EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Accounts: accounts, DateCreated: dateCreated}
+	_, err := sa.db.users.InsertOne(&user)
+	if err != nil {
+		return nil, err
 	}
+
+	//return the inserted item
+	return &user, nil
+}
+
+//CreateAdminUser creates an admin user
+func (sa *Adapter) CreateAdminUser(shibboAuth *model.ShibbolethAuth, externalID string,
+	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
+
+	id, _ := uuid.NewUUID()
 
 	dateCreated := time.Now()
 
 	user := model.User{ID: id.String(), ShibbolethAuth: shibboAuth, ExternalID: externalID, UUID: userUUID,
 		PublicKey: publicKey, Consent: consent, ExposureNotification: exposureNotification, RePost: rePost,
-		EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Accounts: accounts, DateCreated: dateCreated}
+		EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, DateCreated: dateCreated}
 	_, err := sa.db.users.InsertOne(&user)
 	if err != nil {
 		return nil, err

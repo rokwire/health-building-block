@@ -782,9 +782,10 @@ type Storage interface {
 	FindUserAccountsByExternalID(externalID string) (*model.User, error)
 	FindUserByShibbolethID(shibbolethID string) (*model.User, error)
 	FindUsersByRePost(rePost bool) ([]*model.User, error)
-	CreateUser(shibboAuth *model.ShibbolethAuth, externalID string,
-		uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string,
-		adminUser bool) (*model.User, error)
+	CreateAppUser(externalID string,
+		uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error)
+	CreateAdminUser(shibboAuth *model.ShibbolethAuth, externalID string,
+		uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error)
 	CreateDefaultAccount(userID string) (*model.User, error)
 	SaveUser(user *model.User) error
 

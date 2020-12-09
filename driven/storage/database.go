@@ -714,7 +714,21 @@ func (m *database) applyRostersChecks(rosters *collectionWrapper) error {
 func (m *database) applyRawSubAccountsChecks(rawsubaccounts *collectionWrapper) error {
 	log.Println("apply rawsubaccounts checks.....")
 
-	//TODO
+	//add indexes
+	err := rawsubaccounts.AddIndex(bson.D{primitive.E{Key: "uin", Value: 1}}, true)
+	if err != nil {
+		return err
+	}
+
+	err = rawsubaccounts.AddIndex(bson.D{primitive.E{Key: "phone", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	err = rawsubaccounts.AddIndex(bson.D{primitive.E{Key: "primary_account", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
 
 	log.Println("rawsubaccounts checks passed")
 	return nil

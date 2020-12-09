@@ -5100,6 +5100,34 @@ func (sa *Adapter) CreateRawSubAccountItems(items []model.RawSubAccount) error {
 	return nil
 }
 
+//FindRawSubAccounts finds raw sub accounts
+func (sa *Adapter) FindRawSubAccounts(f *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error) {
+	var filter bson.D
+	if f != nil {
+		filter = constructDataFilter(f).(bson.D)
+	}
+
+	options := options.Find()
+	options.SetSort(bson.D{primitive.E{Key: sortBy, Value: sortOrder}})
+	if limit > 0 {
+		options.SetLimit(int64(limit))
+	}
+	if offset > 0 {
+		options.SetSkip(int64(offset))
+	}
+
+	var result []model.RawSubAccount
+	err := sa.db.rawsubaccounts.Find(filter, &result, options)
+	if err != nil {
+		return nil, err
+	}
+	if len(result) < 1 {
+		return make([]model.RawSubAccount, 0), nil
+	}
+
+	return result, nil
+}
+
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {
 	if list == nil {
 		return false

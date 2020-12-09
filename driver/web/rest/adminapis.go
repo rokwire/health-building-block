@@ -4908,6 +4908,74 @@ func (h AdminApisHandler) CreateSubAccountItems(current model.User, group string
 	w.Write([]byte("Successfully created"))
 }
 
+//GetSubAccounts gets sub accounts
+func (h AdminApisHandler) GetSubAccounts(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	//TODO
+	sortBy := "uin"
+	sortOrder := 1
+	limit := 20
+	offset := 0
+	var filter utils.Filter
+	for key, value := range r.URL.Query() {
+		if len(value) < 1 || len(value[0]) < 1 {
+			continue
+		}
+		switch key {
+		case "sortBy":
+			sortBy = value[0]
+		case "sortOrder":
+			if value[0] == "1" {
+				sortOrder = 1
+			} else if value[0] == "-1" {
+				sortOrder = -1
+			} else {
+				log.Println("Invalid 'sortOrder' value - " + value[0])
+				http.Error(w, "Invalid 'sortOrder' value - Must be 1 or -1", http.StatusBadRequest)
+				return
+			}
+		case "limit":
+			limitValue, err := strconv.Atoi(value[0])
+			if err == nil {
+				if limitValue < 1 || limitValue > 50 {
+					log.Println("Invalid 'limit' value - " + value[0])
+					http.Error(w, "Invalid 'limit' value - Must be an integer between 1 and 50", http.StatusBadRequest)
+					return
+				}
+				limit = limitValue
+			} else {
+				log.Printf("error parsing limit - %s\n", err)
+			}
+		case "offset":
+			offsetValue, err := strconv.Atoi(value[0])
+			if err == nil {
+				offset = offsetValue
+			} else {
+				log.Printf("error parsing offset - %s\n", err)
+			}
+		default:
+			filter.Items = append(filter.Items, utils.FilterItem{Field: key, Value: value})
+		}
+	}
+
+	subAccounts, err := h.app.Administration.GetRawSubAccounts(&filter, sortBy, sortOrder, limit, offset)
+	if err != nil {
+		log.Printf("error getting the raw sub accounts - %s", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.Marshal(subAccounts)
+	if err != nil {
+		log.Println("Error on marshal sub accounts")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(data))
+}
+
 type createActionRequest struct {
 	Audit         *string `json:"audit"`
 	ProviderID    string  `json:"provider_id" validate:"required"`

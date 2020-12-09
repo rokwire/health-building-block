@@ -1790,6 +1790,14 @@ func (app *Application) createRawSubAccountItems(current model.User, group strin
 	return nil
 }
 
+func (app *Application) getRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error) {
+	rawSubAccounts, err := app.storage.FindRawSubAccounts(filter, sortBy, sortOrder, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	return rawSubAccounts, nil
+}
+
 func (app *Application) createAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, accountID, encryptedKey, encryptedBlob, false, nil)

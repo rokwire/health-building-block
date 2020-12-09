@@ -402,6 +402,7 @@ type Administration interface {
 	DeleteAllRosters(current model.User, group string) error
 
 	CreateRawSubAccountItems(current model.User, group string, audit *string, items []model.RawSubAccount) error
+	GetRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error)
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
@@ -758,6 +759,10 @@ func (s *administrationImpl) CreateRawSubAccountItems(current model.User, group 
 	return s.app.createRawSubAccountItems(current, group, audit, items)
 }
 
+func (s *administrationImpl) GetRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error) {
+	return s.app.getRawSubAccounts(filter, sortBy, sortOrder, limit, offset)
+}
+
 func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	return s.app.createAction(current, group, audit, providerID, accountID, encryptedKey, encryptedBlob)
 }
@@ -946,6 +951,7 @@ type Storage interface {
 	DeleteAllRosters() error
 
 	CreateRawSubAccountItems(items []model.RawSubAccount) error
+	FindRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error)
 }
 
 //StorageListener listenes for change data storage events

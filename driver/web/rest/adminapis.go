@@ -4990,6 +4990,11 @@ func (h AdminApisHandler) GetSubAccounts(current model.User, group string, w htt
 	w.Write([]byte(data))
 }
 
+//UpdateSubAccount updates sub account
+func (h AdminApisHandler) UpdateSubAccount(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+
+}
+
 type createActionRequest struct {
 	Audit         *string `json:"audit"`
 	ProviderID    string  `json:"provider_id" validate:"required"`

@@ -38,6 +38,7 @@ type guidelinesItemsResponse struct {
 //AppUserResponse represents user response entity
 type AppUserResponse struct {
 	ID                   string  `json:"id"`
+	ExternalID           string  `json:"external_id"`
 	UUID                 string  `json:"uuid"`
 	PublicKey            string  `json:"public_key"`
 	Consent              bool    `json:"consent"`
@@ -45,7 +46,30 @@ type AppUserResponse struct {
 	RePost               bool    `json:"re_post"`
 	EncryptedKey         *string `json:"encrypted_key"`
 	EncryptedBlob        *string `json:"encrypted_blob"`
+
+	Accounts []AppUserAccountResponse `json:"accounts"`
 } //@name User
+
+//AppUserAccountResponse represents user account response entity
+type AppUserAccountResponse struct {
+	ID         string `json:"id"`
+	ExternalID string `json:"external_id"`
+	Default    bool   `json:"default"`
+	Active     bool   `json:"active"`
+	FirstName  string `json:"first_name"`
+	MiddleName string `json:"middle_name"`
+	LastName   string `json:"last_name"`
+	BirthDate  string `json:"birth_date"`
+	Gender     string `json:"gender"`
+	Address1   string `json:"address1"`
+	Address2   string `json:"address2"`
+	Address3   string `json:"address3"`
+	City       string `json:"city"`
+	State      string `json:"state"`
+	ZipCode    string `json:"zip_code"`
+	Phone      string `json:"phone"`
+	Email      string `json:"email"`
+} //@name Account
 
 type manualTestImageResponse struct {
 	EncryptedImageKey  string `json:"encrypted_image_key"`
@@ -76,6 +100,7 @@ type manualTestResponse struct {
 type eManualTestResponse struct {
 	ID            string          `json:"id"`
 	User          AppUserResponse `json:"user"`
+	AccountID     string          `json:"account_id"`
 	HistoryID     string          `json:"history_id"`
 	LocationID    *string         `json:"location_id"`
 	CountyID      *string         `json:"county_id"`
@@ -133,6 +158,42 @@ type PUserResponse struct {
 	PublicKey string `json:"public_key"`
 	Consent   bool   `json:"consent"`
 } //@name PUser
+
+type historyResponse struct {
+	ID            string    `json:"id"`
+	AccountID     string    `json:"account_id"`
+	Date          time.Time `json:"date"`
+	Type          string    `json:"type"`
+	EncryptedKey  string    `json:"encrypted_key"`
+	EncryptedBlob string    `json:"encrypted_blob"`
+} // @name History
+
+type statusResponse struct {
+	ID            string     `json:"id"`
+	AccountID     string     `json:"account_id"`
+	Date          *time.Time `json:"date"`
+	EncryptedKey  string     `json:"encrypted_key"`
+	EncryptedBlob string     `json:"encrypted_blob"`
+	DateUpdated   *time.Time `json:"date_updated"`
+	AppVersion    *string    `json:"app_version"`
+} // @name Status
+
+type cTestResponse struct {
+	ID string `json:"id"`
+
+	ProviderID string `json:"provider_id"`
+	AccountID  string `json:"account_id"`
+
+	EncryptedKey  string `json:"encrypted_key"`
+	EncryptedBlob string `json:"encrypted_blob"`
+
+	OrderNumber *string `json:"order_number"`
+
+	Processed bool `json:"processed"`
+
+	DateCreated time.Time  `json:"date_created"`
+	DateUpdated *time.Time `json:"date_updated"`
+} // @name CTest
 
 func convertToDaysOfOperations(list []locationOperationDayRequest) []model.OperationDay {
 	var doo []model.OperationDay

@@ -17,7 +17,9 @@
 
 package model
 
-import "time"
+import (
+	"time"
+)
 
 //User represents user entity
 type User struct {
@@ -35,8 +37,61 @@ type User struct {
 	EncryptedKey         *string `json:"encrypted_key" bson:"encrypted_key"`
 	EncryptedBlob        *string `json:"encrypted_blob" bson:"encrypted_blob"`
 
+	Accounts []Account `json:"accounts" bson:"accounts"`
+
 	DateCreated time.Time  `json:"date_created" bson:"date_created"`
 	DateUpdated *time.Time `json:"date_updated" bson:"date_updated"`
+}
+
+//GetAccount gives the user account for the provided account id
+func (user User) GetAccount(accountID string) *Account {
+	if len(user.Accounts) == 0 {
+		return nil
+	}
+
+	for _, current := range user.Accounts {
+		if current.ID == accountID {
+			return &current
+		}
+	}
+	return nil
+}
+
+//GetAccountByExternalID gives the user account for the provided external id
+func (user User) GetAccountByExternalID(externalID string) *Account {
+	if len(user.Accounts) == 0 {
+		return nil
+	}
+
+	for _, current := range user.Accounts {
+		if current.ExternalID == externalID {
+			return &current
+		}
+	}
+	return nil
+}
+
+//GetDefaultAccount gives the default user account
+func (user User) GetDefaultAccount() *Account {
+	if len(user.Accounts) == 0 {
+		return nil
+	}
+
+	for _, current := range user.Accounts {
+		if current.Default {
+			return &current
+		}
+	}
+	return nil
+}
+
+//HasDefaultAccount says if the user has a default account
+func (user User) HasDefaultAccount() bool {
+	defaultAccount := user.GetDefaultAccount()
+	if defaultAccount != nil {
+		return true
+	}
+	return false
 }
 
 //IsAdmin says if the user is admin
@@ -108,3 +163,48 @@ type ShibbolethAuth struct {
 	Email      string    `json:"email" bson:"email"`
 	IsMemberOf *[]string `json:"uiucedu_is_member_of" bson:"uiucedu_is_member_of"`
 }
+
+//Account represents account entity
+type Account struct {
+	ID         string `json:"id" bson:"id"`
+	ExternalID string `json:"external_id" bson:"external_id"`
+	Default    bool   `json:"default" bson:"default"`
+	Active     bool   `json:"active" bson:"active"`
+
+	FirstName  string `json:"first_name" bson:"first_name"`
+	MiddleName string `json:"middle_name" bson:"middle_name"`
+	LastName   string `json:"last_name" bson:"last_name"`
+	BirthDate  string `json:"birth_date" bson:"birth_date"`
+	Gender     string `json:"gender" bson:"gender"`
+	Address1   string `json:"address1" bson:"address1"`
+	Address2   string `json:"address2" bson:"address2"`
+	Address3   string `json:"address3" bson:"address3"`
+	City       string `json:"city" bson:"city"`
+	State      string `json:"state" bson:"state"`
+	ZipCode    string `json:"zip_code" bson:"zip_code"`
+	Phone      string `json:"phone" bson:"phone"`
+	Email      string `json:"email" bson:"email"`
+}
+
+//RawSubAccount represents raw sub account entity
+type RawSubAccount struct {
+	UIN        string `json:"uin" bson:"uin"`
+	FirstName  string `json:"first_name" bson:"first_name"`
+	MiddleName string `json:"middle_name" bson:"middle_name"`
+	LastName   string `json:"last_name" bson:"last_name"`
+	BirthDate  string `json:"birth_date" bson:"birth_date"`
+	Gender     string `json:"gender" bson:"gender"`
+	Address1   string `json:"address1" bson:"address1"`
+	Address2   string `json:"address2" bson:"address2"`
+	Address3   string `json:"address3" bson:"address3"`
+	City       string `json:"city" bson:"city"`
+	State      string `json:"state" bson:"state"`
+	ZipCode    string `json:"zip_code" bson:"zip_code"`
+	Phone      string `json:"phone" bson:"phone"`
+	NetID      string `json:"net_id" bson:"net_id"`
+	Email      string `json:"email" bson:"email"`
+
+	PrimaryAccount string `json:"primary_account" bson:"primary_account"`
+
+	AccountID *string `json:"account_id" bson:"account_id"`
+} // @name RawSubAccount

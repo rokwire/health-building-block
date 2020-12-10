@@ -40,7 +40,7 @@ func (app *Application) clearUserData(current model.User) error {
 }
 
 func (app *Application) getUserByShibbolethUIN(shibbolethUIN string) (*model.User, error) {
-	user, err := app.storage.FindUserByExternalID(shibbolethUIN)
+	user, err := app.storage.FindUserAccountsByExternalID(shibbolethUIN)
 	if err != nil {
 		return nil, err
 	}
@@ -99,11 +99,11 @@ func (app *Application) getNews(limit int64) ([]*model.News, error) {
 	return news, nil
 }
 
-func (app *Application) getCTests(current model.User, processed bool) ([]*model.CTest, []*model.Provider, error) {
+func (app *Application) getCTests(account model.Account, processed bool) ([]*model.CTest, []*model.Provider, error) {
 	//We get the data with two requests to the database - NoSQL approach in some cases!
 
 	//1. first get the ctest
-	ctests, err := app.storage.FindCTests(current.ID, processed)
+	ctests, err := app.storage.FindCTests(account.ID, processed)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -154,15 +154,15 @@ func (app *Application) createExternalCTest(providerID string, uin string, encry
 	return nil
 }
 
-func (app *Application) deleteCTests(userID string) (int64, error) {
-	deletedCount, err := app.storage.DeleteCTests(userID)
+func (app *Application) deleteCTests(accountID string) (int64, error) {
+	deletedCount, err := app.storage.DeleteCTests(accountID)
 	if err != nil {
 		return -1, err
 	}
 	return deletedCount, nil
 }
 
-func (app *Application) updateCTest(current model.User, ID string, processed bool) (*model.CTest, error) {
+func (app *Application) updateCTest(account model.Account, ID string, processed bool) (*model.CTest, error) {
 	//check if we have a such ctest entity
 	ctest, err := app.storage.FindCTest(ID)
 	if err != nil {
@@ -172,9 +172,9 @@ func (app *Application) updateCTest(current model.User, ID string, processed boo
 		return nil, errors.New("ctest is nil for id " + ID)
 	}
 
-	//check if the user owns the ctest
-	if current.ID != ctest.UserID {
-		return nil, errors.New("the user does not owns this ctest")
+	//check if the user account owns the ctest
+	if account.ID != ctest.UserID {
+		return nil, errors.New("the account does not owns this ctest")
 	}
 
 	//add the new values
@@ -219,16 +219,16 @@ func (app *Application) getRulesByCounty(countyID string) ([]*model.Rule, []*mod
 	return rules, countyStatuses, testTypes, nil
 }
 
-func (app *Application) createOrUpdateEStatus(userID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
+func (app *Application) createOrUpdateEStatus(accountID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
 	//determine if we need to create or update it
-	status, err := app.storage.FindEStatusByUserID(appVersion, userID)
+	status, err := app.storage.FindEStatusByAccountID(appVersion, accountID)
 	if err != nil {
 		return nil, err
 	}
 
 	if status == nil {
 		//we need to create it
-		status, err = app.storage.CreateEStatus(appVersion, userID, date, encryptedKey, encryptedBlob)
+		status, err = app.storage.CreateEStatus(appVersion, accountID, date, encryptedKey, encryptedBlob)
 		if err != nil {
 			return nil, err
 		}
@@ -249,16 +249,16 @@ func (app *Application) createOrUpdateEStatus(userID string, appVersion *string,
 	return status, nil
 }
 
-func (app *Application) getEStatusByUserID(userID string, appVersion *string) (*model.EStatus, error) {
-	status, err := app.storage.FindEStatusByUserID(appVersion, userID)
+func (app *Application) getEStatusByAccountID(accountID string, appVersion *string) (*model.EStatus, error) {
+	status, err := app.storage.FindEStatusByAccountID(appVersion, accountID)
 	if err != nil {
 		return nil, err
 	}
 	return status, nil
 }
 
-func (app *Application) deleteEStatus(userID string, appVersion *string) error {
-	err := app.storage.DeleteEStatus(appVersion, userID)
+func (app *Application) deleteEStatus(accountID string, appVersion *string) error {
+	err := app.storage.DeleteEStatus(appVersion, accountID)
 	if err != nil {
 		return err
 	}
@@ -382,9 +382,9 @@ func (app *Application) getExposures(timestamp *int64, dateAdded *int64) ([]mode
 	return items, nil
 }
 
-func (app *Application) getUINOverride(current model.User) (*model.UINOverride, error) {
+func (app *Application) getUINOverride(account model.Account) (*model.UINOverride, error) {
 	//supported only for Shibboleth users - uin
-	uin := current.ExternalID
+	uin := account.ExternalID
 	uinOverride, err := app.storage.FindUINOverride(uin)
 	if err != nil {
 		return nil, err
@@ -393,9 +393,9 @@ func (app *Application) getUINOverride(current model.User) (*model.UINOverride, 
 	return uinOverride, nil
 }
 
-func (app *Application) createOrUpdateUINOverride(current model.User, interval int, category *string, expiration *time.Time) error {
+func (app *Application) createOrUpdateUINOverride(account model.Account, interval int, category *string, expiration *time.Time) error {
 	//supported only for Shibboleth users - uin
-	uin := current.ExternalID
+	uin := account.ExternalID
 	err := app.storage.CreateOrUpdateUINOverride(uin, interval, category, expiration)
 	if err != nil {
 		return err
@@ -439,9 +439,9 @@ func (app *Application) deleteExtUINOverride(uin string) error {
 	return nil
 }
 
-func (app *Application) setUINBuildingAccess(current model.User, date time.Time, access string) error {
+func (app *Application) setUINBuildingAccess(account model.Account, date time.Time, access string) error {
 	//supported only for Shibboleth users - uin
-	uin := current.ExternalID
+	uin := account.ExternalID
 	err := app.storage.CreateOrUpdateUINBuildingAccess(uin, date, access)
 	if err != nil {
 		return err
@@ -457,15 +457,15 @@ func (app *Application) getExtUINBuildingAccess(uin string) (*model.UINBuildingA
 	return uinBuildingAccess, nil
 }
 
-func (app *Application) deleteEHitories(userID string) (int64, error) {
-	deletedCount, err := app.storage.DeleteEHistories(userID)
+func (app *Application) deleteEHitories(accountID string) (int64, error) {
+	deletedCount, err := app.storage.DeleteEHistories(accountID)
 	if err != nil {
 		return -1, err
 	}
 	return deletedCount, nil
 }
 
-func (app *Application) updateEHistory(userID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error) {
+func (app *Application) updateEHistory(accountID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error) {
 	history, err := app.storage.FindEHistory(ID)
 	if err != nil {
 		return nil, err
@@ -473,7 +473,7 @@ func (app *Application) updateEHistory(userID string, ID string, date *time.Time
 	if history == nil {
 		return nil, errors.New("history is nil for id " + ID)
 	}
-	if history.UserID != userID {
+	if history.UserID != accountID {
 		return nil, errors.New("not allowed to modify history with id " + ID)
 	}
 

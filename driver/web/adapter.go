@@ -49,7 +49,7 @@ type Adapter struct {
 
 // @title Rokwire Health Building Block API
 // @description Rokwire Health Building Block API Documentation.
-// @version 1.34.0
+// @version 2.0.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost
@@ -63,6 +63,10 @@ type Adapter struct {
 // @securityDefinitions.apikey AppUserAuth
 // @in header (add Bearer prefix to the Authorization value)
 // @name Authorization
+
+// @securityDefinitions.apikey AppUserAccountAuth
+// @in header
+// @name ROKWIRE-ACC-ID
 
 // @securityDefinitions.apikey ProvidersAuth
 // @in header
@@ -100,26 +104,26 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/user", we.getUser).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/user/clear", we.userAuthWrapFunc(we.apisHandler.ClearUserData)).Methods("GET")
 
-	covid19RestSubrouter.HandleFunc("/ctests", we.userAuthWrapFunc(we.apisHandler.GetCTests)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/ctests/{id}", we.userAuthWrapFunc(we.apisHandler.UpdateCTest)).Methods("PUT")
-	covid19RestSubrouter.HandleFunc("/ctests", we.userAuthWrapFunc(we.apisHandler.DeleteCTests)).Methods("DELETE")
+	covid19RestSubrouter.HandleFunc("/ctests", we.userAccountsAuthWrapFunc(we.apisHandler.GetCTests)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/ctests/{id}", we.userAccountsAuthWrapFunc(we.apisHandler.UpdateCTest)).Methods("PUT")
+	covid19RestSubrouter.HandleFunc("/ctests", we.userAccountsAuthWrapFunc(we.apisHandler.DeleteCTests)).Methods("DELETE")
 
-	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAuthWrapFunc(we.apisHandler.GetStatusV2Deprecated)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAuthWrapFunc(we.apisHandler.CreateOrUpdateStatusV2Deprecated)).Methods("PUT")
-	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAuthWrapFunc(we.apisHandler.DeleteStatusV2Deprecated)).Methods("DELETE")
-	covid19RestSubrouter.HandleFunc("/v2/app-version/{app-version}/statuses", we.userAuthWrapFunc(we.apisHandler.GetStatusV2)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/v2/app-version/{app-version}/statuses", we.userAuthWrapFunc(we.apisHandler.CreateOrUpdateStatusV2)).Methods("PUT")
-	covid19RestSubrouter.HandleFunc("/v2/app-version/{app-version}/statuses", we.userAuthWrapFunc(we.apisHandler.DeleteStatusV2)).Methods("DELETE")
+	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.GetStatusV2Deprecated)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.CreateOrUpdateStatusV2Deprecated)).Methods("PUT")
+	covid19RestSubrouter.HandleFunc("/v2/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.DeleteStatusV2Deprecated)).Methods("DELETE")
+	covid19RestSubrouter.HandleFunc("/v2/app-version/{app-version}/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.GetStatusV2)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/v2/app-version/{app-version}/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.CreateOrUpdateStatusV2)).Methods("PUT")
+	covid19RestSubrouter.HandleFunc("/v2/app-version/{app-version}/statuses", we.userAccountsAuthWrapFunc(we.apisHandler.DeleteStatusV2)).Methods("DELETE")
 
-	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAuthWrapFunc(we.apisHandler.GetHistoriesV2)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAuthWrapFunc(we.apisHandler.CreateHistoryV2)).Methods("POST")
-	covid19RestSubrouter.HandleFunc("/v2/histories/{id}", we.userAuthWrapFunc(we.apisHandler.UpdateHistoryV2)).Methods("PUT")
-	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAuthWrapFunc(we.apisHandler.DeleteHistoriesV2)).Methods("DELETE")
+	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAccountsAuthWrapFunc(we.apisHandler.GetHistoriesV2)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAccountsAuthWrapFunc(we.apisHandler.CreateHistoryV2)).Methods("POST")
+	covid19RestSubrouter.HandleFunc("/v2/histories/{id}", we.userAccountsAuthWrapFunc(we.apisHandler.UpdateHistoryV2)).Methods("PUT")
+	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAccountsAuthWrapFunc(we.apisHandler.DeleteHistoriesV2)).Methods("DELETE")
 
-	covid19RestSubrouter.HandleFunc("/uin-override", we.userAuthWrapFunc(we.apisHandler.GetUINOverride)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/uin-override", we.userAuthWrapFunc(we.apisHandler.CreateOrUpdateUINOverride)).Methods("PUT")
+	covid19RestSubrouter.HandleFunc("/uin-override", we.userAccountsAuthWrapFunc(we.apisHandler.GetUINOverride)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/uin-override", we.userAccountsAuthWrapFunc(we.apisHandler.CreateOrUpdateUINOverride)).Methods("PUT")
 
-	covid19RestSubrouter.HandleFunc("/building-access", we.userAuthWrapFunc(we.apisHandler.SetUINBuildingAccess)).Methods("PUT")
+	covid19RestSubrouter.HandleFunc("/building-access", we.userAccountsAuthWrapFunc(we.apisHandler.SetUINBuildingAccess)).Methods("PUT")
 
 	//provider auth
 	covid19RestSubrouter.HandleFunc("/users/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.GetUserByShibbolethUIN)).Methods("GET")
@@ -281,6 +285,12 @@ func (we Adapter) Start() {
 	adminRestSubrouter.HandleFunc("/rosters", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteAllRosters)).Methods("DELETE")
 	adminRestSubrouter.HandleFunc("/rosters/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateRoster)).Methods("PUT")
 
+	adminRestSubrouter.HandleFunc("/raw-sub-account-items", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateSubAccountItems)).Methods("POST")
+	adminRestSubrouter.HandleFunc("/raw-sub-accounts", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetSubAccounts)).Methods("GET")
+	adminRestSubrouter.HandleFunc("/raw-sub-accounts/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateSubAccount)).Methods("PUT")
+	adminRestSubrouter.HandleFunc("/raw-sub-accounts/uin/{uin}", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteSubAccountByUIN)).Methods("DELETE")
+	adminRestSubrouter.HandleFunc("/raw-sub-accounts", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.DeleteAllSubAccounts)).Methods("DELETE")
+
 	adminRestSubrouter.HandleFunc("/user", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetUserByExternalID)).Methods("GET").Queries("external-id", "")
 
 	adminRestSubrouter.HandleFunc("/actions", we.adminAppIDTokenAuthWrapFunc(we.apisHandler.CreateAction)).Methods("POST")
@@ -361,9 +371,9 @@ func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.Handle
 	}
 }
 
-type authFunc = func(model.User, http.ResponseWriter, *http.Request)
+type userAuthFunc = func(model.User, http.ResponseWriter, *http.Request)
 
-func (we Adapter) userAuthWrapFunc(handler authFunc) http.HandlerFunc {
+func (we Adapter) userAuthWrapFunc(handler userAuthFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
@@ -380,6 +390,28 @@ func (we Adapter) userAuthWrapFunc(handler authFunc) http.HandlerFunc {
 		}
 
 		handler(*user, w, req)
+	}
+}
+
+type userAccountsAuthFunc = func(model.User, model.Account, http.ResponseWriter, *http.Request)
+
+func (we Adapter) userAccountsAuthWrapFunc(handler userAccountsAuthFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		utils.LogRequest(req)
+
+		ok, user, account := we.auth.userAccountsCheck(w, req)
+		if !ok {
+			return
+		}
+		if user == nil {
+			//it is valid but the user is not logged in - return 200/null
+			log.Println("200 - Not logged in")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("null"))
+			return
+		}
+
+		handler(*user, *account, w, req)
 	}
 }
 
@@ -503,9 +535,18 @@ func (we Adapter) getUser(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	response := rest.AppUserResponse{UUID: user.UUID, PublicKey: user.PublicKey,
+	accounts := make([]rest.AppUserAccountResponse, len(user.Accounts))
+	if len(user.Accounts) > 0 {
+		for i, c := range user.Accounts {
+			accounts[i] = rest.AppUserAccountResponse{ID: c.ID, ExternalID: c.ExternalID, Default: c.Default, Active: c.Active,
+				FirstName: c.FirstName, MiddleName: c.MiddleName, LastName: c.LastName, BirthDate: c.BirthDate, Gender: c.Gender, Address1: c.Address1,
+				Address2: c.Address2, Address3: c.Address3, City: c.City, State: c.State, ZipCode: c.ZipCode, Phone: c.Phone, Email: c.Email}
+		}
+	}
+
+	response := rest.AppUserResponse{ID: user.ID, ExternalID: user.ExternalID, UUID: user.UUID, PublicKey: user.PublicKey,
 		Consent: user.Consent, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
-		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob}
+		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, Accounts: accounts}
 	data, err := json.Marshal(response)
 	if err != nil {
 		log.Println("Error on marshal the user")
@@ -571,5 +612,15 @@ func (al *AppListener) OnRostersUpdated() {
 	go func() {
 		al.adapter.auth.userAuth.clearCacheUsers()
 		al.adapter.auth.userAuth.loadRosters()
+	}()
+}
+
+//OnSubAccountsUpdated notifies that the sub accounts are updated
+func (al *AppListener) OnSubAccountsUpdated() {
+	log.Println("AppListener -> OnSubAccountsUpdated")
+
+	//clear the cached users
+	go func() {
+		al.adapter.auth.userAuth.clearCacheUsers()
 	}()
 }

@@ -5288,6 +5288,63 @@ func (sa *Adapter) DeleteRawSubAccountByUIN(uin string) error {
 
 //DeleteAllSubAccounts deletes all raw sub accounts
 func (sa *Adapter) DeleteAllSubAccounts() error {
+	//heavy...
+
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//we first need to mark all sub accounts as active "false" before to remove the raw sub accounts
+		rsaFilter := bson.D{}
+		var rawSubAccounts []*model.RawSubAccount
+		err = sa.db.rawsubaccounts.FindWithContext(sessionContext, rsaFilter, &rawSubAccounts, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if rawSubAccounts != nil {
+			for _, rawSubAccount := range rawSubAccounts {
+				//mark the sub account as active "false", we do not remove user sub accounts
+				if rawSubAccount.AccountID != nil {
+					updateSubAccountFilter := bson.D{primitive.E{Key: "accounts.id", Value: *rawSubAccount.AccountID}}
+					updateSubAccount := bson.D{
+						primitive.E{Key: "$set", Value: bson.D{
+							primitive.E{Key: "accounts.$.active", Value: false},
+						}},
+					}
+
+					_, err := sa.db.users.UpdateOneWithContext(sessionContext, updateSubAccountFilter, updateSubAccount, nil)
+					if err != nil {
+						abortTransaction(sessionContext)
+						return err
+					}
+				}
+			}
+		}
+
+		//remove all raw sub accounts
+		removeFilter := bson.D{}
+		_, err = sa.db.rawsubaccounts.DeleteManyWithContext(sessionContext, removeFilter, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

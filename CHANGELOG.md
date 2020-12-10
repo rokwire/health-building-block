@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.0.0] - 2020-12-10
 ### Added
 - Sub accounts feature. [#92](https://github.com/rokwire/health-building-block/issues/92)
 
@@ -190,7 +192,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v1.34.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/rokwire/health-building-block/compare/v1.34.0...v2.0.0
 [1.34.0]: https://github.com/rokwire/health-building-block/compare/v1.33.0...v1.34.0
 [1.33.0]: https://github.com/rokwire/health-building-block/compare/v1.32.0...v1.33.0
 [1.32.0]: https://github.com/rokwire/health-building-block/compare/v1.31.0...v1.32.0

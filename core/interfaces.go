@@ -403,6 +403,8 @@ type Administration interface {
 
 	CreateRawSubAccountItems(current model.User, group string, audit *string, items []model.RawSubAccount) error
 	GetRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error)
+	UpdateRawSubAccount(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+		address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
@@ -763,6 +765,12 @@ func (s *administrationImpl) GetRawSubAccounts(filter *utils.Filter, sortBy stri
 	return s.app.getRawSubAccounts(filter, sortBy, sortOrder, limit, offset)
 }
 
+func (s *administrationImpl) UpdateRawSubAccount(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error {
+	return s.app.updateRawSubAccount(current, group, audit, uin, firstName, middleName, lastName, birthDate, gender, address1, address2,
+		address3, city, state, zipCode, netID, email)
+}
+
 func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	return s.app.createAction(current, group, audit, providerID, accountID, encryptedKey, encryptedBlob)
 }
@@ -952,6 +960,8 @@ type Storage interface {
 
 	CreateRawSubAccountItems(items []model.RawSubAccount) error
 	FindRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error)
+	UpdateRawSubAcccount(uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+		address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error
 }
 
 //StorageListener listenes for change data storage events

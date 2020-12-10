@@ -4763,7 +4763,7 @@ func (h AdminApisHandler) UpdateRoster(current model.User, group string, w http.
 	uin := params["uin"]
 	if len(uin) <= 0 {
 		log.Println("uin is required")
-		http.Error(w, "Provider id is required", http.StatusBadRequest)
+		http.Error(w, "uin is required", http.StatusBadRequest)
 		return
 	}
 
@@ -4990,9 +4990,83 @@ func (h AdminApisHandler) GetSubAccounts(current model.User, group string, w htt
 	w.Write([]byte(data))
 }
 
+type updateRawSubAccountRequest struct {
+	Audit      *string `json:"audit"`
+	FirstName  string  `json:"first_name"`
+	MiddleName string  `json:"middle_name"`
+	LastName   string  `json:"last_name"`
+	BirthDate  string  `json:"birth_date"`
+	Gender     string  `json:"gender"`
+	Address1   string  `json:"address1"`
+	Address2   string  `json:"address2"`
+	Address3   string  `json:"address3"`
+	City       string  `json:"city"`
+	State      string  `json:"state"`
+	ZipCode    string  `json:"zip_code"`
+	NetID      string  `json:"net_id"`
+	Email      string  `json:"email"`
+}
+
 //UpdateSubAccount updates sub account
 func (h AdminApisHandler) UpdateSubAccount(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
 
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update raw sub account item - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateRawSubAccountRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update raw sub account item request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update raw sub account data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	firstName := requestData.FirstName
+	middleName := requestData.MiddleName
+	lastName := requestData.LastName
+	birthDate := requestData.BirthDate
+	gender := requestData.Gender
+	address1 := requestData.Address1
+	address2 := requestData.Address2
+	address3 := requestData.Address3
+	city := requestData.City
+	state := requestData.State
+	zipCode := requestData.ZipCode
+	netID := requestData.NetID
+	email := requestData.Email
+
+	err = h.app.Administration.UpdateRawSubAccount(current, group, audit, uin, firstName, middleName, lastName, birthDate, gender,
+		address1, address2, address3, city, state, zipCode, netID, email)
+	if err != nil {
+		log.Printf("Error on updating raw sub account - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully updated"))
 }
 
 type createActionRequest struct {

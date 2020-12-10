@@ -1798,6 +1798,25 @@ func (app *Application) getRawSubAccounts(filter *utils.Filter, sortBy string, s
 	return rawSubAccounts, nil
 }
 
+func (app *Application) updateRawSubAccount(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error {
+	err := app.storage.UpdateRawSubAcccount(uin, firstName, middleName, lastName, birthDate, gender, address1,
+		address2, address3, city, state, zipCode, netID, email)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "uin", Value: uin}, {Key: "firstName", Value: firstName}, {Key: "middleName", Value: middleName},
+		{Key: "lastName", Value: lastName}, {Key: "birthDate", Value: birthDate}, {Key: "gender", Value: gender}, {Key: "address1", Value: address1},
+		{Key: "address2", Value: address2}, {Key: "address3", Value: address3}, {Key: "city", Value: city}, {Key: "state", Value: state},
+		{Key: "zipCode", Value: zipCode}, {Key: "netID", Value: netID}, {Key: "email", Value: email}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "raw-sub-account", "", lData, audit)
+
+	return nil
+}
+
 func (app *Application) createAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, accountID, encryptedKey, encryptedBlob, false, nil)

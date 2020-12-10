@@ -5128,6 +5128,98 @@ func (sa *Adapter) FindRawSubAccounts(f *utils.Filter, sortBy string, sortOrder 
 	return result, nil
 }
 
+//UpdateRawSubAcccount updates raw sub account
+func (sa *Adapter) UpdateRawSubAcccount(uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error {
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//get the raw sub account
+		rsaFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
+		var rawSubAccounts []*model.RawSubAccount
+		err = sa.db.rawsubaccounts.FindWithContext(sessionContext, rsaFilter, &rawSubAccounts, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(rawSubAccounts) == 0 {
+			abortTransaction(sessionContext)
+			log.Printf("there is no a sub account for the provided uin - %s", uin)
+			return errors.New("there is no a sub account for the provided uin - " + uin)
+		}
+		rawSubAccount := rawSubAccounts[0]
+
+		//update the sub account for the user if there is a such
+		if rawSubAccount.AccountID != nil {
+			updateSubAccountFilter := bson.D{primitive.E{Key: "accounts.id", Value: *rawSubAccount.AccountID}}
+			updateSubAccount := bson.D{
+				primitive.E{Key: "$set", Value: bson.D{
+					primitive.E{Key: "accounts.$.first_name", Value: firstName},
+					primitive.E{Key: "accounts.$.middle_name", Value: middleName},
+					primitive.E{Key: "accounts.$.last_name", Value: lastName},
+					primitive.E{Key: "accounts.$.birth_date", Value: birthDate},
+					primitive.E{Key: "accounts.$.gender", Value: gender},
+					primitive.E{Key: "accounts.$.address1", Value: address1},
+					primitive.E{Key: "accounts.$.address2", Value: address2},
+					primitive.E{Key: "accounts.$.address3", Value: address3},
+					primitive.E{Key: "accounts.$.city", Value: city},
+					primitive.E{Key: "accounts.$.state", Value: state},
+					primitive.E{Key: "accounts.$.zip_code", Value: zipCode},
+					primitive.E{Key: "accounts.$.email", Value: email},
+				}},
+			}
+
+			_, err := sa.db.users.UpdateOneWithContext(sessionContext, updateSubAccountFilter, updateSubAccount, nil)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+		}
+
+		//update the raw sub account
+		rsaSubAccountUpdateFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
+		rsaSubAccountUpdate := bson.D{
+			primitive.E{Key: "$set", Value: bson.D{
+				primitive.E{Key: "first_name", Value: firstName},
+				primitive.E{Key: "middle_name", Value: middleName},
+				primitive.E{Key: "last_name", Value: lastName},
+				primitive.E{Key: "birth_date", Value: birthDate},
+				primitive.E{Key: "gender", Value: gender},
+				primitive.E{Key: "address1", Value: address1},
+				primitive.E{Key: "address2", Value: address2},
+				primitive.E{Key: "address3", Value: address3},
+				primitive.E{Key: "city", Value: city},
+				primitive.E{Key: "state", Value: state},
+				primitive.E{Key: "zip_code", Value: zipCode},
+				primitive.E{Key: "net_id", Value: netID},
+				primitive.E{Key: "email", Value: email},
+			}},
+		}
+		_, err = sa.db.rawsubaccounts.UpdateOneWithContext(sessionContext, rsaSubAccountUpdateFilter, rsaSubAccountUpdate, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {
 	if list == nil {
 		return false

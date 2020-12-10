@@ -5005,9 +5005,20 @@ type updateRawSubAccountRequest struct {
 	ZipCode    string  `json:"zip_code"`
 	NetID      string  `json:"net_id"`
 	Email      string  `json:"email"`
-}
+} // @name updateRawSubAccountRequest
 
 //UpdateSubAccount updates sub account
+// @Description Updates a sub account.
+// @Tags Admin
+// @ID UpdateSubAccount
+// @Accept json
+// @Produce json
+// @Param data body updateRawSubAccountRequest true "body data"
+// @Param uin path string true "UIN"
+// @Success 200 {string} Successfully updated
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/raw-sub-accounts/uin/{id} [put]
 func (h AdminApisHandler) UpdateSubAccount(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uin := params["uin"]

@@ -1486,6 +1486,37 @@ definitions:
     - manual_test
     - provider_name
     type: object
+  updateRawSubAccountRequest:
+    properties:
+      address1:
+        type: string
+      address2:
+        type: string
+      address3:
+        type: string
+      audit:
+        type: string
+      birth_date:
+        type: string
+      city:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      last_name:
+        type: string
+      middle_name:
+        type: string
+      net_id:
+        type: string
+      state:
+        type: string
+      zip_code:
+        type: string
+    type: object
   updateResourceRequest:
     properties:
       audit:
@@ -2857,6 +2888,36 @@ paths:
             items:
               $ref: '#/definitions/RawSubAccount'
             type: array
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/raw-sub-accounts/uin/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates a sub account.
+      operationId: UpdateSubAccount
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateRawSubAccountRequest'
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []

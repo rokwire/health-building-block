@@ -1669,7 +1669,7 @@ func (app *Application) deleteAccessRule(current model.User, group string, ID st
 }
 
 func (app *Application) getUserByExternalID(externalID string) (*model.User, error) {
-	user, err := app.storage.FindUserByExternalID(externalID)
+	user, err := app.storage.FindUserAccountsByExternalID(externalID)
 	if err != nil {
 		return nil, err
 	}
@@ -1776,9 +1776,76 @@ func (app *Application) deleteAllRosters(current model.User, group string) error
 	return nil
 }
 
-func (app *Application) createAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
+func (app *Application) createRawSubAccountItems(current model.User, group string, audit *string, items []model.RawSubAccount) error {
+	err := app.storage.CreateRawSubAccountItems(items)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "items", Value: fmt.Sprintf("%+v", items)}}
+	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "raw-sub-account", "", lData, audit)
+
+	return nil
+}
+
+func (app *Application) getRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error) {
+	rawSubAccounts, err := app.storage.FindRawSubAccounts(filter, sortBy, sortOrder, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	return rawSubAccounts, nil
+}
+
+func (app *Application) updateRawSubAccount(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error {
+	err := app.storage.UpdateRawSubAcccount(uin, firstName, middleName, lastName, birthDate, gender, address1,
+		address2, address3, city, state, zipCode, netID, email)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	lData := []AuditDataEntry{{Key: "uin", Value: uin}, {Key: "firstName", Value: firstName}, {Key: "middleName", Value: middleName},
+		{Key: "lastName", Value: lastName}, {Key: "birthDate", Value: birthDate}, {Key: "gender", Value: gender}, {Key: "address1", Value: address1},
+		{Key: "address2", Value: address2}, {Key: "address3", Value: address3}, {Key: "city", Value: city}, {Key: "state", Value: state},
+		{Key: "zipCode", Value: zipCode}, {Key: "netID", Value: netID}, {Key: "email", Value: email}}
+	defer app.audit.LogUpdateEvent(userIdentifier, userInfo, group, "raw-sub-account", "", lData, audit)
+
+	return nil
+}
+
+func (app *Application) deleteRawSubAccountByUIN(current model.User, group string, uin string) error {
+	err := app.storage.DeleteRawSubAccountByUIN(uin)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "raw-sub-account", fmt.Sprintf("uin:%s", uin))
+
+	return nil
+}
+
+func (app *Application) deleteAllRawSubAccounts(current model.User, group string) error {
+	err := app.storage.DeleteAllSubAccounts()
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "raw-sub-account", "all")
+
+	return nil
+}
+
+func (app *Application) createAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
-	item, user, err := app.storage.CreateAdminCTest(providerID, userID, encryptedKey, encryptedBlob, false, nil)
+	item, user, err := app.storage.CreateAdminCTest(providerID, accountID, encryptedKey, encryptedBlob, false, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1809,7 +1876,7 @@ func (app *Application) createAction(current model.User, group string, audit *st
 
 	//audit
 	userIdentifier, userInfo := current.GetLogData()
-	lData := []AuditDataEntry{{Key: "providerID", Value: providerID}, {Key: "userID", Value: userID},
+	lData := []AuditDataEntry{{Key: "providerID", Value: providerID}, {Key: "accountID", Value: accountID},
 		{Key: "encryptedKey", Value: encryptedKey}, {Key: "encryptedBlob", Value: encryptedBlob}}
 	defer app.audit.LogCreateEvent(userIdentifier, userInfo, group, "action", item.ID, lData, audit)
 

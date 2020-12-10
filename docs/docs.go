@@ -237,7 +237,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/CTest"
+                            "$ref": "#/definitions/model.CTest"
                         }
                     }
                 }
@@ -1935,6 +1935,229 @@ var doc = `{
                         "type": "string",
                         "description": "ID",
                         "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfuly deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/raw-sub-account-items": {
+            "post": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Creates sub account items",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "CreateSubAccountItems",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createRawSubAccountItemsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/raw-sub-accounts": {
+            "get": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Gives the sub accounts matching filters, sorted, and paginated",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "GetSubAccounts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Phone",
+                        "name": "phone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort By",
+                        "name": "sortBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Order By",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/RawSubAccount"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Deletes all sub accounts",
+                "consumes": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "DeleteAllSubAccounts",
+                "responses": {
+                    "200": {
+                        "description": "Successfuly deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/raw-sub-accounts/uin/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Updates a sub account.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "UpdateSubAccount",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/updateRawSubAccountRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/raw-sub-accounts/uin/{uin}": {
+            "delete": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Deletes a sub account by uin",
+                "consumes": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "DeleteSubAccountByUIN",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
                         "in": "path",
                         "required": true
                     }
@@ -3674,6 +3897,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "grant/deny building access",
@@ -3823,6 +4049,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Gets not processed ctests for a user.",
@@ -3847,7 +4076,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/CTest"
+                                "$ref": "#/definitions/model.CTest"
                             }
                         }
                     }
@@ -3894,6 +4123,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Deletes all ctests for a user",
@@ -3919,6 +4151,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Mark ctest as processed.",
@@ -3954,7 +4189,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/CTest"
+                            "$ref": "#/definitions/model.CTest"
                         }
                     }
                 }
@@ -4786,6 +5021,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Gives the uin override for the user",
@@ -4809,6 +5047,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Creates an uin override or updates it if already created",
@@ -4957,6 +5198,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Gets the status for the current user for a specific app version",
@@ -4994,6 +5238,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Updates the status for the user for a specific app version. it creates it if not already created.",
@@ -5037,6 +5284,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Deletes the status for the user for a specific app version.",
@@ -5070,6 +5320,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Gets all histories for the current user user",
@@ -5086,7 +5339,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/History"
+                                "$ref": "#/definitions/model.EHistory"
                             }
                         }
                     }
@@ -5096,6 +5349,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "\"date\", \"type\", \"encrypted_key\" and \"encrypted_blob\" are mandatory fields. When the type is \"unverified_manual_test\" then the client must pass also \"encrypted_image_key\", \"encrypted_image_blob\" and (\"location_id\" or \"county_id\").",
@@ -5124,7 +5380,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/History"
+                            "$ref": "#/definitions/model.EHistory"
                         }
                     }
                 }
@@ -5133,6 +5389,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Deletes the history items for an user.",
@@ -5158,6 +5417,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "\"date\", \"encrypted_key\" and \"encrypted_blob\" are optional. If a field is omitted then it will not be updated.",
@@ -5193,7 +5455,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/History"
+                            "$ref": "#/definitions/model.EHistory"
                         }
                     }
                 }
@@ -5204,6 +5466,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Gets the status for the current user",
@@ -5234,6 +5499,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Updates the status for the user. it creates it if not already created.",
@@ -5272,6 +5540,9 @@ var doc = `{
                 "security": [
                     {
                         "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
                     }
                 ],
                 "description": "Deletes the status for the user.",
@@ -5405,6 +5676,62 @@ var doc = `{
                 }
             }
         },
+        "Account": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "address1": {
+                    "type": "string"
+                },
+                "address2": {
+                    "type": "string"
+                },
+                "address3": {
+                    "type": "string"
+                },
+                "birth_date": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "external_id": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "middle_name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "zip_code": {
+                    "type": "string"
+                }
+            }
+        },
         "AuditEntity": {
             "type": "object",
             "properties": {
@@ -5433,38 +5760,6 @@ var doc = `{
                     "type": "string"
                 },
                 "user_info": {
-                    "type": "string"
-                }
-            }
-        },
-        "CTest": {
-            "type": "object",
-            "properties": {
-                "date_created": {
-                    "type": "string"
-                },
-                "date_updated": {
-                    "type": "string"
-                },
-                "encrypted_blob": {
-                    "type": "string"
-                },
-                "encrypted_key": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "order_number": {
-                    "type": "string"
-                },
-                "processed": {
-                    "type": "boolean"
-                },
-                "provider_id": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -5631,29 +5926,6 @@ var doc = `{
                 }
             }
         },
-        "History": {
-            "type": "object",
-            "properties": {
-                "date": {
-                    "type": "string"
-                },
-                "encrypted_blob": {
-                    "type": "string"
-                },
-                "encrypted_key": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
         "Location": {
             "type": "object",
             "properties": {
@@ -5725,6 +5997,9 @@ var doc = `{
         "ManualTest": {
             "type": "object",
             "properties": {
+                "account_id": {
+                    "type": "string"
+                },
                 "county_id": {
                     "type": "string"
                 },
@@ -5837,6 +6112,62 @@ var doc = `{
                 }
             }
         },
+        "RawSubAccount": {
+            "type": "object",
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                },
+                "address1": {
+                    "type": "string"
+                },
+                "address2": {
+                    "type": "string"
+                },
+                "address3": {
+                    "type": "string"
+                },
+                "birth_date": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "middle_name": {
+                    "type": "string"
+                },
+                "net_id": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "primary_account": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "uin": {
+                    "type": "string"
+                },
+                "zip_code": {
+                    "type": "string"
+                }
+            }
+        },
         "Resource": {
             "type": "object",
             "properties": {
@@ -5880,6 +6211,9 @@ var doc = `{
         "Status": {
             "type": "object",
             "properties": {
+                "account_id": {
+                    "type": "string"
+                },
                 "app_version": {
                     "type": "string"
                 },
@@ -5896,9 +6230,6 @@ var doc = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -6076,6 +6407,12 @@ var doc = `{
         "User": {
             "type": "object",
             "properties": {
+                "accounts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Account"
+                    }
+                },
                 "consent": {
                     "type": "boolean"
                 },
@@ -6087,6 +6424,9 @@ var doc = `{
                 },
                 "exposure_notification": {
                     "type": "boolean"
+                },
+                "external_id": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "string"
@@ -6162,12 +6502,15 @@ var doc = `{
         "createActionRequest": {
             "type": "object",
             "required": [
+                "account_id",
                 "encrypted_blob",
                 "encrypted_key",
-                "provider_id",
-                "user_id"
+                "provider_id"
             ],
             "properties": {
+                "account_id": {
+                    "type": "string"
+                },
                 "audit": {
                     "type": "string"
                 },
@@ -6178,9 +6521,6 @@ var doc = `{
                     "type": "string"
                 },
                 "provider_id": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -6590,6 +6930,79 @@ var doc = `{
                 },
                 "provider_name": {
                     "type": "string"
+                }
+            }
+        },
+        "createRawSubAccountItemsRequest": {
+            "type": "object",
+            "properties": {
+                "audit": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "address1": {
+                                "type": "string"
+                            },
+                            "address2": {
+                                "type": "string"
+                            },
+                            "address3": {
+                                "type": "string"
+                            },
+                            "birth_date": {
+                                "type": "string"
+                            },
+                            "city": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string"
+                            },
+                            "first_name": {
+                                "type": "string"
+                            },
+                            "gender": {
+                                "type": "string"
+                            },
+                            "last_name": {
+                                "type": "string"
+                            },
+                            "middle_name": {
+                                "type": "string"
+                            },
+                            "net_id": {
+                                "type": "string"
+                            },
+                            "phone": {
+                                "type": "string",
+                                "required": [
+                                    "phone"
+                                ]
+                            },
+                            "primary_account": {
+                                "type": "string",
+                                "required": [
+                                    "primary_account"
+                                ]
+                            },
+                            "state": {
+                                "type": "string"
+                            },
+                            "uin": {
+                                "type": "string",
+                                "required": [
+                                    "uin"
+                                ]
+                            },
+                            "zip_code": {
+                                "type": "string"
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -7021,6 +7434,61 @@ var doc = `{
                 }
             }
         },
+        "model.CTest": {
+            "type": "object",
+            "properties": {
+                "date_created": {
+                    "type": "string"
+                },
+                "date_updated": {
+                    "type": "string"
+                },
+                "encrypted_blob": {
+                    "type": "string"
+                },
+                "encrypted_key": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "order_number": {
+                    "type": "string"
+                },
+                "processed": {
+                    "type": "boolean"
+                },
+                "provider_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EHistory": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "encrypted_blob": {
+                    "type": "string"
+                },
+                "encrypted_key": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "processManualTestRequest": {
             "type": "object",
             "required": [
@@ -7364,6 +7832,53 @@ var doc = `{
                 }
             }
         },
+        "updateRawSubAccountRequest": {
+            "type": "object",
+            "properties": {
+                "address1": {
+                    "type": "string"
+                },
+                "address2": {
+                    "type": "string"
+                },
+                "address3": {
+                    "type": "string"
+                },
+                "audit": {
+                    "type": "string"
+                },
+                "birth_date": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "middle_name": {
+                    "type": "string"
+                },
+                "net_id": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "zip_code": {
+                    "type": "string"
+                }
+            }
+        },
         "updateResourceRequest": {
             "type": "object",
             "properties": {
@@ -7570,6 +8085,11 @@ var doc = `{
             "type": "apiKey",
             "name": "Authorization",
             "in": "header (add Bearer prefix to the Authorization value)"
+        },
+        "AppUserAccountAuth": {
+            "type": "apiKey",
+            "name": "ROKWIRE-ACC-ID",
+            "in": "header"
         },
         "AppUserAuth": {
             "type": "apiKey",

@@ -40,21 +40,21 @@ type Services interface {
 
 	GetNews(limit int64) ([]*model.News, error)
 
-	GetEStatusByUserID(userID string, appVersion *string) (*model.EStatus, error)
-	CreateOrUpdateEStatus(userID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error)
-	DeleteEStatus(userID string, appVersion *string) error
+	GetEStatusByAccountID(accountID string, appVersion *string) (*model.EStatus, error)
+	CreateOrUpdateEStatus(accountID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error)
+	DeleteEStatus(accountID string, appVersion *string) error
 
-	GetEHistoriesByUserID(userID string) ([]*model.EHistory, error)
-	CreateЕHistory(userID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error)
-	CreateManualЕHistory(userID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
+	GetEHistoriesByAccountID(accountID string) ([]*model.EHistory, error)
+	CreateЕHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error)
+	CreateManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 		countyID *string, locationID *string) (*model.EHistory, error)
-	DeleteEHitories(userID string) (int64, error)
-	UpdateEHistory(userID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error)
+	DeleteEHitories(accountID string) (int64, error)
+	UpdateEHistory(accountID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error)
 
-	GetCTests(urrent model.User, processed bool) ([]*model.CTest, []*model.Provider, error)
+	GetCTests(account model.Account, processed bool) ([]*model.CTest, []*model.Provider, error)
 	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error
-	DeleteCTests(userID string) (int64, error)
-	UpdateCTest(current model.User, ID string, processed bool) (*model.CTest, error)
+	DeleteCTests(accountID string) (int64, error)
+	UpdateCTest(account model.Account, ID string, processed bool) (*model.CTest, error)
 
 	GetProviders() ([]*model.Provider, error)
 
@@ -81,15 +81,15 @@ type Services interface {
 	AddTraceReport(items []model.TraceExposure) (int, error)
 	GetExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)
 
-	GetUINOverride(current model.User) (*model.UINOverride, error)
-	CreateOrUpdateUINOverride(current model.User, interval int, category *string, expiration *time.Time) error
+	GetUINOverride(account model.Account) (*model.UINOverride, error)
+	CreateOrUpdateUINOverride(account model.Account, interval int, category *string, expiration *time.Time) error
 
 	GetExtUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
 	CreateExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error)
 	UpdateExtUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error)
 	DeleteExtUINOverride(uin string) error
 
-	SetUINBuildingAccess(current model.User, date time.Time, access string) error
+	SetUINBuildingAccess(account model.Account, date time.Time, access string) error
 	GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
 
 	GetRosterByPhone(phone string) (map[string]string, error)
@@ -135,53 +135,53 @@ func (s *servicesImpl) GetNews(limit int64) ([]*model.News, error) {
 	return s.app.getNews(limit)
 }
 
-func (s *servicesImpl) GetEStatusByUserID(userID string, appVersion *string) (*model.EStatus, error) {
-	return s.app.getEStatusByUserID(userID, appVersion)
+func (s *servicesImpl) GetEStatusByAccountID(accountID string, appVersion *string) (*model.EStatus, error) {
+	return s.app.getEStatusByAccountID(accountID, appVersion)
 }
 
-func (s *servicesImpl) CreateOrUpdateEStatus(userID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
-	return s.app.createOrUpdateEStatus(userID, appVersion, date, encryptedKey, encryptedBlob)
+func (s *servicesImpl) CreateOrUpdateEStatus(accountID string, appVersion *string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
+	return s.app.createOrUpdateEStatus(accountID, appVersion, date, encryptedKey, encryptedBlob)
 }
 
-func (s *servicesImpl) DeleteEStatus(userID string, appVersion *string) error {
-	return s.app.deleteEStatus(userID, appVersion)
+func (s *servicesImpl) DeleteEStatus(accountID string, appVersion *string) error {
+	return s.app.deleteEStatus(accountID, appVersion)
 }
 
-func (s *servicesImpl) GetEHistoriesByUserID(userID string) ([]*model.EHistory, error) {
-	return s.app.getEHistoriesByUserID(userID)
+func (s *servicesImpl) GetEHistoriesByAccountID(accountID string) ([]*model.EHistory, error) {
+	return s.app.getEHistoriesByAccountID(accountID)
 }
 
-func (s *servicesImpl) CreateЕHistory(userID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
-	return s.app.createЕHistory(userID, date, eType, encryptedKey, encryptedBlob)
+func (s *servicesImpl) CreateЕHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
+	return s.app.createЕHistory(accountID, date, eType, encryptedKey, encryptedBlob)
 }
 
-func (s *servicesImpl) CreateManualЕHistory(userID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
+func (s *servicesImpl) CreateManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 	countyID *string, locationID *string) (*model.EHistory, error) {
-	return s.app.createManualЕHistory(userID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
+	return s.app.createManualЕHistory(accountID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
 }
 
-func (s *servicesImpl) DeleteEHitories(userID string) (int64, error) {
-	return s.app.deleteEHitories(userID)
+func (s *servicesImpl) DeleteEHitories(accountID string) (int64, error) {
+	return s.app.deleteEHitories(accountID)
 }
 
-func (s *servicesImpl) UpdateEHistory(userID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error) {
-	return s.app.updateEHistory(userID, ID, date, encryptedKey, encryptedBlob)
+func (s *servicesImpl) UpdateEHistory(accountID string, ID string, date *time.Time, encryptedKey *string, encryptedBlob *string) (*model.EHistory, error) {
+	return s.app.updateEHistory(accountID, ID, date, encryptedKey, encryptedBlob)
 }
 
-func (s *servicesImpl) GetCTests(current model.User, processed bool) ([]*model.CTest, []*model.Provider, error) {
-	return s.app.getCTests(current, processed)
+func (s *servicesImpl) GetCTests(account model.Account, processed bool) ([]*model.CTest, []*model.Provider, error) {
+	return s.app.getCTests(account, processed)
 }
 
 func (s *servicesImpl) CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, orderNumber *string) error {
 	return s.app.createExternalCTest(providerID, uin, encryptedKey, encryptedBlob, orderNumber)
 }
 
-func (s *servicesImpl) DeleteCTests(userID string) (int64, error) {
-	return s.app.deleteCTests(userID)
+func (s *servicesImpl) DeleteCTests(accountID string) (int64, error) {
+	return s.app.deleteCTests(accountID)
 }
 
-func (s *servicesImpl) UpdateCTest(current model.User, ID string, processed bool) (*model.CTest, error) {
-	return s.app.updateCTest(current, ID, processed)
+func (s *servicesImpl) UpdateCTest(account model.Account, ID string, processed bool) (*model.CTest, error) {
+	return s.app.updateCTest(account, ID, processed)
 }
 
 func (s *servicesImpl) GetProviders() ([]*model.Provider, error) {
@@ -252,12 +252,12 @@ func (s *servicesImpl) GetExposures(timestamp *int64, dateAdded *int64) ([]model
 	return s.app.getExposures(timestamp, dateAdded)
 }
 
-func (s *servicesImpl) GetUINOverride(current model.User) (*model.UINOverride, error) {
-	return s.app.getUINOverride(current)
+func (s *servicesImpl) GetUINOverride(account model.Account) (*model.UINOverride, error) {
+	return s.app.getUINOverride(account)
 }
 
-func (s *servicesImpl) CreateOrUpdateUINOverride(current model.User, interval int, category *string, expiration *time.Time) error {
-	return s.app.createOrUpdateUINOverride(current, interval, category, expiration)
+func (s *servicesImpl) CreateOrUpdateUINOverride(account model.Account, interval int, category *string, expiration *time.Time) error {
+	return s.app.createOrUpdateUINOverride(account, interval, category, expiration)
 }
 
 func (s *servicesImpl) GetExtUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error) {
@@ -276,8 +276,8 @@ func (s *servicesImpl) DeleteExtUINOverride(uin string) error {
 	return s.app.deleteExtUINOverride(uin)
 }
 
-func (s *servicesImpl) SetUINBuildingAccess(current model.User, date time.Time, access string) error {
-	return s.app.setUINBuildingAccess(current, date, access)
+func (s *servicesImpl) SetUINBuildingAccess(account model.Account, date time.Time, access string) error {
+	return s.app.setUINBuildingAccess(account, date, access)
 }
 
 func (s *servicesImpl) GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error) {
@@ -401,9 +401,16 @@ type Administration interface {
 	DeleteRosterByUIN(current model.User, group string, uin string) error
 	DeleteAllRosters(current model.User, group string) error
 
+	CreateRawSubAccountItems(current model.User, group string, audit *string, items []model.RawSubAccount) error
+	GetRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error)
+	UpdateRawSubAccount(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+		address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error
+	DeleteRawSubAccountByUIN(current model.User, group string, uin string) error
+	DeleteAllRawSubAccounts(current model.User, group string) error
+
 	GetUserByExternalID(externalID string) (*model.User, error)
 
-	CreateAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
+	CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
 
 	GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string, clientData *string,
 		createdAt *time.Time, sortBy *string, asc *bool, limit *int64) ([]*AuditEntity, error)
@@ -752,8 +759,30 @@ func (s *administrationImpl) DeleteAllRosters(current model.User, group string) 
 	return s.app.deleteAllRosters(current, group)
 }
 
-func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, userID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
-	return s.app.createAction(current, group, audit, providerID, userID, encryptedKey, encryptedBlob)
+func (s *administrationImpl) CreateRawSubAccountItems(current model.User, group string, audit *string, items []model.RawSubAccount) error {
+	return s.app.createRawSubAccountItems(current, group, audit, items)
+}
+
+func (s *administrationImpl) GetRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error) {
+	return s.app.getRawSubAccounts(filter, sortBy, sortOrder, limit, offset)
+}
+
+func (s *administrationImpl) UpdateRawSubAccount(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error {
+	return s.app.updateRawSubAccount(current, group, audit, uin, firstName, middleName, lastName, birthDate, gender, address1, address2,
+		address3, city, state, zipCode, netID, email)
+}
+
+func (s *administrationImpl) DeleteRawSubAccountByUIN(current model.User, group string, uin string) error {
+	return s.app.deleteRawSubAccountByUIN(current, group, uin)
+}
+
+func (s *administrationImpl) DeleteAllRawSubAccounts(current model.User, group string) error {
+	return s.app.deleteAllRawSubAccounts(current, group)
+}
+
+func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
+	return s.app.createAction(current, group, audit, providerID, accountID, encryptedKey, encryptedBlob)
 }
 
 func (s *administrationImpl) GetAudit(current model.User, group string, userIdentifier *string, entity *string, entityID *string, operation *string,
@@ -770,11 +799,17 @@ type Storage interface {
 
 	ClearUserData(userID string) error
 	FindUser(userID string) (*model.User, error)
+	//it does not look the accounts, it looks just the primary user
 	FindUserByExternalID(externalID string) (*model.User, error)
+	//it looks primary user + accounts
+	FindUserAccountsByExternalID(externalID string) (*model.User, error)
 	FindUserByShibbolethID(shibbolethID string) (*model.User, error)
 	FindUsersByRePost(rePost bool) ([]*model.User, error)
-	CreateUser(shibboAuth *model.ShibbolethAuth, externalID string,
+	CreateAppUser(externalID string,
 		uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error)
+	CreateAdminUser(shibboAuth *model.ShibbolethAuth, externalID string,
+		uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error)
+	CreateDefaultAccount(userID string) (*model.User, error)
 	SaveUser(user *model.User) error
 
 	ReadCovid19Config() (*model.COVID19Config, error)
@@ -796,16 +831,16 @@ type Storage interface {
 	FindNews(ID string) (*model.News, error)
 	SaveNews(news *model.News) error
 
-	CreateEStatus(appVersion *string, userID string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error)
-	FindEStatusByUserID(appVersion *string, userID string) (*model.EStatus, error)
+	CreateEStatus(appVersion *string, accountID string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error)
+	FindEStatusByAccountID(appVersion *string, accountID string) (*model.EStatus, error)
 	SaveEStatus(status *model.EStatus) error
-	DeleteEStatus(appVersion *string, userID string) error
+	DeleteEStatus(appVersion *string, accountID string) error
 
-	CreateEHistory(userID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error)
-	CreateManualЕHistory(userID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
+	CreateEHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error)
+	CreateManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 		countyID *string, locationID *string) (*model.EHistory, error)
-	FindEHistories(userID string) ([]*model.EHistory, error)
-	DeleteEHistories(userID string) (int64, error)
+	FindEHistories(accountID string) ([]*model.EHistory, error)
+	DeleteEHistories(accountD string) (int64, error)
 	FindEHistory(ID string) (*model.EHistory, error)
 	SaveEHistory(history *model.EHistory) error
 
@@ -816,11 +851,11 @@ type Storage interface {
 	DeleteProvider(ID string) error
 
 	CreateExternalCTest(providerID string, uin string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
-	CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
+	CreateAdminCTest(providerID string, accountID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error)
 	FindCTest(ID string) (*model.CTest, error)
-	FindCTests(userID string, processed bool) ([]*model.CTest, error)
+	FindCTests(accountID string, processed bool) ([]*model.CTest, error)
 	FindCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error)
-	DeleteCTests(userID string) (int64, error)
+	DeleteCTests(accountID string) (int64, error)
 	SaveCTest(ctest *model.CTest) error
 
 	FindCounties(f *utils.Filter) ([]*model.County, error)
@@ -932,6 +967,13 @@ type Storage interface {
 	DeleteRosterByPhone(phone string) error
 	DeleteRosterByUIN(uin string) error
 	DeleteAllRosters() error
+
+	CreateRawSubAccountItems(items []model.RawSubAccount) error
+	FindRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error)
+	UpdateRawSubAcccount(uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+		address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error
+	DeleteRawSubAccountByUIN(uin string) error
+	DeleteAllSubAccounts() error
 }
 
 //StorageListener listenes for change data storage events
@@ -939,6 +981,7 @@ type StorageListener interface {
 	OnConfigsChanged()
 	OnAppVersionsChanged()
 	OnRostersChanged()
+	OnRawSubAccountsChanged()
 }
 
 type storageListenerImpl struct {
@@ -958,6 +1001,11 @@ func (a *storageListenerImpl) OnAppVersionsChanged() {
 func (a *storageListenerImpl) OnRostersChanged() {
 	//notify that th rosters has been changed
 	a.app.notifyListeners("onRostersUpdated", nil)
+}
+
+func (a *storageListenerImpl) OnRawSubAccountsChanged() {
+	//notify that the raw sub accounts have been changed
+	a.app.notifyListeners("onRawSubAccountsUpdated", nil)
 }
 
 //DataProvider is used by core to access needed data
@@ -1035,4 +1083,5 @@ type ApplicationListener interface {
 	OnClearUserData(user model.User)
 	OnUserUpdated(user model.User)
 	OnRostersUpdated()
+	OnSubAccountsUpdated()
 }

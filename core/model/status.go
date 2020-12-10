@@ -28,4 +28,4 @@ type EStatus struct {
 	EncryptedBlob string     `json:"encrypted_blob" bson:"encrypted_blob"`
 	DateUpdated   *time.Time `json:"date_updated" bson:"date_updated"`
 	AppVersion    *string    `json:"app_version" bson:"app_version"`
-} // @name Status
+}

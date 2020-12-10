@@ -289,10 +289,40 @@ func (sa *Adapter) ClearUserData(userID string) error {
 			return err
 		}
 
-		// delete the user data
-		err = sa.deleteUserData(sessionContext, userID)
+		//get the user
+		uFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
 		if err != nil {
 			abortTransaction(sessionContext)
+			return err
+		}
+		if len(usersResult) == 0 {
+			abortTransaction(sessionContext)
+			log.Printf("there is no a user for the provided user id - %s %s", userID, err)
+			return err
+		}
+		user := usersResult[0]
+
+		//remove the user accounts data
+		if len(user.Accounts) > 0 {
+			for _, account := range user.Accounts {
+
+				// delete the account data
+				err = sa.deleteAccountData(sessionContext, account)
+				if err != nil {
+					abortTransaction(sessionContext)
+					return err
+				}
+			}
+		}
+
+		//remove from users
+		usersFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+		_, err = sa.db.users.DeleteOneWithContext(sessionContext, usersFilter, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			log.Printf("error deleting user record for a user - %s", err)
 			return err
 		}
 
@@ -325,9 +355,27 @@ func (sa *Adapter) FindUser(ID string) (*model.User, error) {
 	return result[0], nil
 }
 
-//FindUserByExternalID finds the user for the provided external id
+//FindUserByExternalID finds the user for the provided external id. It does not look in the accounts
 func (sa *Adapter) FindUserByExternalID(externalID string) (*model.User, error) {
 	filter := bson.D{primitive.E{Key: "external_id", Value: externalID}}
+	var result []*model.User
+	err := sa.db.users.Find(filter, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil || len(result) == 0 {
+		//not found
+		return nil, nil
+	}
+	return result[0], nil
+}
+
+//FindUserAccountsByExternalID looks in primary user + accounts
+func (sa *Adapter) FindUserAccountsByExternalID(externalID string) (*model.User, error) {
+	filter := bson.D{primitive.E{Key: "$or", Value: []interface{}{
+		bson.D{primitive.E{Key: "external_id", Value: externalID}},
+		bson.D{primitive.E{Key: "accounts.external_id", Value: externalID}},
+	}}}
 	var result []*model.User
 	err := sa.db.users.Find(filter, &result, nil)
 	if err != nil {
@@ -366,26 +414,176 @@ func (sa *Adapter) FindUsersByRePost(rePost bool) ([]*model.User, error) {
 	return result, nil
 }
 
-//CreateUser creates an user
-func (sa *Adapter) CreateUser(shibboAuth *model.ShibbolethAuth, externalID string,
+//CreateAppUser creates an app user
+func (sa *Adapter) CreateAppUser(externalID string,
 	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
-	id, err := uuid.NewUUID()
+	var user *model.User
+
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			log.Printf("error starting a transaction - %s", err)
+			return err
+		}
+
+		userID, _ := uuid.NewUUID()
+
+		var accounts []model.Account
+
+		//add default account
+		accounts = append(accounts, model.Account{ID: userID.String(), ExternalID: externalID, Default: true, Active: true})
+
+		//check if there are added sub accounts for this user
+		rawSubAccountsFilter := bson.D{primitive.E{Key: "primary_account", Value: externalID}}
+		var rawSubAccounts []*model.RawSubAccount
+		err = sa.db.rawsubaccounts.FindWithContext(sessionContext, rawSubAccountsFilter, &rawSubAccounts, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(rawSubAccounts) > 0 {
+			//if there are, then hook them up
+			for _, rsa := range rawSubAccounts {
+				subAccID, _ := uuid.NewUUID()
+				newSubAccount := model.Account{ID: subAccID.String(), ExternalID: rsa.UIN, Default: false, Active: true, FirstName: rsa.FirstName,
+					MiddleName: rsa.MiddleName, LastName: rsa.LastName, BirthDate: rsa.BirthDate, Gender: rsa.Gender, Address1: rsa.Address1,
+					Address2: rsa.Address2, Address3: rsa.Address3, City: rsa.City, State: rsa.State, ZipCode: rsa.ZipCode, Phone: rsa.Phone,
+					Email: rsa.Email}
+
+				accounts = append(accounts, newSubAccount)
+
+				//update the raw sub account with the inserted account id
+				rawSubAccountUpdateFilter := bson.D{primitive.E{Key: "uin", Value: rsa.UIN}}
+				rawSubAccountUpdate := bson.D{
+					primitive.E{Key: "$set", Value: bson.D{
+						primitive.E{Key: "account_id", Value: subAccID.String()},
+					}},
+				}
+				_, err := sa.db.rawsubaccounts.UpdateOneWithContext(sessionContext, rawSubAccountUpdateFilter, rawSubAccountUpdate, nil)
+				if err != nil {
+					abortTransaction(sessionContext)
+					return err
+				}
+			}
+		}
+
+		//insert the created user
+		user = &model.User{ID: userID.String(), ExternalID: externalID, UUID: userUUID,
+			PublicKey: publicKey, Consent: consent, ExposureNotification: exposureNotification, RePost: rePost,
+			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Accounts: accounts, DateCreated: time.Now()}
+		_, err = sa.db.users.InsertOneWithContext(sessionContext, user)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		//commit the transaction
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
+
+	return user, nil
+}
+
+//CreateAdminUser creates an admin user
+func (sa *Adapter) CreateAdminUser(shibboAuth *model.ShibbolethAuth, externalID string,
+	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
+
+	id, _ := uuid.NewUUID()
 
 	dateCreated := time.Now()
 
 	user := model.User{ID: id.String(), ShibbolethAuth: shibboAuth, ExternalID: externalID, UUID: userUUID,
 		PublicKey: publicKey, Consent: consent, ExposureNotification: exposureNotification, RePost: rePost,
 		EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, DateCreated: dateCreated}
-	_, err = sa.db.users.InsertOne(&user)
+	_, err := sa.db.users.InsertOne(&user)
 	if err != nil {
 		return nil, err
 	}
 
 	//return the inserted item
 	return &user, nil
+}
+
+//CreateDefaultAccount creates a default account for the user
+func (sa *Adapter) CreateDefaultAccount(userID string) (*model.User, error) {
+	var user *model.User
+
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			log.Printf("error starting a transaction - %s", err)
+			return err
+		}
+
+		// find the user
+		findFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+		var usersResult []*model.User
+		err = sa.db.users.FindWithContext(sessionContext, findFilter, &usersResult, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if usersResult == nil || len(usersResult) == 0 {
+			abortTransaction(sessionContext)
+			return errors.New("there is no an user for the provided id " + userID)
+		}
+		user = usersResult[0]
+
+		// error if already there is a default account
+		if user.HasDefaultAccount() {
+			abortTransaction(sessionContext)
+			return errors.New("there is already a default account for this user " + userID)
+		}
+
+		// update it
+		newAccounts := user.Accounts
+		if newAccounts == nil {
+			//there are no any accounts yet
+			newAccounts = make([]model.Account, 0)
+		}
+		newAccounts = append(newAccounts, model.Account{ID: user.ID, ExternalID: user.ExternalID, Default: true, Active: true})
+		updateFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+		update := bson.D{
+			primitive.E{Key: "$set", Value: bson.D{
+				primitive.E{Key: "accounts", Value: newAccounts},
+			}},
+		}
+		updateResult, err := sa.db.users.UpdateOne(updateFilter, update, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if updateResult.ModifiedCount != 1 {
+			abortTransaction(sessionContext)
+			return errors.New("modifier count != 1")
+		}
+
+		//the updated user is returned
+		user.Accounts = newAccounts
+
+		//commit the transaction
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 //SaveUser saves the user
@@ -681,13 +879,13 @@ func (sa *Adapter) SaveNews(news *model.News) error {
 }
 
 //CreateEStatus creates a new covid19 passport status
-func (sa *Adapter) CreateEStatus(appVersion *string, userID string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
+func (sa *Adapter) CreateEStatus(appVersion *string, accountID string, date *time.Time, encryptedKey string, encryptedBlob string) (*model.EStatus, error) {
 	id, err := uuid.NewUUID()
 	if err != nil {
 		return nil, err
 	}
 
-	status := model.EStatus{ID: id.String(), AppVersion: appVersion, UserID: userID, Date: date, EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob}
+	status := model.EStatus{ID: id.String(), AppVersion: appVersion, UserID: accountID, Date: date, EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob}
 	_, err = sa.db.estatus.InsertOne(&status)
 	if err != nil {
 		return nil, err
@@ -697,9 +895,9 @@ func (sa *Adapter) CreateEStatus(appVersion *string, userID string, date *time.T
 	return &status, nil
 }
 
-//FindEStatusByUserID finds a status by user id
-func (sa *Adapter) FindEStatusByUserID(appVersion *string, userID string) (*model.EStatus, error) {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID},
+//FindEStatusByAccountID finds a status by account id
+func (sa *Adapter) FindEStatusByAccountID(appVersion *string, accountID string) (*model.EStatus, error) {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID},
 		primitive.E{Key: "app_version", Value: appVersion}}
 	var result []*model.EStatus
 	err := sa.db.estatus.Find(filter, &result, nil)
@@ -727,9 +925,9 @@ func (sa *Adapter) SaveEStatus(status *model.EStatus) error {
 	return nil
 }
 
-//DeleteEStatus deletes the status for the user
-func (sa *Adapter) DeleteEStatus(appVersion *string, userID string) error {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID},
+//DeleteEStatus deletes the status for the user account
+func (sa *Adapter) DeleteEStatus(appVersion *string, accountID string) error {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID},
 		primitive.E{Key: "app_version", Value: appVersion}}
 	result, err := sa.db.estatus.DeleteOne(filter, nil)
 	if err != nil {
@@ -737,26 +935,26 @@ func (sa *Adapter) DeleteEStatus(appVersion *string, userID string) error {
 		return err
 	}
 	if result == nil {
-		return errors.New("result is nil forestatus with user id " + userID)
+		return errors.New("result is nil forestatus with account id " + accountID)
 	}
 	deletedCount := result.DeletedCount
 	if deletedCount == 0 {
-		return errors.New("there is no a estatus for user id " + userID)
+		return errors.New("there is no a estatus for account id " + accountID)
 	}
 	if deletedCount > 1 {
-		return errors.New("deleted more than one records for user id " + userID)
+		return errors.New("deleted more than one records for account id " + accountID)
 	}
 	return nil
 }
 
 //CreateEHistory creates a history
-func (sa *Adapter) CreateEHistory(userID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
+func (sa *Adapter) CreateEHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
 	id, err := uuid.NewUUID()
 	if err != nil {
 		return nil, err
 	}
 
-	history := model.EHistory{ID: id.String(), UserID: userID, Date: date, Type: eType,
+	history := model.EHistory{ID: id.String(), UserID: accountID, Date: date, Type: eType,
 		EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob}
 	_, err = sa.db.ehistory.InsertOne(&history)
 	if err != nil {
@@ -768,7 +966,7 @@ func (sa *Adapter) CreateEHistory(userID string, date time.Time, eType string, e
 }
 
 //CreateManualЕHistory creates a history
-func (sa *Adapter) CreateManualЕHistory(userID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
+func (sa *Adapter) CreateManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 	countyID *string, locationID *string) (*model.EHistory, error) {
 	var history model.EHistory
 
@@ -782,7 +980,7 @@ func (sa *Adapter) CreateManualЕHistory(userID string, date time.Time, encrypte
 
 		//1. insert history item
 		historyID, _ := uuid.NewUUID()
-		history = model.EHistory{ID: historyID.String(), UserID: userID, Date: date, Type: "unverified_manual_test",
+		history = model.EHistory{ID: historyID.String(), UserID: accountID, Date: date, Type: "unverified_manual_test",
 			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob}
 		insertedID, err := sa.db.ehistory.InsertOneWithContext(sessionContext, &history)
 		if err != nil {
@@ -792,7 +990,7 @@ func (sa *Adapter) CreateManualЕHistory(userID string, date time.Time, encrypte
 
 		//2. insert manual test item
 		manualTestID, _ := uuid.NewUUID()
-		manualTest := eManualTest{ID: manualTestID.String(), UserID: userID, EHistoryID: insertedID.(string),
+		manualTest := eManualTest{ID: manualTestID.String(), UserID: accountID, EHistoryID: insertedID.(string),
 			LocationID: locationID, CountyID: countyID, EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob,
 			EncryptedImageKey: *encryptedImageKey, EncryptedImageBlob: *encryptedImageBlob, Status: "unverified", DateCreated: time.Now()}
 		_, err = sa.db.emanualtests.InsertOneWithContext(sessionContext, &manualTest)
@@ -816,9 +1014,9 @@ func (sa *Adapter) CreateManualЕHistory(userID string, date time.Time, encrypte
 	return &history, nil
 }
 
-//FindEHistories finds all histories for an user
-func (sa *Adapter) FindEHistories(userID string) ([]*model.EHistory, error) {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+//FindEHistories finds all histories for an user account
+func (sa *Adapter) FindEHistories(accountID string) ([]*model.EHistory, error) {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID}}
 	var result []*model.EHistory
 
 	options := options.Find()
@@ -831,9 +1029,9 @@ func (sa *Adapter) FindEHistories(userID string) ([]*model.EHistory, error) {
 	return result, nil
 }
 
-//DeleteEHistories deletes all histories for an user
-func (sa *Adapter) DeleteEHistories(userID string) (int64, error) {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+//DeleteEHistories deletes all histories for an user account
+func (sa *Adapter) DeleteEHistories(accountID string) (int64, error) {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID}}
 
 	result, err := sa.db.ehistory.DeleteMany(filter, nil)
 	if err != nil {
@@ -1059,8 +1257,11 @@ func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedK
 			return errors.New("there is no a provider for the provided identifier")
 		}
 
-		//2. check if there is a user with the provided uin
-		userFilter := bson.D{primitive.E{Key: "external_id", Value: uin}}
+		//2. check if there is a user with the provided uin - handle the accounts case
+		userFilter := bson.D{primitive.E{Key: "$or", Value: []interface{}{
+			bson.D{primitive.E{Key: "external_id", Value: uin}},
+			bson.D{primitive.E{Key: "accounts.external_id", Value: uin}},
+		}}}
 		var userResult []*model.User
 		err = sa.db.users.FindWithContext(sessionContext, userFilter, &userResult, nil)
 		if err != nil {
@@ -1074,14 +1275,29 @@ func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedK
 		}
 		user = *userResult[0]
 
-		//3. create a ctest
+		//3. find the account id
+		var accountID string
+		if len(user.Accounts) > 0 {
+			for _, acc := range user.Accounts {
+				if acc.ExternalID == uin {
+					accountID = acc.ID
+					break
+				}
+			}
+		}
+		if len(accountID) == 0 {
+			//we can go in a situation where the user does not have any acccount yet.
+			accountID = user.ID
+		}
+
+		//4. create a ctest
 		id, err := uuid.NewUUID()
 		if err != nil {
 			abortTransaction(sessionContext)
 			return err
 		}
 		dateCreated := time.Now()
-		cTest = model.CTest{ID: id.String(), ProviderID: providerID, UserID: user.ID,
+		cTest = model.CTest{ID: id.String(), ProviderID: providerID, UserID: accountID,
 			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Processed: processed, OrderNumber: orderNumber, DateCreated: dateCreated}
 		_, err = sa.db.ctests.InsertOneWithContext(sessionContext, &cTest)
 		if err != nil {
@@ -1089,7 +1305,7 @@ func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedK
 			return err
 		}
 
-		//4. Set the user re-post field as "false"
+		//5. Set the user re-post field as "false"
 		sUserfilter := bson.D{primitive.E{Key: "_id", Value: user.ID}}
 		dateUpdated := time.Now()
 		user.DateUpdated = &dateUpdated
@@ -1116,7 +1332,7 @@ func (sa *Adapter) CreateExternalCTest(providerID string, uin string, encryptedK
 }
 
 //CreateAdminCTest creates an admin ctests record
-func (sa *Adapter) CreateAdminCTest(providerID string, userID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error) {
+func (sa *Adapter) CreateAdminCTest(providerID string, accountID string, encryptedKey string, encryptedBlob string, processed bool, orderNumber *string) (*model.CTest, *model.User, error) {
 	var cTest model.CTest
 	var user model.User
 
@@ -1142,8 +1358,11 @@ func (sa *Adapter) CreateAdminCTest(providerID string, userID string, encryptedK
 			return errors.New("there is no a provider for the provided identifier")
 		}
 
-		//2. check if there is a user with the id
-		userFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
+		//2. check if there is a user with the provided identifier - handle the accounts case
+		userFilter := bson.D{primitive.E{Key: "$or", Value: []interface{}{
+			bson.D{primitive.E{Key: "_id", Value: accountID}},
+			bson.D{primitive.E{Key: "accounts.id", Value: accountID}},
+		}}}
 		var userResult []*model.User
 		err = sa.db.users.FindWithContext(sessionContext, userFilter, &userResult, nil)
 		if err != nil {
@@ -1155,7 +1374,6 @@ func (sa *Adapter) CreateAdminCTest(providerID string, userID string, encryptedK
 			abortTransaction(sessionContext)
 			return errors.New("there is no a user for the provided identifier")
 		}
-		user = *userResult[0]
 
 		//3. create a ctest
 		id, err := uuid.NewUUID()
@@ -1164,7 +1382,7 @@ func (sa *Adapter) CreateAdminCTest(providerID string, userID string, encryptedK
 			return err
 		}
 		dateCreated := time.Now()
-		cTest = model.CTest{ID: id.String(), ProviderID: providerID, UserID: user.ID,
+		cTest = model.CTest{ID: id.String(), ProviderID: providerID, UserID: accountID,
 			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Processed: processed, OrderNumber: orderNumber, DateCreated: dateCreated}
 		_, err = sa.db.ctests.InsertOneWithContext(sessionContext, &cTest)
 		if err != nil {
@@ -1203,9 +1421,9 @@ func (sa *Adapter) FindCTest(ID string) (*model.CTest, error) {
 	return ctest, nil
 }
 
-//FindCTests finds ctests for user and processed
-func (sa *Adapter) FindCTests(userID string, processed bool) ([]*model.CTest, error) {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID},
+//FindCTests finds ctests for user account and processed
+func (sa *Adapter) FindCTests(accountID string, processed bool) ([]*model.CTest, error) {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID},
 		primitive.E{Key: "processed", Value: processed}}
 
 	options := options.Find()
@@ -1219,22 +1437,29 @@ func (sa *Adapter) FindCTests(userID string, processed bool) ([]*model.CTest, er
 	return result, nil
 }
 
-type ctu2Join struct {
-	ID            string     `bson:"_id"`
-	ProviderID    string     `bson:"provider_id"`
-	OrderNumber   *string    `bson:"order_number"`
-	EncryptedKey  string     `bson:"encrypted_key"`
-	EncryptedBlob string     `bson:"encrypted_blob"`
-	Processed     bool       `bson:"processed"`
-	DateCreated   time.Time  `bson:"date_created"`
-	DateUpdated   *time.Time `bson:"date_updated"`
-
-	UserID         string `bson:"user_id"`
-	UserExternalID string `bson:"user_external_id"`
-}
-
 //FindCTestsByExternalUserIDs finds ctests lists for the provided external user IDs
 func (sa *Adapter) FindCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error) {
+	//1. get based on the user
+	ubList, err := sa.findCTBEIDBaesOnUser(externalUserIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	//2. get based on the user accounts
+	uabList, err := sa.findCTBEIDBaesOnUserAccounts(externalUserIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	//3. merge the maps
+	for key, value := range uabList {
+		ubList[key] = value
+	}
+
+	return ubList, nil
+}
+
+func (sa *Adapter) findCTBEIDBaesOnUser(externalUserIDs []string) (map[string][]*model.CTest, error) {
 	pipeline := []bson.M{
 		{"$lookup": bson.M{
 			"from":         "users",
@@ -1250,36 +1475,134 @@ func (sa *Adapter) FindCTestsByExternalUserIDs(externalUserIDs []string) (map[st
 			"user_id": "$user._id", "user_external_id": "$user.external_id",
 		}}}
 
-	var result []*ctu2Join
+	type ctuJoin struct {
+		ID            string     `bson:"_id"`
+		ProviderID    string     `bson:"provider_id"`
+		OrderNumber   *string    `bson:"order_number"`
+		EncryptedKey  string     `bson:"encrypted_key"`
+		EncryptedBlob string     `bson:"encrypted_blob"`
+		Processed     bool       `bson:"processed"`
+		DateCreated   time.Time  `bson:"date_created"`
+		DateUpdated   *time.Time `bson:"date_updated"`
+
+		UserID         string `bson:"user_id"`
+		UserExternalID string `bson:"user_external_id"`
+	}
+
+	var result []*ctuJoin
 	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
 	if err != nil {
 		return nil, err
 	}
 	if result == nil || len(result) == 0 {
 		//not found
-		return nil, nil
+		return make(map[string][]*model.CTest, 0), nil
 	}
 
 	//construct the result
 	mapData := make(map[string][]*model.CTest, len(externalUserIDs))
 	for _, v := range result {
-		userExternalID := v.UserExternalID
-		list := mapData[userExternalID]
-		if list == nil {
-			list = []*model.CTest{}
-		}
-		list = append(list, &model.CTest{ID: v.ID, ProviderID: v.ProviderID, UserID: v.UserID,
-			EncryptedKey: v.EncryptedKey, EncryptedBlob: v.EncryptedBlob, OrderNumber: v.OrderNumber, Processed: v.Processed,
-			DateCreated: v.DateCreated, DateUpdated: v.DateUpdated})
+		if v.OrderNumber != nil {
+			userExternalID := v.UserExternalID
+			list := mapData[userExternalID]
+			if list == nil {
+				list = []*model.CTest{}
+			}
+			list = append(list, &model.CTest{ID: v.ID, ProviderID: v.ProviderID, UserID: v.UserID,
+				EncryptedKey: v.EncryptedKey, EncryptedBlob: v.EncryptedBlob, OrderNumber: v.OrderNumber, Processed: v.Processed,
+				DateCreated: v.DateCreated, DateUpdated: v.DateUpdated})
 
-		mapData[userExternalID] = list
+			mapData[userExternalID] = list
+		}
 	}
 	return mapData, nil
 }
 
-//DeleteCTests deletes all ctest for a user
-func (sa *Adapter) DeleteCTests(userID string) (int64, error) {
-	filter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+func (sa *Adapter) findCTBEIDBaesOnUserAccounts(externalUserIDs []string) (map[string][]*model.CTest, error) {
+	pipeline := []bson.M{
+		{"$lookup": bson.M{
+			"from":         "ctests",
+			"localField":   "accounts.id",
+			"foreignField": "user_id",
+			"as":           "ctests",
+		}},
+		{"$unwind": "$accounts"},
+		{"$match": bson.M{"accounts.external_id": bson.M{"$in": externalUserIDs}}},
+		{"$project": bson.M{
+			"_id": 1, "external_id": 1, "accounts": 1,
+			"ctests": bson.M{
+				"$filter": bson.M{
+					"input": "$ctests",
+					"as":    "ctest",
+					"cond": bson.M{
+						"$and": []bson.M{
+							{"$eq": []interface{}{"$$ctest.user_id", "$accounts.id"}},
+						},
+					},
+				},
+			},
+		}},
+	}
+
+	type usersAccountsJoin struct {
+		ID         string `bson:"_id"`
+		ExternalID string `bson:"external_id"`
+		Account    struct {
+			ID         string `json:"id" bson:"id"`
+			ExternalID string `json:"external_id" bson:"external_id"`
+		} `bson:"accounts"`
+
+		CTests []struct {
+			ID            string     `bson:"_id"`
+			ProviderID    string     `bson:"provider_id"`
+			OrderNumber   *string    `bson:"order_number"`
+			EncryptedKey  string     `bson:"encrypted_key"`
+			EncryptedBlob string     `bson:"encrypted_blob"`
+			Processed     bool       `bson:"processed"`
+			DateCreated   time.Time  `bson:"date_created"`
+			DateUpdated   *time.Time `bson:"date_updated"`
+			UserID        string     `bson:"user_id"`
+		} `bson:"ctests"`
+	}
+
+	var result []usersAccountsJoin
+	err := sa.db.users.Aggregate(pipeline, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil || len(result) == 0 {
+		//not found
+		return make(map[string][]*model.CTest, 0), nil
+	}
+
+	//construct the result
+	mapData := make(map[string][]*model.CTest, len(result))
+	for _, acc := range result {
+		accountExternalID := acc.Account.ExternalID
+		accountID := acc.Account.ID
+		list := mapData[accountExternalID]
+		if list == nil {
+			list = []*model.CTest{}
+		}
+
+		if acc.CTests != nil {
+			for _, current := range acc.CTests {
+				if current.OrderNumber != nil {
+					list = append(list, &model.CTest{ID: current.ID, ProviderID: current.ProviderID, UserID: accountID,
+						EncryptedKey: current.EncryptedKey, EncryptedBlob: current.EncryptedBlob, OrderNumber: current.OrderNumber, Processed: current.Processed,
+						DateCreated: current.DateCreated, DateUpdated: current.DateUpdated})
+				}
+			}
+		}
+
+		mapData[accountExternalID] = list
+	}
+	return mapData, nil
+}
+
+//DeleteCTests deletes all ctest for a user account
+func (sa *Adapter) DeleteCTests(accountID string) (int64, error) {
+	filter := bson.D{primitive.E{Key: "user_id", Value: accountID}}
 
 	result, err := sa.db.ctests.DeleteMany(filter, nil)
 	if err != nil {
@@ -3746,12 +4069,33 @@ type manualTestUserJoin struct {
 	DateCreated   time.Time `bson:"date_created"`
 
 	UserID                   string  `bson:"user_id"`
+	UserExternalID           string  `bson:"user_external_id"`
 	UserUUID                 string  `bson:"user_uuid"`
 	UserPublicKey            string  `bson:"user_public_key"`
 	UserConsent              bool    `bson:"user_consent"`
 	UserExposureNotification bool    `bson:"user_exposure_notification"`
 	UserEncryptedKey         *string `bson:"user_encrypted_key"`
 	UserEncryptedBlob        *string `bson:"user_encrypted_blob"`
+	UserAccounts             []struct {
+		ID         string `bson:"id"`
+		ExternalID string `bson:"external_id"`
+		Default    bool   `bson:"default"`
+		Active     bool   `bson:"active"`
+
+		FirstName  string `bson:"first_name"`
+		MiddleName string `bson:"middle_name"`
+		LastName   string `bson:"last_name"`
+		BirthDate  string `bson:"birth_date"`
+		Gender     string `bson:"gender"`
+		Address1   string `bson:"address1"`
+		Address2   string `bson:"address2"`
+		Address3   string `bson:"address3"`
+		City       string `bson:"city"`
+		State      string `bson:"state"`
+		ZipCode    string `bson:"zip_code"`
+		Phone      string `bson:"phone"`
+		Email      string `bson:"email"`
+	} `bson:"user_accounts"`
 }
 
 //FindManualTestsByCountyIDDeep find the manual test for a county
@@ -3789,9 +4133,10 @@ func (sa *Adapter) FindManualTestsByCountyIDDeep(countyID string, status *string
 	pipeline = append(pipeline, bson.M{"$unwind": "$user"},
 		bson.M{"$project": bson.M{
 			"_id": 1, "ehistory_id": 1, "location_id": 1, "county_id": 1, "encrypted_key": 1, "encrypted_blob": 1, "status": 1, "date_created": 1,
-			"user_id": "$user._id", "user_uuid": "$user.uuid", "user_public_key": "$user.public_key",
+			"user_id": "$user._id", "user_external_id": "$user.external_id", "user_uuid": "$user.uuid", "user_public_key": "$user.public_key",
 			"user_consent": "$user.consent", "user_exposure_notification": "$user._exposure_notification",
 			"user_info": "$user.info", "user_encrypted_key": "$user.encrypted_key", "user_encrypted_blob": "$user.encrypted_blob",
+			"user_accounts": "$user.accounts",
 		}},
 		bson.M{"$sort": bson.D{primitive.E{Key: "date_created", Value: -1}}})
 
@@ -3808,13 +4153,23 @@ func (sa *Adapter) FindManualTestsByCountyIDDeep(countyID string, status *string
 
 	var resultList []*model.EManualTest
 	for _, item := range result {
-		user := model.User{ID: item.UserID, UUID: item.UserUUID, PublicKey: item.UserPublicKey,
+
+		accounts := make([]model.Account, len(item.UserAccounts))
+		if item.UserAccounts != nil {
+			for i, acc := range item.UserAccounts {
+				accounts[i] = model.Account{ID: acc.ID, ExternalID: acc.ExternalID, Default: acc.Default, Active: acc.Active, FirstName: acc.FirstName,
+					MiddleName: acc.MiddleName, LastName: acc.LastName, BirthDate: acc.BirthDate, Gender: acc.Gender, Address1: acc.Address1,
+					Address2: acc.Address2, Address3: acc.Address3, City: acc.City, State: acc.State, ZipCode: acc.ZipCode, Phone: acc.Phone, Email: acc.Email}
+			}
+		}
+
+		user := model.User{ID: item.UserID, ExternalID: item.UserExternalID, UUID: item.UserUUID, PublicKey: item.UserPublicKey,
 			Consent: item.UserConsent, ExposureNotification: item.UserExposureNotification,
-			EncryptedKey: item.UserEncryptedKey, EncryptedBlob: item.UserEncryptedBlob}
+			EncryptedKey: item.UserEncryptedKey, EncryptedBlob: item.UserEncryptedBlob, Accounts: accounts}
 
 		mt := model.EManualTest{ID: item.ID, HistoryID: item.HistoryID, LocationID: item.LocationID, CountyID: item.CountyID,
 			EncryptedKey: item.EncryptedKey, EncryptedBlob: item.EncryptedBlob,
-			Status: item.Status, Date: item.DateCreated, User: user}
+			Status: item.Status, Date: item.DateCreated, User: user, AccountID: item.UserID}
 
 		resultList = append(resultList, &mt)
 	}
@@ -4166,16 +4521,30 @@ func (sa *Adapter) DeleteAccessRule(ID string) error {
 	return nil
 }
 
-type ctuJoin struct {
-	ID          string `bson:"_id"`
-	OrderNumber string `bson:"order_number"`
-
-	UserID         string `bson:"user_id"`
-	UserExternalID string `bson:"user_external_id"`
-}
-
 //FindExternalUserIDsByTestsOrderNumbers finds the external users ids for the tests orders numbers
 func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error) {
+
+	//1. get based on the user
+	ubList, err := sa.findEUIDsBasedOnUser(orderNumbers)
+	if err != nil {
+		return nil, err
+	}
+
+	//2. get based on the user accounts
+	uabList, err := sa.findEUIDsBasedOnUserAccounts(orderNumbers)
+	if err != nil {
+		return nil, err
+	}
+
+	//3. merge the maps
+	for key, value := range uabList {
+		ubList[key] = value
+	}
+
+	return ubList, nil
+}
+
+func (sa *Adapter) findEUIDsBasedOnUser(orderNumbers []string) (map[string]*string, error) {
 	pipeline := []bson.M{
 		{"$lookup": bson.M{
 			"from":         "users",
@@ -4190,6 +4559,13 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 			"user_id": "$user._id", "user_external_id": "$user.external_id",
 		}}}
 
+	type ctuJoin struct {
+		ID          string `bson:"_id"`
+		OrderNumber string `bson:"order_number"`
+
+		UserID         string `bson:"user_id"`
+		UserExternalID string `bson:"user_external_id"`
+	}
 	var result []*ctuJoin
 	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
 	if err != nil {
@@ -4197,11 +4573,64 @@ func (sa *Adapter) FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string)
 	}
 	if result == nil || len(result) == 0 {
 		//not found
-		return nil, nil
+		return make(map[string]*string, 0), nil
 	}
 	mapData := make(map[string]*string, len(result))
 	for _, v := range result {
 		mapData[v.OrderNumber] = &v.UserExternalID
+	}
+	return mapData, nil
+}
+
+func (sa *Adapter) findEUIDsBasedOnUserAccounts(orderNumbers []string) (map[string]*string, error) {
+	pipeline := []bson.M{
+		{"$lookup": bson.M{
+			"from":         "users",
+			"localField":   "user_id",
+			"foreignField": "accounts.id",
+			"as":           "user",
+		}},
+		{"$match": bson.M{"order_number": bson.M{"$in": orderNumbers}}},
+		{"$unwind": "$user"},
+		{"$project": bson.M{
+			"_id": 1, "order_number": 1, "user_id": 1,
+			"user_account": bson.M{
+				"$filter": bson.M{
+					"input": "$user.accounts",
+					"as":    "ac",
+					"cond": bson.M{
+						"$and": []bson.M{
+							{"$eq": []interface{}{"$$ac.id", "$user_id"}},
+						},
+					},
+				},
+			},
+		}}}
+
+	type ctuJoin struct {
+		ID          string `bson:"_id"`
+		OrderNumber string `bson:"order_number"`
+		UserID      string `bson:"user_id"`
+
+		UserAccount []struct {
+			ExternalID string `bson:"external_id"`
+		} `bson:"user_account"`
+	}
+
+	var result []ctuJoin
+	err := sa.db.ctests.Aggregate(pipeline, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil || len(result) == 0 {
+		//not found
+		return make(map[string]*string, 0), nil
+	}
+	mapData := make(map[string]*string, len(result))
+	for _, v := range result {
+		if len(v.UserAccount) > 0 {
+			mapData[v.OrderNumber] = &v.UserAccount[0].ExternalID
+		}
 	}
 	return mapData, nil
 }
@@ -4555,6 +4984,370 @@ func (sa *Adapter) DeleteAllRosters() error {
 	return nil
 }
 
+//CreateRawSubAccountItems creates raw sub account items
+func (sa *Adapter) CreateRawSubAccountItems(items []model.RawSubAccount) error {
+	//heavy....
+
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			log.Printf("error starting a transaction - %s", err)
+			return err
+		}
+
+		//apply logic for every raw sub account
+		for _, current := range items {
+			var accountID *string
+
+			// check if there is a primary account added
+			uFilter := bson.D{primitive.E{Key: "external_id", Value: current.PrimaryAccount}}
+			var usersResult []*model.User
+			err = sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+			if len(usersResult) > 0 {
+				//there is a primary user for this account
+
+				user := usersResult[0]
+				subAccount := user.GetAccountByExternalID(current.UIN)
+
+				if subAccount != nil {
+					//there is a sub account, so we need to update it
+
+					//we know the account id
+					accountID = &subAccount.ID
+
+					updateSubAccountFilter := bson.D{primitive.E{Key: "accounts.id", Value: subAccount.ID}}
+					updateSubAccount := bson.D{
+						primitive.E{Key: "$set", Value: bson.D{
+							primitive.E{Key: "accounts.$.active", Value: true},
+							primitive.E{Key: "accounts.$.first_name", Value: current.FirstName},
+							primitive.E{Key: "accounts.$.middle_name", Value: current.MiddleName},
+							primitive.E{Key: "accounts.$.last_name", Value: current.LastName},
+							primitive.E{Key: "accounts.$.birth_date", Value: current.BirthDate},
+							primitive.E{Key: "accounts.$.gender", Value: current.Gender},
+							primitive.E{Key: "accounts.$.address1", Value: current.Address1},
+							primitive.E{Key: "accounts.$.address2", Value: current.Address2},
+							primitive.E{Key: "accounts.$.address3", Value: current.Address3},
+							primitive.E{Key: "accounts.$.city", Value: current.City},
+							primitive.E{Key: "accounts.$.state", Value: current.State},
+							primitive.E{Key: "accounts.$.zip_code", Value: current.ZipCode},
+							primitive.E{Key: "accounts.$.phone", Value: current.Phone},
+							primitive.E{Key: "accounts.$.email", Value: current.Email},
+						}},
+					}
+
+					_, err := sa.db.users.UpdateOneWithContext(sessionContext, updateSubAccountFilter, updateSubAccount, nil)
+					if err != nil {
+						abortTransaction(sessionContext)
+						return err
+					}
+				} else {
+					//there is no a sub account, so we need to create it
+
+					//generate sub account id
+					genSubAccountID, err := uuid.NewUUID()
+					if err != nil {
+						abortTransaction(sessionContext)
+						return err
+					}
+					subAccID := genSubAccountID.String()
+					accountID = &subAccID
+
+					newSubAccount := model.Account{ID: subAccID, ExternalID: current.UIN, Default: false, Active: true, FirstName: current.FirstName,
+						MiddleName: current.MiddleName, LastName: current.LastName, BirthDate: current.BirthDate, Gender: current.Gender, Address1: current.Address1,
+						Address2: current.Address2, Address3: current.Address3, City: current.City, State: current.State, ZipCode: current.ZipCode, Phone: current.Phone,
+						Email: current.Email}
+
+					createSubAccountFilter := bson.D{primitive.E{Key: "_id", Value: user.ID}}
+					createSubAccount := bson.D{
+						primitive.E{Key: "$push", Value: bson.D{
+							primitive.E{Key: "accounts", Value: newSubAccount},
+						}},
+					}
+
+					_, err = sa.db.users.UpdateOneWithContext(sessionContext, createSubAccountFilter, createSubAccount, nil)
+					if err != nil {
+						abortTransaction(sessionContext)
+						return err
+					}
+				}
+			}
+
+			//save the raw sub account
+			current.AccountID = accountID
+			_, err = sa.db.rawsubaccounts.InsertOneWithContext(sessionContext, &current)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+
+		}
+
+		//commit the transaction
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//FindRawSubAccounts finds raw sub accounts
+func (sa *Adapter) FindRawSubAccounts(f *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error) {
+	var filter bson.D
+	if f != nil {
+		filter = constructDataFilter(f).(bson.D)
+	}
+
+	options := options.Find()
+	options.SetSort(bson.D{primitive.E{Key: sortBy, Value: sortOrder}})
+	if limit > 0 {
+		options.SetLimit(int64(limit))
+	}
+	if offset > 0 {
+		options.SetSkip(int64(offset))
+	}
+
+	var result []model.RawSubAccount
+	err := sa.db.rawsubaccounts.Find(filter, &result, options)
+	if err != nil {
+		return nil, err
+	}
+	if len(result) < 1 {
+		return make([]model.RawSubAccount, 0), nil
+	}
+
+	return result, nil
+}
+
+//UpdateRawSubAcccount updates raw sub account
+func (sa *Adapter) UpdateRawSubAcccount(uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error {
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//get the raw sub account
+		rsaFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
+		var rawSubAccounts []*model.RawSubAccount
+		err = sa.db.rawsubaccounts.FindWithContext(sessionContext, rsaFilter, &rawSubAccounts, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(rawSubAccounts) == 0 {
+			abortTransaction(sessionContext)
+			log.Printf("there is no a sub account for the provided uin - %s", uin)
+			return errors.New("there is no a sub account for the provided uin - " + uin)
+		}
+		rawSubAccount := rawSubAccounts[0]
+
+		//update the sub account for the user if there is a such
+		if rawSubAccount.AccountID != nil {
+			updateSubAccountFilter := bson.D{primitive.E{Key: "accounts.id", Value: *rawSubAccount.AccountID}}
+			updateSubAccount := bson.D{
+				primitive.E{Key: "$set", Value: bson.D{
+					primitive.E{Key: "accounts.$.first_name", Value: firstName},
+					primitive.E{Key: "accounts.$.middle_name", Value: middleName},
+					primitive.E{Key: "accounts.$.last_name", Value: lastName},
+					primitive.E{Key: "accounts.$.birth_date", Value: birthDate},
+					primitive.E{Key: "accounts.$.gender", Value: gender},
+					primitive.E{Key: "accounts.$.address1", Value: address1},
+					primitive.E{Key: "accounts.$.address2", Value: address2},
+					primitive.E{Key: "accounts.$.address3", Value: address3},
+					primitive.E{Key: "accounts.$.city", Value: city},
+					primitive.E{Key: "accounts.$.state", Value: state},
+					primitive.E{Key: "accounts.$.zip_code", Value: zipCode},
+					primitive.E{Key: "accounts.$.email", Value: email},
+				}},
+			}
+
+			_, err := sa.db.users.UpdateOneWithContext(sessionContext, updateSubAccountFilter, updateSubAccount, nil)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+		}
+
+		//update the raw sub account
+		rsaSubAccountUpdateFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
+		rsaSubAccountUpdate := bson.D{
+			primitive.E{Key: "$set", Value: bson.D{
+				primitive.E{Key: "first_name", Value: firstName},
+				primitive.E{Key: "middle_name", Value: middleName},
+				primitive.E{Key: "last_name", Value: lastName},
+				primitive.E{Key: "birth_date", Value: birthDate},
+				primitive.E{Key: "gender", Value: gender},
+				primitive.E{Key: "address1", Value: address1},
+				primitive.E{Key: "address2", Value: address2},
+				primitive.E{Key: "address3", Value: address3},
+				primitive.E{Key: "city", Value: city},
+				primitive.E{Key: "state", Value: state},
+				primitive.E{Key: "zip_code", Value: zipCode},
+				primitive.E{Key: "net_id", Value: netID},
+				primitive.E{Key: "email", Value: email},
+			}},
+		}
+		_, err = sa.db.rawsubaccounts.UpdateOneWithContext(sessionContext, rsaSubAccountUpdateFilter, rsaSubAccountUpdate, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//DeleteRawSubAccountByUIN deletes a raw sub account
+func (sa *Adapter) DeleteRawSubAccountByUIN(uin string) error {
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//get the raw sub account
+		rsaFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
+		var rawSubAccounts []*model.RawSubAccount
+		err = sa.db.rawsubaccounts.FindWithContext(sessionContext, rsaFilter, &rawSubAccounts, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(rawSubAccounts) == 0 {
+			abortTransaction(sessionContext)
+			log.Printf("there is no a sub account for the provided uin - %s", uin)
+			return errors.New("there is no a sub account for the provided uin - " + uin)
+		}
+		rawSubAccount := rawSubAccounts[0]
+
+		//mark the sub account as active "false", we do not remove user sub accounts
+		if rawSubAccount.AccountID != nil {
+			updateSubAccountFilter := bson.D{primitive.E{Key: "accounts.id", Value: *rawSubAccount.AccountID}}
+			updateSubAccount := bson.D{
+				primitive.E{Key: "$set", Value: bson.D{
+					primitive.E{Key: "accounts.$.active", Value: false},
+				}},
+			}
+
+			_, err := sa.db.users.UpdateOneWithContext(sessionContext, updateSubAccountFilter, updateSubAccount, nil)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+		}
+
+		//remove the raw sub account
+		removeFilter := bson.D{primitive.E{Key: "uin", Value: rawSubAccount.UIN}}
+		_, err = sa.db.rawsubaccounts.DeleteOneWithContext(sessionContext, removeFilter, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			log.Printf("error deleting raw sub account for uin - %s", err)
+			return err
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//DeleteAllSubAccounts deletes all raw sub accounts
+func (sa *Adapter) DeleteAllSubAccounts() error {
+	//heavy...
+
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//we first need to mark all sub accounts as active "false" before to remove the raw sub accounts
+		rsaFilter := bson.D{}
+		var rawSubAccounts []*model.RawSubAccount
+		err = sa.db.rawsubaccounts.FindWithContext(sessionContext, rsaFilter, &rawSubAccounts, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if rawSubAccounts != nil {
+			for _, rawSubAccount := range rawSubAccounts {
+				//mark the sub account as active "false", we do not remove user sub accounts
+				if rawSubAccount.AccountID != nil {
+					updateSubAccountFilter := bson.D{primitive.E{Key: "accounts.id", Value: *rawSubAccount.AccountID}}
+					updateSubAccount := bson.D{
+						primitive.E{Key: "$set", Value: bson.D{
+							primitive.E{Key: "accounts.$.active", Value: false},
+						}},
+					}
+
+					_, err := sa.db.users.UpdateOneWithContext(sessionContext, updateSubAccountFilter, updateSubAccount, nil)
+					if err != nil {
+						abortTransaction(sessionContext)
+						return err
+					}
+				}
+			}
+		}
+
+		//remove all raw sub accounts
+		removeFilter := bson.D{}
+		_, err = sa.db.rawsubaccounts.DeleteManyWithContext(sessionContext, removeFilter, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {
 	if list == nil {
 		return false
@@ -4577,32 +5370,18 @@ func (sa *Adapter) deleteAllStatuses(sessionContext mongo.SessionContext) error 
 	return nil
 }
 
-func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID string) error {
-
-	//first read the user as we need the external id too
-	uFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
-	var usersResult []*model.User
-	err := sa.db.users.FindWithContext(sessionContext, uFilter, &usersResult, nil)
-	if err != nil {
-		return err
-	}
-	if len(usersResult) == 0 {
-		log.Printf("there is no a user for the provided user id - %s %s", userID, err)
-		return err
-	}
-	user := usersResult[0]
-	externalID := user.ExternalID
+func (sa *Adapter) deleteAccountData(sessionContext mongo.SessionContext, account model.Account) error {
 
 	//remove from uinoverrides
-	uinOverridesFilter := bson.D{primitive.E{Key: "uin", Value: externalID}}
-	_, err = sa.db.uinoverrides.DeleteOneWithContext(sessionContext, uinOverridesFilter, nil)
+	uinOverridesFilter := bson.D{primitive.E{Key: "uin", Value: account.ExternalID}}
+	_, err := sa.db.uinoverrides.DeleteOneWithContext(sessionContext, uinOverridesFilter, nil)
 	if err != nil {
 		log.Printf("error deleting uinoverride record for a user - %s", err)
 		return err
 	}
 
 	//remove from uinbuildingaccess
-	uinBuildingAccessFilter := bson.D{primitive.E{Key: "uin", Value: externalID}}
+	uinBuildingAccessFilter := bson.D{primitive.E{Key: "uin", Value: account.ExternalID}}
 	_, err = sa.db.uinbuildingaccess.DeleteOneWithContext(sessionContext, uinBuildingAccessFilter, nil)
 	if err != nil {
 		log.Printf("error deleting uinbuildingaccess record for a user - %s", err)
@@ -4610,7 +5389,7 @@ func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID st
 	}
 
 	//remove from ctest
-	cTestFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	cTestFilter := bson.D{primitive.E{Key: "user_id", Value: account.ID}}
 	_, err = sa.db.ctests.DeleteManyWithContext(sessionContext, cTestFilter, nil)
 	if err != nil {
 		log.Printf("error deleting ctests for a user - %s", err)
@@ -4618,7 +5397,7 @@ func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID st
 	}
 
 	//remove from history
-	historyFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	historyFilter := bson.D{primitive.E{Key: "user_id", Value: account.ID}}
 	//from ehistory
 	_, err = sa.db.ehistory.DeleteManyWithContext(sessionContext, historyFilter, nil)
 	if err != nil {
@@ -4627,7 +5406,7 @@ func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID st
 	}
 
 	//remove from status
-	statusFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	statusFilter := bson.D{primitive.E{Key: "user_id", Value: account.ID}}
 	//from estatus
 	_, err = sa.db.estatus.DeleteManyWithContext(sessionContext, statusFilter, nil)
 	if err != nil {
@@ -4636,18 +5415,10 @@ func (sa *Adapter) deleteUserData(sessionContext mongo.SessionContext, userID st
 	}
 
 	//remove from manual tests
-	mtFilter := bson.D{primitive.E{Key: "user_id", Value: userID}}
+	mtFilter := bson.D{primitive.E{Key: "user_id", Value: account.ID}}
 	_, err = sa.db.emanualtests.DeleteOneWithContext(sessionContext, mtFilter, nil)
 	if err != nil {
 		log.Printf("error deleting manual tests for a user - %s", err)
-		return err
-	}
-
-	//remove from users
-	usersFilter := bson.D{primitive.E{Key: "_id", Value: userID}}
-	_, err = sa.db.users.DeleteOneWithContext(sessionContext, usersFilter, nil)
-	if err != nil {
-		log.Printf("error deleting user record for a user - %s", err)
 		return err
 	}
 

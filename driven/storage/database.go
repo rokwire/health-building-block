@@ -61,6 +61,7 @@ type database struct {
 	uinbuildingaccess *collectionWrapper
 	appversions       *collectionWrapper
 	rosters           *collectionWrapper
+	rawsubaccounts    *collectionWrapper
 
 	listener core.StorageListener
 }
@@ -222,6 +223,11 @@ func (m *database) start() error {
 	if err != nil {
 		return err
 	}
+	rawsubaccounts := &collectionWrapper{database: m, coll: db.Collection("rawsubaccounts")}
+	err = m.applyRawSubAccountsChecks(rawsubaccounts)
+	if err != nil {
+		return err
+	}
 
 	//asign the db, db client and the collections
 	m.db = db
@@ -251,6 +257,7 @@ func (m *database) start() error {
 	m.uinbuildingaccess = uinbuildingaccess
 	m.appversions = appversions
 	m.rosters = rosters
+	m.rawsubaccounts = rawsubaccounts
 
 	//watch for config changes
 	go m.configs.Watch(nil)
@@ -260,6 +267,9 @@ func (m *database) start() error {
 
 	//watch for rosters changes
 	go m.rosters.Watch(nil)
+
+	//watch for rawsubaccounts changes
+	go m.rawsubaccounts.Watch(nil)
 
 	return nil
 }
@@ -704,6 +714,29 @@ func (m *database) applyRostersChecks(rosters *collectionWrapper) error {
 	return nil
 }
 
+func (m *database) applyRawSubAccountsChecks(rawsubaccounts *collectionWrapper) error {
+	log.Println("apply rawsubaccounts checks.....")
+
+	//add indexes
+	err := rawsubaccounts.AddIndex(bson.D{primitive.E{Key: "uin", Value: 1}}, true)
+	if err != nil {
+		return err
+	}
+
+	err = rawsubaccounts.AddIndex(bson.D{primitive.E{Key: "phone", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	err = rawsubaccounts.AddIndex(bson.D{primitive.E{Key: "primary_account", Value: 1}}, false)
+	if err != nil {
+		return err
+	}
+
+	log.Println("rawsubaccounts checks passed")
+	return nil
+}
+
 func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 	if changeDoc == nil {
 		return
@@ -733,6 +766,12 @@ func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 
 		if m.listener != nil {
 			m.listener.OnRostersChanged()
+		}
+	} else if "rawsubaccounts" == coll {
+		log.Println("rawsubaccounts collection changed")
+
+		if m.listener != nil {
+			m.listener.OnRawSubAccountsChanged()
 		}
 	} else {
 		log.Println("other collection changed")

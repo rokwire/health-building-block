@@ -2109,6 +2109,43 @@ var doc = `{
                 }
             }
         },
+        "/admin/raw-sub-accounts/uin/{uin}": {
+            "delete": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Deletes a sub account by uin",
+                "consumes": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "DeleteSubAccountByUIN",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UIN",
+                        "name": "uin",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfuly deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/resources": {
             "get": {
                 "security": [

@@ -5081,6 +5081,15 @@ func (h AdminApisHandler) UpdateSubAccount(current model.User, group string, w h
 }
 
 //DeleteSubAccountByUIN deletes a sub account by uin
+// @Description Deletes a sub account by uin
+// @Tags Admin
+// @ID DeleteSubAccountByUIN
+// @Accept plain
+// @Param uin path string true "UIN"
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/raw-sub-accounts/uin/{uin} [delete]
 func (h AdminApisHandler) DeleteSubAccountByUIN(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uin := params["uin"]

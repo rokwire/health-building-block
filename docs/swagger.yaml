@@ -2923,6 +2923,28 @@ paths:
       - AdminGroupAuth: []
       tags:
       - Admin
+  /admin/raw-sub-accounts/uin/{uin}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a sub account by uin
+      operationId: DeleteSubAccountByUIN
+      parameters:
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
   /admin/resources:
     get:
       consumes:

@@ -51,8 +51,8 @@ type database struct {
 	counties          *collectionWrapper
 	testtypes         *collectionWrapper
 	rules             *collectionWrapper
-	symptomgroups     *collectionWrapper
-	symptomrules      *collectionWrapper
+	symptomgroups     *collectionWrapper //old
+	symptomrules      *collectionWrapper //old
 	symptoms          *collectionWrapper
 	crules            *collectionWrapper
 	traceexposures    *collectionWrapper

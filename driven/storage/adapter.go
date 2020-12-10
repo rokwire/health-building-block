@@ -4986,6 +4986,8 @@ func (sa *Adapter) DeleteAllRosters() error {
 
 //CreateRawSubAccountItems creates raw sub account items
 func (sa *Adapter) CreateRawSubAccountItems(items []model.RawSubAccount) error {
+	//heavy....
+
 	// transaction
 	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
 		err := sessionContext.StartTransaction()
@@ -5222,6 +5224,65 @@ func (sa *Adapter) UpdateRawSubAcccount(uin string, firstName string, middleName
 
 //DeleteRawSubAccountByUIN deletes a raw sub account
 func (sa *Adapter) DeleteRawSubAccountByUIN(uin string) error {
+	// transaction
+	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
+		err := sessionContext.StartTransaction()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		//get the raw sub account
+		rsaFilter := bson.D{primitive.E{Key: "uin", Value: uin}}
+		var rawSubAccounts []*model.RawSubAccount
+		err = sa.db.rawsubaccounts.FindWithContext(sessionContext, rsaFilter, &rawSubAccounts, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			return err
+		}
+		if len(rawSubAccounts) == 0 {
+			abortTransaction(sessionContext)
+			log.Printf("there is no a sub account for the provided uin - %s", uin)
+			return errors.New("there is no a sub account for the provided uin - " + uin)
+		}
+		rawSubAccount := rawSubAccounts[0]
+
+		//mark the sub account as active "false", we do not remove user sub accounts
+		if rawSubAccount.AccountID != nil {
+			updateSubAccountFilter := bson.D{primitive.E{Key: "accounts.id", Value: *rawSubAccount.AccountID}}
+			updateSubAccount := bson.D{
+				primitive.E{Key: "$set", Value: bson.D{
+					primitive.E{Key: "accounts.$.active", Value: false},
+				}},
+			}
+
+			_, err := sa.db.users.UpdateOneWithContext(sessionContext, updateSubAccountFilter, updateSubAccount, nil)
+			if err != nil {
+				abortTransaction(sessionContext)
+				return err
+			}
+		}
+
+		//remove the raw sub account
+		removeFilter := bson.D{primitive.E{Key: "uin", Value: rawSubAccount.UIN}}
+		_, err = sa.db.rawsubaccounts.DeleteOneWithContext(sessionContext, removeFilter, nil)
+		if err != nil {
+			abortTransaction(sessionContext)
+			log.Printf("error deleting raw sub account for uin - %s", err)
+			return err
+		}
+
+		err = sessionContext.CommitTransaction(sessionContext)
+		if err != nil {
+			log.Printf("error on commiting a transaction - %s", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

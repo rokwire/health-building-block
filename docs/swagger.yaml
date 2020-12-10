@@ -2851,6 +2851,21 @@ paths:
       tags:
       - Admin
   /admin/raw-sub-accounts:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes all sub accounts
+      operationId: DeleteAllSubAccounts
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
     get:
       consumes:
       - application/json

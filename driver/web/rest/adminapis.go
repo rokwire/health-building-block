@@ -5112,6 +5112,14 @@ func (h AdminApisHandler) DeleteSubAccountByUIN(current model.User, group string
 }
 
 //DeleteAllSubAccounts deletes all sub accounts
+// @Description Deletes all sub accounts
+// @Tags Admin
+// @ID DeleteAllSubAccounts
+// @Accept plain
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/raw-sub-accounts [delete]
 func (h AdminApisHandler) DeleteAllSubAccounts(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	err := h.app.Administration.DeleteAllRawSubAccounts(current, group)
 	if err != nil {

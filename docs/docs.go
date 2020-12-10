@@ -2058,6 +2058,32 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Deletes all sub accounts",
+                "consumes": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "DeleteAllSubAccounts",
+                "responses": {
+                    "200": {
+                        "description": "Successfuly deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/admin/raw-sub-accounts/uin/{id}": {

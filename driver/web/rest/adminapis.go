@@ -5080,6 +5080,42 @@ func (h AdminApisHandler) UpdateSubAccount(current model.User, group string, w h
 	w.Write([]byte("Successfully updated"))
 }
 
+//DeleteSubAccountByUIN deletes a sub account by uin
+func (h AdminApisHandler) DeleteSubAccountByUIN(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+
+	err := h.app.Administration.DeleteRawSubAccountByUIN(current, group, uin)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully deleted"))
+}
+
+//DeleteAllSubAccounts deletes all sub accounts
+func (h AdminApisHandler) DeleteAllSubAccounts(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	err := h.app.Administration.DeleteAllRawSubAccounts(current, group)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully deleted"))
+}
+
 type createActionRequest struct {
 	Audit         *string `json:"audit"`
 	ProviderID    string  `json:"provider_id" validate:"required"`

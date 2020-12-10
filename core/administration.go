@@ -1817,6 +1817,32 @@ func (app *Application) updateRawSubAccount(current model.User, group string, au
 	return nil
 }
 
+func (app *Application) deleteRawSubAccountByUIN(current model.User, group string, uin string) error {
+	err := app.storage.DeleteRawSubAccountByUIN(uin)
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "raw-sub-account", fmt.Sprintf("uin:%s", uin))
+
+	return nil
+}
+
+func (app *Application) deleteAllRawSubAccounts(current model.User, group string) error {
+	err := app.storage.DeleteAllSubAccounts()
+	if err != nil {
+		return err
+	}
+
+	//audit
+	userIdentifier, userInfo := current.GetLogData()
+	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "raw-sub-account", "all")
+
+	return nil
+}
+
 func (app *Application) createAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	//1. create a ctest
 	item, user, err := app.storage.CreateAdminCTest(providerID, accountID, encryptedKey, encryptedBlob, false, nil)

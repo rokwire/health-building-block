@@ -5220,6 +5220,16 @@ func (sa *Adapter) UpdateRawSubAcccount(uin string, firstName string, middleName
 	return nil
 }
 
+//DeleteRawSubAccountByUIN deletes a raw sub account
+func (sa *Adapter) DeleteRawSubAccountByUIN(uin string) error {
+	return nil
+}
+
+//DeleteAllSubAccounts deletes all raw sub accounts
+func (sa *Adapter) DeleteAllSubAccounts() error {
+	return nil
+}
+
 func (sa *Adapter) containsCountyStatus(ID string, list []countyStatus) bool {
 	if list == nil {
 		return false

@@ -405,6 +405,8 @@ type Administration interface {
 	GetRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error)
 	UpdateRawSubAccount(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
 		address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error
+	DeleteRawSubAccountByUIN(current model.User, group string, uin string) error
+	DeleteAllRawSubAccounts(current model.User, group string) error
 
 	GetUserByExternalID(externalID string) (*model.User, error)
 
@@ -771,6 +773,14 @@ func (s *administrationImpl) UpdateRawSubAccount(current model.User, group strin
 		address3, city, state, zipCode, netID, email)
 }
 
+func (s *administrationImpl) DeleteRawSubAccountByUIN(current model.User, group string, uin string) error {
+	return s.app.deleteRawSubAccountByUIN(current, group, uin)
+}
+
+func (s *administrationImpl) DeleteAllRawSubAccounts(current model.User, group string) error {
+	return s.app.deleteAllRawSubAccounts(current, group)
+}
+
 func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {
 	return s.app.createAction(current, group, audit, providerID, accountID, encryptedKey, encryptedBlob)
 }
@@ -962,6 +972,8 @@ type Storage interface {
 	FindRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error)
 	UpdateRawSubAcccount(uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
 		address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error
+	DeleteRawSubAccountByUIN(uin string) error
+	DeleteAllSubAccounts() error
 }
 
 //StorageListener listenes for change data storage events

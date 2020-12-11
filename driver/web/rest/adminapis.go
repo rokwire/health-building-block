@@ -4992,9 +4992,9 @@ func (h AdminApisHandler) GetSubAccounts(current model.User, group string, w htt
 
 type updateRawSubAccountRequest struct {
 	Audit      *string `json:"audit"`
-	FirstName  string  `json:"first_name"`
+	FirstName  string  `json:"first_name" validate:"required"`
 	MiddleName string  `json:"middle_name"`
-	LastName   string  `json:"last_name"`
+	LastName   string  `json:"last_name" validate:"required"`
 	BirthDate  string  `json:"birth_date"`
 	Gender     string  `json:"gender"`
 	Address1   string  `json:"address1"`

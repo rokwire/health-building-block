@@ -11,7 +11,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.0.0"
+        "version": "2.1.0"
     },
     "host": "localhost",
     "basePath": "/health",
@@ -6951,13 +6951,19 @@
                                 "type": "string"
                             },
                             "first_name": {
-                                "type": "string"
+                                "type": "string",
+                                "required": [
+                                    "first_name"
+                                ]
                             },
                             "gender": {
                                 "type": "string"
                             },
                             "last_name": {
-                                "type": "string"
+                                "type": "string",
+                                "required": [
+                                    "last_name"
+                                ]
                             },
                             "middle_name": {
                                 "type": "string"
@@ -6966,10 +6972,7 @@
                                 "type": "string"
                             },
                             "phone": {
-                                "type": "string",
-                                "required": [
-                                    "phone"
-                                ]
+                                "type": "string"
                             },
                             "primary_account": {
                                 "type": "string",
@@ -7822,6 +7825,10 @@
         },
         "updateRawSubAccountRequest": {
             "type": "object",
+            "required": [
+                "first_name",
+                "last_name"
+            ],
             "properties": {
                 "address1": {
                     "type": "string"
@@ -7857,6 +7864,9 @@
                     "type": "string"
                 },
                 "net_id": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "state": {

@@ -4822,9 +4822,9 @@ type createRawSubAccountItemsRequest struct {
 	Audit *string `json:"audit"`
 	Items []struct {
 		UIN        string `json:"uin" validate:"required"`
-		FirstName  string `json:"first_name"`
+		FirstName  string `json:"first_name" validate:"required"`
 		MiddleName string `json:"middle_name"`
-		LastName   string `json:"last_name"`
+		LastName   string `json:"last_name" validate:"required"`
 		BirthDate  string `json:"birth_date"`
 		Gender     string `json:"gender"`
 		Address1   string `json:"address1"`
@@ -4833,7 +4833,7 @@ type createRawSubAccountItemsRequest struct {
 		City       string `json:"city"`
 		State      string `json:"state"`
 		ZipCode    string `json:"zip_code"`
-		Phone      string `json:"phone"  validate:"required"`
+		Phone      string `json:"phone"`
 		NetID      string `json:"net_id"`
 		Email      string `json:"email"`
 

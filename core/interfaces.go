@@ -404,7 +404,7 @@ type Administration interface {
 	CreateRawSubAccountItems(current model.User, group string, audit *string, items []model.RawSubAccount) error
 	GetRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error)
 	UpdateRawSubAccount(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
-		address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error
+		address1 string, address2 string, address3 string, city string, state string, zipCode string, phone string, netID string, email string) error
 	DeleteRawSubAccountByUIN(current model.User, group string, uin string) error
 	DeleteAllRawSubAccounts(current model.User, group string) error
 
@@ -768,9 +768,9 @@ func (s *administrationImpl) GetRawSubAccounts(filter *utils.Filter, sortBy stri
 }
 
 func (s *administrationImpl) UpdateRawSubAccount(current model.User, group string, audit *string, uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
-	address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error {
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, phone string, netID string, email string) error {
 	return s.app.updateRawSubAccount(current, group, audit, uin, firstName, middleName, lastName, birthDate, gender, address1, address2,
-		address3, city, state, zipCode, netID, email)
+		address3, city, state, zipCode, phone, netID, email)
 }
 
 func (s *administrationImpl) DeleteRawSubAccountByUIN(current model.User, group string, uin string) error {
@@ -971,7 +971,7 @@ type Storage interface {
 	CreateRawSubAccountItems(items []model.RawSubAccount) error
 	FindRawSubAccounts(filter *utils.Filter, sortBy string, sortOrder int, limit int, offset int) ([]model.RawSubAccount, error)
 	UpdateRawSubAcccount(uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
-		address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error
+		address1 string, address2 string, address3 string, city string, state string, zipCode string, phone string, netID string, email string) error
 	DeleteRawSubAccountByUIN(uin string) error
 	DeleteAllSubAccounts() error
 }

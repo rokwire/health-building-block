@@ -5003,6 +5003,7 @@ type updateRawSubAccountRequest struct {
 	City       string  `json:"city"`
 	State      string  `json:"state"`
 	ZipCode    string  `json:"zip_code"`
+	Phone      string  `json:"phone"`
 	NetID      string  `json:"net_id"`
 	Email      string  `json:"email"`
 } // @name updateRawSubAccountRequest
@@ -5064,11 +5065,12 @@ func (h AdminApisHandler) UpdateSubAccount(current model.User, group string, w h
 	city := requestData.City
 	state := requestData.State
 	zipCode := requestData.ZipCode
+	phone := requestData.Phone
 	netID := requestData.NetID
 	email := requestData.Email
 
 	err = h.app.Administration.UpdateRawSubAccount(current, group, audit, uin, firstName, middleName, lastName, birthDate, gender,
-		address1, address2, address3, city, state, zipCode, netID, email)
+		address1, address2, address3, city, state, zipCode, phone, netID, email)
 	if err != nil {
 		log.Printf("Error on updating raw sub account - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

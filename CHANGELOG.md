@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Sub accounts feature internal improvements. [#103](https://github.com/rokwire/health-building-block/issues/103)
 - Update sub accounts required fields. [#101](https://github.com/rokwire/health-building-block/issues/101)
 
 ## [2.0.0] - 2020-12-10

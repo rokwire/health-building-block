@@ -558,7 +558,7 @@ func (sa *Adapter) CreateDefaultAccount(userID string) (*model.User, error) {
 				primitive.E{Key: "accounts", Value: newAccounts},
 			}},
 		}
-		updateResult, err := sa.db.users.UpdateOne(updateFilter, update, nil)
+		updateResult, err := sa.db.users.UpdateOneWithContext(sessionContext, updateFilter, update, nil)
 		if err != nil {
 			abortTransaction(sessionContext)
 			return err

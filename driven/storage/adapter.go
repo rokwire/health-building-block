@@ -558,7 +558,7 @@ func (sa *Adapter) CreateDefaultAccount(userID string) (*model.User, error) {
 				primitive.E{Key: "accounts", Value: newAccounts},
 			}},
 		}
-		updateResult, err := sa.db.users.UpdateOne(updateFilter, update, nil)
+		updateResult, err := sa.db.users.UpdateOneWithContext(sessionContext, updateFilter, update, nil)
 		if err != nil {
 			abortTransaction(sessionContext)
 			return err
@@ -5132,7 +5132,7 @@ func (sa *Adapter) FindRawSubAccounts(f *utils.Filter, sortBy string, sortOrder 
 
 //UpdateRawSubAcccount updates raw sub account
 func (sa *Adapter) UpdateRawSubAcccount(uin string, firstName string, middleName string, lastName string, birthDate string, gender string,
-	address1 string, address2 string, address3 string, city string, state string, zipCode string, netID string, email string) error {
+	address1 string, address2 string, address3 string, city string, state string, zipCode string, phone string, netID string, email string) error {
 	// transaction
 	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
 		err := sessionContext.StartTransaction()
@@ -5172,6 +5172,7 @@ func (sa *Adapter) UpdateRawSubAcccount(uin string, firstName string, middleName
 					primitive.E{Key: "accounts.$.city", Value: city},
 					primitive.E{Key: "accounts.$.state", Value: state},
 					primitive.E{Key: "accounts.$.zip_code", Value: zipCode},
+					primitive.E{Key: "accounts.$.phone", Value: phone},
 					primitive.E{Key: "accounts.$.email", Value: email},
 				}},
 			}
@@ -5198,6 +5199,7 @@ func (sa *Adapter) UpdateRawSubAcccount(uin string, firstName string, middleName
 				primitive.E{Key: "city", Value: city},
 				primitive.E{Key: "state", Value: state},
 				primitive.E{Key: "zip_code", Value: zipCode},
+				primitive.E{Key: "phone", Value: phone},
 				primitive.E{Key: "net_id", Value: netID},
 				primitive.E{Key: "email", Value: email},
 			}},

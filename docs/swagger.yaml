@@ -910,18 +910,20 @@ definitions:
             email:
               type: string
             first_name:
+              required:
+              - first_name
               type: string
             gender:
               type: string
             last_name:
+              required:
+              - last_name
               type: string
             middle_name:
               type: string
             net_id:
               type: string
             phone:
-              required:
-              - phone
               type: string
             primary_account:
               required:
@@ -1512,10 +1514,15 @@ definitions:
         type: string
       net_id:
         type: string
+      phone:
+        type: string
       state:
         type: string
       zip_code:
         type: string
+    required:
+    - first_name
+    - last_name
     type: object
   updateResourceRequest:
     properties:
@@ -1654,7 +1661,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 2.0.0
+  version: 2.1.0
 paths:
   /admin/access-rules:
     get:

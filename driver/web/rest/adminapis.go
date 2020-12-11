@@ -4822,9 +4822,9 @@ type createRawSubAccountItemsRequest struct {
 	Audit *string `json:"audit"`
 	Items []struct {
 		UIN        string `json:"uin" validate:"required"`
-		FirstName  string `json:"first_name"`
+		FirstName  string `json:"first_name" validate:"required"`
 		MiddleName string `json:"middle_name"`
-		LastName   string `json:"last_name"`
+		LastName   string `json:"last_name" validate:"required"`
 		BirthDate  string `json:"birth_date"`
 		Gender     string `json:"gender"`
 		Address1   string `json:"address1"`
@@ -4833,7 +4833,7 @@ type createRawSubAccountItemsRequest struct {
 		City       string `json:"city"`
 		State      string `json:"state"`
 		ZipCode    string `json:"zip_code"`
-		Phone      string `json:"phone"  validate:"required"`
+		Phone      string `json:"phone"`
 		NetID      string `json:"net_id"`
 		Email      string `json:"email"`
 
@@ -4992,9 +4992,9 @@ func (h AdminApisHandler) GetSubAccounts(current model.User, group string, w htt
 
 type updateRawSubAccountRequest struct {
 	Audit      *string `json:"audit"`
-	FirstName  string  `json:"first_name"`
+	FirstName  string  `json:"first_name" validate:"required"`
 	MiddleName string  `json:"middle_name"`
-	LastName   string  `json:"last_name"`
+	LastName   string  `json:"last_name" validate:"required"`
 	BirthDate  string  `json:"birth_date"`
 	Gender     string  `json:"gender"`
 	Address1   string  `json:"address1"`
@@ -5003,6 +5003,7 @@ type updateRawSubAccountRequest struct {
 	City       string  `json:"city"`
 	State      string  `json:"state"`
 	ZipCode    string  `json:"zip_code"`
+	Phone      string  `json:"phone"`
 	NetID      string  `json:"net_id"`
 	Email      string  `json:"email"`
 } // @name updateRawSubAccountRequest
@@ -5064,11 +5065,12 @@ func (h AdminApisHandler) UpdateSubAccount(current model.User, group string, w h
 	city := requestData.City
 	state := requestData.State
 	zipCode := requestData.ZipCode
+	phone := requestData.Phone
 	netID := requestData.NetID
 	email := requestData.Email
 
 	err = h.app.Administration.UpdateRawSubAccount(current, group, audit, uin, firstName, middleName, lastName, birthDate, gender,
-		address1, address2, address3, city, state, zipCode, netID, email)
+		address1, address2, address3, city, state, zipCode, phone, netID, email)
 	if err != nil {
 		log.Printf("Error on updating raw sub account - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

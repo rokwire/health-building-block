@@ -6963,13 +6963,19 @@ var doc = `{
                                 "type": "string"
                             },
                             "first_name": {
-                                "type": "string"
+                                "type": "string",
+                                "required": [
+                                    "first_name"
+                                ]
                             },
                             "gender": {
                                 "type": "string"
                             },
                             "last_name": {
-                                "type": "string"
+                                "type": "string",
+                                "required": [
+                                    "last_name"
+                                ]
                             },
                             "middle_name": {
                                 "type": "string"
@@ -6978,10 +6984,7 @@ var doc = `{
                                 "type": "string"
                             },
                             "phone": {
-                                "type": "string",
-                                "required": [
-                                    "phone"
-                                ]
+                                "type": "string"
                             },
                             "primary_account": {
                                 "type": "string",
@@ -7834,6 +7837,10 @@ var doc = `{
         },
         "updateRawSubAccountRequest": {
             "type": "object",
+            "required": [
+                "first_name",
+                "last_name"
+            ],
             "properties": {
                 "address1": {
                     "type": "string"
@@ -7869,6 +7876,9 @@ var doc = `{
                     "type": "string"
                 },
                 "net_id": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "state": {
@@ -8120,7 +8130,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "2.0.0",
+	Version:     "2.1.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

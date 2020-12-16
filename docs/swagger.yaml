@@ -547,6 +547,8 @@ definitions:
         type: string
       encrypted_key:
         type: string
+      encrypted_pk:
+        type: string
       exposure_notification:
         type: boolean
       external_id:
@@ -1211,6 +1213,8 @@ definitions:
         type: string
       encrypted_key:
         type: string
+      encrypted_pk:
+        type: string
       exposure_notification:
         type: boolean
       public_key:
@@ -1661,7 +1665,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 2.1.0
+  version: 2.2.0
 paths:
   /admin/access-rules:
     get:

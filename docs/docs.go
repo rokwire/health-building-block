@@ -6422,6 +6422,9 @@ var doc = `{
                 "encrypted_key": {
                     "type": "string"
                 },
+                "encrypted_pk": {
+                    "type": "string"
+                },
                 "exposure_notification": {
                     "type": "boolean"
                 },
@@ -7423,6 +7426,9 @@ var doc = `{
                 "encrypted_key": {
                     "type": "string"
                 },
+                "encrypted_pk": {
+                    "type": "string"
+                },
                 "exposure_notification": {
                     "type": "boolean"
                 },
@@ -8130,7 +8136,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "2.1.0",
+	Version:     "2.2.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

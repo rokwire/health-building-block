@@ -36,6 +36,7 @@ type User struct {
 	RePost               bool    `json:"re_post" bson:"re_post"`
 	EncryptedKey         *string `json:"encrypted_key" bson:"encrypted_key"`
 	EncryptedBlob        *string `json:"encrypted_blob" bson:"encrypted_blob"`
+	EncryptedPK          *string `json:"encrypted_pk" bson:"encrypted_pk"`
 
 	Accounts []Account `json:"accounts" bson:"accounts"`
 

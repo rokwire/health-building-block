@@ -3503,7 +3503,7 @@ func (h AdminApisHandler) GetManualTestsByCountyID(current model.User, group str
 
 			userResponse := AppUserResponse{ID: user.ID, ExternalID: user.ExternalID, UUID: user.UUID, PublicKey: user.PublicKey,
 				Consent: user.Consent, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
-				EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, Accounts: accounts}
+				EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, EncryptedPK: user.EncryptedPK, Accounts: accounts}
 
 			r := eManualTestResponse{ID: item.ID, HistoryID: item.HistoryID, LocationID: item.LocationID,
 				CountyID: item.CountyID, EncryptedKey: item.EncryptedKey, EncryptedBlob: item.EncryptedBlob,
@@ -4381,7 +4381,7 @@ func (h AdminApisHandler) GetUserByExternalID(current model.User, group string, 
 
 	responseUser := AppUserResponse{ID: user.ID, ExternalID: user.ExternalID, UUID: user.UUID, PublicKey: user.PublicKey,
 		Consent: user.Consent, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
-		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, Accounts: accounts}
+		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, EncryptedPK: user.EncryptedPK, Accounts: accounts}
 	data, err := json.Marshal(responseUser)
 	if err != nil {
 		log.Println("Error on marshal the test type result items")

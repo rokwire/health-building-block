@@ -11,7 +11,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.1.0"
+        "version": "2.2.0"
     },
     "host": "localhost",
     "basePath": "/health",
@@ -6410,6 +6410,9 @@
                 "encrypted_key": {
                     "type": "string"
                 },
+                "encrypted_pk": {
+                    "type": "string"
+                },
                 "exposure_notification": {
                     "type": "boolean"
                 },
@@ -7409,6 +7412,9 @@
                     "type": "string"
                 },
                 "encrypted_key": {
+                    "type": "string"
+                },
+                "encrypted_pk": {
                     "type": "string"
                 },
                 "exposure_notification": {

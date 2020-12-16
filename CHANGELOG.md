@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2020-12-16
+### Changed
+- Add encrypted PK field to the user entity. [#106](https://github.com/rokwire/health-building-block/issues/106)
+
 ## [2.1.0] - 2020-12-11
 ### Changed
 - Sub accounts feature internal improvements. [#103](https://github.com/rokwire/health-building-block/issues/103)
@@ -197,7 +201,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/rokwire/health-building-block/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/rokwire/health-building-block/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/rokwire/health-building-block/compare/v1.34.0...v2.0.0
 [1.34.0]: https://github.com/rokwire/health-building-block/compare/v1.33.0...v1.34.0

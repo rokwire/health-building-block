@@ -416,7 +416,7 @@ func (sa *Adapter) FindUsersByRePost(rePost bool) ([]*model.User, error) {
 
 //CreateAppUser creates an app user
 func (sa *Adapter) CreateAppUser(externalID string,
-	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
+	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) (*model.User, error) {
 	var user *model.User
 
 	// transaction
@@ -471,7 +471,7 @@ func (sa *Adapter) CreateAppUser(externalID string,
 		//insert the created user
 		user = &model.User{ID: userID.String(), ExternalID: externalID, UUID: userUUID,
 			PublicKey: publicKey, Consent: consent, ExposureNotification: exposureNotification, RePost: rePost,
-			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, Accounts: accounts, DateCreated: time.Now()}
+			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, EncryptedPK: encryptedPK, Accounts: accounts, DateCreated: time.Now()}
 		_, err = sa.db.users.InsertOneWithContext(sessionContext, user)
 		if err != nil {
 			abortTransaction(sessionContext)

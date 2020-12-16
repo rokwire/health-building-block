@@ -546,7 +546,7 @@ func (we Adapter) getUser(w http.ResponseWriter, r *http.Request) {
 
 	response := rest.AppUserResponse{ID: user.ID, ExternalID: user.ExternalID, UUID: user.UUID, PublicKey: user.PublicKey,
 		Consent: user.Consent, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
-		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, Accounts: accounts}
+		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, EncryptedPK: user.EncryptedPK, Accounts: accounts}
 	data, err := json.Marshal(response)
 	if err != nil {
 		log.Println("Error on marshal the user")

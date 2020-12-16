@@ -46,6 +46,7 @@ type AppUserResponse struct {
 	RePost               bool    `json:"re_post"`
 	EncryptedKey         *string `json:"encrypted_key"`
 	EncryptedBlob        *string `json:"encrypted_blob"`
+	EncryptedPK          *string `json:"encrypted_pk"`
 
 	Accounts []AppUserAccountResponse `json:"accounts"`
 } //@name User

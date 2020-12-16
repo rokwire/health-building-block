@@ -6422,6 +6422,9 @@ var doc = `{
                 "encrypted_key": {
                     "type": "string"
                 },
+                "encrypted_pk": {
+                    "type": "string"
+                },
                 "exposure_notification": {
                     "type": "boolean"
                 },

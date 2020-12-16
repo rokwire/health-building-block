@@ -549,9 +549,9 @@ func (app *Application) FindUserByExternalID(externalID string) (*model.User, er
 
 //CreateAppUser creates an app user
 func (app *Application) CreateAppUser(externalID string, uuid string, publicKey string,
-	consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
+	consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) (*model.User, error) {
 
-	user, err := app.storage.CreateAppUser(externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob)
+	user, err := app.storage.CreateAppUser(externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
 	if err != nil {
 		return nil, err
 	}

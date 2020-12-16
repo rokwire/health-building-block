@@ -423,6 +423,7 @@ type loginAppUserRequest struct {
 	RePost               *bool   `json:"re_post"`
 	EncryptedKey         *string `json:"encrypted_key"`
 	EncryptedBlob        *string `json:"encrypted_blob"`
+	EncryptedPK          *string `json:"encrypted_pk"`
 } //@name loginUserRequest
 
 //all manipulating of the user must happen via the auth module. We cache the users in the auth module
@@ -477,6 +478,7 @@ func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 	rePost := requestData.RePost
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
+	encryptedPK := requestData.EncryptedPK
 
 	if user == nil {
 		//we need to create
@@ -485,7 +487,7 @@ func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 		if authType != nil && *authType == "shibboleth" {
 			rePostValue = true
 		}
-		err = we.auth.createAppUser(*externalID, uuid, publicKey, *consent, *exposureNotification, rePostValue, encryptedKey, encryptedBlob)
+		err = we.auth.createAppUser(*externalID, uuid, publicKey, *consent, *exposureNotification, rePostValue, encryptedKey, encryptedBlob, encryptedPK)
 		if err != nil {
 			log.Println("Error on creating user")
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -498,7 +500,7 @@ func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 	} else {
 		//we need to update
 
-		err = we.auth.updateAppUser(*user, uuid, publicKey, *consent, *exposureNotification, rePost, encryptedKey, encryptedBlob)
+		err = we.auth.updateAppUser(*user, uuid, publicKey, *consent, *exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
 		if err != nil {
 			log.Println("Error on updating user")
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -546,7 +548,7 @@ func (we Adapter) getUser(w http.ResponseWriter, r *http.Request) {
 
 	response := rest.AppUserResponse{ID: user.ID, ExternalID: user.ExternalID, UUID: user.UUID, PublicKey: user.PublicKey,
 		Consent: user.Consent, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
-		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, Accounts: accounts}
+		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, EncryptedPK: user.EncryptedPK, Accounts: accounts}
 	data, err := json.Marshal(response)
 	if err != nil {
 		log.Println("Error on marshal the user")

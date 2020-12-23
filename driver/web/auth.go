@@ -19,6 +19,8 @@ package web
 
 import (
 	"context"
+	"crypto/rsa"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"health/core"
@@ -31,6 +33,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/lestrrat-go/jwx/jwk"
 	"golang.org/x/sync/syncmap"
 	"gopkg.in/ericchiang/go-oidc.v2"
 )
@@ -90,9 +93,9 @@ func (auth *Auth) createAppUser(externalID string, uuid string, publicKey string
 
 //NewAuth creates new auth handler
 func NewAuth(app *core.Application, appKeys []string, oidcProvider string,
-	oidcAppClientID string, appClientID string, webAppClientID string, phoneAuthSecret string, providersAPIKeys []string) *Auth {
+	oidcAppClientID string, appClientID string, webAppClientID string, phoneAuthSecret string, authKeys string, authIssuer string, providersAPIKeys []string) *Auth {
 	apiKeysAuth := newAPIKeysAuth(appKeys)
-	userAuth2 := newUserAuth(app, oidcProvider, oidcAppClientID, phoneAuthSecret)
+	userAuth2 := newUserAuth(app, oidcProvider, oidcAppClientID, phoneAuthSecret, authKeys, authIssuer)
 	adminAuth := newAdminAuth(app, oidcProvider, appClientID, webAppClientID)
 	providersAuth := newProviderAuth(providersAPIKeys)
 
@@ -530,15 +533,31 @@ type shData struct {
 	UIuceduUIN *string `json:"uiucedu_uin"`
 }
 
+type tokenData struct {
+	UID      string
+	Name     string
+	Email    string
+	Phone    string
+	ClientID string
+	Groups   string
+	Auth     string
+	Type     string
+	ISS      string
+}
+
 //UserAuth entity
 type UserAuth struct {
 	app *core.Application
 
-	//shibboleth
+	//shibboleth - keep for back compatability
 	appIDTokenVerifier *oidc.IDTokenVerifier
 
-	//phone
+	//phone - keep for back compatability
 	phoneAuthSecret string
+
+	//auth service
+	Keys   *jwk.Set
+	Issuer string
 
 	cachedUsers     *syncmap.Map //cache users while active - 5 minutes timeout
 	cachedUsersLock *sync.RWMutex
@@ -636,15 +655,16 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 		auth.responseBadRequest(w)
 		return false, nil, nil, nil
 	}
-	rawIDToken := splitAuthorization[1]
+	rawToken := splitAuthorization[1]
 
-	// determine the token type - 1 for shibboleth, 2 for phone
-	tokenType, err := auth.getTokenType(rawIDToken)
+	// determine the token type: 1 for shibboleth, 2 for phone, 3 for auth access token
+	// 1 & 2 are deprecated but we support them for back compatability
+	tokenType, err := auth.getTokenType(rawToken)
 	if err != nil {
 		auth.responseUnauthorized(err.Error(), w)
 		return false, nil, nil, nil
 	}
-	if !(*tokenType == 1 || *tokenType == 2) {
+	if !(*tokenType == 1 || *tokenType == 2 || *tokenType == 3) {
 		auth.responseUnauthorized("not supported token type", w)
 		return false, nil, nil, nil
 	}
@@ -652,22 +672,44 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 	// process the token - validate it, extract the user identifier
 	var externalID string
 	var authType string
-	if *tokenType == 1 {
-		uin, err := auth.processShibbolethToken(rawIDToken)
+
+	switch *tokenType {
+	case 1:
+		//support this for back compatability
+		uin, err := auth.processShibbolethToken(rawToken)
 		if err != nil {
 			auth.responseUnauthorized(err.Error(), w)
 			return false, nil, nil, nil
 		}
 		externalID = *uin
 		authType = "shibboleth"
-	} else if *tokenType == 2 {
-		phone, err := auth.processPhoneToken(rawIDToken)
+	case 2:
+		//support this for back compatability
+		phone, err := auth.processPhoneToken(rawToken)
 		if err != nil {
 			auth.responseUnauthorized(err.Error(), w)
 			return false, nil, nil, nil
 		}
 		externalID = *phone
 		authType = "phone"
+	case 3:
+		tokenData, err := auth.processAccessToken(rawToken)
+		if err != nil {
+			auth.responseUnauthorized(err.Error(), w)
+			return false, nil, nil, nil
+		}
+
+		tokenAuth := tokenData.Auth
+		if tokenAuth == "oidc" {
+			externalID = tokenData.UID
+			authType = "shibboleth"
+		} else if tokenAuth == "rokwire_phone" {
+			externalID = tokenData.UID
+			authType = "phone"
+		} else {
+			auth.responseUnauthorized("not supported token auth type", w)
+			return false, nil, nil, nil
+		}
 	}
 
 	//TODO - refactor!!!
@@ -679,7 +721,7 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 			auth.responseUnauthorized(fmt.Sprintf("%s phone is not added in the system", externalID), w)
 			return false, nil, nil, nil
 		}
-		//it is found
+		//it was found
 		externalID = *foundedUIN
 		authType = "shibboleth"
 	}
@@ -770,6 +812,81 @@ func (auth *UserAuth) createDefaultAccountIfNeeded(current model.User) (*model.U
 	return user, nil
 }
 
+func (auth *UserAuth) processAccessToken(token string) (*tokenData, error) {
+	//extract the data - header and payload
+	tokenSegments := strings.Split(token, ".")
+	if len(tokenSegments) != 3 {
+		return nil, errors.New("token segments count is != 3")
+	}
+	//header data
+	headerData, err := jwt.DecodeSegment(tokenSegments[0])
+	if err != nil {
+		log.Printf("error decoding the header segment - %s", err)
+		return nil, err
+	}
+	headerMap := make(map[string]string)
+	err = json.Unmarshal(headerData, &headerMap)
+	if err != nil {
+		log.Println("error unmarshaling the header data" + err.Error())
+		return nil, err
+	}
+
+	//payload
+	payloadData, err := jwt.DecodeSegment(tokenSegments[1])
+	if err != nil {
+		log.Printf("error decoding the payload segment - %s", err)
+		return nil, err
+	}
+	var tokenData *tokenData
+	err = json.Unmarshal(payloadData, &tokenData)
+	if err != nil {
+		log.Println("error unmarshaling the payload data" + err.Error())
+		return nil, err
+	}
+
+	//check issuer
+	if tokenData.ISS != auth.Issuer {
+		log.Printf("issuer does not match: - %s", tokenData.ISS)
+		return nil, errors.New("issuer does not match:" + tokenData.ISS)
+	}
+
+	//check keys
+	kid := headerMap["kid"]
+	if len(kid) == 0 {
+		log.Println("kid header is missing")
+		return nil, errors.New("kid header is missing")
+	}
+	jwkMatch := auth.Keys.LookupKeyID(kid)
+	if len(jwkMatch) == 0 {
+		log.Printf("no matching kid found")
+		return nil, errors.New("no matching kid found")
+	} else if len(jwkMatch) > 1 {
+		log.Printf("multiple matching kids found")
+		return nil, errors.New("multiple matching kids found")
+	}
+	publicKey := jwkMatch[0].(jwk.RSAPublicKey)
+
+	//validate
+	jwk := rsa.PublicKey{}
+	parsedToken, err := jwt.ParseWithClaims(token, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if err := publicKey.Raw(&jwk); err != nil {
+			log.Println("failed to create public key:", err)
+			return nil, err
+		}
+		return &jwk, nil
+	})
+	if err != nil {
+		log.Printf("error parse/validate token - %s", err)
+		return nil, err
+	}
+	if !parsedToken.Valid {
+		log.Printf("not valid token - %s", token)
+		return nil, errors.New("not valid token:" + token)
+	}
+
+	return tokenData, nil
+}
+
 func (auth *UserAuth) processShibbolethToken(token string) (*string, error) {
 	// Validate the token
 	idToken, err := auth.appIDTokenVerifier.Verify(context.Background(), token)
@@ -826,7 +943,8 @@ func (auth *UserAuth) processPhoneToken(token string) (*string, error) {
 	return nil, errors.New("there is no phoneNumber claim in the phone token")
 }
 
-// type: 1 for shibboleth, 2 for phone
+// type: 1 for shibboleth, 2 for phone, 3 for auth access token
+// 1 & 2 are deprecated but we support them for back compatability
 func (auth *UserAuth) getTokenType(token string) (*int, error) {
 	parser := new(jwt.Parser)
 	claims := jwt.MapClaims{}
@@ -842,6 +960,10 @@ func (auth *UserAuth) getTokenType(token string) (*int, error) {
 		}
 		if key == "phoneNumber" {
 			tokenType := 2
+			return &tokenType, nil
+		}
+		if key == "uid" {
+			tokenType := 3
 			return &tokenType, nil
 		}
 	}
@@ -1001,13 +1123,18 @@ func (auth *UserAuth) responseForbbiden(info string, w http.ResponseWriter) {
 }
 
 func newUserAuth(app *core.Application, oidcProvider string, oidcAppClientID string,
-	phoneAuthSecret string) *UserAuth {
+	phoneAuthSecret string, keys string, issuer string) *UserAuth {
+
 	provider, err := oidc.NewProvider(context.Background(), oidcProvider)
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	appIDTokenVerifier := provider.Verifier(&oidc.Config{ClientID: oidcAppClientID})
+
+	keysSet, err := jwk.ParseString(keys)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	cacheUsers := &syncmap.Map{}
 	lock := &sync.RWMutex{}
@@ -1015,8 +1142,7 @@ func newUserAuth(app *core.Application, oidcProvider string, oidcAppClientID str
 	cacheRosters := []map[string]string{}
 	rostersLock := &sync.RWMutex{}
 
-	auth := UserAuth{app: app, appIDTokenVerifier: appIDTokenVerifier,
-		phoneAuthSecret: phoneAuthSecret, cachedUsers: cacheUsers, cachedUsersLock: lock,
-		rosters: cacheRosters, rostersLock: rostersLock}
+	auth := UserAuth{app: app, appIDTokenVerifier: appIDTokenVerifier, phoneAuthSecret: phoneAuthSecret, Keys: keysSet, Issuer: issuer,
+		cachedUsers: cacheUsers, cachedUsersLock: lock, rosters: cacheRosters, rostersLock: rostersLock}
 	return &auth
 }

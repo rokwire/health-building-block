@@ -576,8 +576,9 @@ func (we Adapter) providerAuthWrapFunc(handler http.HandlerFunc) http.HandlerFun
 
 //NewWebAdapter creates new WebAdapter instance
 func NewWebAdapter(host string, app *core.Application, appKeys []string, oidcProvider string,
-	oidcAppClientID string, adminAppClientID string, adminWebAppClientID string, phoneAuthSecret string, providersKeys []string) Adapter {
-	auth := NewAuth(app, appKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID, phoneAuthSecret, providersKeys)
+	oidcAppClientID string, adminAppClientID string, adminWebAppClientID string, phoneAuthSecret string,
+	authKeys string, authIssuer string, providersKeys []string) Adapter {
+	auth := NewAuth(app, appKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID, phoneAuthSecret, authKeys, authIssuer, providersKeys)
 	authorization := casbin.NewEnforcer("driver/web/authorization_model.conf", "driver/web/authorization_policy.csv")
 
 	apisHandler := rest.NewApisHandler(app)

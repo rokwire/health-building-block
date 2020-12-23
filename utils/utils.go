@@ -131,7 +131,8 @@ func LogRequest(req *http.Request) {
 		var logValue []string
 		//do not log api keys, cookies and Authorization
 		if key == "Rokwire-Api-Key" || key == "User-Id" || key == "Cookie" ||
-			key == "Authorization" || key == "Rokwire-Hs-Api-Key" || key == "Group" {
+			key == "Authorization" || key == "Rokwire-Hs-Api-Key" || key == "Group" ||
+			key == "Rokwire-Acc-Id" {
 			logValue = append(logValue, "---")
 		} else {
 			logValue = value
@@ -139,6 +140,16 @@ func LogRequest(req *http.Request) {
 		header[key] = logValue
 	}
 	log.Printf("%s %s %s", method, path, header)
+}
+
+//GetLogUUIDValue prepares UUID to be logged.
+func GetLogUUIDValue(identifier string) string {
+	if len(identifier) < 26 {
+		return fmt.Sprintf("bad identifier - %s", identifier)
+	}
+
+	sub := identifier[:26]
+	return fmt.Sprintf("%s***", sub)
 }
 
 //GetLogValue prepares a sensitive data to be logged.

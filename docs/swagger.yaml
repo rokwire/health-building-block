@@ -60,6 +60,43 @@ definitions:
       value:
         type: string
     type: object
+  Account:
+    properties:
+      active:
+        type: boolean
+      address1:
+        type: string
+      address2:
+        type: string
+      address3:
+        type: string
+      birth_date:
+        type: string
+      city:
+        type: string
+      default:
+        type: boolean
+      email:
+        type: string
+      external_id:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      middle_name:
+        type: string
+      phone:
+        type: string
+      state:
+        type: string
+      zip_code:
+        type: string
+    type: object
   AuditEntity:
     properties:
       client_data:
@@ -79,27 +116,6 @@ definitions:
       user_identifier:
         type: string
       user_info:
-        type: string
-    type: object
-  CTest:
-    properties:
-      date_created:
-        type: string
-      date_updated:
-        type: string
-      encrypted_blob:
-        type: string
-      encrypted_key:
-        type: string
-      id:
-        type: string
-      order_number:
-        type: string
-      processed:
-        type: boolean
-      provider_id:
-        type: string
-      user_id:
         type: string
     type: object
   County:
@@ -207,21 +223,6 @@ definitions:
       type:
         type: string
     type: object
-  History:
-    properties:
-      date:
-        type: string
-      encrypted_blob:
-        type: string
-      encrypted_key:
-        type: string
-      id:
-        type: string
-      type:
-        type: string
-      user_id:
-        type: string
-    type: object
   Location:
     properties:
       address_1:
@@ -269,6 +270,8 @@ definitions:
     type: object
   ManualTest:
     properties:
+      account_id:
+        type: string
       county_id:
         type: string
       date:
@@ -342,6 +345,43 @@ definitions:
       provider_name:
         type: string
     type: object
+  RawSubAccount:
+    properties:
+      account_id:
+        type: string
+      address1:
+        type: string
+      address2:
+        type: string
+      address3:
+        type: string
+      birth_date:
+        type: string
+      city:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      last_name:
+        type: string
+      middle_name:
+        type: string
+      net_id:
+        type: string
+      phone:
+        type: string
+      primary_account:
+        type: string
+      state:
+        type: string
+      uin:
+        type: string
+      zip_code:
+        type: string
+    type: object
   Resource:
     properties:
       display_order:
@@ -370,6 +410,8 @@ definitions:
     type: object
   Status:
     properties:
+      account_id:
+        type: string
       app_version:
         type: string
       date:
@@ -381,8 +423,6 @@ definitions:
       encrypted_key:
         type: string
       id:
-        type: string
-      user_id:
         type: string
     type: object
   Symptom:
@@ -497,14 +537,22 @@ definitions:
     type: object
   User:
     properties:
+      accounts:
+        items:
+          $ref: '#/definitions/Account'
+        type: array
       consent:
         type: boolean
       encrypted_blob:
         type: string
       encrypted_key:
         type: string
+      encrypted_pk:
+        type: string
       exposure_notification:
         type: boolean
+      external_id:
+        type: string
       id:
         type: string
       public_key:
@@ -554,6 +602,8 @@ definitions:
     type: object
   createActionRequest:
     properties:
+      account_id:
+        type: string
       audit:
         type: string
       encrypted_blob:
@@ -562,13 +612,11 @@ definitions:
         type: string
       provider_id:
         type: string
-      user_id:
-        type: string
     required:
+    - account_id
     - encrypted_blob
     - encrypted_key
     - provider_id
-    - user_id
     type: object
   createAppVersionRequest:
     properties:
@@ -844,6 +892,56 @@ definitions:
     - manual_test
     - provider_name
     type: object
+  createRawSubAccountItemsRequest:
+    properties:
+      audit:
+        type: string
+      items:
+        items:
+          properties:
+            address1:
+              type: string
+            address2:
+              type: string
+            address3:
+              type: string
+            birth_date:
+              type: string
+            city:
+              type: string
+            email:
+              type: string
+            first_name:
+              required:
+              - first_name
+              type: string
+            gender:
+              type: string
+            last_name:
+              required:
+              - last_name
+              type: string
+            middle_name:
+              type: string
+            net_id:
+              type: string
+            phone:
+              type: string
+            primary_account:
+              required:
+              - primary_account
+              type: string
+            state:
+              type: string
+            uin:
+              required:
+              - uin
+              type: string
+            zip_code:
+              type: string
+          type: object
+        type: array
+    type: object
   createResourceRequest:
     properties:
       audit:
@@ -1050,13 +1148,35 @@ definitions:
     type: object
   getRosterByPhoneResponse:
     properties:
+      address1:
+        type: string
+      address2:
+        type: string
+      address3:
+        type: string
+      badge_type:
+        type: string
+      birth_date:
+        type: string
+      city:
+        type: string
+      email:
+        type: string
       first_name:
+        type: string
+      gender:
         type: string
       last_name:
         type: string
       middle_name:
         type: string
+      phone:
+        type: string
+      state:
+        type: string
       uin:
+        type: string
+      zip_code:
         type: string
     type: object
   gubonResponse:
@@ -1093,6 +1213,8 @@ definitions:
         type: string
       encrypted_key:
         type: string
+      encrypted_pk:
+        type: string
       exposure_notification:
         type: boolean
       public_key:
@@ -1106,6 +1228,42 @@ definitions:
     - exposure_notification
     - public_key
     - uuid
+    type: object
+  model.CTest:
+    properties:
+      date_created:
+        type: string
+      date_updated:
+        type: string
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      id:
+        type: string
+      order_number:
+        type: string
+      processed:
+        type: boolean
+      provider_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  model.EHistory:
+    properties:
+      date:
+        type: string
+      encrypted_blob:
+        type: string
+      encrypted_key:
+        type: string
+      id:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
     type: object
   processManualTestRequest:
     properties:
@@ -1334,6 +1492,42 @@ definitions:
     - manual_test
     - provider_name
     type: object
+  updateRawSubAccountRequest:
+    properties:
+      address1:
+        type: string
+      address2:
+        type: string
+      address3:
+        type: string
+      audit:
+        type: string
+      birth_date:
+        type: string
+      city:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      last_name:
+        type: string
+      middle_name:
+        type: string
+      net_id:
+        type: string
+      phone:
+        type: string
+      state:
+        type: string
+      zip_code:
+        type: string
+    required:
+    - first_name
+    - last_name
+    type: object
   updateResourceRequest:
     properties:
       audit:
@@ -1343,6 +1537,37 @@ definitions:
       link:
         type: string
       title:
+        type: string
+    type: object
+  updateRosterRequest:
+    properties:
+      address1:
+        type: string
+      address2:
+        type: string
+      address3:
+        type: string
+      audit:
+        type: string
+      badge_type:
+        type: string
+      birth_date:
+        type: string
+      city:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      last_name:
+        type: string
+      middle_name:
+        type: string
+      state:
+        type: string
+      zip_code:
         type: string
     type: object
   updateRuleRequest:
@@ -1440,7 +1665,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 1.31.0
+  version: 2.2.0
 paths:
   /admin/access-rules:
     get:
@@ -1566,7 +1791,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/CTest'
+            $ref: '#/definitions/model.CTest'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -2611,6 +2836,141 @@ paths:
       - AdminGroupAuth: []
       tags:
       - Admin
+  /admin/raw-sub-account-items:
+    post:
+      consumes:
+      - application/json
+      description: Creates sub account items
+      operationId: CreateSubAccountItems
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/createRawSubAccountItemsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/raw-sub-accounts:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes all sub accounts
+      operationId: DeleteAllSubAccounts
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: Gives the sub accounts matching filters, sorted, and paginated
+      operationId: GetSubAccounts
+      parameters:
+      - description: Phone
+        in: query
+        name: phone
+        type: string
+      - description: UIN
+        in: query
+        name: uin
+        type: string
+      - description: Sort By
+        in: query
+        name: sortBy
+        type: string
+      - description: Order By
+        in: query
+        name: orderBy
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: Offset
+        in: query
+        name: offset
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/RawSubAccount'
+            type: array
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/raw-sub-accounts/uin/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates a sub account.
+      operationId: UpdateSubAccount
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateRawSubAccountRequest'
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/raw-sub-accounts/uin/{uin}:
+    delete:
+      consumes:
+      - text/plain
+      description: Deletes a sub account by uin
+      operationId: DeleteSubAccountByUIN
+      parameters:
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
   /admin/resources:
     get:
       consumes:
@@ -2856,6 +3216,36 @@ paths:
       responses:
         "200":
           description: Successfuly deleted
+          schema:
+            type: string
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/rosters/uin/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates a roster.
+      operationId: UpdateRoster
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateRosterRequest'
+      - description: UIN
+        in: path
+        name: uin
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
           schema:
             type: string
       security:
@@ -3644,6 +4034,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/counties:
@@ -3732,6 +4123,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     get:
@@ -3749,10 +4141,11 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/CTest'
+              $ref: '#/definitions/model.CTest'
             type: array
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     post:
@@ -3802,9 +4195,10 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/CTest'
+            $ref: '#/definitions/model.CTest'
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/ext/building-access:
@@ -4340,6 +4734,7 @@ paths:
             $ref: '#/definitions/UINOverride'
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     put:
@@ -4361,6 +4756,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/user:
@@ -4450,6 +4846,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     get:
@@ -4473,6 +4870,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     put:
@@ -4501,6 +4899,7 @@ paths:
             $ref: '#/definitions/Status'
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/v2/histories:
@@ -4516,6 +4915,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     get:
@@ -4528,10 +4928,11 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/History'
+              $ref: '#/definitions/model.EHistory'
             type: array
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     post:
@@ -4554,9 +4955,10 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/History'
+            $ref: '#/definitions/model.EHistory'
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/v2/histories/{id}:
@@ -4584,9 +4986,10 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/History'
+            $ref: '#/definitions/model.EHistory'
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/v2/statuses:
@@ -4603,6 +5006,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     get:
@@ -4622,6 +5026,7 @@ paths:
             type: string
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
     put:
@@ -4646,6 +5051,7 @@ paths:
             $ref: '#/definitions/Status'
       security:
       - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /version:
@@ -4669,6 +5075,10 @@ securityDefinitions:
   AdminUserAuth:
     in: header (add Bearer prefix to the Authorization value)
     name: Authorization
+    type: apiKey
+  AppUserAccountAuth:
+    in: header
+    name: ROKWIRE-ACC-ID
     type: apiKey
   AppUserAuth:
     in: header (add Bearer prefix to the Authorization value)

@@ -76,15 +76,19 @@ func (auth *Auth) providersCheck(w http.ResponseWriter, r *http.Request) bool {
 }
 
 func (auth *Auth) userCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
-	return auth.userAuth.check(w, r)
+	return auth.userAuth.userCheck(w, r)
 }
 
-func (auth *Auth) updateAppUser(user model.User, uuid string, publicKey string, consent bool, exposureNotification bool, rePost *bool, encryptedKey *string, encryptedBlob *string) error {
-	return auth.userAuth.updateAppUser(user, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob)
+func (auth *Auth) userAccountsCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *model.Account) {
+	return auth.userAuth.userAccountsCheck(w, r)
 }
 
-func (auth *Auth) createAppUser(externalID string, uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) error {
-	return auth.userAuth.createAppUser(externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob)
+func (auth *Auth) updateAppUser(user model.User, uuid string, publicKey string, consent bool, exposureNotification bool, rePost *bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
+	return auth.userAuth.updateAppUser(user, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
+}
+
+func (auth *Auth) createAppUser(externalID string, uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
+	return auth.userAuth.createAppUser(externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
 }
 
 //NewAuth creates new auth handler
@@ -635,7 +639,7 @@ func (auth *UserAuth) cleanCacheUser() {
 	auth.cleanCacheUser()
 }
 
-func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
+func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
 	authorizationHeader := r.Header.Get("Authorization")
 	if len(authorizationHeader) <= 0 {
 		auth.responseBadRequest(w)
@@ -730,7 +734,82 @@ func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mode
 		auth.responseInternalServerError(w)
 		return false, nil, nil, nil
 	}
+
+	// we do not have a such user yet but the ID token is valid so return ok
+	if user == nil {
+		return true, nil, &externalID, &authType
+	}
+
+	// once we have the user we must check if we need to create a default account, every user must have at least one default account
+	user, err = auth.createDefaultAccountIfNeeded(*user)
+	if err != nil {
+		log.Printf("error creating a default account for user - %s - %s\n", utils.GetLogUUIDValue(user.ID), err)
+
+		auth.responseInternalServerError(w)
+		return false, nil, nil, nil
+	}
+
 	return true, user, &externalID, &authType
+}
+
+func (auth *UserAuth) userCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
+	//apply main check
+	ok, user, externalID, authType := auth.mainCheck(w, r)
+	if !ok {
+		return false, nil, nil, nil
+	}
+
+	return true, user, externalID, authType
+}
+
+func (auth *UserAuth) userAccountsCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *model.Account) {
+	//apply main check
+	ok, user, _, _ := auth.mainCheck(w, r)
+	if !ok {
+		return false, nil, nil
+	}
+
+	// determine the used user account
+	/// get the account id from the header
+	passedAccountID := r.Header.Get("ROKWIRE-ACC-ID")
+	/// if account id not passed then we use the default one, we support the old client version
+	if len(passedAccountID) == 0 {
+		defAccount := user.GetDefaultAccount()
+		if defAccount == nil {
+			log.Printf("error getting default account - %s\n", utils.GetLogUUIDValue(user.ID))
+
+			auth.responseInternalServerError(w)
+			return false, nil, nil
+		}
+		passedAccountID = defAccount.ID
+	}
+	/// now get the user account for the provided account id
+	account := user.GetAccount(passedAccountID)
+	if account == nil {
+		auth.responseForbbiden(fmt.Sprintf("Security - %s is trying to use account %s", utils.GetLogUUIDValue(user.ID), passedAccountID), w)
+		return false, nil, nil
+	}
+
+	return true, user, account
+}
+
+func (auth *UserAuth) createDefaultAccountIfNeeded(current model.User) (*model.User, error) {
+	if current.HasDefaultAccount() {
+		//we have a default account, so do nothing
+		return &current, nil
+	}
+
+	log.Printf("createDefaultAccountIfNeeded -> we need to create default account!")
+
+	//1. remove it from the cache
+	auth.deleteCacheUser(current.ExternalID)
+
+	//2. create default account
+	user, err := auth.app.CreateDefaultAccount(current.ID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (auth *UserAuth) processAccessToken(token string) (*tokenData, error) {
@@ -892,9 +971,9 @@ func (auth *UserAuth) getTokenType(token string) (*int, error) {
 }
 
 func (auth *UserAuth) createAppUser(externalID string, uuid string, publicKey string,
-	consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) error {
+	consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
 
-	_, err := auth.app.CreateAppUser(externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob)
+	_, err := auth.app.CreateAppUser(externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
 	if err != nil {
 		return err
 	}
@@ -903,7 +982,7 @@ func (auth *UserAuth) createAppUser(externalID string, uuid string, publicKey st
 }
 
 func (auth *UserAuth) updateAppUser(user model.User, uuid string, publicKey string, consent bool, exposureNotification bool, rePost *bool,
-	encryptedKey *string, encryptedBlob *string) error {
+	encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
 
 	//1. remove it from the cache
 	auth.deleteCacheUser(user.ExternalID)
@@ -918,6 +997,7 @@ func (auth *UserAuth) updateAppUser(user model.User, uuid string, publicKey stri
 	}
 	user.EncryptedKey = encryptedKey
 	user.EncryptedBlob = encryptedBlob
+	user.EncryptedPK = encryptedPK
 
 	//3. Update the user
 	err := auth.app.UpdateUser(&user)
@@ -1033,6 +1113,13 @@ func (auth *UserAuth) responseInternalServerError(w http.ResponseWriter) {
 
 	w.WriteHeader(http.StatusInternalServerError)
 	w.Write([]byte("Internal Server Error"))
+}
+
+func (auth *UserAuth) responseForbbiden(info string, w http.ResponseWriter) {
+	log.Printf("403 - Forbidden - %s", info)
+
+	w.WriteHeader(http.StatusForbidden)
+	w.Write([]byte("Forbidden"))
 }
 
 func newUserAuth(app *core.Application, oidcProvider string, oidcAppClientID string,

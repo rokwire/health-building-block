@@ -779,7 +779,7 @@ type getCTestsResponse struct {
 
 	ProviderID   string `json:"provider_id"`
 	ProviderName string `json:"provider"`
-	UserID       string `json:"user_id"`
+	AccountID    string `json:"account_id"`
 
 	EncryptedKey  string `json:"encrypted_key"`
 	EncryptedBlob string `json:"encrypted_blob"`
@@ -798,8 +798,9 @@ type getCTestsResponse struct {
 // @Param processed query bool false "select false value"
 // @Success 200 {array} model.CTest
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/ctests [get]
-func (h ApisHandler) GetCTests(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetCTests(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	keys, ok := r.URL.Query()["processed"]
 	if !ok || len(keys[0]) < 1 {
 		log.Println("url param 'processed' is missing")
@@ -808,7 +809,7 @@ func (h ApisHandler) GetCTests(current model.User, w http.ResponseWriter, r *htt
 	}
 	processed, _ := strconv.ParseBool(keys[0])
 
-	ctests, providers, err := h.app.Services.GetCTests(current, processed)
+	ctests, providers, err := h.app.Services.GetCTests(account, processed)
 	if err != nil {
 		log.Println("Error on getting the ctests items")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -822,7 +823,7 @@ func (h ApisHandler) GetCTests(current model.User, w http.ResponseWriter, r *htt
 			provider := h.findProvider(ctest.ProviderID, providers)
 
 			r := getCTestsResponse{ID: ctest.ID, ProviderID: provider.ID, ProviderName: provider.Name,
-				UserID: ctest.UserID, EncryptedKey: ctest.EncryptedKey, EncryptedBlob: ctest.EncryptedBlob,
+				AccountID: ctest.UserID, EncryptedKey: ctest.EncryptedKey, EncryptedBlob: ctest.EncryptedBlob,
 				Processed: ctest.Processed, DateCreated: ctest.DateCreated, DateUpdated: ctest.DateUpdated}
 			resultList[i] = r
 		}
@@ -853,8 +854,9 @@ type updateCTestRequest struct {
 // @Param id path string true "ID"
 // @Success 200 {object} model.CTest
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/ctests/{id} [put]
-func (h ApisHandler) UpdateCTest(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) UpdateCTest(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -886,13 +888,33 @@ func (h ApisHandler) UpdateCTest(current model.User, w http.ResponseWriter, r *h
 		return
 	}
 
-	ctest, err := h.app.Services.UpdateCTest(current, ID, requestData.Processed)
+	ctest, err := h.app.Services.UpdateCTest(account, ID, requestData.Processed)
 	if err != nil {
 		log.Printf("Error on updating the ctest item - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	data, err = json.Marshal(ctest)
+
+	//TODO refactor!!!
+	type updateCTestResponse struct {
+		ID string `json:"id"`
+
+		ProviderID string `json:"provider_id"`
+		AccountID  string `json:"account_id"`
+
+		EncryptedKey  string `json:"encrypted_key"`
+		EncryptedBlob string `json:"encrypted_blob"`
+
+		OrderNumber *string `json:"order_number"`
+
+		Processed bool `json:"processed"`
+
+		DateCreated time.Time  `json:"date_created"`
+		DateUpdated *time.Time `json:"date_updated"`
+	}
+	result := updateCTestResponse{ID: ctest.ID, ProviderID: ctest.ProviderID, AccountID: ctest.UserID, EncryptedKey: ctest.EncryptedKey,
+		EncryptedBlob: ctest.EncryptedBlob, OrderNumber: ctest.OrderNumber, Processed: ctest.Processed, DateCreated: ctest.DateCreated, DateUpdated: ctest.DateUpdated}
+	data, err = json.Marshal(result)
 	if err != nil {
 		log.Println("Error on marshal the ctest item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -911,9 +933,10 @@ func (h ApisHandler) UpdateCTest(current model.User, w http.ResponseWriter, r *h
 // @Accept plain
 // @Success 200 {object} string "Successfuly deleted [n] items"
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/ctests [delete]
-func (h ApisHandler) DeleteCTests(current model.User, w http.ResponseWriter, r *http.Request) {
-	deletedCount, err := h.app.Services.DeleteCTests(current.ID)
+func (h ApisHandler) DeleteCTests(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	deletedCount, err := h.app.Services.DeleteCTests(account.ID)
 	if err != nil {
 		log.Printf("Error on deleting the ctests items - %s\n", err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1044,12 +1067,13 @@ type getStatusByCountyResponse struct {
 // @Tags Covid19
 // @ID GetStatusV2Deprecated
 // @Accept  json
-// @Success 200 {object} model.EStatus
+// @Success 200 {object} rest.statusResponse
 // @Success 404 {string} Not Found
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/statuses [get]
-func (h ApisHandler) GetStatusV2Deprecated(current model.User, w http.ResponseWriter, r *http.Request) {
-	h.processGetStatusV2(current, nil, w, r)
+func (h ApisHandler) GetStatusV2Deprecated(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	h.processGetStatusV2(current, account, nil, w, r)
 }
 
 //GetStatusV2 gets the status for the current user for a specific app version
@@ -1058,18 +1082,19 @@ func (h ApisHandler) GetStatusV2Deprecated(current model.User, w http.ResponseWr
 // @ID GetStatusV2
 // @Accept json
 // @Param app-version path string false "App version"
-// @Success 200 {object} model.EStatus
+// @Success 200 {object} rest.statusResponse
 // @Success 404 {string} Not Found
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/app-version/{app-version}/statuses [get]
-func (h ApisHandler) GetStatusV2(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetStatusV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	appVersion := params["app-version"]
-	h.processGetStatusV2(current, &appVersion, w, r)
+	h.processGetStatusV2(current, account, &appVersion, w, r)
 }
 
-func (h ApisHandler) processGetStatusV2(current model.User, appVersion *string, w http.ResponseWriter, r *http.Request) {
-	status, err := h.app.Services.GetEStatusByUserID(current.ID, appVersion)
+func (h ApisHandler) processGetStatusV2(current model.User, account model.Account, appVersion *string, w http.ResponseWriter, r *http.Request) {
+	status, err := h.app.Services.GetEStatusByAccountID(account.ID, appVersion)
 	if err != nil {
 		log.Println("Error on getting a status")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1081,7 +1106,9 @@ func (h ApisHandler) processGetStatusV2(current model.User, appVersion *string, 
 		return
 	}
 
-	data, err := json.Marshal(status)
+	rItem := statusResponse{ID: status.ID, AccountID: status.UserID, Date: status.Date, EncryptedKey: status.EncryptedKey,
+		EncryptedBlob: status.EncryptedBlob, DateUpdated: status.DateUpdated, AppVersion: status.AppVersion}
+	data, err := json.Marshal(rItem)
 	if err != nil {
 		log.Println("Error on marshal a status")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1107,11 +1134,12 @@ type createOrUpdateStatusRequestV2 struct {
 // @Accept json
 // @Produce json
 // @Param data body createOrUpdateStatusRequestV2 true "body data"
-// @Success 200 {object} model.EStatus
+// @Success 200 {object} rest.statusResponse
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/statuses [put]
-func (h ApisHandler) CreateOrUpdateStatusV2Deprecated(current model.User, w http.ResponseWriter, r *http.Request) {
-	h.processCreateOrUpdateStatusV2(current, nil, w, r)
+func (h ApisHandler) CreateOrUpdateStatusV2Deprecated(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	h.processCreateOrUpdateStatusV2(current, account, nil, w, r)
 }
 
 //CreateOrUpdateStatusV2 creates or updates the status for the current user for a specific app version
@@ -1122,16 +1150,17 @@ func (h ApisHandler) CreateOrUpdateStatusV2Deprecated(current model.User, w http
 // @Produce json
 // @Param app-version path string false "App version"
 // @Param data body createOrUpdateStatusRequestV2 true "body data"
-// @Success 200 {object} model.EStatus
+// @Success 200 {object} rest.statusResponse
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/app-version/{app-version}/statuses [put]
-func (h ApisHandler) CreateOrUpdateStatusV2(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) CreateOrUpdateStatusV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	appVersion := params["app-version"]
-	h.processCreateOrUpdateStatusV2(current, &appVersion, w, r)
+	h.processCreateOrUpdateStatusV2(current, account, &appVersion, w, r)
 }
 
-func (h ApisHandler) processCreateOrUpdateStatusV2(current model.User, appVersion *string, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) processCreateOrUpdateStatusV2(current model.User, account model.Account, appVersion *string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create or update a status - %s\n", err.Error())
@@ -1159,13 +1188,16 @@ func (h ApisHandler) processCreateOrUpdateStatusV2(current model.User, appVersio
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
 
-	status, err := h.app.Services.CreateOrUpdateEStatus(current.ID, appVersion, date, encryptedKey, encryptedBlob)
+	status, err := h.app.Services.CreateOrUpdateEStatus(account.ID, appVersion, date, encryptedKey, encryptedBlob)
 	if err != nil {
 		log.Printf("Error on marshal a status - %s\n", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response, err := json.Marshal(status)
+
+	rItem := statusResponse{ID: status.ID, AccountID: status.UserID, Date: status.Date, EncryptedKey: status.EncryptedKey,
+		EncryptedBlob: status.EncryptedBlob, DateUpdated: status.DateUpdated, AppVersion: status.AppVersion}
+	response, err := json.Marshal(rItem)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(response)
@@ -1179,9 +1211,10 @@ func (h ApisHandler) processCreateOrUpdateStatusV2(current model.User, appVersio
 // @Accept plain
 // @Success 200 {object} string "Successfully deleted"
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/statuses [delete]
-func (h ApisHandler) DeleteStatusV2Deprecated(current model.User, w http.ResponseWriter, r *http.Request) {
-	h.processDeleteStatusV2(current, nil, w, r)
+func (h ApisHandler) DeleteStatusV2Deprecated(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	h.processDeleteStatusV2(current, account, nil, w, r)
 }
 
 //DeleteStatusV2 deletes the status for a specific app version.
@@ -1192,15 +1225,16 @@ func (h ApisHandler) DeleteStatusV2Deprecated(current model.User, w http.Respons
 // @Param app-version path string false "App version"
 // @Success 200 {object} string "Successfully deleted"
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/app-version/{app-version}/statuses [delete]
-func (h ApisHandler) DeleteStatusV2(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) DeleteStatusV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	appVersion := params["app-version"]
-	h.processDeleteStatusV2(current, &appVersion, w, r)
+	h.processDeleteStatusV2(current, account, &appVersion, w, r)
 }
 
-func (h ApisHandler) processDeleteStatusV2(current model.User, appVersion *string, w http.ResponseWriter, r *http.Request) {
-	err := h.app.Services.DeleteEStatus(current.ID, appVersion)
+func (h ApisHandler) processDeleteStatusV2(current model.User, account model.Account, appVersion *string, w http.ResponseWriter, r *http.Request) {
+	err := h.app.Services.DeleteEStatus(account.ID, appVersion)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1233,8 +1267,9 @@ type createЕHistory struct {
 // @Param data body createЕHistory true "body data"
 // @Success 200 {object} model.EHistory
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/histories [post]
-func (h ApisHandler) CreateHistoryV2(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) CreateHistoryV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal create a history - %s\n", err.Error())
@@ -1278,14 +1313,14 @@ func (h ApisHandler) CreateHistoryV2(current model.User, w http.ResponseWriter, 
 			return
 		}
 
-		history, err = h.app.Services.CreateManualЕHistory(current.ID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
+		history, err = h.app.Services.CreateManualЕHistory(account.ID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
 		if err != nil {
 			log.Println(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	} else {
-		history, err = h.app.Services.CreateЕHistory(current.ID, date, eType, encryptedKey, encryptedBlob)
+		history, err = h.app.Services.CreateЕHistory(account.ID, date, eType, encryptedKey, encryptedBlob)
 		if err != nil {
 			log.Println(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1293,7 +1328,9 @@ func (h ApisHandler) CreateHistoryV2(current model.User, w http.ResponseWriter, 
 		}
 	}
 
-	data, err = json.Marshal(history)
+	response := historyResponse{ID: history.ID, AccountID: history.UserID, Date: history.Date,
+		Type: history.Type, EncryptedKey: history.EncryptedKey, EncryptedBlob: history.EncryptedBlob}
+	data, err = json.Marshal(response)
 	if err != nil {
 		log.Println("Error on marshal a history")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1354,8 +1391,9 @@ type updateЕHistory struct {
 // @Param id path string true "ID"
 // @Success 200 {object} model.EHistory
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/histories/{id} [put]
-func (h ApisHandler) UpdateHistoryV2(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) UpdateHistoryV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]
 	if len(ID) <= 0 {
@@ -1391,13 +1429,16 @@ func (h ApisHandler) UpdateHistoryV2(current model.User, w http.ResponseWriter, 
 	date := requestData.Date
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
-	history, err := h.app.Services.UpdateEHistory(current.ID, ID, date, encryptedKey, encryptedBlob)
+	history, err := h.app.Services.UpdateEHistory(account.ID, ID, date, encryptedKey, encryptedBlob)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	data, err = json.Marshal(history)
+
+	response := historyResponse{ID: history.ID, AccountID: history.UserID, Date: history.Date,
+		Type: history.Type, EncryptedKey: history.EncryptedKey, EncryptedBlob: history.EncryptedBlob}
+	data, err = json.Marshal(response)
 	if err != nil {
 		log.Println("Error on marshal the ehistory item")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1416,20 +1457,26 @@ func (h ApisHandler) UpdateHistoryV2(current model.User, w http.ResponseWriter, 
 // @Accept  json
 // @Success 200 {array} model.EHistory
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/histories [get]
-func (h ApisHandler) GetHistoriesV2(current model.User, w http.ResponseWriter, r *http.Request) {
-	historiesItems, err := h.app.Services.GetEHistoriesByUserID(current.ID)
+func (h ApisHandler) GetHistoriesV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	historiesItems, err := h.app.Services.GetEHistoriesByAccountID(account.ID)
 	if err != nil {
 		log.Println("Error on getting the histories items")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	if len(historiesItems) == 0 {
-		historiesItems = make([]*model.EHistory, 0)
+	historiesResponse := make([]historyResponse, len(historiesItems))
+
+	if historiesItems != nil {
+		for i, current := range historiesItems {
+			historiesResponse[i] = historyResponse{ID: current.ID, AccountID: current.UserID, Date: current.Date,
+				Type: current.Type, EncryptedKey: current.EncryptedKey, EncryptedBlob: current.EncryptedBlob}
+		}
 	}
 
-	data, err := json.Marshal(historiesItems)
+	data, err := json.Marshal(historiesResponse)
 	if err != nil {
 		log.Println("Error on marshal the histories items")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1448,9 +1495,10 @@ func (h ApisHandler) GetHistoriesV2(current model.User, w http.ResponseWriter, r
 // @Accept plain
 // @Success 200 {object} string "Successfully deleted [n] items"
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/v2/histories [delete]
-func (h ApisHandler) DeleteHistoriesV2(current model.User, w http.ResponseWriter, r *http.Request) {
-	deletedCount, err := h.app.Services.DeleteEHitories(current.ID)
+func (h ApisHandler) DeleteHistoriesV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	deletedCount, err := h.app.Services.DeleteEHitories(account.ID)
 	if err != nil {
 		log.Printf("Error on deleting the ehistories items - %s\n", err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1470,9 +1518,10 @@ func (h ApisHandler) DeleteHistoriesV2(current model.User, w http.ResponseWriter
 // @Accept json
 // @Success 200 {object} model.UINOverride
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/uin-override [get]
-func (h ApisHandler) GetUINOverride(current model.User, w http.ResponseWriter, r *http.Request) {
-	uinOverride, err := h.app.Services.GetUINOverride(current)
+func (h ApisHandler) GetUINOverride(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	uinOverride, err := h.app.Services.GetUINOverride(account)
 	if err != nil {
 		log.Printf("Error on getting the uin override item - %s\n", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1505,8 +1554,9 @@ type createOrUpdateUINOverride struct {
 // @Param data body createOrUpdateUINOverride true "body data"
 // @Success 200 {object} string
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/uin-override [put]
-func (h ApisHandler) CreateOrUpdateUINOverride(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) CreateOrUpdateUINOverride(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	bodyData, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal the create or update uin override  - %s\n", err.Error())
@@ -1535,7 +1585,7 @@ func (h ApisHandler) CreateOrUpdateUINOverride(current model.User, w http.Respon
 	category := requestData.Category
 	expiration := requestData.Expiration
 
-	err = h.app.Services.CreateOrUpdateUINOverride(current, interval, category, expiration)
+	err = h.app.Services.CreateOrUpdateUINOverride(account, interval, category, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1559,8 +1609,9 @@ type setBuildingAccessRequest struct {
 // @Param data body setBuildingAccessRequest true "body data"
 // @Success 200 {object} string
 // @Security AppUserAuth
+// @Security AppUserAccountAuth
 // @Router /covid19/building-access [put]
-func (h ApisHandler) SetUINBuildingAccess(current model.User, w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) SetUINBuildingAccess(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Error on marshal the set building access item - %s\n", err.Error())
@@ -1588,7 +1639,7 @@ func (h ApisHandler) SetUINBuildingAccess(current model.User, w http.ResponseWri
 	date := requestData.Date
 	access := requestData.Access
 
-	err = h.app.Services.SetUINBuildingAccess(current, date, access)
+	err = h.app.Services.SetUINBuildingAccess(account, date, access)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -2514,6 +2565,17 @@ type getRosterByPhoneResponse struct {
 	FirstName  string `json:"first_name"`
 	MiddleName string `json:"middle_name"`
 	LastName   string `json:"last_name"`
+	Address1   string `json:"address1"`
+	Address2   string `json:"address2"`
+	Address3   string `json:"address3"`
+	BadgeType  string `json:"badge_type"`
+	BirthDate  string `json:"birth_date"`
+	City       string `json:"city"`
+	Email      string `json:"email"`
+	Gender     string `json:"gender"`
+	Phone      string `json:"phone"`
+	State      string `json:"state"`
+	ZipCode    string `json:"zip_code"`
 } // @name getRosterByPhoneResponse
 
 //GetRosterByPhone returns uin of the roster member with a given phone number
@@ -2546,7 +2608,21 @@ func (h ApisHandler) GetRosterByPhone(appVersion *string, w http.ResponseWriter,
 		firstName := roster["first_name"]
 		middleName := roster["middle_name"]
 		lastName := roster["last_name"]
-		response = &getRosterByPhoneResponse{UIN: uin, FirstName: firstName, MiddleName: middleName, LastName: lastName}
+		address1 := roster["address1"]
+		address2 := roster["address2"]
+		address3 := roster["address3"]
+		badgeType := roster["badge_type"]
+		birthDate := roster["birth_date"]
+		city := roster["city"]
+		email := roster["email"]
+		gender := roster["gender"]
+		phone := roster["phone"]
+		state := roster["state"]
+		zipCode := roster["zip_code"]
+
+		response = &getRosterByPhoneResponse{UIN: uin, FirstName: firstName, MiddleName: middleName, LastName: lastName,
+			Address1: address1, Address2: address2, Address3: address3, BadgeType: badgeType, BirthDate: birthDate, City: city,
+			Email: email, Gender: gender, Phone: phone, State: state, ZipCode: zipCode}
 	}
 
 	data, err := json.Marshal(response)

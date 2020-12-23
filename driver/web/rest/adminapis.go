@@ -3491,13 +3491,23 @@ func (h AdminApisHandler) GetManualTestsByCountyID(current model.User, group str
 	if manualTests != nil {
 		for _, item := range manualTests {
 			user := item.User
-			userResponse := AppUserResponse{UUID: user.UUID, PublicKey: user.PublicKey,
+
+			accounts := make([]AppUserAccountResponse, len(user.Accounts))
+			if len(user.Accounts) > 0 {
+				for i, c := range user.Accounts {
+					accounts[i] = AppUserAccountResponse{ID: c.ID, ExternalID: c.ExternalID, Default: c.Default, Active: c.Active,
+						FirstName: c.FirstName, MiddleName: c.MiddleName, LastName: c.LastName, BirthDate: c.BirthDate, Gender: c.Gender, Address1: c.Address1,
+						Address2: c.Address2, Address3: c.Address3, City: c.City, State: c.State, ZipCode: c.ZipCode, Phone: c.Phone, Email: c.Email}
+				}
+			}
+
+			userResponse := AppUserResponse{ID: user.ID, ExternalID: user.ExternalID, UUID: user.UUID, PublicKey: user.PublicKey,
 				Consent: user.Consent, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
-				EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob}
+				EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, EncryptedPK: user.EncryptedPK, Accounts: accounts}
 
 			r := eManualTestResponse{ID: item.ID, HistoryID: item.HistoryID, LocationID: item.LocationID,
 				CountyID: item.CountyID, EncryptedKey: item.EncryptedKey, EncryptedBlob: item.EncryptedBlob,
-				Status: item.Status, Date: item.Date, User: userResponse}
+				Status: item.Status, Date: item.Date, User: userResponse, AccountID: item.AccountID}
 			resultList = append(resultList, r)
 		}
 	} else {
@@ -4359,9 +4369,19 @@ func (h AdminApisHandler) GetUserByExternalID(current model.User, group string, 
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	responseUser := AppUserResponse{ID: user.ID, UUID: user.UUID, PublicKey: user.PublicKey,
+
+	accounts := make([]AppUserAccountResponse, len(user.Accounts))
+	if len(user.Accounts) > 0 {
+		for i, c := range user.Accounts {
+			accounts[i] = AppUserAccountResponse{ID: c.ID, ExternalID: c.ExternalID, Default: c.Default, Active: c.Active,
+				FirstName: c.FirstName, MiddleName: c.MiddleName, LastName: c.LastName, BirthDate: c.BirthDate, Gender: c.Gender, Address1: c.Address1,
+				Address2: c.Address2, Address3: c.Address3, City: c.City, State: c.State, ZipCode: c.ZipCode, Phone: c.Phone, Email: c.Email}
+		}
+	}
+
+	responseUser := AppUserResponse{ID: user.ID, ExternalID: user.ExternalID, UUID: user.UUID, PublicKey: user.PublicKey,
 		Consent: user.Consent, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
-		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob}
+		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, EncryptedPK: user.EncryptedPK, Accounts: accounts}
 	data, err := json.Marshal(responseUser)
 	if err != nil {
 		log.Println("Error on marshal the test type result items")
@@ -4709,10 +4729,416 @@ func (h AdminApisHandler) DeleteAllRosters(current model.User, group string, w h
 	w.Write([]byte("Successfully deleted"))
 }
 
+type updateRosterRequest struct {
+	Audit      *string `json:"audit"`
+	FirstName  string  `json:"first_name"`
+	MiddleName string  `json:"middle_name"`
+	LastName   string  `json:"last_name"`
+	BirthDate  string  `json:"birth_date"`
+	Gender     string  `json:"gender"`
+	Address1   string  `json:"address1"`
+	Address2   string  `json:"address2"`
+	Address3   string  `json:"address3"`
+	City       string  `json:"city"`
+	State      string  `json:"state"`
+	ZipCode    string  `json:"zip_code"`
+	Email      string  `json:"email"`
+	BadgeType  string  `json:"badge_type"`
+} // @name updateRosterRequest
+
+//UpdateRoster updates a roster
+// @Description Updates a roster.
+// @Tags Admin
+// @ID UpdateRoster
+// @Accept json
+// @Produce json
+// @Param data body updateRosterRequest true "body data"
+// @Param uin path string true "UIN"
+// @Success 200 {string} Successfully updated
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/rosters/uin/{id} [put]
+func (h AdminApisHandler) UpdateRoster(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update roster item - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateRosterRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update roster item request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update roster data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	firstName := requestData.FirstName
+	middleName := requestData.MiddleName
+	lastName := requestData.LastName
+	birthDate := requestData.BirthDate
+	gender := requestData.Gender
+	address1 := requestData.Address1
+	address2 := requestData.Address2
+	address3 := requestData.Address3
+	city := requestData.City
+	state := requestData.State
+	zipCode := requestData.ZipCode
+	email := requestData.Email
+	badgeType := requestData.BadgeType
+	err = h.app.Administration.UpdateRoster(current, group, audit, uin, firstName, middleName, lastName, birthDate, gender,
+		address1, address2, address3, city, state, zipCode, email, badgeType)
+	if err != nil {
+		log.Printf("Error on updating roster - %s\n", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully updated"))
+}
+
+type createRawSubAccountItemsRequest struct {
+	Audit *string `json:"audit"`
+	Items []struct {
+		UIN        string `json:"uin" validate:"required"`
+		FirstName  string `json:"first_name" validate:"required"`
+		MiddleName string `json:"middle_name"`
+		LastName   string `json:"last_name" validate:"required"`
+		BirthDate  string `json:"birth_date"`
+		Gender     string `json:"gender"`
+		Address1   string `json:"address1"`
+		Address2   string `json:"address2"`
+		Address3   string `json:"address3"`
+		City       string `json:"city"`
+		State      string `json:"state"`
+		ZipCode    string `json:"zip_code"`
+		Phone      string `json:"phone"`
+		NetID      string `json:"net_id"`
+		Email      string `json:"email"`
+
+		PrimaryAccount string `json:"primary_account" validate:"required"`
+	} `json:"items" validate:"required,min=1"`
+} // @name createRawSubAccountItemsRequest
+
+//CreateSubAccountItems creates sub account items
+// @Description Creates sub account items
+// @Tags Admin
+// @ID CreateSubAccountItems
+// @Accept json
+// @Produce json
+// @Param data body createRawSubAccountItemsRequest true "body data"
+// @Success 200 {string} Successfully created
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/raw-sub-account-items [post]
+func (h AdminApisHandler) CreateSubAccountItems(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal create raw sub accounts items - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData createRawSubAccountItemsRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the create raw sub account items request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating create raw sub account items data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = validate.Var(requestData.Items, "required,dive")
+	if err != nil {
+		log.Printf("Error on validating create raw sub account items - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	items := requestData.Items
+
+	//prepare the items
+	itemsList := make([]model.RawSubAccount, len(items))
+	for i, current := range items {
+		item := model.RawSubAccount{UIN: current.UIN, FirstName: current.FirstName, MiddleName: current.MiddleName,
+			LastName: current.LastName, BirthDate: current.BirthDate, Gender: current.Gender, Address1: current.Address1,
+			Address2: current.Address2, Address3: current.Address3, City: current.City, State: current.State, ZipCode: current.ZipCode,
+			Phone: current.Phone, NetID: current.NetID, Email: current.Email, PrimaryAccount: current.PrimaryAccount}
+		itemsList[i] = item
+	}
+
+	err = h.app.Administration.CreateRawSubAccountItems(current, group, audit, itemsList)
+	if err != nil {
+		log.Printf("Error on creating raw sub account items - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully created"))
+}
+
+//GetSubAccounts gives sub accounts
+// @Description Gives the sub accounts matching filters, sorted, and paginated
+// @Tags Admin
+// @ID GetSubAccounts
+// @Accept json
+// @Param phone query string false "Phone"
+// @Param uin query string false "UIN"
+// @Param sortBy query string false "Sort By"
+// @Param orderBy query string false "Order By"
+// @Param limit query string false "Limit"
+// @Param offset query string false "Offset"
+// @Success 200 {array} model.RawSubAccount
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/raw-sub-accounts [get]
+func (h AdminApisHandler) GetSubAccounts(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	//TODO
+	sortBy := "uin"
+	sortOrder := 1
+	limit := 20
+	offset := 0
+	var filter utils.Filter
+	for key, value := range r.URL.Query() {
+		if len(value) < 1 || len(value[0]) < 1 {
+			continue
+		}
+		switch key {
+		case "sortBy":
+			sortBy = value[0]
+		case "sortOrder":
+			if value[0] == "1" {
+				sortOrder = 1
+			} else if value[0] == "-1" {
+				sortOrder = -1
+			} else {
+				log.Println("Invalid 'sortOrder' value - " + value[0])
+				http.Error(w, "Invalid 'sortOrder' value - Must be 1 or -1", http.StatusBadRequest)
+				return
+			}
+		case "limit":
+			limitValue, err := strconv.Atoi(value[0])
+			if err == nil {
+				if limitValue < 1 || limitValue > 50 {
+					log.Println("Invalid 'limit' value - " + value[0])
+					http.Error(w, "Invalid 'limit' value - Must be an integer between 1 and 50", http.StatusBadRequest)
+					return
+				}
+				limit = limitValue
+			} else {
+				log.Printf("error parsing limit - %s\n", err)
+			}
+		case "offset":
+			offsetValue, err := strconv.Atoi(value[0])
+			if err == nil {
+				offset = offsetValue
+			} else {
+				log.Printf("error parsing offset - %s\n", err)
+			}
+		default:
+			filter.Items = append(filter.Items, utils.FilterItem{Field: key, Value: value})
+		}
+	}
+
+	subAccounts, err := h.app.Administration.GetRawSubAccounts(&filter, sortBy, sortOrder, limit, offset)
+	if err != nil {
+		log.Printf("error getting the raw sub accounts - %s", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.Marshal(subAccounts)
+	if err != nil {
+		log.Println("Error on marshal sub accounts")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(data))
+}
+
+type updateRawSubAccountRequest struct {
+	Audit      *string `json:"audit"`
+	FirstName  string  `json:"first_name" validate:"required"`
+	MiddleName string  `json:"middle_name"`
+	LastName   string  `json:"last_name" validate:"required"`
+	BirthDate  string  `json:"birth_date"`
+	Gender     string  `json:"gender"`
+	Address1   string  `json:"address1"`
+	Address2   string  `json:"address2"`
+	Address3   string  `json:"address3"`
+	City       string  `json:"city"`
+	State      string  `json:"state"`
+	ZipCode    string  `json:"zip_code"`
+	Phone      string  `json:"phone"`
+	NetID      string  `json:"net_id"`
+	Email      string  `json:"email"`
+} // @name updateRawSubAccountRequest
+
+//UpdateSubAccount updates sub account
+// @Description Updates a sub account.
+// @Tags Admin
+// @ID UpdateSubAccount
+// @Accept json
+// @Produce json
+// @Param data body updateRawSubAccountRequest true "body data"
+// @Param uin path string true "UIN"
+// @Success 200 {string} Successfully updated
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/raw-sub-accounts/uin/{id} [put]
+func (h AdminApisHandler) UpdateSubAccount(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal the update raw sub account item - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateRawSubAccountRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update raw sub account item request data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update raw sub account data - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audit := requestData.Audit
+	firstName := requestData.FirstName
+	middleName := requestData.MiddleName
+	lastName := requestData.LastName
+	birthDate := requestData.BirthDate
+	gender := requestData.Gender
+	address1 := requestData.Address1
+	address2 := requestData.Address2
+	address3 := requestData.Address3
+	city := requestData.City
+	state := requestData.State
+	zipCode := requestData.ZipCode
+	phone := requestData.Phone
+	netID := requestData.NetID
+	email := requestData.Email
+
+	err = h.app.Administration.UpdateRawSubAccount(current, group, audit, uin, firstName, middleName, lastName, birthDate, gender,
+		address1, address2, address3, city, state, zipCode, phone, netID, email)
+	if err != nil {
+		log.Printf("Error on updating raw sub account - %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully updated"))
+}
+
+//DeleteSubAccountByUIN deletes a sub account by uin
+// @Description Deletes a sub account by uin
+// @Tags Admin
+// @ID DeleteSubAccountByUIN
+// @Accept plain
+// @Param uin path string true "UIN"
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/raw-sub-accounts/uin/{uin} [delete]
+func (h AdminApisHandler) DeleteSubAccountByUIN(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uin := params["uin"]
+	if len(uin) <= 0 {
+		log.Println("uin is required")
+		http.Error(w, "uin is required", http.StatusBadRequest)
+		return
+	}
+
+	err := h.app.Administration.DeleteRawSubAccountByUIN(current, group, uin)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully deleted"))
+}
+
+//DeleteAllSubAccounts deletes all sub accounts
+// @Description Deletes all sub accounts
+// @Tags Admin
+// @ID DeleteAllSubAccounts
+// @Accept plain
+// @Success 200 {object} string "Successfuly deleted"
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/raw-sub-accounts [delete]
+func (h AdminApisHandler) DeleteAllSubAccounts(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	err := h.app.Administration.DeleteAllRawSubAccounts(current, group)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully deleted"))
+}
+
 type createActionRequest struct {
 	Audit         *string `json:"audit"`
 	ProviderID    string  `json:"provider_id" validate:"required"`
-	UserID        string  `json:"user_id" validate:"required"`
+	AccountID     string  `json:"account_id" validate:"required"`
 	EncryptedKey  string  `json:"encrypted_key" validate:"required"`
 	EncryptedBlob string  `json:"encrypted_blob" validate:"required"`
 } // @name createActionRequest
@@ -4755,18 +5181,21 @@ func (h ApisHandler) CreateAction(current model.User, group string, w http.Respo
 
 	audit := requestData.Audit
 	providerID := requestData.ProviderID
-	userID := requestData.UserID
+	accountID := requestData.AccountID
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
 
-	item, err := h.app.Administration.CreateAction(current, group, audit, providerID, userID, encryptedKey, encryptedBlob)
+	item, err := h.app.Administration.CreateAction(current, group, audit, providerID, accountID, encryptedKey, encryptedBlob)
 	if err != nil {
 		log.Printf("Error on creating an action - %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	data, err = json.Marshal(item)
+	responseItem := cTestResponse{ID: item.ID, ProviderID: item.ProviderID, AccountID: item.UserID, EncryptedKey: item.EncryptedKey,
+		EncryptedBlob: item.EncryptedBlob, OrderNumber: item.OrderNumber, Processed: item.Processed, DateCreated: item.DateCreated, DateUpdated: item.DateUpdated}
+
+	data, err = json.Marshal(responseItem)
 	if err != nil {
 		log.Println("Error on marshal an action")
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

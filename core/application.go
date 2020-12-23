@@ -240,6 +240,8 @@ func (app *Application) notifyListeners(message string, data interface{}) {
 				listener.OnUserUpdated(data.(model.User))
 			} else if message == "onRostersUpdated" {
 				listener.OnRostersUpdated()
+			} else if message == "onRawSubAccountsUpdated" {
+				listener.OnSubAccountsUpdated()
 			}
 		}
 	}()
@@ -547,8 +549,19 @@ func (app *Application) FindUserByExternalID(externalID string) (*model.User, er
 
 //CreateAppUser creates an app user
 func (app *Application) CreateAppUser(externalID string, uuid string, publicKey string,
-	consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
-	user, err := app.storage.CreateUser(nil, externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob)
+	consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) (*model.User, error) {
+
+	user, err := app.storage.CreateAppUser(externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+//CreateDefaultAccount creates a default account for the user
+func (app *Application) CreateDefaultAccount(userID string) (*model.User, error) {
+	user, err := app.storage.CreateDefaultAccount(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -559,7 +572,7 @@ func (app *Application) CreateAppUser(externalID string, uuid string, publicKey 
 //CreateAdminAppUser creates an admin app user
 func (app *Application) CreateAdminAppUser(shibboAuth *model.ShibbolethAuth) (*model.User, error) {
 	externalID := "a_" + shibboAuth.Uin //TODO
-	user, err := app.storage.CreateUser(shibboAuth, externalID, "", "", false, false, false, nil, nil)
+	user, err := app.storage.CreateAdminUser(shibboAuth, externalID, "", "", false, false, false, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -584,25 +597,25 @@ func (app *Application) LoadAllRosters() ([]map[string]string, error) {
 	return rosters, nil
 }
 
-func (app *Application) getEHistoriesByUserID(userID string) ([]*model.EHistory, error) {
-	histories, err := app.storage.FindEHistories(userID)
+func (app *Application) getEHistoriesByAccountID(accountID string) ([]*model.EHistory, error) {
+	histories, err := app.storage.FindEHistories(accountID)
 	if err != nil {
 		return nil, err
 	}
 	return histories, nil
 }
 
-func (app *Application) createЕHistory(userID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
-	history, err := app.storage.CreateEHistory(userID, date, eType, encryptedKey, encryptedBlob)
+func (app *Application) createЕHistory(accountID string, date time.Time, eType string, encryptedKey string, encryptedBlob string) (*model.EHistory, error) {
+	history, err := app.storage.CreateEHistory(accountID, date, eType, encryptedKey, encryptedBlob)
 	if err != nil {
 		return nil, err
 	}
 	return history, nil
 }
 
-func (app *Application) createManualЕHistory(userID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
+func (app *Application) createManualЕHistory(accountID string, date time.Time, encryptedKey string, encryptedBlob string, encryptedImageKey *string, encryptedImageBlob *string,
 	countyID *string, locationID *string) (*model.EHistory, error) {
-	history, err := app.storage.CreateManualЕHistory(userID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
+	history, err := app.storage.CreateManualЕHistory(accountID, date, encryptedKey, encryptedBlob, encryptedImageKey, encryptedImageBlob, countyID, locationID)
 	if err != nil {
 		return nil, err
 	}

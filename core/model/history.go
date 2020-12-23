@@ -27,4 +27,4 @@ type EHistory struct {
 	Type          string    `json:"type" bson:"type"`
 	EncryptedKey  string    `json:"encrypted_key" bson:"encrypted_key"`
 	EncryptedBlob string    `json:"encrypted_blob" bson:"encrypted_blob"`
-} // @name History
+}

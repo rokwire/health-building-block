@@ -695,9 +695,17 @@ func (auth *UserAuth) check(w http.ResponseWriter, r *http.Request) (bool, *mode
 			return false, nil, nil, nil
 		}
 
-		//TODO - add phone when it is ready in the auth service, handle only shibboleth for now!
-		externalID = tokenData.UID
-		authType = "shibboleth"
+		tokenAuth := tokenData.Auth
+		if tokenAuth == "oidc" {
+			externalID = tokenData.UID
+			authType = "shibboleth"
+		} else if tokenAuth == "rokwire_phone" {
+			externalID = tokenData.UID
+			authType = "phone"
+		} else {
+			auth.responseUnauthorized("not supported token auth type", w)
+			return false, nil, nil, nil
+		}
 	}
 
 	//TODO - refactor!!!

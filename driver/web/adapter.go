@@ -137,7 +137,7 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/ext/uin-overrides/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.DeleteExtUINOverride)).Methods("DELETE")
 	covid19RestSubrouter.HandleFunc("/ext/building-access", we.providerAuthWrapFunc(we.apisHandler.GetExtBuildingAccess)).Methods("GET").Queries("uin", "")
 
-	// api key auth
+	// user or api key auth
 	covid19RestSubrouter.HandleFunc("/counties", we.authWrapFunc(we.apisHandler.GetCounties)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/counties/{id}", we.authWrapFunc(we.apisHandler.GetCounty)).Methods("GET")
 
@@ -318,18 +318,34 @@ func (we Adapter) wrapFunc(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+//TODO change name
 type apiKeysAuthFunc = func(*string, http.ResponseWriter, *http.Request)
 
+//TODO change name
 func (we Adapter) authWrapFunc(handler apiKeysAuthFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
-		authenticated, appVersion := we.auth.apiKeyCheck(w, req)
-		if !authenticated {
+		apiKey := req.Header.Get("ROKWIRE-API-KEY")
+		//apply api key check
+		if len(apiKey) > 0 {
+			authenticated, appVersion := we.auth.apiKeyCheck(w, req)
+			if !authenticated {
+				return
+			}
+
+			handler(appVersion, w, req)
+
 			return
 		}
 
-		handler(appVersion, w, req)
+		//apply token check
+		authenticated, _, _, _ := we.auth.userCheck(w, req)
+		if authenticated {
+			v := "appVersion"
+			handler(&v, w, req)
+			return
+		}
 	}
 }
 

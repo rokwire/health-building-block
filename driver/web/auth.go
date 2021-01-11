@@ -641,7 +641,7 @@ func (auth *UserAuth) cleanCacheUser() {
 
 func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
 	//get the tokens
-	token, isFromCookie, csrfToken, err := auth.getTokens(r)
+	token, tokenSourceType, csrfToken, err := auth.getTokens(r)
 	if err != nil {
 		log.Printf("error gettings tokens - %s", err)
 
@@ -655,7 +655,7 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 		return false, nil, nil, nil
 	}
 	rawToken := *token //we have token
-	if *isFromCookie && (csrfToken == nil || len(*csrfToken) == 0) {
+	if *tokenSourceType == "cookie" && (csrfToken == nil || len(*csrfToken) == 0) {
 		//if the token is sent via cookie then we must have csrf token as well
 		auth.responseBadRequest(w)
 		return false, nil, nil, nil
@@ -758,26 +758,37 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 	return true, user, &externalID, &authType
 }
 
-func (auth *UserAuth) getTokens(r *http.Request) (*string, *bool, *string, error) {
-	/*	authorizationHeader := r.Header.Get("Authorization")
-		if len(authorizationHeader) <= 0 {
-			auth.responseBadRequest(w)
-			return nil,
-		}
-		splitAuthorization := strings.Fields(authorizationHeader)
-		if len(splitAuthorization) != 2 {
-			auth.responseBadRequest(w)
-			return false, nil, nil, nil
-		}
-		// expected - Bearer 1234
-		if splitAuthorization[0] != "Bearer" {
-			auth.responseBadRequest(w)
-			return false, nil, nil, nil
-		}
-		rawToken := splitAuthorization[1] */
+//token source type - cookie and header
+func (auth *UserAuth) getTokens(r *http.Request) (*string, *string, *string, error) {
+	//1. Check if there is a cookie
+	cookie, err := r.Cookie("rokwire-access")
+	if err == nil && cookie != nil && len(cookie.Value) > 0 {
+		//there is a cookie
+		tokenSourceType := "cookie"
+		csrfToken := r.Header.Get("CSRF")
 
-	//TODO
-	return nil, nil, nil, nil
+		return &cookie.Value, &tokenSourceType, &csrfToken, nil
+	}
+
+	//2. Check if there is a token in the Authorization header
+	authorizationHeader := r.Header.Get("Authorization")
+	if len(authorizationHeader) <= 0 {
+		//no authorization
+		return nil, nil, nil, nil
+	}
+	splitAuthorization := strings.Fields(authorizationHeader)
+	if len(splitAuthorization) != 2 {
+		//bad authorization
+		return nil, nil, nil, nil
+	}
+	// expected - Bearer 1234
+	if splitAuthorization[0] != "Bearer" {
+		//bad authorization
+		return nil, nil, nil, nil
+	}
+	token := splitAuthorization[1]
+	tokenSourceType := "header"
+	return &token, &tokenSourceType, nil, nil
 }
 
 func (auth *UserAuth) userCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {

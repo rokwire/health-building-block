@@ -137,41 +137,41 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/ext/uin-overrides/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.DeleteExtUINOverride)).Methods("DELETE")
 	covid19RestSubrouter.HandleFunc("/ext/building-access", we.providerAuthWrapFunc(we.apisHandler.GetExtBuildingAccess)).Methods("GET").Queries("uin", "")
 
-	// api key auth
-	covid19RestSubrouter.HandleFunc("/counties", we.authWrapFunc(we.apisHandler.GetCounties)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/counties/{id}", we.authWrapFunc(we.apisHandler.GetCounty)).Methods("GET")
+	// user or api key auth
+	covid19RestSubrouter.HandleFunc("/counties", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetCounties)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/counties/{id}", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetCounty)).Methods("GET")
 
-	covid19RestSubrouter.HandleFunc("/rules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetRulesByCounty)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/rules/county/{county-id}", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetRulesByCounty)).Methods("GET")
 	//deprecated
-	covid19RestSubrouter.HandleFunc("/symptom-rules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetSymptomRuleByCounty)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/access-rules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetAccessRuleByCounty)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/crules/county/{county-id}", we.authWrapFunc(we.apisHandler.GetCRulesByCounty)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/symptom-rules/county/{county-id}", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetSymptomRuleByCounty)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/access-rules/county/{county-id}", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetAccessRuleByCounty)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/crules/county/{county-id}", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetCRulesByCounty)).Methods("GET")
 
-	covid19RestSubrouter.HandleFunc("/resources", we.authWrapFunc(we.apisHandler.GetResources)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/resources", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetResources)).Methods("GET")
 
-	covid19RestSubrouter.HandleFunc("/faq", we.authWrapFunc(we.apisHandler.GetFAQ)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/faq", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetFAQ)).Methods("GET")
 
-	covid19RestSubrouter.HandleFunc("/news", we.authWrapFunc(we.apisHandler.GetNews)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/news", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetNews)).Methods("GET")
 
-	covid19RestSubrouter.HandleFunc("/providers", we.authWrapFunc(we.apisHandler.GetProvidersByCounties)).Methods("GET").Queries("county-ids", "")
-	covid19RestSubrouter.HandleFunc("/providers", we.authWrapFunc(we.apisHandler.GetProviders)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/providers/county/{county-id}", we.authWrapFunc(we.apisHandler.GetProvidersByCounty)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/providers", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetProvidersByCounties)).Methods("GET").Queries("county-ids", "")
+	covid19RestSubrouter.HandleFunc("/providers", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetProviders)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/providers/county/{county-id}", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetProvidersByCounty)).Methods("GET")
 
-	covid19RestSubrouter.HandleFunc("/locations", we.authWrapFunc(we.apisHandler.GetLocationsByCountyIDProviderID)).Methods("GET").Queries("county-id", "", "provider-id", "")
-	covid19RestSubrouter.HandleFunc("/locations", we.authWrapFunc(we.apisHandler.GetLocationsByCountyID)).Methods("GET").Queries("county-id", "")
-	covid19RestSubrouter.HandleFunc("/locations/{id}", we.authWrapFunc(we.apisHandler.GetLocation)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/locations", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetLocationsByCountyIDProviderID)).Methods("GET").Queries("county-id", "", "provider-id", "")
+	covid19RestSubrouter.HandleFunc("/locations", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetLocationsByCountyID)).Methods("GET").Queries("county-id", "")
+	covid19RestSubrouter.HandleFunc("/locations/{id}", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetLocation)).Methods("GET")
 
-	covid19RestSubrouter.HandleFunc("/test-types", we.authWrapFunc(we.apisHandler.GetTestTypesByIDs)).Methods("GET").Queries("ids", "")
-	covid19RestSubrouter.HandleFunc("/test-types", we.authWrapFunc(we.apisHandler.GetTestTypes)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/test-types", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetTestTypesByIDs)).Methods("GET").Queries("ids", "")
+	covid19RestSubrouter.HandleFunc("/test-types", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetTestTypes)).Methods("GET")
 
 	//deprecated
-	covid19RestSubrouter.HandleFunc("/symptom-groups", we.authWrapFunc(we.apisHandler.GetSymptomGroups)).Methods("GET")
-	covid19RestSubrouter.HandleFunc("/symptoms", we.authWrapFunc(we.apisHandler.GetSymptoms)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/symptom-groups", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetSymptomGroups)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/symptoms", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetSymptoms)).Methods("GET")
 
-	covid19RestSubrouter.HandleFunc("/trace/report", we.authWrapFunc(we.apisHandler.AddTraceReport)).Methods("POST")
-	covid19RestSubrouter.HandleFunc("/trace/exposures", we.authWrapFunc(we.apisHandler.GetExposures)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/trace/report", we.apiKeyOrTokenWrapFunc(we.apisHandler.AddTraceReport)).Methods("POST")
+	covid19RestSubrouter.HandleFunc("/trace/exposures", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetExposures)).Methods("GET")
 
-	covid19RestSubrouter.HandleFunc("/rosters/phone/{phone}", we.authWrapFunc(we.apisHandler.GetRosterByPhone)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/rosters/phone/{phone}", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetRosterByPhone)).Methods("GET")
 
 	// handle admin rest apis /////////////////
 	adminRestSubrouter := router.PathPrefix("/health/admin").Subrouter()
@@ -320,54 +320,29 @@ func (we Adapter) wrapFunc(handler http.HandlerFunc) http.HandlerFunc {
 
 type apiKeysAuthFunc = func(*string, http.ResponseWriter, *http.Request)
 
-func (we Adapter) authWrapFunc(handler apiKeysAuthFunc) http.HandlerFunc {
+func (we Adapter) apiKeyOrTokenWrapFunc(handler apiKeysAuthFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
-		authenticated, appVersion := we.auth.apiKeyCheck(w, req)
-		if !authenticated {
-			return
-		}
-
-		handler(appVersion, w, req)
-	}
-}
-
-type adminAuthFunc = func(model.User, string, http.ResponseWriter, *http.Request)
-
-func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		utils.LogRequest(req)
-
-		var err error
-
-		ok, user, group, shibboAuth := we.auth.adminCheck(w, req)
-		if !ok {
-			return
-		}
-		if user == nil {
-			//it is valid but the user does not exist, so create it first
-			user, err = we.auth.createAdminAppUser(shibboAuth)
-			if err != nil {
-				log.Printf("Error on creating admin app user - %s", err.Error())
-				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		apiKey := req.Header.Get("ROKWIRE-API-KEY")
+		//apply api key check
+		if len(apiKey) > 0 {
+			authenticated, appVersion := we.auth.apiKeyCheck(w, req)
+			if !authenticated {
 				return
 			}
-			log.Println("Admin user created")
-		}
 
-		//authorization
-		sub := group        // the group that wants to access a resource.
-		obj := req.URL.Path // the resource that is going to be accessed.
-		act := req.Method   // the operation that the user performs on the resource.
-		acOK := we.authorization.Enforce(sub, obj, act)
-		if !acOK {
-			log.Printf("Access control error - %s is trying to apply %s operation for %s\n", sub, act, obj)
-			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			handler(appVersion, w, req)
+
 			return
 		}
 
-		handler(*user, group, w, req)
+		//apply token check
+		authenticated, _, _, _, appVersion := we.auth.userCheck(w, req)
+		if authenticated {
+			handler(appVersion, w, req)
+			return
+		}
 	}
 }
 
@@ -377,7 +352,7 @@ func (we Adapter) userAuthWrapFunc(handler userAuthFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
-		ok, user, _, _ := we.auth.userCheck(w, req)
+		ok, user, _, _, _ := we.auth.userCheck(w, req)
 		if !ok {
 			return
 		}
@@ -442,7 +417,7 @@ type loginAppUserRequest struct {
 func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 	utils.LogRequest(r)
 
-	ok, user, externalID, authType := we.auth.userCheck(w, r)
+	ok, user, externalID, authType, _ := we.auth.userCheck(w, r)
 	if !ok {
 		return
 	}
@@ -523,7 +498,7 @@ func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 func (we Adapter) getUser(w http.ResponseWriter, r *http.Request) {
 	utils.LogRequest(r)
 
-	ok, user, _, _ := we.auth.userCheck(w, r)
+	ok, user, _, _, _ := we.auth.userCheck(w, r)
 	if !ok {
 		return
 	}
@@ -559,6 +534,44 @@ func (we Adapter) getUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charser=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
+}
+
+type adminAuthFunc = func(model.User, string, http.ResponseWriter, *http.Request)
+
+func (we Adapter) adminAppIDTokenAuthWrapFunc(handler adminAuthFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		utils.LogRequest(req)
+
+		var err error
+
+		ok, user, group, shibboAuth := we.auth.adminCheck(w, req)
+		if !ok {
+			return
+		}
+		if user == nil {
+			//it is valid but the user does not exist, so create it first
+			user, err = we.auth.createAdminAppUser(shibboAuth)
+			if err != nil {
+				log.Printf("Error on creating admin app user - %s", err.Error())
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+			log.Println("Admin user created")
+		}
+
+		//authorization
+		sub := group        // the group that wants to access a resource.
+		obj := req.URL.Path // the resource that is going to be accessed.
+		act := req.Method   // the operation that the user performs on the resource.
+		acOK := we.authorization.Enforce(sub, obj, act)
+		if !acOK {
+			log.Printf("Access control error - %s is trying to apply %s operation for %s\n", sub, act, obj)
+			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			return
+		}
+
+		handler(*user, group, w, req)
+	}
 }
 
 func (we Adapter) providerAuthWrapFunc(handler http.HandlerFunc) http.HandlerFunc {

@@ -75,7 +75,7 @@ func (auth *Auth) providersCheck(w http.ResponseWriter, r *http.Request) bool {
 	return auth.providersAuth.check(w, r)
 }
 
-func (auth *Auth) userCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
+func (auth *Auth) userCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string, *string) {
 	return auth.userAuth.userCheck(w, r)
 }
 
@@ -639,34 +639,44 @@ func (auth *UserAuth) cleanCacheUser() {
 	auth.cleanCacheUser()
 }
 
-func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
-	authorizationHeader := r.Header.Get("Authorization")
-	if len(authorizationHeader) <= 0 {
-		auth.responseBadRequest(w)
-		return false, nil, nil, nil
+func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string, *string) {
+	vHeader := r.Header.Get("v")
+	var appVersion *string
+	if len(vHeader) > 0 {
+		appVersion = &vHeader
 	}
-	splitAuthorization := strings.Fields(authorizationHeader)
-	if len(splitAuthorization) != 2 {
-		auth.responseBadRequest(w)
-		return false, nil, nil, nil
+
+	//get the tokens
+	token, tokenSourceType, csrfToken, err := auth.getTokens(r)
+	if err != nil {
+		log.Printf("error gettings tokens - %s", err)
+
+		auth.responseInternalServerError(w)
+		return false, nil, nil, nil, nil
 	}
-	// expected - Bearer 1234
-	if splitAuthorization[0] != "Bearer" {
+
+	//check if all input data is available
+	if token == nil || len(*token) == 0 {
 		auth.responseBadRequest(w)
-		return false, nil, nil, nil
+		return false, nil, nil, nil, nil
 	}
-	rawToken := splitAuthorization[1]
+	rawToken := *token //we have token
+	if *tokenSourceType == "cookie" && (csrfToken == nil || len(*csrfToken) == 0) {
+		//if the token is sent via cookie then we must have csrf token as well
+		auth.responseBadRequest(w)
+		return false, nil, nil, nil, nil
+	}
 
 	// determine the token type: 1 for shibboleth, 2 for phone, 3 for auth access token
 	// 1 & 2 are deprecated but we support them for back compatability
 	tokenType, err := auth.getTokenType(rawToken)
 	if err != nil {
 		auth.responseUnauthorized(err.Error(), w)
-		return false, nil, nil, nil
+		return false, nil, nil, nil, nil
 	}
 	if !(*tokenType == 1 || *tokenType == 2 || *tokenType == 3) {
 		auth.responseUnauthorized("not supported token type", w)
-		return false, nil, nil, nil
+		return false, nil, nil, nil, nil
 	}
 
 	// process the token - validate it, extract the user identifier
@@ -679,7 +689,7 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 		uin, err := auth.processShibbolethToken(rawToken)
 		if err != nil {
 			auth.responseUnauthorized(err.Error(), w)
-			return false, nil, nil, nil
+			return false, nil, nil, nil, nil
 		}
 		externalID = *uin
 		authType = "shibboleth"
@@ -688,15 +698,22 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 		phone, err := auth.processPhoneToken(rawToken)
 		if err != nil {
 			auth.responseUnauthorized(err.Error(), w)
-			return false, nil, nil, nil
+			return false, nil, nil, nil, nil
 		}
 		externalID = *phone
 		authType = "phone"
 	case 3:
-		tokenData, err := auth.processAccessToken(rawToken)
+		//mobile app sends just token, the browser sends token + csrf token
+
+		csrfCheck := false
+		if *tokenSourceType == "cookie" {
+			csrfCheck = true
+		}
+
+		tokenData, err := auth.processAccessToken(rawToken, csrfCheck, csrfToken)
 		if err != nil {
 			auth.responseUnauthorized(err.Error(), w)
-			return false, nil, nil, nil
+			return false, nil, nil, nil, nil
 		}
 
 		tokenAuth := tokenData.Auth
@@ -708,7 +725,7 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 			authType = "phone"
 		} else {
 			auth.responseUnauthorized("not supported token auth type", w)
-			return false, nil, nil, nil
+			return false, nil, nil, nil, nil
 		}
 	}
 
@@ -719,7 +736,7 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 		if foundedUIN == nil {
 			//not found, it means that this phone is not added, so return unauthorized
 			auth.responseUnauthorized(fmt.Sprintf("%s phone is not added in the system", externalID), w)
-			return false, nil, nil, nil
+			return false, nil, nil, nil, nil
 		}
 		//it was found
 		externalID = *foundedUIN
@@ -732,12 +749,12 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 		log.Printf("error getting an user for external id - %s\n", err)
 
 		auth.responseInternalServerError(w)
-		return false, nil, nil, nil
+		return false, nil, nil, nil, nil
 	}
 
 	// we do not have a such user yet but the ID token is valid so return ok
 	if user == nil {
-		return true, nil, &externalID, &authType
+		return true, nil, &externalID, &authType, nil
 	}
 
 	// once we have the user we must check if we need to create a default account, every user must have at least one default account
@@ -746,25 +763,58 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 		log.Printf("error creating a default account for user - %s - %s\n", utils.GetLogUUIDValue(user.ID), err)
 
 		auth.responseInternalServerError(w)
-		return false, nil, nil, nil
+		return false, nil, nil, nil, nil
 	}
 
-	return true, user, &externalID, &authType
+	return true, user, &externalID, &authType, appVersion
 }
 
-func (auth *UserAuth) userCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
-	//apply main check
-	ok, user, externalID, authType := auth.mainCheck(w, r)
-	if !ok {
-		return false, nil, nil, nil
+//token source type - cookie and header
+func (auth *UserAuth) getTokens(r *http.Request) (*string, *string, *string, error) {
+	//1. Check if there is a cookie
+	cookie, err := r.Cookie("rokwire-access")
+	if err == nil && cookie != nil && len(cookie.Value) > 0 {
+		//there is a cookie
+		tokenSourceType := "cookie"
+		csrfToken := r.Header.Get("CSRF")
+
+		return &cookie.Value, &tokenSourceType, &csrfToken, nil
 	}
 
-	return true, user, externalID, authType
+	//2. Check if there is a token in the Authorization header
+	authorizationHeader := r.Header.Get("Authorization")
+	if len(authorizationHeader) <= 0 {
+		//no authorization
+		return nil, nil, nil, nil
+	}
+	splitAuthorization := strings.Fields(authorizationHeader)
+	if len(splitAuthorization) != 2 {
+		//bad authorization
+		return nil, nil, nil, nil
+	}
+	// expected - Bearer 1234
+	if splitAuthorization[0] != "Bearer" {
+		//bad authorization
+		return nil, nil, nil, nil
+	}
+	token := splitAuthorization[1]
+	tokenSourceType := "header"
+	return &token, &tokenSourceType, nil, nil
+}
+
+func (auth *UserAuth) userCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string, *string) {
+	//apply main check
+	ok, user, externalID, authType, appVersion := auth.mainCheck(w, r)
+	if !ok {
+		return false, nil, nil, nil, nil
+	}
+
+	return true, user, externalID, authType, appVersion
 }
 
 func (auth *UserAuth) userAccountsCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *model.Account) {
 	//apply main check
-	ok, user, _, _ := auth.mainCheck(w, r)
+	ok, user, _, _, _ := auth.mainCheck(w, r)
 	if !ok {
 		return false, nil, nil
 	}
@@ -812,7 +862,45 @@ func (auth *UserAuth) createDefaultAccountIfNeeded(current model.User) (*model.U
 	return user, nil
 }
 
-func (auth *UserAuth) processAccessToken(token string) (*tokenData, error) {
+//mobile app sends just token, the browser sends token + csrf token
+func (auth *UserAuth) processAccessToken(token string, csrfCheck bool, csrfToken *string) (*tokenData, error) {
+
+	//1. apply csrf check
+	if csrfCheck {
+
+		if csrfToken == nil || len(*csrfToken) == 0 {
+			return nil, errors.New("missing csrf token")
+		}
+
+		crsfTokenData, err := auth.validateToken(*csrfToken, "csrf")
+		if err != nil {
+			log.Printf("error trying to validate csrf token - %s", err)
+			return nil, err
+		}
+
+		if crsfTokenData == nil {
+			log.Printf("not valid csrf token - %s", *csrfToken)
+			return nil, errors.New("not valid csrf token")
+		}
+	}
+
+	//2. apply access token check
+	accessTokenData, err := auth.validateToken(token, "access")
+	if err != nil {
+		log.Printf("error trying to validate access token - %s", err)
+		return nil, err
+	}
+
+	if accessTokenData == nil {
+		log.Printf("not valid access token - %s", token)
+		return nil, errors.New("not valid access token")
+	}
+
+	return accessTokenData, nil
+}
+
+//token type - access or csrf
+func (auth *UserAuth) validateToken(token string, tokenType string) (*tokenData, error) {
 	//extract the data - header and payload
 	tokenSegments := strings.Split(token, ".")
 	if len(tokenSegments) != 3 {
@@ -882,6 +970,12 @@ func (auth *UserAuth) processAccessToken(token string) (*tokenData, error) {
 	if !parsedToken.Valid {
 		log.Printf("not valid token - %s", token)
 		return nil, errors.New("not valid token:" + token)
+	}
+
+	//check token type
+	if tokenData.Type != tokenType {
+		log.Printf("invalid type %s", tokenData.Type)
+		return nil, errors.New("invalid type - " + token)
 	}
 
 	return tokenData, nil

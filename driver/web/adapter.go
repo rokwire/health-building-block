@@ -340,10 +340,9 @@ func (we Adapter) authWrapFunc(handler apiKeysAuthFunc) http.HandlerFunc {
 		}
 
 		//apply token check
-		authenticated, _, _, _ := we.auth.userCheck(w, req)
+		authenticated, _, _, _, appVersion := we.auth.userCheck(w, req)
 		if authenticated {
-			v := "appVersion"
-			handler(&v, w, req)
+			handler(appVersion, w, req)
 			return
 		}
 	}
@@ -355,7 +354,7 @@ func (we Adapter) userAuthWrapFunc(handler userAuthFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
-		ok, user, _, _ := we.auth.userCheck(w, req)
+		ok, user, _, _, _ := we.auth.userCheck(w, req)
 		if !ok {
 			return
 		}
@@ -420,7 +419,7 @@ type loginAppUserRequest struct {
 func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 	utils.LogRequest(r)
 
-	ok, user, externalID, authType := we.auth.userCheck(w, r)
+	ok, user, externalID, authType, _ := we.auth.userCheck(w, r)
 	if !ok {
 		return
 	}
@@ -501,7 +500,7 @@ func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 func (we Adapter) getUser(w http.ResponseWriter, r *http.Request) {
 	utils.LogRequest(r)
 
-	ok, user, _, _ := we.auth.userCheck(w, r)
+	ok, user, _, _, _ := we.auth.userCheck(w, r)
 	if !ok {
 		return
 	}

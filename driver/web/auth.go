@@ -697,9 +697,14 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 		externalID = *phone
 		authType = "phone"
 	case 3:
-		//TODO
 		//mobile app sends just token, the browser sends token + csrf token
-		tokenData, err := auth.processAccessToken(rawToken, false, nil)
+
+		csrfCheck := false
+		if *tokenSourceType == "cookie" {
+			csrfCheck = true
+		}
+
+		tokenData, err := auth.processAccessToken(rawToken, csrfCheck, csrfToken)
 		if err != nil {
 			auth.responseUnauthorized(err.Error(), w)
 			return false, nil, nil, nil
@@ -853,8 +858,43 @@ func (auth *UserAuth) createDefaultAccountIfNeeded(current model.User) (*model.U
 
 //mobile app sends just token, the browser sends token + csrf token
 func (auth *UserAuth) processAccessToken(token string, csrfCheck bool, csrfToken *string) (*tokenData, error) {
-	//TODO
 
+	//1. apply csrf check
+	if csrfCheck {
+
+		if csrfToken == nil || len(*csrfToken) == 0 {
+			return nil, errors.New("missing csrf token")
+		}
+
+		crsfTokenData, err := auth.validateToken(*csrfToken, "csrf")
+		if err != nil {
+			log.Printf("error trying to validate csrf token - %s", err)
+			return nil, err
+		}
+
+		if crsfTokenData == nil {
+			log.Printf("not valid csrf token - %s", *csrfToken)
+			return nil, errors.New("not valid csrf token")
+		}
+	}
+
+	//2. apply access token check
+	accessTokenData, err := auth.validateToken(token, "access")
+	if err != nil {
+		log.Printf("error trying to validate access token - %s", err)
+		return nil, err
+	}
+
+	if accessTokenData == nil {
+		log.Printf("not valid access token - %s", token)
+		return nil, errors.New("not valid access token")
+	}
+
+	return accessTokenData, nil
+}
+
+//token type - access or csrf
+func (auth *UserAuth) validateToken(token string, tokenType string) (*tokenData, error) {
 	//extract the data - header and payload
 	tokenSegments := strings.Split(token, ".")
 	if len(tokenSegments) != 3 {
@@ -924,6 +964,12 @@ func (auth *UserAuth) processAccessToken(token string, csrfCheck bool, csrfToken
 	if !parsedToken.Valid {
 		log.Printf("not valid token - %s", token)
 		return nil, errors.New("not valid token:" + token)
+	}
+
+	//check token type
+	if tokenData.Type != tokenType {
+		log.Printf("invalid type %s", tokenData.Type)
+		return nil, errors.New("invalid type - " + token)
 	}
 
 	return tokenData, nil

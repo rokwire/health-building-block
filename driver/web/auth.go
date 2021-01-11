@@ -640,22 +640,26 @@ func (auth *UserAuth) cleanCacheUser() {
 }
 
 func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
-	authorizationHeader := r.Header.Get("Authorization")
-	if len(authorizationHeader) <= 0 {
+	//get the tokens
+	token, isFromCookie, csrfToken, err := auth.getTokens(r)
+	if err != nil {
+		log.Printf("error gettings tokens - %s", err)
+
+		auth.responseInternalServerError(w)
+		return false, nil, nil, nil
+	}
+
+	//check if all input data is available
+	if token == nil || len(*token) == 0 {
 		auth.responseBadRequest(w)
 		return false, nil, nil, nil
 	}
-	splitAuthorization := strings.Fields(authorizationHeader)
-	if len(splitAuthorization) != 2 {
+	rawToken := *token //we have token
+	if *isFromCookie && (csrfToken == nil || len(*csrfToken) == 0) {
+		//if the token is sent via cookie then we must have csrf token as well
 		auth.responseBadRequest(w)
 		return false, nil, nil, nil
 	}
-	// expected - Bearer 1234
-	if splitAuthorization[0] != "Bearer" {
-		auth.responseBadRequest(w)
-		return false, nil, nil, nil
-	}
-	rawToken := splitAuthorization[1]
 
 	// determine the token type: 1 for shibboleth, 2 for phone, 3 for auth access token
 	// 1 & 2 are deprecated but we support them for back compatability
@@ -693,7 +697,9 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 		externalID = *phone
 		authType = "phone"
 	case 3:
-		tokenData, err := auth.processAccessToken(rawToken)
+		//TODO
+		//mobile app sends just token, the browser sends token + csrf token
+		tokenData, err := auth.processAccessToken(rawToken, false, nil)
 		if err != nil {
 			auth.responseUnauthorized(err.Error(), w)
 			return false, nil, nil, nil
@@ -750,6 +756,28 @@ func (auth *UserAuth) mainCheck(w http.ResponseWriter, r *http.Request) (bool, *
 	}
 
 	return true, user, &externalID, &authType
+}
+
+func (auth *UserAuth) getTokens(r *http.Request) (*string, *bool, *string, error) {
+	/*	authorizationHeader := r.Header.Get("Authorization")
+		if len(authorizationHeader) <= 0 {
+			auth.responseBadRequest(w)
+			return nil,
+		}
+		splitAuthorization := strings.Fields(authorizationHeader)
+		if len(splitAuthorization) != 2 {
+			auth.responseBadRequest(w)
+			return false, nil, nil, nil
+		}
+		// expected - Bearer 1234
+		if splitAuthorization[0] != "Bearer" {
+			auth.responseBadRequest(w)
+			return false, nil, nil, nil
+		}
+		rawToken := splitAuthorization[1] */
+
+	//TODO
+	return nil, nil, nil, nil
 }
 
 func (auth *UserAuth) userCheck(w http.ResponseWriter, r *http.Request) (bool, *model.User, *string, *string) {
@@ -812,7 +840,10 @@ func (auth *UserAuth) createDefaultAccountIfNeeded(current model.User) (*model.U
 	return user, nil
 }
 
-func (auth *UserAuth) processAccessToken(token string) (*tokenData, error) {
+//mobile app sends just token, the browser sends token + csrf token
+func (auth *UserAuth) processAccessToken(token string, csrfCheck bool, csrfToken *string) (*tokenData, error) {
+	//TODO
+
 	//extract the data - header and payload
 	tokenSegments := strings.Split(token, ".")
 	if len(tokenSegments) != 3 {

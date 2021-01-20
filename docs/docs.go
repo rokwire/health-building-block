@@ -6006,6 +6006,9 @@ var doc = `{
                 "date": {
                     "type": "string"
                 },
+                "date_created": {
+                    "type": "string"
+                },
                 "encrypted_blob": {
                     "type": "string"
                 },
@@ -7504,6 +7507,9 @@ var doc = `{
                 "status"
             ],
             "properties": {
+                "date": {
+                    "type": "string"
+                },
                 "encrypted_blob": {
                     "type": "string"
                 },

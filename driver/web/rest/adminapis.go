@@ -3507,7 +3507,7 @@ func (h AdminApisHandler) GetManualTestsByCountyID(current model.User, group str
 
 			r := eManualTestResponse{ID: item.ID, HistoryID: item.HistoryID, LocationID: item.LocationID,
 				CountyID: item.CountyID, EncryptedKey: item.EncryptedKey, EncryptedBlob: item.EncryptedBlob,
-				Status: item.Status, Date: item.Date, User: userResponse, AccountID: item.AccountID}
+				Status: item.Status, Date: item.Date, DateCreated: item.DateCreated, User: userResponse, AccountID: item.AccountID}
 			resultList = append(resultList, r)
 		}
 	} else {
@@ -3526,9 +3526,10 @@ func (h AdminApisHandler) GetManualTestsByCountyID(current model.User, group str
 }
 
 type processManualTestRequest struct {
-	Status        string  `json:"status" validate:"required,oneof=unverified verified rejected"`
-	EncryptedKey  *string `json:"encrypted_key"`
-	EncryptedBlob *string `json:"encrypted_blob"`
+	Status        string     `json:"status" validate:"required,oneof=unverified verified rejected"`
+	EncryptedKey  *string    `json:"encrypted_key"`
+	EncryptedBlob *string    `json:"encrypted_blob"`
+	Date          *time.Time `json:"date"`
 } //@name processManualTestRequest
 
 //ProcessManualTest processes manual test
@@ -3577,12 +3578,13 @@ func (h AdminApisHandler) ProcessManualTest(current model.User, group string, w 
 	status := requestData.Status
 	encryptedKey := requestData.EncryptedKey
 	encryptedBlob := requestData.EncryptedBlob
+	date := requestData.Date
 	if status == "verified" && (encryptedKey == nil || encryptedBlob == nil) {
 		http.Error(w, "encrypted key and encrypted blob are required when the status is verified", http.StatusBadRequest)
 		return
 	}
 
-	err = h.app.Administration.ProcessManualTest(ID, status, encryptedKey, encryptedBlob)
+	err = h.app.Administration.ProcessManualTest(ID, status, encryptedKey, encryptedBlob, date)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

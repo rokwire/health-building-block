@@ -108,7 +108,8 @@ type eManualTestResponse struct {
 	EncryptedKey  string          `json:"encrypted_key"`
 	EncryptedBlob string          `json:"encrypted_blob"`
 	Status        string          `json:"status"`
-	Date          time.Time       `json:"date"`
+	Date          *time.Time      `json:"date"`
+	DateCreated   time.Time       `json:"date_created"`
 } // @name ManualTest
 
 type locationResponse struct {

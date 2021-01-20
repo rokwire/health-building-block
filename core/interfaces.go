@@ -371,7 +371,7 @@ type Administration interface {
 	DeleteSymptomRule(current model.User, group string, ID string) error
 
 	GetManualTestByCountyID(countyID string, status *string) ([]*model.EManualTest, error)
-	ProcessManualTest(ID string, status string, encryptedKey *string, encryptedBlob *string) error
+	ProcessManualTest(ID string, status string, encryptedKey *string, encryptedBlob *string, date *time.Time) error
 	GetManualTestImage(ID string) (*string, *string, error)
 
 	GetAccessRules() ([]*model.AccessRule, error)
@@ -666,8 +666,8 @@ func (s *administrationImpl) GetManualTestByCountyID(countyID string, status *st
 	return s.app.getManualTestByCountyID(countyID, status)
 }
 
-func (s *administrationImpl) ProcessManualTest(ID string, status string, encryptedKey *string, encryptedBlob *string) error {
-	return s.app.processManualTest(ID, status, encryptedKey, encryptedBlob)
+func (s *administrationImpl) ProcessManualTest(ID string, status string, encryptedKey *string, encryptedBlob *string, date *time.Time) error {
+	return s.app.processManualTest(ID, status, encryptedKey, encryptedBlob, date)
 }
 
 func (s *administrationImpl) GetManualTestImage(ID string) (*string, *string, error) {
@@ -933,7 +933,7 @@ type Storage interface {
 
 	FindManualTestsByCountyIDDeep(countyID string, status *string) ([]*model.EManualTest, error)
 	FindManualTestImage(ID string) (*string, *string, error)
-	ProcessManualTest(ID string, status string, encryptedKey *string, encryptedBlob *string) error
+	ProcessManualTest(ID string, status string, encryptedKey *string, encryptedBlob *string, date *time.Time) error
 
 	ReadAllAccessRules() ([]*model.AccessRule, error)
 	CreateAccessRule(countyID string, rules []model.AccessRuleCountyStatus) (*model.AccessRule, error)

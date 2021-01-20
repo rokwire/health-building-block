@@ -53,7 +53,8 @@ type EManualTest struct {
 	EncryptedImageKey  string
 	EncryptedImageBlob string
 
-	Image  string
-	Status string //unverified, verified, rejected
-	Date   time.Time
+	Image       string
+	Status      string //unverified, verified, rejected
+	Date        *time.Time
+	DateCreated time.Time
 }

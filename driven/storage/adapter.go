@@ -63,7 +63,8 @@ type eManualTest struct {
 	EncryptedImageKey  string `bson:"encrypted_image_key"`
 	EncryptedImageBlob string `bson:"encrypted_image_blob"`
 
-	Status string `bson:"status"` //unverified, verified, rejected
+	Status string     `bson:"status"` //unverified, verified, rejected
+	Date   *time.Time `bson:"date"`
 
 	DateCreated time.Time `bson:"date_created"`
 }
@@ -992,7 +993,8 @@ func (sa *Adapter) CreateManualЕHistory(accountID string, date time.Time, encry
 		manualTestID, _ := uuid.NewUUID()
 		manualTest := eManualTest{ID: manualTestID.String(), UserID: accountID, EHistoryID: insertedID.(string),
 			LocationID: locationID, CountyID: countyID, EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob,
-			EncryptedImageKey: *encryptedImageKey, EncryptedImageBlob: *encryptedImageBlob, Status: "unverified", DateCreated: time.Now()}
+			EncryptedImageKey: *encryptedImageKey, EncryptedImageBlob: *encryptedImageBlob, Status: "unverified",
+			Date: &date, DateCreated: time.Now()}
 		_, err = sa.db.emanualtests.InsertOneWithContext(sessionContext, &manualTest)
 		if err != nil {
 			abortTransaction(sessionContext)
@@ -4059,14 +4061,15 @@ func (sa *Adapter) ReadTraceExposures(timestamp *int64, dateAdded *int64) ([]mod
 }
 
 type manualTestUserJoin struct {
-	ID            string    `bson:"_id"`
-	HistoryID     string    `bson:"ehistory_id"`
-	LocationID    *string   `bson:"location_id"`
-	CountyID      *string   `bson:"county_id"`
-	EncryptedKey  string    `bson:"encrypted_key"`
-	EncryptedBlob string    `bson:"encrypted_blob"`
-	Status        string    `bson:"status"`
-	DateCreated   time.Time `bson:"date_created"`
+	ID            string     `bson:"_id"`
+	HistoryID     string     `bson:"ehistory_id"`
+	LocationID    *string    `bson:"location_id"`
+	CountyID      *string    `bson:"county_id"`
+	EncryptedKey  string     `bson:"encrypted_key"`
+	EncryptedBlob string     `bson:"encrypted_blob"`
+	Status        string     `bson:"status"`
+	Date          *time.Time `bson:"date"`
+	DateCreated   time.Time  `bson:"date_created"`
 
 	UserID                   string  `bson:"user_id"`
 	UserExternalID           string  `bson:"user_external_id"`
@@ -4132,7 +4135,7 @@ func (sa *Adapter) FindManualTestsByCountyIDDeep(countyID string, status *string
 
 	pipeline = append(pipeline, bson.M{"$unwind": "$user"},
 		bson.M{"$project": bson.M{
-			"_id": 1, "ehistory_id": 1, "location_id": 1, "county_id": 1, "encrypted_key": 1, "encrypted_blob": 1, "status": 1, "date_created": 1,
+			"_id": 1, "ehistory_id": 1, "location_id": 1, "county_id": 1, "encrypted_key": 1, "encrypted_blob": 1, "status": 1, "date": 1, "date_created": 1,
 			"user_id": "$user._id", "user_external_id": "$user.external_id", "user_uuid": "$user.uuid", "user_public_key": "$user.public_key",
 			"user_consent": "$user.consent", "user_exposure_notification": "$user._exposure_notification",
 			"user_info": "$user.info", "user_encrypted_key": "$user.encrypted_key", "user_encrypted_blob": "$user.encrypted_blob",
@@ -4169,7 +4172,7 @@ func (sa *Adapter) FindManualTestsByCountyIDDeep(countyID string, status *string
 
 		mt := model.EManualTest{ID: item.ID, HistoryID: item.HistoryID, LocationID: item.LocationID, CountyID: item.CountyID,
 			EncryptedKey: item.EncryptedKey, EncryptedBlob: item.EncryptedBlob,
-			Status: item.Status, Date: item.DateCreated, User: user, AccountID: item.UserID}
+			Status: item.Status, Date: item.Date, DateCreated: item.DateCreated, User: user, AccountID: item.UserID}
 
 		resultList = append(resultList, &mt)
 	}

@@ -7507,6 +7507,9 @@ var doc = `{
                 "status"
             ],
             "properties": {
+                "date": {
+                    "type": "string"
+                },
                 "encrypted_blob": {
                     "type": "string"
                 },

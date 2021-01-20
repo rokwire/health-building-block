@@ -4196,7 +4196,7 @@ func (sa *Adapter) FindManualTestImage(ID string) (*string, *string, error) {
 }
 
 //ProcessManualTest processes manual test
-func (sa *Adapter) ProcessManualTest(ID string, status string, encryptedKey *string, encryptedBlob *string) error {
+func (sa *Adapter) ProcessManualTest(ID string, status string, encryptedKey *string, encryptedBlob *string, date *time.Time) error {
 	// transaction
 	err := sa.db.dbClient.UseSession(context.Background(), func(sessionContext mongo.SessionContext) error {
 		err := sessionContext.StartTransaction()
@@ -4260,6 +4260,9 @@ func (sa *Adapter) ProcessManualTest(ID string, status string, encryptedKey *str
 			history.Type = "verified_manual_test"
 			history.EncryptedKey = *encryptedKey
 			history.EncryptedBlob = *encryptedBlob
+			if date != nil {
+				history.Date = *date
+			}
 
 			//3.3 save the history item
 			err = sa.db.ehistory.ReplaceOneWithContext(sessionContext, historyFilter, history, nil)

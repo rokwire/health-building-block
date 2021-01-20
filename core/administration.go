@@ -1604,8 +1604,8 @@ func (app *Application) getManualTestByCountyID(countyID string, status *string)
 	return manualTests, nil
 }
 
-func (app *Application) processManualTest(ID string, status string, encryptedKey *string, encryptedBlob *string) error {
-	err := app.storage.ProcessManualTest(ID, status, encryptedKey, encryptedBlob)
+func (app *Application) processManualTest(ID string, status string, encryptedKey *string, encryptedBlob *string, date *time.Time) error {
+	err := app.storage.ProcessManualTest(ID, status, encryptedKey, encryptedBlob, date)
 	if err != nil {
 		return err
 	}

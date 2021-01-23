@@ -271,6 +271,7 @@ func (sa *Adapter) ReadAllAppVersions() ([]string, error) {
 
 //CreateAppVersion preates app version
 func (sa *Adapter) CreateAppVersion(version string) error {
+
 	dateUpdated := time.Now()
 	item := bson.D{primitive.E{Key: "version", Value: version}, primitive.E{Key: "date_created", Value: dateUpdated}}
 	_, err := sa.db.appversions.InsertOne(item)

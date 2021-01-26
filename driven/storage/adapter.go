@@ -603,6 +603,11 @@ func (sa *Adapter) SaveUser(user *model.User) error {
 	return nil
 }
 
+func (sa *Adapter) GetCovid19Configs() ([]model.COVID19Config, error) {
+	configs := []model.COVID19Config{model.COVID19Config{Name: "test1"}, model.COVID19Config{Name: "test2"}}
+	return configs, nil
+}
+
 //ReadCovid19Config reads the covid19 configuration from the storage
 func (sa *Adapter) ReadCovid19Config() (*model.COVID19Config, error) {
 	filter := bson.D{primitive.E{Key: "name", Value: "covid19"}}

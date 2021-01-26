@@ -56,6 +56,25 @@ func (h AdminApisHandler) GetCovid19Config(current model.User, group string, w h
 	w.Write(data)
 }
 
+func (h AdminApisHandler) GetCovid19Configs(current model.User, group string, w http.ResponseWriter, r *http.Request) {
+	configs, err := h.app.GetCovid19Configs()
+	if err != nil {
+		log.Printf("Error covid19 config - %s\n", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.Marshal(configs)
+	if err != nil {
+		log.Println(data)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 //UpdateCovid19Config updates the covid19 config
 func (h AdminApisHandler) UpdateCovid19Config(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)

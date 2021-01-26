@@ -812,6 +812,7 @@ type Storage interface {
 	CreateDefaultAccount(userID string) (*model.User, error)
 	SaveUser(user *model.User) error
 
+	GetCovid19Configs() ([]model.COVID19Config, error)
 	ReadCovid19Config() (*model.COVID19Config, error)
 	SaveCovid19Config(covid19Config *model.COVID19Config) error
 

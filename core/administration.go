@@ -38,7 +38,7 @@ func (app *Application) getCovid19Config() (*model.COVID19Config, error) {
 	return config, nil
 }
 
-func (app *Application) GetCovid19Configs() ([]model.COVID19Config, error) {
+func (app *Application) getCovid19Configs() ([]model.COVID19Config, error) {
 	configs, _ := app.storage.GetCovid19Configs()
 	return configs, nil
 }

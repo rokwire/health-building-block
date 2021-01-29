@@ -57,7 +57,7 @@ func (h AdminApisHandler) GetCovid19Config(current model.User, group string, w h
 }
 
 func (h AdminApisHandler) GetCovid19Configs(current model.User, group string, w http.ResponseWriter, r *http.Request) {
-	configs, err := h.app.GetCovid19Configs()
+	configs, err := h.app.Administration.GetCovid19Configs()
 	if err != nil {
 		log.Printf("Error covid19 config - %s\n", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

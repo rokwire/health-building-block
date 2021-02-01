@@ -2125,11 +2125,8 @@ paths:
       - Admin
   /admin/covid19-configs:
     get:
-      consumes:
-      - application/json
+      description: Gives all the covid19 configurations
       operationId: GetCovid19Configs
-      produces:
-      - application/json
       responses:
         "200":
           description: OK

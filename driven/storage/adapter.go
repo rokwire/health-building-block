@@ -603,6 +603,7 @@ func (sa *Adapter) SaveUser(user *model.User) error {
 	return nil
 }
 
+//GetCovid19Configs gives all covid 19 configs
 func (sa *Adapter) GetCovid19Configs() ([]model.COVID19Config, error) {
 	filter := bson.D{}
 	var result []model.COVID19Config

@@ -56,11 +56,12 @@ func (h AdminApisHandler) GetCovid19Config(current model.User, group string, w h
 	w.Write(data)
 }
 
-// @GetCovid19Cinfigs gets all the covid19 configurations
+// GetCovid19Configs gets all the covid19 configurations
+// @Description Gives all the covid19 configurations
 // @Tags Admin
 // @ID GetCovid19Configs
-// @Accept json
-// @Produce json
+// Accept json
+// @P@roduce json
 // @Success 200 {array} model.COVID19Config
 // @Security AdminUserAuth
 // @Security AdminGroupAuth

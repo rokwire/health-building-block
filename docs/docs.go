@@ -766,12 +766,7 @@ var doc = `{
                         "AdminGroupAuth": []
                     }
                 ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                "description": "Gives all the covid19 configurations",
                 "tags": [
                     "Admin"
                 ],

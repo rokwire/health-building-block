@@ -56,6 +56,15 @@ func (h AdminApisHandler) GetCovid19Config(current model.User, group string, w h
 	w.Write(data)
 }
 
+// @GetCovid19Cinfigs gets all the covid19 configurations
+// @Tags Admin
+// @ID GetCovid19Configs
+// @Accept json
+// @Produce json
+// @Success 200 {array} model.Covid19
+// @Security AdminUserAuth
+// @Security AdminGroupAuth
+// @Router /admin/covid19-configs [get]
 func (h AdminApisHandler) GetCovid19Configs(current model.User, group string, w http.ResponseWriter, r *http.Request) {
 	configs, err := h.app.Administration.GetCovid19Configs()
 	if err != nil {

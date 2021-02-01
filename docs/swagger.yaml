@@ -1231,6 +1231,14 @@ definitions:
     - public_key
     - uuid
     type: object
+  model.COVID19Config:
+    properties:
+      name:
+        type: string
+      news_update_period:
+        description: in minutes
+        type: integer
+    type: object
   model.CTest:
     properties:
       date_created:
@@ -2110,6 +2118,25 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/CountyStatus'
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/covid19-configs:
+    get:
+      consumes:
+      - application/json
+      operationId: GetCovid19Configs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.COVID19Config'
+            type: array
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []

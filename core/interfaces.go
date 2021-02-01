@@ -292,6 +292,7 @@ func (s *servicesImpl) GetRosterByPhone(phone string) (map[string]string, error)
 type Administration interface {
 	GetCovid19Config() (*model.COVID19Config, error)
 	UpdateCovid19Config(config *model.COVID19Config) error
+	GetCovid19Configs() ([]model.COVID19Config, error)
 
 	GetAppVersions() ([]string, error)
 	CreateAppVersion(current model.User, group string, audit *string, version string) error
@@ -426,6 +427,10 @@ func (s *administrationImpl) GetCovid19Config() (*model.COVID19Config, error) {
 
 func (s *administrationImpl) UpdateCovid19Config(config *model.COVID19Config) error {
 	return s.app.updateCovid19Config(config)
+}
+
+func (s *administrationImpl) GetCovid19Configs() ([]model.COVID19Config, error) {
+	return s.app.getCovid19Configs()
 }
 
 func (s *administrationImpl) GetNews() ([]*model.News, error) {
@@ -812,6 +817,7 @@ type Storage interface {
 	CreateDefaultAccount(userID string) (*model.User, error)
 	SaveUser(user *model.User) error
 
+	GetCovid19Configs() ([]model.COVID19Config, error)
 	ReadCovid19Config() (*model.COVID19Config, error)
 	SaveCovid19Config(covid19Config *model.COVID19Config) error
 

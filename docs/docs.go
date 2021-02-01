@@ -756,6 +756,34 @@ var doc = `{
                 }
             }
         },
+        "/admin/covid19-configs": {
+            "get": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Gives all the covid19 configurations",
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "GetCovid19Configs",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.COVID19Config"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/admin/crules": {
             "get": {
                 "security": [
@@ -7443,6 +7471,18 @@ var doc = `{
                 },
                 "uuid": {
                     "type": "string"
+                }
+            }
+        },
+        "model.COVID19Config": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "news_update_period": {
+                    "description": "in minutes",
+                    "type": "integer"
                 }
             }
         },

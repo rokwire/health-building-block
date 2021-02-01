@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Add date created field to the app version entity. [#117](https://github.com/rokwire/health-building-block/issues/117)
 
+### Added
+- Expose get configs admin API. [#119](https://github.com/rokwire/health-building-block/issues/119)
+
 ## [2.5.0] - 2021-01-20
 ### Changed
 - Update the process manual test admin API. [#114](https://github.com/rokwire/health-building-block/issues/114)

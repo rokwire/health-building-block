@@ -38,6 +38,11 @@ func (app *Application) getCovid19Config() (*model.COVID19Config, error) {
 	return config, nil
 }
 
+func (app *Application) getCovid19Configs() ([]model.COVID19Config, error) {
+	configs, _ := app.storage.GetCovid19Configs()
+	return configs, nil
+}
+
 func (app *Application) updateCovid19Config(config *model.COVID19Config) error {
 	err := app.storage.SaveCovid19Config(config)
 	if err != nil {

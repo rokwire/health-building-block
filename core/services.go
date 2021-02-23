@@ -517,3 +517,7 @@ func (app *Application) getRosterByPhone(phone string) (map[string]string, error
 	}
 	return roster, nil
 }
+
+func (app *Application) getExtJoinExternalApproval(account model.Account) (interface{}, error) {
+	return nil, nil
+}

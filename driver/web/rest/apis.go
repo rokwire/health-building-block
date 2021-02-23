@@ -1661,13 +1661,13 @@ func (h ApisHandler) SetUINBuildingAccess(current model.User, account model.Acco
 // @Security AppUserAccountAuth
 // @Router /covid19/join-external-approvements [get]
 func (h ApisHandler) GetExtJoinExternalApproval(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
-
-	/*items, err := h.app.External.GetExtJoinExternalApproval(externalApproverID, "pending")
+	items, err := h.app.Services.GetExtJoinExternalApproval(account)
 	if err != nil {
 		log.Printf("error getting ext join external approval - %s", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	} */
+	}
+	log.Println(items)
 	/*
 		type resItem struct {
 			ID                       string    `json:"id"`

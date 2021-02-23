@@ -40,6 +40,7 @@ type Application struct {
 	sender       Sender
 	messaging    Messaging
 	profileBB    ProfileBuildingBlock
+	rokmetro     Rokmetro
 	audit        Audit
 
 	storage Storage
@@ -679,13 +680,14 @@ func (app *Application) getSymptomGroups() ([]*model.SymptomGroup, error) {
 }
 
 //NewApplication creates new Application
-func NewApplication(version string, build string, dataProvider DataProvider, sender Sender, messaging Messaging, profileBB ProfileBuildingBlock, storage Storage, audit Audit) *Application {
+func NewApplication(version string, build string, dataProvider DataProvider, sender Sender, messaging Messaging,
+	profileBB ProfileBuildingBlock, rokmetro Rokmetro, storage Storage, audit Audit) *Application {
 	cvLock := &sync.RWMutex{}
 	avLock := &sync.RWMutex{}
 	listeners := []ApplicationListener{}
 
 	application := Application{version: version, build: build, dataProvider: dataProvider, sender: sender, messaging: messaging,
-		profileBB: profileBB, storage: storage, audit: audit, cvLock: cvLock, avLock: avLock, listeners: listeners}
+		profileBB: profileBB, rokmetro: rokmetro, storage: storage, audit: audit, cvLock: cvLock, avLock: avLock, listeners: listeners}
 
 	//add the drivers ports/interfaces
 	application.Services = &servicesImpl{app: &application}

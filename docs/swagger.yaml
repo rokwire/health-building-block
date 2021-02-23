@@ -223,6 +223,25 @@ definitions:
       type:
         type: string
     type: object
+  JoinGroupExtApprovement:
+    properties:
+      date_created:
+        type: string
+      external_approver_id:
+        type: string
+      external_approver_last_name:
+        type: string
+      first_name:
+        type: string
+      group_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      status:
+        type: string
+    type: object
   Location:
     properties:
       address_1:
@@ -4368,6 +4387,24 @@ paths:
             type: array
       security:
       - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/join-external-approvements:
+    get:
+      consumes:
+      - application/json
+      description: Gives the join groups external approvals for approving
+      operationId: GetExtJoinExternalApproval
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/JoinGroupExtApprovement'
+            type: array
+      security:
+      - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/locations:

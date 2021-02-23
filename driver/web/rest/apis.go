@@ -1652,6 +1652,14 @@ func (h ApisHandler) SetUINBuildingAccess(current model.User, account model.Acco
 }
 
 //GetExtJoinExternalApproval gets the join external approvals for approving
+// @Description Gives the join groups external approvals for approving
+// @Tags Covid19
+// @ID GetExtJoinExternalApproval
+// @Accept json
+// @Success 200 {array} joinGroupExtApprovement
+// @Security AppUserAuth
+// @Security AppUserAccountAuth
+// @Router /covid19/join-external-approvements [get]
 func (h ApisHandler) GetExtJoinExternalApproval(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 
 	/*items, err := h.app.External.GetExtJoinExternalApproval(externalApproverID, "pending")

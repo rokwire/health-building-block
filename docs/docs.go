@@ -4442,6 +4442,37 @@ var doc = `{
                 }
             }
         },
+        "/covid19/join-external-approvements": {
+            "get": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
+                    }
+                ],
+                "description": "Gives the join groups external approvals for approving",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetExtJoinExternalApproval",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/JoinGroupExtApprovement"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/locations": {
             "get": {
                 "security": [
@@ -5950,6 +5981,35 @@ var doc = `{
                     "type": "string"
                 },
                 "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "JoinGroupExtApprovement": {
+            "type": "object",
+            "properties": {
+                "date_created": {
+                    "type": "string"
+                },
+                "external_approver_id": {
+                    "type": "string"
+                },
+                "external_approver_last_name": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "group_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }

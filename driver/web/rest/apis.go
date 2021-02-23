@@ -1667,34 +1667,24 @@ func (h ApisHandler) GetExtJoinExternalApproval(current model.User, account mode
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Println(items)
-	/*
-		type resItem struct {
-			ID                       string    `json:"id"`
-			GroupName                string    `json:"group_name"`
-			FirstName                string    `json:"first_name"`
-			LastName                 string    `json:"last_name"`
-			DateCreated              time.Time `json:"date_created"`
-			ExternalApproverID       string    `json:"external_approver_id"`
-			ExternalApproverLastName string    `json:"external_approver_last_name"`
-			Status                   string    `json:"status"`
-		}
-		result := make([]resItem, len(items))
-		for i, c := range items {
-			result[i] = resItem{ID: c.ID, GroupName: c.Group.Title, FirstName: c.FirstName, LastName: c.LastName,
-				DateCreated: c.DateCreated, ExternalApproverID: c.ExternalApproverID, ExternalApproverLastName: c.ExternalApproverLastName}
-		}
 
-		data, err := json.Marshal(result)
-		if err != nil {
-			log.Println("Error on marshal ext join external approval")
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-			return
-		}
+	result := make([]joinGroupExtApprovement, len(items))
+	for i, c := range items {
+		result[i] = joinGroupExtApprovement{ID: c.ID, GroupName: c.GroupName, FirstName: c.FirstName, LastName: c.LastName,
+			DateCreated: c.DateCreated, ExternalApproverID: c.ExternalApproverID, ExternalApproverLastName: c.ExternalApproverLastName,
+			Status: c.Status}
+	}
 
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-		w.Write(data) */
+	data, err := json.Marshal(result)
+	if err != nil {
+		log.Println("Error on marshal ext join external approval")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 type updateExtJoinExternalApprovementRequest struct {

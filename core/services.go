@@ -518,6 +518,11 @@ func (app *Application) getRosterByPhone(phone string) (map[string]string, error
 	return roster, nil
 }
 
-func (app *Application) getExtJoinExternalApproval(account model.Account) (interface{}, error) {
-	return nil, nil
+func (app *Application) getExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error) {
+	//ask rokmetro for the data
+	data, err := app.rokmetro.GetExtJoinExternalApproval(account.ExternalID)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }

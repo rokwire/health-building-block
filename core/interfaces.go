@@ -94,7 +94,7 @@ type Services interface {
 
 	GetRosterByPhone(phone string) (map[string]string, error)
 
-	GetExtJoinExternalApproval(account model.Account) (interface{}, error)
+	GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error)
 }
 
 type servicesImpl struct {
@@ -290,7 +290,7 @@ func (s *servicesImpl) GetRosterByPhone(phone string) (map[string]string, error)
 	return s.app.getRosterByPhone(phone)
 }
 
-func (s *servicesImpl) GetExtJoinExternalApproval(account model.Account) (interface{}, error) {
+func (s *servicesImpl) GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error) {
 	return s.app.getExtJoinExternalApproval(account)
 }
 
@@ -1063,7 +1063,19 @@ type ProfileUserData struct {
 
 //Rokmetro is used by core to communicate with the rokmetro ecosystem
 type Rokmetro interface {
-	GetExtJoinExternalApproval(externalApproverID string) (interface{}, error)
+	GetExtJoinExternalApproval(externalApproverID string) ([]RokmetroJoinGroupExtApprovement, error)
+}
+
+//RokmetroJoinGroupExtApprovement represent Rokmetro join group external approvement entity
+type RokmetroJoinGroupExtApprovement struct {
+	ID                       string    `json:"id"`
+	GroupName                string    `json:"group_name"`
+	FirstName                string    `json:"first_name"`
+	LastName                 string    `json:"last_name"`
+	DateCreated              time.Time `json:"date_created"`
+	ExternalApproverID       string    `json:"external_approver_id"`
+	ExternalApproverLastName string    `json:"external_approver_last_name"`
+	Status                   string    `json:"status"`
 }
 
 //Audit is used by core to log history

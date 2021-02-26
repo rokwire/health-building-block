@@ -1381,6 +1381,13 @@ definitions:
           type: string
         type: array
     type: object
+  updateExtJoinExternalApprovementRequest:
+    properties:
+      status:
+        type: string
+    required:
+    - status
+    type: object
   updateExtUINOverrideRequest:
     properties:
       category:
@@ -4402,6 +4409,36 @@ paths:
             items:
               $ref: '#/definitions/JoinGroupExtApprovement'
             type: array
+      security:
+      - AppUserAuth: []
+      - AppUserAccountAuth: []
+      tags:
+      - Covid19
+  /covid19/join-external-approvements/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Accept/Reject external group joining request
+      operationId: UpdateExtJoinExternalApproval
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateExtJoinExternalApprovementRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully processed
+          schema:
+            type: string
       security:
       - AppUserAuth: []
       - AppUserAccountAuth: []

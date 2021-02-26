@@ -4473,6 +4473,55 @@ var doc = `{
                 }
             }
         },
+        "/covid19/join-external-approvements/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
+                    }
+                ],
+                "description": "Accept/Reject external group joining request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "UpdateExtJoinExternalApproval",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/updateExtJoinExternalApprovementRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully processed",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/locations": {
             "get": {
                 "security": [
@@ -7730,6 +7779,17 @@ var doc = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "updateExtJoinExternalApprovementRequest": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string"
                 }
             }
         },

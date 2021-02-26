@@ -1689,9 +1689,20 @@ func (h ApisHandler) GetExtJoinExternalApproval(current model.User, account mode
 
 type updateExtJoinExternalApprovementRequest struct {
 	Status string `json:"status" validate:"required,oneof=accepted rejected"`
-}
+} // @name updateExtJoinExternalApprovementRequest
 
 //UpdateExtJoinExternalApproval accept/reject an approvement
+// @Description Accept/Reject external group joining request
+// @Tags Covid19
+// @ID UpdateExtJoinExternalApproval
+// @Accept json
+// @Produce json
+// @Param data body updateExtJoinExternalApprovementRequest true "body data"
+// @Success 200 {object} string "Successfully processed"
+// @Param id path string true "ID"
+// @Security AppUserAuth
+// @Security AppUserAccountAuth
+// @Router /covid19/join-external-approvements/{id} [post]
 func (h ApisHandler) UpdateExtJoinExternalApproval(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]

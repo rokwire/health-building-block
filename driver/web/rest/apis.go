@@ -1651,6 +1651,103 @@ func (h ApisHandler) SetUINBuildingAccess(current model.User, account model.Acco
 	w.Write([]byte("Successfully processed"))
 }
 
+//GetExtJoinExternalApproval gets the join external approvals for approving
+// @Description Gives the join groups external approvals for approving
+// @Tags Covid19
+// @ID GetExtJoinExternalApproval
+// @Accept json
+// @Success 200 {array} joinGroupExtApprovement
+// @Security AppUserAuth
+// @Security AppUserAccountAuth
+// @Router /covid19/join-external-approvements [get]
+func (h ApisHandler) GetExtJoinExternalApproval(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	items, err := h.app.Services.GetExtJoinExternalApproval(account)
+	if err != nil {
+		log.Printf("error getting ext join external approval - %s", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	result := make([]joinGroupExtApprovement, len(items))
+	for i, c := range items {
+		result[i] = joinGroupExtApprovement{ID: c.ID, GroupName: c.GroupName, FirstName: c.FirstName, LastName: c.LastName,
+			DateCreated: c.DateCreated, ExternalApproverID: c.ExternalApproverID, ExternalApproverLastName: c.ExternalApproverLastName,
+			Status: c.Status}
+	}
+
+	data, err := json.Marshal(result)
+	if err != nil {
+		log.Println("Error on marshal ext join external approval")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+type updateExtJoinExternalApprovementRequest struct {
+	Status string `json:"status" validate:"required,oneof=accepted rejected"`
+} // @name updateExtJoinExternalApprovementRequest
+
+//UpdateExtJoinExternalApproval accept/reject an approvement
+// @Description Accept/Reject external group joining request
+// @Tags Covid19
+// @ID UpdateExtJoinExternalApproval
+// @Accept json
+// @Produce json
+// @Param data body updateExtJoinExternalApprovementRequest true "body data"
+// @Success 200 {object} string "Successfully processed"
+// @Param id path string true "ID"
+// @Security AppUserAuth
+// @Security AppUserAccountAuth
+// @Router /covid19/join-external-approvements/{id} [put]
+func (h ApisHandler) UpdateExtJoinExternalApproval(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	ID := params["id"]
+	if len(ID) <= 0 {
+		log.Println("id is required")
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error on marshal update join external aprrovement - %s\n", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	var requestData updateExtJoinExternalApprovementRequest
+	err = json.Unmarshal(data, &requestData)
+	if err != nil {
+		log.Printf("Error on unmarshal the update join external aprrovement  - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	//validate
+	validate := validator.New()
+	err = validate.Struct(requestData)
+	if err != nil {
+		log.Printf("Error on validating update join external aprrovement  - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	status := requestData.Status
+	err = h.app.Services.UpdateExtJoinExternalApprovement(ID, status)
+	if err != nil {
+		log.Printf("Error on updating join external aprrovement  - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully processed"))
+}
+
 //GetProviders gets the providers
 // @Description Gives all the providers
 // @Tags Covid19

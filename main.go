@@ -23,6 +23,7 @@ import (
 	dataprovider "health/driven/dataprovider"
 	messaging "health/driven/messaging"
 	profilebb "health/driven/profilebb"
+	rokmetro "health/driven/rokmetro"
 	sender "health/driven/sender"
 	storage "health/driven/storage"
 	driver "health/driver/web"
@@ -83,8 +84,13 @@ func main() {
 	profileAPIKey := getEnvKey("HEALTH_PROFILE_API_KEY", true)
 	profileBBAdapter := profilebb.NewProfileBBAdapter(profileHost, profileAPIKey)
 
+	//rokmetro adapter
+	rokmetroGroupsHost := getEnvKey("HEALTH_ROKMETRO_GROUPS_HOST", true)
+	rokmetroGroupsAPIKey := getEnvKey("HEALTH_ROKMETRO_GROUPS_API_KEY", true)
+	rokmetroAdapter := rokmetro.NewRokmetroAdapter(rokmetroGroupsHost, rokmetroGroupsAPIKey)
+
 	//application
-	application := core.NewApplication(Version, Build, dataProvider, sender, messaging, profileBBAdapter, storageAdapter, auditAdapter)
+	application := core.NewApplication(Version, Build, dataProvider, sender, messaging, profileBBAdapter, rokmetroAdapter, storageAdapter, auditAdapter)
 	application.Start()
 
 	//web adapter

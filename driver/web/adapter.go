@@ -49,7 +49,7 @@ type Adapter struct {
 
 // @title Rokwire Health Building Block API
 // @description Rokwire Health Building Block API Documentation.
-// @version 2.5.0
+// @version 2.6.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost
@@ -125,6 +125,9 @@ func (we Adapter) Start() {
 
 	covid19RestSubrouter.HandleFunc("/building-access", we.userAccountsAuthWrapFunc(we.apisHandler.SetUINBuildingAccess)).Methods("PUT")
 
+	covid19RestSubrouter.HandleFunc("/join-external-approvements", we.userAccountsAuthWrapFunc(we.apisHandler.GetExtJoinExternalApproval)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/join-external-approvements/{id}", we.userAccountsAuthWrapFunc(we.apisHandler.UpdateExtJoinExternalApproval)).Methods("PUT")
+
 	//provider auth
 	covid19RestSubrouter.HandleFunc("/users/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.GetUserByShibbolethUIN)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/users/re-post", we.providerAuthWrapFunc(we.apisHandler.GetUsersForRePost)).Methods("GET")
@@ -179,6 +182,7 @@ func (we Adapter) Start() {
 	//admin app id token auth
 	adminRestSubrouter.HandleFunc("/covid19-config", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetCovid19Config)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/covid19-config", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.UpdateCovid19Config)).Methods("PUT")
+	adminRestSubrouter.HandleFunc("/covid19-configs", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetCovid19Configs)).Methods("GET")
 
 	adminRestSubrouter.HandleFunc("/app-versions", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.GetAppVersions)).Methods("GET")
 	adminRestSubrouter.HandleFunc("/app-versions", we.adminAppIDTokenAuthWrapFunc(we.adminApisHandler.CreateAppVersion)).Methods("POST")

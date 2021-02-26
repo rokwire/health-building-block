@@ -93,6 +93,9 @@ type Services interface {
 	GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
 
 	GetRosterByPhone(phone string) (map[string]string, error)
+
+	GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error)
+	UpdateExtJoinExternalApprovement(jeaID string, status string) error
 }
 
 type servicesImpl struct {
@@ -288,10 +291,19 @@ func (s *servicesImpl) GetRosterByPhone(phone string) (map[string]string, error)
 	return s.app.getRosterByPhone(phone)
 }
 
+func (s *servicesImpl) GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error) {
+	return s.app.getExtJoinExternalApproval(account)
+}
+
+func (s *servicesImpl) UpdateExtJoinExternalApprovement(jeaID string, status string) error {
+	return s.app.updateExtJoinExternalApprovement(jeaID, status)
+}
+
 //Administration exposes administration APIs for the driver adapters
 type Administration interface {
 	GetCovid19Config() (*model.COVID19Config, error)
 	UpdateCovid19Config(config *model.COVID19Config) error
+	GetCovid19Configs() ([]model.COVID19Config, error)
 
 	GetAppVersions() ([]string, error)
 	CreateAppVersion(current model.User, group string, audit *string, version string) error
@@ -426,6 +438,10 @@ func (s *administrationImpl) GetCovid19Config() (*model.COVID19Config, error) {
 
 func (s *administrationImpl) UpdateCovid19Config(config *model.COVID19Config) error {
 	return s.app.updateCovid19Config(config)
+}
+
+func (s *administrationImpl) GetCovid19Configs() ([]model.COVID19Config, error) {
+	return s.app.getCovid19Configs()
 }
 
 func (s *administrationImpl) GetNews() ([]*model.News, error) {
@@ -812,6 +828,7 @@ type Storage interface {
 	CreateDefaultAccount(userID string) (*model.User, error)
 	SaveUser(user *model.User) error
 
+	GetCovid19Configs() ([]model.COVID19Config, error)
 	ReadCovid19Config() (*model.COVID19Config, error)
 	SaveCovid19Config(covid19Config *model.COVID19Config) error
 
@@ -1047,6 +1064,24 @@ type ProfileBuildingBlock interface {
 //ProfileUserData represents the profile building block user data entity
 type ProfileUserData struct {
 	FCMTokens []string `json:"fcmTokens"`
+}
+
+//Rokmetro is used by core to communicate with the rokmetro ecosystem
+type Rokmetro interface {
+	GetExtJoinExternalApproval(externalApproverID string) ([]RokmetroJoinGroupExtApprovement, error)
+	UpdateExtJoinExternalApprovement(jeaID string, status string) error
+}
+
+//RokmetroJoinGroupExtApprovement represent Rokmetro join group external approvement entity
+type RokmetroJoinGroupExtApprovement struct {
+	ID                       string    `json:"id"`
+	GroupName                string    `json:"group_name"`
+	FirstName                string    `json:"first_name"`
+	LastName                 string    `json:"last_name"`
+	DateCreated              time.Time `json:"date_created"`
+	ExternalApproverID       string    `json:"external_approver_id"`
+	ExternalApproverLastName string    `json:"external_approver_last_name"`
+	Status                   string    `json:"status"`
 }
 
 //Audit is used by core to log history

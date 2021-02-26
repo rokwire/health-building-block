@@ -756,6 +756,34 @@ var doc = `{
                 }
             }
         },
+        "/admin/covid19-configs": {
+            "get": {
+                "security": [
+                    {
+                        "AdminUserAuth": []
+                    },
+                    {
+                        "AdminGroupAuth": []
+                    }
+                ],
+                "description": "Gives all the covid19 configurations",
+                "tags": [
+                    "Admin"
+                ],
+                "operationId": "GetCovid19Configs",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.COVID19Config"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/admin/crules": {
             "get": {
                 "security": [
@@ -4414,6 +4442,86 @@ var doc = `{
                 }
             }
         },
+        "/covid19/join-external-approvements": {
+            "get": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
+                    }
+                ],
+                "description": "Gives the join groups external approvals for approving",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetExtJoinExternalApproval",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/JoinGroupExtApprovement"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/join-external-approvements/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
+                    }
+                ],
+                "description": "Accept/Reject external group joining request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "UpdateExtJoinExternalApproval",
+                "parameters": [
+                    {
+                        "description": "body data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/updateExtJoinExternalApprovementRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully processed",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/locations": {
             "get": {
                 "security": [
@@ -5922,6 +6030,35 @@ var doc = `{
                     "type": "string"
                 },
                 "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "JoinGroupExtApprovement": {
+            "type": "object",
+            "properties": {
+                "date_created": {
+                    "type": "string"
+                },
+                "external_approver_id": {
+                    "type": "string"
+                },
+                "external_approver_last_name": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "group_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }
@@ -7446,6 +7583,18 @@ var doc = `{
                 }
             }
         },
+        "model.COVID19Config": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "news_update_period": {
+                    "description": "in minutes",
+                    "type": "integer"
+                }
+            }
+        },
         "model.CTest": {
             "type": "object",
             "properties": {
@@ -7630,6 +7779,17 @@ var doc = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "updateExtJoinExternalApprovementRequest": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string"
                 }
             }
         },
@@ -8142,7 +8302,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "2.5.0",
+	Version:     "2.6.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

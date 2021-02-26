@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0] - 2021-02-26
+### Changed
+- Add date created field to the app version entity. [#117](https://github.com/rokwire/health-building-block/issues/117)
+
+### Added
+- Expose get configs admin API. [#119](https://github.com/rokwire/health-building-block/issues/119)
+- Expose APIs for external join group approvement . [#121](https://github.com/rokwire/health-building-block/issues/121)
+
 ## [2.5.0] - 2021-01-20
 ### Changed
 - Update the process manual test admin API. [#114](https://github.com/rokwire/health-building-block/issues/114)
@@ -213,7 +221,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v2.6.0...HEAD
+[2.6.0]: https://github.com/rokwire/health-building-block/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/rokwire/health-building-block/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/rokwire/health-building-block/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/rokwire/health-building-block/compare/v2.2.0...v2.3.0

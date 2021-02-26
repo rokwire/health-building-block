@@ -223,6 +223,25 @@ definitions:
       type:
         type: string
     type: object
+  JoinGroupExtApprovement:
+    properties:
+      date_created:
+        type: string
+      external_approver_id:
+        type: string
+      external_approver_last_name:
+        type: string
+      first_name:
+        type: string
+      group_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      status:
+        type: string
+    type: object
   Location:
     properties:
       address_1:
@@ -1231,6 +1250,14 @@ definitions:
     - public_key
     - uuid
     type: object
+  model.COVID19Config:
+    properties:
+      name:
+        type: string
+      news_update_period:
+        description: in minutes
+        type: integer
+    type: object
   model.CTest:
     properties:
       date_created:
@@ -1353,6 +1380,13 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  updateExtJoinExternalApprovementRequest:
+    properties:
+      status:
+        type: string
+    required:
+    - status
     type: object
   updateExtUINOverrideRequest:
     properties:
@@ -1669,7 +1703,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 2.5.0
+  version: 2.6.0
 paths:
   /admin/access-rules:
     get:
@@ -2110,6 +2144,22 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/CountyStatus'
+      security:
+      - AdminUserAuth: []
+      - AdminGroupAuth: []
+      tags:
+      - Admin
+  /admin/covid19-configs:
+    get:
+      description: Gives all the covid19 configurations
+      operationId: GetCovid19Configs
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.COVID19Config'
+            type: array
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -4344,6 +4394,54 @@ paths:
             type: array
       security:
       - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/join-external-approvements:
+    get:
+      consumes:
+      - application/json
+      description: Gives the join groups external approvals for approving
+      operationId: GetExtJoinExternalApproval
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/JoinGroupExtApprovement'
+            type: array
+      security:
+      - AppUserAuth: []
+      - AppUserAccountAuth: []
+      tags:
+      - Covid19
+  /covid19/join-external-approvements/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Accept/Reject external group joining request
+      operationId: UpdateExtJoinExternalApproval
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/updateExtJoinExternalApprovementRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully processed
+          schema:
+            type: string
+      security:
+      - AppUserAuth: []
+      - AppUserAccountAuth: []
       tags:
       - Covid19
   /covid19/locations:

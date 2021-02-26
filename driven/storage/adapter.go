@@ -271,7 +271,9 @@ func (sa *Adapter) ReadAllAppVersions() ([]string, error) {
 
 //CreateAppVersion preates app version
 func (sa *Adapter) CreateAppVersion(version string) error {
-	item := bson.D{primitive.E{Key: "version", Value: version}}
+
+	dateUpdated := time.Now()
+	item := bson.D{primitive.E{Key: "version", Value: version}, primitive.E{Key: "date_created", Value: dateUpdated}}
 	_, err := sa.db.appversions.InsertOne(item)
 	if err != nil {
 		return err
@@ -599,6 +601,18 @@ func (sa *Adapter) SaveUser(user *model.User) error {
 		return err
 	}
 	return nil
+}
+
+//GetCovid19Configs gives all covid 19 configs
+func (sa *Adapter) GetCovid19Configs() ([]model.COVID19Config, error) {
+	filter := bson.D{}
+	var result []model.COVID19Config
+	err := sa.db.configs.Find(filter, &result, nil)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+
 }
 
 //ReadCovid19Config reads the covid19 configuration from the storage

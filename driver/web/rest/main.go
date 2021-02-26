@@ -197,6 +197,17 @@ type cTestResponse struct {
 	DateUpdated *time.Time `json:"date_updated"`
 } // @name CTest
 
+type joinGroupExtApprovement struct {
+	ID                       string    `json:"id"`
+	GroupName                string    `json:"group_name"`
+	FirstName                string    `json:"first_name"`
+	LastName                 string    `json:"last_name"`
+	DateCreated              time.Time `json:"date_created"`
+	ExternalApproverID       string    `json:"external_approver_id"`
+	ExternalApproverLastName string    `json:"external_approver_last_name"`
+	Status                   string    `json:"status"`
+} // @name JoinGroupExtApprovement
+
 func convertToDaysOfOperations(list []locationOperationDayRequest) []model.OperationDay {
 	var doo []model.OperationDay
 	if list != nil {

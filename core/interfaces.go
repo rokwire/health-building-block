@@ -1069,6 +1069,7 @@ type ProfileUserData struct {
 //Rokmetro is used by core to communicate with the rokmetro ecosystem
 type Rokmetro interface {
 	GetExtJoinExternalApproval(externalApproverID string) ([]RokmetroJoinGroupExtApprovement, error)
+	UpdateExtJoinExternalApprovement(jeaID string, status string) error
 }
 
 //RokmetroJoinGroupExtApprovement represent Rokmetro join group external approvement entity

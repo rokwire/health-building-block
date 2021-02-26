@@ -528,5 +528,10 @@ func (app *Application) getExtJoinExternalApproval(account model.Account) ([]Rok
 }
 
 func (app *Application) updateExtJoinExternalApprovement(jeaID string, status string) error {
+	//communicate with rokmetro
+	err := app.rokmetro.UpdateExtJoinExternalApprovement(jeaID, status)
+	if err != nil {
+		return err
+	}
 	return nil
 }

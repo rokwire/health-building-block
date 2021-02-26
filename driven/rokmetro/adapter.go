@@ -56,6 +56,11 @@ func (a *Adapter) GetExtJoinExternalApproval(externalApproverID string) ([]core.
 	return result, nil
 }
 
+//UpdateExtJoinExternalApprovement approve/reject jea
+func (a *Adapter) UpdateExtJoinExternalApprovement(jeaID string, status string) error {
+	return nil
+}
+
 //NewRokmetroAdapter creates a new rokmetro adapter instance
 func NewRokmetroAdapter(groupsBBHost string, apiKey string) *Adapter {
 	return &Adapter{groupsBBHost: groupsBBHost, apiKey: apiKey}

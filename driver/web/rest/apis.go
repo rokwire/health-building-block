@@ -1725,13 +1725,12 @@ func (h ApisHandler) UpdateExtJoinExternalApproval(current model.User, account m
 		return
 	}
 	status := requestData.Status
-	log.Println(status)
-	/*	err = h.app.External.UpdateExtJoinExternalApprovement(ID, status)
-		if err != nil {
-			log.Printf("Error on updating join external aprrovement  - %s\n", err.Error())
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		} */
+	err = h.app.Services.UpdateExtJoinExternalApprovement(ID, status)
+	if err != nil {
+		log.Printf("Error on updating join external aprrovement  - %s\n", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)

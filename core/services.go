@@ -526,3 +526,7 @@ func (app *Application) getExtJoinExternalApproval(account model.Account) ([]Rok
 	}
 	return data, nil
 }
+
+func (app *Application) updateExtJoinExternalApprovement(jeaID string, status string) error {
+	return nil
+}

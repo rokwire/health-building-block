@@ -95,6 +95,7 @@ type Services interface {
 	GetRosterByPhone(phone string) (map[string]string, error)
 
 	GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error)
+	UpdateExtJoinExternalApprovement(jeaID string, status string) error
 }
 
 type servicesImpl struct {
@@ -292,6 +293,10 @@ func (s *servicesImpl) GetRosterByPhone(phone string) (map[string]string, error)
 
 func (s *servicesImpl) GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error) {
 	return s.app.getExtJoinExternalApproval(account)
+}
+
+func (s *servicesImpl) UpdateExtJoinExternalApprovement(jeaID string, status string) error {
+	return s.app.updateExtJoinExternalApprovement(jeaID, status)
 }
 
 //Administration exposes administration APIs for the driver adapters

@@ -4415,7 +4415,7 @@ paths:
       tags:
       - Covid19
   /covid19/join-external-approvements/{id}:
-    post:
+    put:
       consumes:
       - application/json
       description: Accept/Reject external group joining request

@@ -4474,7 +4474,7 @@ var doc = `{
             }
         },
         "/covid19/join-external-approvements/{id}": {
-            "post": {
+            "put": {
                 "security": [
                     {
                         "AppUserAuth": []

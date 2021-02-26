@@ -1702,7 +1702,7 @@ type updateExtJoinExternalApprovementRequest struct {
 // @Param id path string true "ID"
 // @Security AppUserAuth
 // @Security AppUserAccountAuth
-// @Router /covid19/join-external-approvements/{id} [post]
+// @Router /covid19/join-external-approvements/{id} [put]
 func (h ApisHandler) UpdateExtJoinExternalApproval(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	ID := params["id"]

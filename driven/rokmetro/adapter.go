@@ -1,6 +1,7 @@
 package rokmetro
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -58,6 +59,45 @@ func (a *Adapter) GetExtJoinExternalApproval(externalApproverID string) ([]core.
 
 //UpdateExtJoinExternalApprovement approve/reject jea
 func (a *Adapter) UpdateExtJoinExternalApprovement(jeaID string, status string) error {
+	url := fmt.Sprintf("%s/ext/join-external-approvements/%s", a.groupsBBHost, jeaID)
+
+	data := struct {
+		Status string `json:"status"`
+	}{status}
+
+	jsonBody, err := json.Marshal(data)
+	if err != nil {
+		log.Printf("error marshal approve/reject jea - %s - %s - %s", jeaID, status, err)
+		return err
+	}
+
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		log.Printf("error approve/reject jea - %s - %s - %s", jeaID, status, err)
+		return err
+	}
+	req.Header.Set("ROKMETRO-EXTERNAL-API-KEY", a.apiKey)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("error executing approve/reject jea - %s - %s - %s", jeaID, status, err)
+		return err
+	}
+
+	if resp.StatusCode != 200 {
+		defer resp.Body.Close()
+
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Printf("error reading the body data for getting join groups external approvements data request - %s", err)
+			return err
+		}
+		respBody := string(body)
+
+		log.Printf("approve/reject jea  - error with response code - %d - %s", resp.StatusCode, respBody)
+		return errors.New("approve/reject jea  - [internal - " + respBody + "]")
+	}
 	return nil
 }
 

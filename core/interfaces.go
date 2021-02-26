@@ -93,6 +93,9 @@ type Services interface {
 	GetExtUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)
 
 	GetRosterByPhone(phone string) (map[string]string, error)
+
+	GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error)
+	UpdateExtJoinExternalApprovement(jeaID string, status string) error
 }
 
 type servicesImpl struct {
@@ -286,6 +289,14 @@ func (s *servicesImpl) GetExtUINBuildingAccess(uin string) (*model.UINBuildingAc
 
 func (s *servicesImpl) GetRosterByPhone(phone string) (map[string]string, error) {
 	return s.app.getRosterByPhone(phone)
+}
+
+func (s *servicesImpl) GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error) {
+	return s.app.getExtJoinExternalApproval(account)
+}
+
+func (s *servicesImpl) UpdateExtJoinExternalApprovement(jeaID string, status string) error {
+	return s.app.updateExtJoinExternalApprovement(jeaID, status)
 }
 
 //Administration exposes administration APIs for the driver adapters
@@ -1053,6 +1064,24 @@ type ProfileBuildingBlock interface {
 //ProfileUserData represents the profile building block user data entity
 type ProfileUserData struct {
 	FCMTokens []string `json:"fcmTokens"`
+}
+
+//Rokmetro is used by core to communicate with the rokmetro ecosystem
+type Rokmetro interface {
+	GetExtJoinExternalApproval(externalApproverID string) ([]RokmetroJoinGroupExtApprovement, error)
+	UpdateExtJoinExternalApprovement(jeaID string, status string) error
+}
+
+//RokmetroJoinGroupExtApprovement represent Rokmetro join group external approvement entity
+type RokmetroJoinGroupExtApprovement struct {
+	ID                       string    `json:"id"`
+	GroupName                string    `json:"group_name"`
+	FirstName                string    `json:"first_name"`
+	LastName                 string    `json:"last_name"`
+	DateCreated              time.Time `json:"date_created"`
+	ExternalApproverID       string    `json:"external_approver_id"`
+	ExternalApproverLastName string    `json:"external_approver_last_name"`
+	Status                   string    `json:"status"`
 }
 
 //Audit is used by core to log history

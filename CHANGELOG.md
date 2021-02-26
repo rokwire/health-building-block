@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Expose get configs admin API. [#119](https://github.com/rokwire/health-building-block/issues/119)
+- Expose APIs for external join group approvement . [#121](https://github.com/rokwire/health-building-block/issues/121)
 
 ## [2.5.0] - 2021-01-20
 ### Changed

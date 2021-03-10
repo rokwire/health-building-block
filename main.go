@@ -75,9 +75,9 @@ func main() {
 	to := getEmailsRecepients()
 	sender := sender.NewSenderAdapter(smtpHost, smtpPort, user, password, from, to)
 
-	firebaseAuth := getEnvKey("HEALTH_FIREBASE_AUTH", true)
-	firebaseProjectID := getEnvKey("HEALTH_FIREBASE_PROJECT_ID", true)
-	messaging := messaging.NewFirebaseAdapter(firebaseAuth, firebaseProjectID)
+	//firebaseAuth := getEnvKey("HEALTH_FIREBASE_AUTH", true)
+	//firebaseProjectID := getEnvKey("HEALTH_FIREBASE_PROJECT_ID", true)
+	messaging := messaging.NewFirebaseAdapter("", "")
 
 	//profile bb adapter
 	profileHost := getEnvKey("HEALTH_PROFILE_HOST", true)
@@ -102,8 +102,10 @@ func main() {
 	adminWebAppClientID := getEnvKey("HEALTH_OIDC_ADMIN_WEB_CLIENT_ID", true)
 	phoneSecret := getEnvKey("HEALTH_PHONE_SECRET", true)
 	providersKeys := getHSAPIKeys()
-	authKeys := getEnvKey("HEALTH_AUTH_KEYS", true)
-	authIssuer := getEnvKey("HEALTH_AUTH_ISSUER", true)
+	//authKeys := getEnvKey("HEALTH_AUTH_KEYS", true)
+	//authIssuer := getEnvKey("HEALTH_AUTH_ISSUER", true)
+	authKeys := ""
+	authIssuer := ""
 	webAdapter := driver.NewWebAdapter(host, application, apiKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID,
 		phoneSecret, authKeys, authIssuer, providersKeys)
 

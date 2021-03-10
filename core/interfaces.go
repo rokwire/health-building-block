@@ -1078,6 +1078,8 @@ type RokmetroJoinGroupExtApprovement struct {
 	GroupName                string    `json:"group_name"`
 	FirstName                string    `json:"first_name"`
 	LastName                 string    `json:"last_name"`
+	Email                    string    `json:"email"`
+	Phone                    string    `json:"phone"`
 	DateCreated              time.Time `json:"date_created"`
 	ExternalApproverID       string    `json:"external_approver_id"`
 	ExternalApproverLastName string    `json:"external_approver_last_name"`

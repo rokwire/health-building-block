@@ -1225,10 +1225,12 @@ func newUserAuth(app *core.Application, oidcProvider string, oidcAppClientID str
 	}
 	appIDTokenVerifier := provider.Verifier(&oidc.Config{ClientID: oidcAppClientID})
 
-	keysSet, err := jwk.ParseString(keys)
+	/*keysSet, err := jwk.ParseString(keys)
 	if err != nil {
 		log.Fatalln(err)
-	}
+	}*/
+	// TODO
+	var keysSet *jwk.Set
 
 	cacheUsers := &syncmap.Map{}
 	lock := &sync.RWMutex{}

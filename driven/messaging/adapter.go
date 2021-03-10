@@ -24,6 +24,8 @@ import (
 	fire "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
 	firemessaging "firebase.google.com/go/messaging"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/option"
 )
 
 //FirebaseAdapter implements Firebase messaging
@@ -70,28 +72,28 @@ func (fa *FirebaseAdapter) getAPNSConfig() *firemessaging.APNSConfig {
 
 //NewFirebaseAdapter creates a new firebase adapter instance
 func NewFirebaseAdapter(authFile string, projectID string) *FirebaseAdapter {
-	/*	conf, err := google.JWTConfigFromJSON([]byte(authFile),
-			"https://www.googleapis.com/auth/firebase",
-			"https://www.googleapis.com/auth/cloud-platform")
-		if err != nil {
-			log.Fatal(err.Error())
-			return nil
-		}
+	conf, err := google.JWTConfigFromJSON([]byte(authFile),
+		"https://www.googleapis.com/auth/firebase",
+		"https://www.googleapis.com/auth/cloud-platform")
+	if err != nil {
+		log.Fatal(err.Error())
+		return nil
+	}
 
-		tokenSource := conf.TokenSource(context.Background())
-		creds := google.Credentials{ProjectID: projectID, TokenSource: tokenSource}
-		opt := option.WithCredentials(&creds)
-		app, err := fire.NewApp(context.Background(), nil, opt)
-		if err != nil {
-			log.Fatalf("error creating Firebase app: %v\n", err)
-			return nil
-		}
-		client, err := app.Messaging(context.Background())
-		if err != nil {
-			log.Fatalf("error getting Messaging client: %v\n", err)
-			return nil
-		}
+	tokenSource := conf.TokenSource(context.Background())
+	creds := google.Credentials{ProjectID: projectID, TokenSource: tokenSource}
+	opt := option.WithCredentials(&creds)
+	app, err := fire.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		log.Fatalf("error creating Firebase app: %v\n", err)
+		return nil
+	}
+	client, err := app.Messaging(context.Background())
+	if err != nil {
+		log.Fatalf("error getting Messaging client: %v\n", err)
+		return nil
+	}
 
-		return &FirebaseAdapter{app: app, client: client}*/
-	return nil
+	return &FirebaseAdapter{app: app, client: client}
+
 }

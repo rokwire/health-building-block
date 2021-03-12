@@ -32,8 +32,6 @@ import (
 	"github.com/gorilla/mux"
 	"gopkg.in/go-playground/validator.v9"
 
-	"github.com/casbin/casbin"
-	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 

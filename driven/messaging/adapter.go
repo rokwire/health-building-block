@@ -24,7 +24,6 @@ import (
 	fire "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
 	firemessaging "firebase.google.com/go/messaging"
-
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 )
@@ -96,4 +95,5 @@ func NewFirebaseAdapter(authFile string, projectID string) *FirebaseAdapter {
 	}
 
 	return &FirebaseAdapter{app: app, client: client}
+
 }

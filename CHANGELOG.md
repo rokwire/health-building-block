@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Get email and phone from the Rokmetro system[#126](https://github.com/rokwire/health-building-block/issues/126)
+
+## [Unreleased]
+### Changed
 - Make the log files on AWS readable. [#122](https://github.com/rokwire/health-building-block/issues/122)
 
 ## [2.6.0] - 2021-02-26

@@ -1671,6 +1671,7 @@ func (h ApisHandler) GetExtJoinExternalApproval(current model.User, account mode
 	result := make([]joinGroupExtApprovement, len(items))
 	for i, c := range items {
 		result[i] = joinGroupExtApprovement{ID: c.ID, GroupName: c.GroupName, FirstName: c.FirstName, LastName: c.LastName,
+			Email: c.Email, Phone: c.Phone,
 			DateCreated: c.DateCreated, ExternalApproverID: c.ExternalApproverID, ExternalApproverLastName: c.ExternalApproverLastName,
 			Status: c.Status}
 	}

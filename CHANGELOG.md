@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [Unreleased]
+- Expose external API to check if the user exists[#128](https://github.com/rokwire/health-building-block/issues/128)
 ## [Unreleased]
 ### Changed
 - Get email and phone from the Rokmetro system[#126](https://github.com/rokwire/health-building-block/issues/126)

@@ -177,6 +177,13 @@ func (auth *APIKeysAuth) check(w http.ResponseWriter, r *http.Request) (bool, *s
 	return true, appVersion
 }
 
+func newAPIKeysAuth(appKeys []string) *APIKeysAuth {
+	auth := APIKeysAuth{appKeys}
+	return &auth
+}
+
+////////////////////////////////////
+
 //ExternalAuthCheck entity
 type ExternalAuth struct {
 	appKeys []string
@@ -216,11 +223,6 @@ func (auth *ExternalAuth) check(externallKey *string, w http.ResponseWriter) boo
 //newExternalAuth creates new internal auth
 func newExternalAuth(apiKeys []string) *ExternalAuth {
 	auth := ExternalAuth{appKeys: apiKeys}
-	return &auth
-}
-
-func newAPIKeysAuth(appKeys []string) *APIKeysAuth {
-	auth := APIKeysAuth{appKeys}
 	return &auth
 }
 

@@ -394,23 +394,6 @@ func (we Adapter) userAccountsAuthWrapFunc(handler userAccountsAuthFunc) http.Ha
 	}
 }
 
-type externalKeyAuthFunc = func(string, http.ResponseWriter, *http.Request)
-
-func (we Adapter) externalKeyAuthFunc(handler apiKeysAuthFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		utils.LogRequest(req)
-
-		//TODO
-		/*
-			clientID, authenticated := we.auth.externalAuthCheck(w, req)
-			if !authenticated {
-				return
-			}
-
-			handler(clientID, w, req) */
-	}
-}
-
 type loginAppUserRequest struct {
 	UUID                 string  `json:"uuid" validate:"required"`
 	PublicKey            string  `json:"public_key" validate:"required"`
@@ -605,6 +588,23 @@ func (we Adapter) providerAuthWrapFunc(handler http.HandlerFunc) http.HandlerFun
 		}
 
 		handler(w, req)
+	}
+}
+
+type externalKeyAuthFunc = func(string, http.ResponseWriter, *http.Request)
+
+func (we Adapter) externalKeyAuthFunc(handler apiKeysAuthFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		utils.LogRequest(req)
+
+		//TODO
+		/*
+			clientID, authenticated := we.auth.externalAuthCheck(w, req)
+			if !authenticated {
+				return
+			}
+
+			handler(clientID, w, req) */
 	}
 }
 

@@ -95,6 +95,7 @@ func main() {
 
 	//web adapter
 	apiKeys := getAPIKeys()
+	//TODO - get ROKWIRE-EXT-HS-API-KEYS from the environment
 	host := getEnvKey("HEALTH_HOST", true)
 	oidcProvider := getEnvKey("HEALTH_OIDC_PROVIDER", true)
 	oidcAppClientID := getEnvKey("HEALTH_OIDC_APP_CLIENT_ID", true)

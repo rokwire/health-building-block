@@ -140,6 +140,9 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/ext/uin-overrides/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.DeleteExtUINOverride)).Methods("DELETE")
 	covid19RestSubrouter.HandleFunc("/ext/building-access", we.providerAuthWrapFunc(we.apisHandler.GetExtBuildingAccess)).Methods("GET").Queries("uin", "")
 
+	//external auth
+	//TODO - expose api which accepts extrernal id and last name as query params
+
 	// user or api key auth
 	covid19RestSubrouter.HandleFunc("/counties", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetCounties)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/counties/{id}", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetCounty)).Methods("GET")

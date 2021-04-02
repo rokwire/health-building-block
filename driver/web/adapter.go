@@ -591,20 +591,16 @@ func (we Adapter) providerAuthWrapFunc(handler http.HandlerFunc) http.HandlerFun
 	}
 }
 
-type externalKeyAuthFunc = func(string, http.ResponseWriter, *http.Request)
-
-func (we Adapter) externalKeyAuthFunc(handler apiKeysAuthFunc) http.HandlerFunc {
+func (we Adapter) externalKeyAuthFunc(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
-		//TODO
-		/*
-			clientID, authenticated := we.auth.externalAuthCheck(w, req)
-			if !authenticated {
-				return
-			}
+		authenticated := we.auth.externalAuthCheck(w, req)
+		if !authenticated {
+			return
+		}
 
-			handler(clientID, w, req) */
+		handler(w, req)
 	}
 }
 

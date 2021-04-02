@@ -82,16 +82,8 @@ func (auth *Auth) adminCheck(w http.ResponseWriter, r *http.Request) (bool, *mod
 func (auth *Auth) createAdminAppUser(shibboAuth *model.ShibbolethAuth) (*model.User, error) {
 	return auth.adminAuth.createAdminAppUser(shibboAuth)
 }
-func (auth *Auth) externalAuthCheck(w http.ResponseWriter, r *http.Request) (string, bool) {
-	clientIDOK, clientID := auth.clientIDCheck(w, r)
-	if !clientIDOK {
-		return "", false
-	}
-
-	externalAuthKey := auth.getExternalAPIKey(r)
-	authenticated := auth.externalAuth.check(externalAuthKey, w)
-
-	return *clientID, authenticated
+func (auth *Auth) externalAuthCheck(w http.ResponseWriter, r *http.Request) bool {
+	return auth.externalAuth.check(w, r)
 }
 func (auth *Auth) providersCheck(w http.ResponseWriter, r *http.Request) bool {
 	return auth.providersAuth.check(w, r)
@@ -189,9 +181,10 @@ type ExternalAuth struct {
 	appKeys []string
 }
 
-func (auth *ExternalAuth) check(externallKey *string, w http.ResponseWriter) bool {
-	//check if there is internal key in the header
-	if externallKey == nil || len(*externallKey) == 0 {
+func (auth *ExternalAuth) check(w http.ResponseWriter, r *http.Request) bool {
+	apiKey := r.Header.Get("ROKWIRE-EXT-HS-API-KEY")
+	//check if there is api key in the header
+	if len(apiKey) == 0 {
 		//no key, so return 400
 		log.Println(fmt.Sprintf("400 - Bad Request"))
 
@@ -204,14 +197,14 @@ func (auth *ExternalAuth) check(externallKey *string, w http.ResponseWriter) boo
 	appKeys := auth.appKeys
 	exist := false
 	for _, element := range appKeys {
-		if element == *externallKey {
+		if element == apiKey {
 			exist = true
 			break
 		}
 	}
 	if !exist {
 		//not exist, so return 401
-		log.Println(fmt.Sprintf("401 - Unauthorized for key %s", *externallKey))
+		log.Println(fmt.Sprintf("401 - Unauthorized for key %s", apiKey))
 
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Unauthorized"))

@@ -591,7 +591,7 @@ func (we Adapter) providerAuthWrapFunc(handler http.HandlerFunc) http.HandlerFun
 	}
 }
 
-func (we Adapter) externalKeyAuthFunc(handler http.HandlerFunc) http.HandlerFunc {
+func (we Adapter) externalAuthWrapFunc(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 

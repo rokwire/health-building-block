@@ -400,12 +400,14 @@ func (we Adapter) externalKeyAuthFunc(handler apiKeysAuthFunc) http.HandlerFunc 
 	return func(w http.ResponseWriter, req *http.Request) {
 		utils.LogRequest(req)
 
-		clientID, authenticated := we.auth.externalAuthCheck(w, req)
-		if !authenticated {
-			return
-		}
+		//TODO
+		/*
+			clientID, authenticated := we.auth.externalAuthCheck(w, req)
+			if !authenticated {
+				return
+			}
 
-		handler(clientID, w, req)
+			handler(clientID, w, req) */
 	}
 }
 

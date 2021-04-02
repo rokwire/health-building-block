@@ -214,14 +214,13 @@ func (auth *ExternalAuth) check(externallKey *string, w http.ResponseWriter) boo
 }
 
 //newExternalAuth creates new internal auth
-func newExternalAuth(internalApiKeys []string) *ExternalAuth {
-	auth := ExternalAuth{appKeys: ExternalAuth}
+func newExternalAuth(apiKeys []string) *ExternalAuth {
+	auth := ExternalAuth{appKeys: apiKeys}
 	return &auth
 }
 
-func newAPIKeysAuth(appKeys []string, externalApiKeys string) *APIKeysAuth {
-	auth := APIKeysAuth{appKeys, externalAuth: externalAuth}
-	externalAuth := newExternalAuth(externalApiKeys)
+func newAPIKeysAuth(appKeys []string) *APIKeysAuth {
+	auth := APIKeysAuth{appKeys}
 	return &auth
 }
 

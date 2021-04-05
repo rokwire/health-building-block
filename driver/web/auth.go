@@ -114,13 +114,14 @@ func (auth *Auth) getExternalAPIKey(r *http.Request) *string {
 
 //NewAuth creates new auth handler
 func NewAuth(app *core.Application, appKeys []string, oidcProvider string,
-	oidcAppClientID string, appClientID string, webAppClientID string, phoneAuthSecret string, authKeys string, authIssuer string, providersAPIKeys []string) *Auth {
+	oidcAppClientID string, appClientID string, webAppClientID string, phoneAuthSecret string, authKeys string, authIssuer string, providersAPIKeys []string, externalApiKeys []string) *Auth {
 	apiKeysAuth := newAPIKeysAuth(appKeys)
 	userAuth2 := newUserAuth(app, oidcProvider, oidcAppClientID, phoneAuthSecret, authKeys, authIssuer)
 	adminAuth := newAdminAuth(app, oidcProvider, appClientID, webAppClientID)
 	providersAuth := newProviderAuth(providersAPIKeys)
+	externalAuth := newExternalAuth(externalApiKeys)
 
-	auth := Auth{apiKeysAuth: apiKeysAuth, userAuth: userAuth2, adminAuth: adminAuth, providersAuth: providersAuth}
+	auth := Auth{apiKeysAuth: apiKeysAuth, userAuth: userAuth2, adminAuth: adminAuth, providersAuth: providersAuth, externalAuth: externalAuth}
 	return &auth
 }
 

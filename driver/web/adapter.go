@@ -142,6 +142,7 @@ func (we Adapter) Start() {
 
 	//external auth
 	//TODO - expose api which accepts extrernal id and last name as query params
+	covid19RestSubrouter.HandleFunc("/external/user", we.externalAuthWrapFunc(we.apisHandler.GetUserByExernalIDAndLastName)).Methods("GET").Queries("last-name", "", "identifier", "")
 
 	// user or api key auth
 	covid19RestSubrouter.HandleFunc("/counties", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetCounties)).Methods("GET")
@@ -610,8 +611,8 @@ func (we Adapter) externalAuthWrapFunc(handler http.HandlerFunc) http.HandlerFun
 //NewWebAdapter creates new WebAdapter instance
 func NewWebAdapter(host string, app *core.Application, appKeys []string, oidcProvider string,
 	oidcAppClientID string, adminAppClientID string, adminWebAppClientID string, phoneAuthSecret string,
-	authKeys string, authIssuer string, providersKeys []string) Adapter {
-	auth := NewAuth(app, appKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID, phoneAuthSecret, authKeys, authIssuer, providersKeys)
+	authKeys string, authIssuer string, providersKeys []string, externalApiKeys []string) Adapter {
+	auth := NewAuth(app, appKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID, phoneAuthSecret, authKeys, authIssuer, providersKeys, externalApiKeys)
 	authorization := casbin.NewEnforcer("driver/web/authorization_model.conf", "driver/web/authorization_policy.csv")
 
 	apisHandler := rest.NewApisHandler(app)

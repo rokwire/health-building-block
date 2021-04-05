@@ -677,6 +677,15 @@ func (h ApisHandler) GetCounty(appVersion *string, w http.ResponseWriter, r *htt
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
+func (h ApisHandler) GetUserByExernalIDAndLastName(w http.ResponseWriter, r *http.Request) {
+	/*	params := mux.Vars(r)
+		ЕxternalID := params["externalID"]
+		if len(ExternalID) <= 0 {
+			log.Println("ExternalID is required")
+			http.Error(w, "ExternalID is required", http.StatusBadRequest)
+			return
+		}*/
+}
 
 type getMCountiesResponse struct {
 	ID            string `json:"id"`

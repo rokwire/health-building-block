@@ -678,13 +678,37 @@ func (h ApisHandler) GetCounty(appVersion *string, w http.ResponseWriter, r *htt
 	w.Write(data)
 }
 func (h ApisHandler) GetUserByExernalIDAndLastName(w http.ResponseWriter, r *http.Request) {
-	/*	params := mux.Vars(r)
-		ЕxternalID := params["externalID"]
-		if len(ExternalID) <= 0 {
-			log.Println("ExternalID is required")
-			http.Error(w, "ExternalID is required", http.StatusBadRequest)
-			return
-		}*/
+	printExternalIDKeys, ok := r.URL.Query()["identifier"]
+	if !ok || len(printExternalIDKeys[0]) < 1 {
+		log.Println("external key is missing")
+		return
+	} else {
+		log.Print(printExternalIDKeys)
+	}
+	printExternalKey := printExternalIDKeys[0]
+	printExternal := strings.Split(printExternalKey, ",")
+	if len(printExternal) == 0 {
+		http.Error(w, "externaldID is required", http.StatusBadRequest)
+		return
+	}
+	printLastNameKeys, ok := r.URL.Query()["last-name"]
+	if !ok || len(printLastNameKeys[0]) < 1 {
+		log.Println("Last name is missing")
+		return
+	} else {
+		log.Print(printLastNameKeys)
+	}
+	printLastNameKey := printLastNameKeys[0]
+	printLastName := strings.Split(printLastNameKey, ",")
+	if len(printLastName) == 0 {
+		http.Error(w, "Last name is required", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(printExternalKey))
+	w.Write([]byte(printLastNameKey))
 }
 
 type getMCountiesResponse struct {

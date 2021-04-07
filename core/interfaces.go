@@ -35,6 +35,7 @@ type Services interface {
 	GetCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error)
 
 	GetResources() ([]*model.Resource, error)
+	GetExternalIDAndLastName(external_id string) (*model.User, error)
 
 	GetFAQ() (*model.FAQ, error)
 
@@ -197,6 +198,9 @@ func (s *servicesImpl) FindCounties(f *utils.Filter) ([]*model.County, error) {
 
 func (s *servicesImpl) GetCounty(ID string) (*model.County, error) {
 	return s.app.getCounty(ID)
+}
+func (s *servicesImpl) GetExternalIDAndLastName(external_id string) (*model.User, error) {
+	return s.app.getExternalIDAndLastName(external_id)
 }
 
 func (s *servicesImpl) GetRulesByCounty(countyID string) ([]*model.Rule, []*model.CountyStatus, []*model.TestType, error) {

@@ -646,6 +646,13 @@ func (app *Application) getCounty(ID string) (*model.County, error) {
 	}
 	return county, nil
 }
+func (app *Application) getExternalIDAndLastName(external_id string) (*model.User, error) {
+	getExternal, err := app.storage.FindUserByExternalID(external_id)
+	if err != nil {
+		return nil, err
+	}
+	return getExternal, nil
+}
 
 func (app *Application) containsCountyStatusP(ID string, list []*model.CountyStatus) bool {
 	if list == nil {

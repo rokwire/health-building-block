@@ -35,7 +35,7 @@ type Services interface {
 	GetCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error)
 
 	GetResources() ([]*model.Resource, error)
-	GetExternalIDAndLastName(external_id string) (*model.User, error)
+	GetExternalIDAndLastName(external_id, lastName string) (*model.User, error)
 
 	GetFAQ() (*model.FAQ, error)
 
@@ -199,8 +199,8 @@ func (s *servicesImpl) FindCounties(f *utils.Filter) ([]*model.County, error) {
 func (s *servicesImpl) GetCounty(ID string) (*model.County, error) {
 	return s.app.getCounty(ID)
 }
-func (s *servicesImpl) GetExternalIDAndLastName(external_id string) (*model.User, error) {
-	return s.app.getExternalIDAndLastName(external_id)
+func (s *servicesImpl) GetExternalIDAndLastName(external_id, lastName string) (*model.User, error) {
+	return s.app.getExternalIDAndLastName(external_id, lastName)
 }
 
 func (s *servicesImpl) GetRulesByCounty(countyID string) ([]*model.Rule, []*model.CountyStatus, []*model.TestType, error) {
@@ -434,6 +434,10 @@ type Administration interface {
 
 type administrationImpl struct {
 	app *Application
+}
+
+func (s *administrationImpl) GetUserByExternalID(external_id string) (*model.User, error) {
+	return s.app.getUserByExternalID(external_id)
 }
 
 func (s *administrationImpl) GetCovid19Config() (*model.COVID19Config, error) {
@@ -742,8 +746,8 @@ func (s *administrationImpl) DeleteUINOverride(current model.User, group string,
 	return s.app.deleteUINOverride(current, group, uin)
 }
 
-func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User, error) {
-	return s.app.getUserByExternalID(externalID)
+func (s *administrationImpl) GetUserByExernalIDAndLastName(externalID string) (*model.User, error) {
+	return s.app.getUserByExernalIDAndLastName(externalID)
 }
 
 func (s *administrationImpl) CreateRoster(current model.User, group string, audit *string, phone string, uin string, firstName string,

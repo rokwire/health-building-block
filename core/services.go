@@ -345,6 +345,13 @@ func (app *Application) getCRulesByCounty(appVersion *string, countyID string) (
 	}
 	return rules, nil
 }
+func (app *Application) getExternalIDAndLastName(external_id, lastName string) (*model.User, error) {
+	getExternal, err := app.storage.FindUserByExternalID(external_id)
+	if err != nil {
+		return nil, err
+	}
+	return getExternal, nil
+}
 
 func (app *Application) getAccessRuleByCounty(countyID string) (*model.AccessRule, []*model.CountyStatus, error) {
 	//get the access rule

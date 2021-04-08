@@ -30,6 +30,13 @@ import (
 	"github.com/google/uuid"
 )
 
+func (app *Application) getUserByExternalID(extrernalID string) (*model.User, error) {
+	external_id, err := app.storage.FindUserByExternalID(extrernalID)
+	if err != nil {
+		return nil, err
+	}
+	return external_id, nil
+}
 func (app *Application) getCovid19Config() (*model.COVID19Config, error) {
 	config, err := app.storage.ReadCovid19Config()
 	if err != nil {
@@ -1673,7 +1680,7 @@ func (app *Application) deleteAccessRule(current model.User, group string, ID st
 	return nil
 }
 
-func (app *Application) getUserByExternalID(externalID string) (*model.User, error) {
+func (app *Application) getUserByExernalIDAndLastName(externalID string) (*model.User, error) {
 	user, err := app.storage.FindUserAccountsByExternalID(externalID)
 	if err != nil {
 		return nil, err

@@ -1680,8 +1680,8 @@ func (app *Application) deleteAccessRule(current model.User, group string, ID st
 	return nil
 }
 
-func (app *Application) getUserByExernalIDAndLastName(externalID string) (*model.User, error) {
-	user, err := app.storage.FindUserAccountsByExternalID(externalID)
+func (app *Application) getUserByExernalIDAndLastName(externalID, lastName string) (*model.User, error) {
+	user, err := app.storage.GetUserByExernalIDAndLastName(externalID, lastName)
 	if err != nil {
 		return nil, err
 	}

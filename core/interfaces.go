@@ -746,8 +746,8 @@ func (s *administrationImpl) DeleteUINOverride(current model.User, group string,
 	return s.app.deleteUINOverride(current, group, uin)
 }
 
-func (s *administrationImpl) GetUserByExernalIDAndLastName(externalID string) (*model.User, error) {
-	return s.app.getUserByExernalIDAndLastName(externalID)
+func (s *administrationImpl) GetUserByExernalIDAndLastName(externalID, lastName string) (*model.User, error) {
+	return s.app.getUserByExernalIDAndLastName(externalID, lastName)
 }
 
 func (s *administrationImpl) CreateRoster(current model.User, group string, audit *string, phone string, uin string, firstName string,
@@ -829,6 +829,8 @@ type Storage interface {
 	FindUserAccountsByExternalID(externalID string) (*model.User, error)
 	FindUserByShibbolethID(shibbolethID string) (*model.User, error)
 	FindUsersByRePost(rePost bool) ([]*model.User, error)
+	GetUserByExernalIDAndLastName(externalID, lastName string) (*model.User, error)
+
 	CreateAppUser(externalID string,
 		uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) (*model.User, error)
 	CreateAdminUser(shibboAuth *model.ShibbolethAuth, externalID string,

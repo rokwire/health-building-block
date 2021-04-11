@@ -95,8 +95,7 @@ func main() {
 
 	//web adapter
 	apiKeys := getAPIKeys()
-	//TODO - get ROKWIRE-EXT-HS-API-KEYS from the environment
-	externalApiKey := getExternalApiKey()
+	externalApiKeys := getExternalApiKeys()
 	host := getEnvKey("HEALTH_HOST", true)
 	oidcProvider := getEnvKey("HEALTH_OIDC_PROVIDER", true)
 	oidcAppClientID := getEnvKey("HEALTH_OIDC_APP_CLIENT_ID", true)
@@ -108,7 +107,7 @@ func main() {
 	authIssuer := getEnvKey("HEALTH_AUTH_ISSUER", true)
 
 	webAdapter := driver.NewWebAdapter(host, application, apiKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID,
-		phoneSecret, authKeys, authIssuer, providersKeys, externalApiKey)
+		phoneSecret, authKeys, authIssuer, providersKeys, externalApiKeys)
 
 	webAdapter.Start()
 }
@@ -145,14 +144,15 @@ func getAPIKeys() []string {
 
 	return rokwireAPIKeysList
 }
-func getExternalApiKey() []string {
+
+func getExternalApiKeys() []string {
 	//get from the environment
-	rokwireExternalApiKey := getExternalApiKeys("ROKWIRE-EXT-HS-API-KEYS", true)
+	rokwireExternalApiKey := getEnvKey("ROKWIRE_EXT_HS_API_KEYS", true)
 
 	//it is comma separated format
 	externalKeyList := strings.Split(rokwireExternalApiKey, ",")
 	if len(externalKeyList) <= 0 {
-		log.Fatal("The external key list is empty")
+		log.Fatal("The external keys list is empty")
 	}
 
 	return externalKeyList
@@ -172,19 +172,6 @@ func getHSAPIKeys() []string {
 }
 
 func getEnvKey(key string, required bool) string {
-	//get from the environment
-	value, exist := os.LookupEnv(key)
-	if !exist {
-		if required {
-			log.Fatal("No provided environment variable for " + key)
-		} else {
-			log.Printf("No provided environment variable for " + key)
-		}
-	}
-	printEnvVar(key, value)
-	return value
-}
-func getExternalApiKeys(key string, required bool) string {
 	//get from the environment
 	value, exist := os.LookupEnv(key)
 	if !exist {

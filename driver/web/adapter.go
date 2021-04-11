@@ -141,7 +141,6 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/ext/building-access", we.providerAuthWrapFunc(we.apisHandler.GetExtBuildingAccess)).Methods("GET").Queries("uin", "")
 
 	//external auth
-	//TODO - expose api which accepts extrernal id and last name as query params
 	covid19RestSubrouter.HandleFunc("/external/user", we.externalAuthWrapFunc(we.apisHandler.GetUserByExernalIDAndLastName)).Methods("GET").Queries("last-name", "", "identifier", "")
 
 	// user or api key auth

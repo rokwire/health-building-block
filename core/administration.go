@@ -37,6 +37,13 @@ func (app *Application) getUserByExternalID(extrernalID string) (*model.User, er
 	}
 	return external_id, nil
 }
+func (app *Application) getUserExternalIDAndLastName(extrernalID, lastName string) (*model.User, error) {
+	external_id, err := app.storage.FindUserByExternalID(extrernalID)
+	if err != nil {
+		return nil, err
+	}
+	return external_id, nil
+}
 func (app *Application) getCovid19Config() (*model.COVID19Config, error) {
 	config, err := app.storage.ReadCovid19Config()
 	if err != nil {
@@ -1678,14 +1685,6 @@ func (app *Application) deleteAccessRule(current model.User, group string, ID st
 	userIdentifier, userInfo := current.GetLogData()
 	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "access-rule", ID)
 	return nil
-}
-
-func (app *Application) getUserByExernalIDAndLastName(externalID, lastName string) (*model.User, error) {
-	user, err := app.storage.GetUserByExernalIDAndLastName(externalID, lastName)
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
 }
 
 func (app *Application) createRoster(current model.User, group string, audit *string, phone string, uin string, firstName string,

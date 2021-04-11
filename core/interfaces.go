@@ -425,6 +425,7 @@ type Administration interface {
 	DeleteAllRawSubAccounts(current model.User, group string) error
 
 	GetUserByExternalID(externalID string) (*model.User, error)
+	GetUserExternalIDAndLastName(externalID, lastName string) (*model.User, error)
 
 	CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
 
@@ -438,6 +439,9 @@ type administrationImpl struct {
 
 func (s *administrationImpl) GetUserByExternalID(external_id string) (*model.User, error) {
 	return s.app.getUserByExternalID(external_id)
+}
+func (s *administrationImpl) GetUserExternalIDAndLastName(external_id, lastName string) (*model.User, error) {
+	return s.app.getUserExternalIDAndLastName(external_id, lastName)
 }
 
 func (s *administrationImpl) GetCovid19Config() (*model.COVID19Config, error) {
@@ -746,10 +750,6 @@ func (s *administrationImpl) DeleteUINOverride(current model.User, group string,
 	return s.app.deleteUINOverride(current, group, uin)
 }
 
-func (s *administrationImpl) GetUserByExernalIDAndLastName(externalID, lastName string) (*model.User, error) {
-	return s.app.getUserByExernalIDAndLastName(externalID, lastName)
-}
-
 func (s *administrationImpl) CreateRoster(current model.User, group string, audit *string, phone string, uin string, firstName string,
 	middleName string, lastName string, birthDate string, gender string, address1 string, address2 string,
 	address3 string, city string, state string, zipCode string, email string, badgeType string) error {
@@ -829,7 +829,6 @@ type Storage interface {
 	FindUserAccountsByExternalID(externalID string) (*model.User, error)
 	FindUserByShibbolethID(shibbolethID string) (*model.User, error)
 	FindUsersByRePost(rePost bool) ([]*model.User, error)
-	GetUserByExernalIDAndLastName(externalID, lastName string) (*model.User, error)
 
 	CreateAppUser(externalID string,
 		uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) (*model.User, error)

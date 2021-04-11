@@ -678,37 +678,33 @@ func (h ApisHandler) GetCounty(appVersion *string, w http.ResponseWriter, r *htt
 	w.Write(data)
 }
 func (h ApisHandler) GetUserByExernalIDAndLastName(w http.ResponseWriter, r *http.Request) {
-	printExternalIDKeys, ok := r.URL.Query()["identifier"]
-	if !ok || len(printExternalIDKeys[0]) < 1 {
+	externalIDKeys, ok := r.URL.Query()["identifier"]
+	if !ok || len(externalIDKeys[0]) < 1 {
 		log.Println("external key is missing")
 		return
-	} else {
-		log.Print(printExternalIDKeys)
 	}
-	printExternalKey := printExternalIDKeys[0]
-	printExternal := strings.Split(printExternalKey, ",")
-	if len(printExternal) == 0 {
-		http.Error(w, "externaldID is required", http.StatusBadRequest)
-		return
-	}
-	printLastNameKeys, ok := r.URL.Query()["last-name"]
-	if !ok || len(printLastNameKeys[0]) < 1 {
+	externalID := externalIDKeys[0]
+
+	lastNameKeys, ok := r.URL.Query()["last-name"]
+	if !ok || len(lastNameKeys[0]) < 1 {
 		log.Println("Last name is missing")
 		return
-	} else {
-		log.Print(printLastNameKeys)
 	}
-	printLastNameKey := printLastNameKeys[0]
-	printLastName := strings.Split(printLastNameKey, ",")
-	if len(printLastName) == 0 {
-		http.Error(w, "Last name is required", http.StatusBadRequest)
+	lastName := lastNameKeys[0]
+
+	user, err := h.app.Services.GetUser(externalID, lastName)
+	if err != nil {
+		log.Printf("Error on getting user by identifier and last name %s", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
+	//TODO check if user nil
+	log.Println(user)
+
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(printExternalKey))
-	w.Write([]byte(printLastNameKey))
+	w.Write([]byte("TODO"))
 }
 
 type getMCountiesResponse struct {

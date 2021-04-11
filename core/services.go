@@ -542,3 +542,7 @@ func (app *Application) updateExtJoinExternalApprovement(jeaID string, status st
 	}
 	return nil
 }
+
+func (app *Application) getUser(externalID, lastName string) (*model.User, error) {
+	return nil, nil
+}

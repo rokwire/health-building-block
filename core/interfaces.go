@@ -35,7 +35,6 @@ type Services interface {
 	GetCTestsByExternalUserIDs(externalUserIDs []string) (map[string][]*model.CTest, error)
 
 	GetResources() ([]*model.Resource, error)
-	GetExternalIDAndLastName(external_id, lastName string) (*model.User, error)
 
 	GetFAQ() (*model.FAQ, error)
 
@@ -97,6 +96,8 @@ type Services interface {
 
 	GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error)
 	UpdateExtJoinExternalApprovement(jeaID string, status string) error
+
+	GetUser(externalID string, lastName string) (*model.User, error)
 }
 
 type servicesImpl struct {
@@ -301,6 +302,10 @@ func (s *servicesImpl) GetExtJoinExternalApproval(account model.Account) ([]Rokm
 
 func (s *servicesImpl) UpdateExtJoinExternalApprovement(jeaID string, status string) error {
 	return s.app.updateExtJoinExternalApprovement(jeaID, status)
+}
+
+func (s *servicesImpl) GetUser(externalID string, lastName string) (*model.User, error) {
+	return s.app.getUser(externalID, lastName)
 }
 
 //Administration exposes administration APIs for the driver adapters

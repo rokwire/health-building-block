@@ -700,11 +700,16 @@ func (h ApisHandler) GetUserByExernalIDAndLastName(w http.ResponseWriter, r *htt
 	}
 
 	//TODO check if user nil
-	log.Println(user)
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("TODO"))
+	if user == nil {
+		//log.Printf("There is no user with that externalID")
+		http.Error(w, "There is no user with that externalID", http.StatusNotFound)
+		//w.Write([]byte("There is no user with that externalID"))
+		return
+	} else {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("nil"))
+	}
 }
 
 type getMCountiesResponse struct {

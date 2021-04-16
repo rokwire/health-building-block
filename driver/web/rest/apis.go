@@ -699,11 +699,8 @@ func (h ApisHandler) GetUserByExernalIDAndLastName(w http.ResponseWriter, r *htt
 		return
 	}
 
-	//TODO check if user nil
 	if user == nil {
-		//log.Printf("There is no user with that externalID")
-		http.Error(w, "There is no user with that externalID", http.StatusNotFound)
-		//w.Write([]byte("There is no user with that externalID"))
+		http.Error(w, "There is no user with that identiier", http.StatusNotFound)
 		return
 	} else {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")

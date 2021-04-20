@@ -59,6 +59,7 @@ func (auth *Auth) Start() error {
 
 	return nil
 }
+
 func (auth *Auth) clientIDCheck(w http.ResponseWriter, r *http.Request) (bool, *string) {
 	clientID := r.Header.Get("APP")
 	if len(clientID) == 0 {

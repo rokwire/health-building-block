@@ -82,9 +82,11 @@ func (auth *Auth) adminCheck(w http.ResponseWriter, r *http.Request) (bool, *mod
 func (auth *Auth) createAdminAppUser(shibboAuth *model.ShibbolethAuth) (*model.User, error) {
 	return auth.adminAuth.createAdminAppUser(shibboAuth)
 }
+
 func (auth *Auth) externalAuthCheck(w http.ResponseWriter, r *http.Request) bool {
 	return auth.externalAuth.check(w, r)
 }
+
 func (auth *Auth) providersCheck(w http.ResponseWriter, r *http.Request) bool {
 	return auth.providersAuth.check(w, r)
 }
@@ -103,13 +105,6 @@ func (auth *Auth) updateAppUser(user model.User, uuid string, publicKey string, 
 
 func (auth *Auth) createAppUser(externalID string, uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
 	return auth.userAuth.createAppUser(externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
-}
-func (auth *Auth) getExternalAPIKey(r *http.Request) *string {
-	apiKey := r.Header.Get("ROKWIRE_GS_API_KEY")
-	if len(apiKey) == 0 {
-		return nil
-	}
-	return &apiKey
 }
 
 //NewAuth creates new auth handler

@@ -607,6 +607,31 @@ func (h ApisHandler) GetExtBuildingAccess(w http.ResponseWriter, r *http.Request
 	w.Write(data)
 }
 
+func (h ApisHandler) GetUserByIdentifier(w http.ResponseWriter, r *http.Request) {
+	externalIDKeys, ok := r.URL.Query()["identifier"]
+	if !ok || len(externalIDKeys[0]) < 1 {
+		log.Println("external key is missing")
+		return
+	}
+	identifier := externalIDKeys[0]
+
+	user, err := h.app.Services.GetUser(identifier)
+	if err != nil {
+		log.Printf("Error on getting user by identifier and last name %s", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	if user == nil {
+		http.Error(w, "There is no user with that identiier", http.StatusNotFound)
+		return
+	} else {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("nil"))
+	}
+}
+
 //GetCounty gets a county
 // @Description Gets a county
 // @Tags Covid19
@@ -676,30 +701,6 @@ func (h ApisHandler) GetCounty(appVersion *string, w http.ResponseWriter, r *htt
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
-}
-func (h ApisHandler) GetUserByIdentifier(w http.ResponseWriter, r *http.Request) {
-	externalIDKeys, ok := r.URL.Query()["identifier"]
-	if !ok || len(externalIDKeys[0]) < 1 {
-		log.Println("external key is missing")
-		return
-	}
-	identifier := externalIDKeys[0]
-
-	user, err := h.app.Services.GetUser(identifier)
-	if err != nil {
-		log.Printf("Error on getting user by identifier and last name %s", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	if user == nil {
-		http.Error(w, "There is no user with that identiier", http.StatusNotFound)
-		return
-	} else {
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("nil"))
-	}
 }
 
 type getMCountiesResponse struct {

@@ -49,6 +49,7 @@ type Auth struct {
 	userAuth      *UserAuth
 	adminAuth     *AdminAuth
 	providersAuth *ProvidersAuth
+	externalAuth  *ExternalAuth
 }
 
 //Start starts the auth module
@@ -57,6 +58,18 @@ func (auth *Auth) Start() error {
 	auth.userAuth.start()
 
 	return nil
+}
+
+func (auth *Auth) clientIDCheck(w http.ResponseWriter, r *http.Request) (bool, *string) {
+	clientID := r.Header.Get("APP")
+	if len(clientID) == 0 {
+		clientID = "edu.illinois.rokwire"
+	}
+
+	log.Println(fmt.Sprintf("400 - Bad Request"))
+	w.WriteHeader(http.StatusBadRequest)
+	w.Write([]byte("Bad Request"))
+	return false, nil
 }
 
 func (auth *Auth) apiKeyCheck(w http.ResponseWriter, r *http.Request) (bool, *string) {
@@ -69,6 +82,10 @@ func (auth *Auth) adminCheck(w http.ResponseWriter, r *http.Request) (bool, *mod
 
 func (auth *Auth) createAdminAppUser(shibboAuth *model.ShibbolethAuth) (*model.User, error) {
 	return auth.adminAuth.createAdminAppUser(shibboAuth)
+}
+
+func (auth *Auth) externalAuthCheck(w http.ResponseWriter, r *http.Request) bool {
+	return auth.externalAuth.check(w, r)
 }
 
 func (auth *Auth) providersCheck(w http.ResponseWriter, r *http.Request) bool {
@@ -93,13 +110,15 @@ func (auth *Auth) createAppUser(externalID string, uuid string, publicKey string
 
 //NewAuth creates new auth handler
 func NewAuth(app *core.Application, appKeys []string, oidcProvider string,
-	oidcAppClientID string, appClientID string, webAppClientID string, phoneAuthSecret string, authKeys string, authIssuer string, providersAPIKeys []string) *Auth {
+	oidcAppClientID string, appClientID string, webAppClientID string, phoneAuthSecret string,
+	authKeys string, authIssuer string, providersAPIKeys []string, externalAPIKeys []string) *Auth {
 	apiKeysAuth := newAPIKeysAuth(appKeys)
 	userAuth2 := newUserAuth(app, oidcProvider, oidcAppClientID, phoneAuthSecret, authKeys, authIssuer)
 	adminAuth := newAdminAuth(app, oidcProvider, appClientID, webAppClientID)
 	providersAuth := newProviderAuth(providersAPIKeys)
+	externalAuth := newExternalAuth(externalAPIKeys)
 
-	auth := Auth{apiKeysAuth: apiKeysAuth, userAuth: userAuth2, adminAuth: adminAuth, providersAuth: providersAuth}
+	auth := Auth{apiKeysAuth: apiKeysAuth, userAuth: userAuth2, adminAuth: adminAuth, providersAuth: providersAuth, externalAuth: externalAuth}
 	return &auth
 }
 
@@ -150,6 +169,51 @@ func (auth *APIKeysAuth) check(w http.ResponseWriter, r *http.Request) (bool, *s
 
 func newAPIKeysAuth(appKeys []string) *APIKeysAuth {
 	auth := APIKeysAuth{appKeys}
+	return &auth
+}
+
+////////////////////////////////////
+
+//ExternalAuth entity
+type ExternalAuth struct {
+	appKeys []string
+}
+
+func (auth *ExternalAuth) check(w http.ResponseWriter, r *http.Request) bool {
+	apiKey := r.Header.Get("ROKWIRE-EXT-HS-API-KEY")
+	//check if there is api key in the header
+	if len(apiKey) == 0 {
+		//no key, so return 400
+		log.Println(fmt.Sprintf("400 - Bad Request"))
+
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Bad Request"))
+		return false
+	}
+
+	//check if the api key is one of the listed
+	appKeys := auth.appKeys
+	exist := false
+	for _, element := range appKeys {
+		if element == apiKey {
+			exist = true
+			break
+		}
+	}
+	if !exist {
+		//not exist, so return 401
+		log.Println(fmt.Sprintf("401 - Unauthorized for key %s", apiKey))
+
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Unauthorized"))
+		return false
+	}
+	return true
+}
+
+//newExternalAuth creates new internal auth
+func newExternalAuth(apiKeys []string) *ExternalAuth {
+	auth := ExternalAuth{appKeys: apiKeys}
 	return &auth
 }
 

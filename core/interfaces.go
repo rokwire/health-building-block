@@ -96,6 +96,8 @@ type Services interface {
 
 	GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error)
 	UpdateExtJoinExternalApprovement(jeaID string, status string) error
+
+	GetUser(externalID string) (*model.User, error)
 }
 
 type servicesImpl struct {
@@ -297,6 +299,10 @@ func (s *servicesImpl) GetExtJoinExternalApproval(account model.Account) ([]Rokm
 
 func (s *servicesImpl) UpdateExtJoinExternalApprovement(jeaID string, status string) error {
 	return s.app.updateExtJoinExternalApprovement(jeaID, status)
+}
+
+func (s *servicesImpl) GetUser(externalID string) (*model.User, error) {
+	return s.app.getUser(externalID)
 }
 
 //Administration exposes administration APIs for the driver adapters
@@ -821,6 +827,7 @@ type Storage interface {
 	FindUserAccountsByExternalID(externalID string) (*model.User, error)
 	FindUserByShibbolethID(shibbolethID string) (*model.User, error)
 	FindUsersByRePost(rePost bool) ([]*model.User, error)
+
 	CreateAppUser(externalID string,
 		uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) (*model.User, error)
 	CreateAdminUser(shibboAuth *model.ShibbolethAuth, externalID string,

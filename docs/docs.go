@@ -4414,6 +4414,32 @@ var doc = `{
                 }
             }
         },
+        "/covid19/external/user": {
+            "get": {
+                "security": [
+                    {
+                        "ExternalAuth": []
+                    }
+                ],
+                "description": "Gets an user by identifier",
+                "tags": [
+                    "External"
+                ],
+                "operationId": "GetUserByIdentifier",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Identifier",
+                        "name": "identifier",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
         "/covid19/faq": {
             "get": {
                 "security": [
@@ -6040,6 +6066,9 @@ var doc = `{
                 "date_created": {
                     "type": "string"
                 },
+                "email": {
+                    "type": "string"
+                },
                 "external_approver_id": {
                     "type": "string"
                 },
@@ -6056,6 +6085,9 @@ var doc = `{
                     "type": "string"
                 },
                 "last_name": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "status": {
@@ -8277,6 +8309,11 @@ var doc = `{
             "type": "apiKey",
             "name": "Authorization",
             "in": "header (add Bearer prefix to the Authorization value)"
+        },
+        "ExternalAuth": {
+            "type": "apiKey",
+            "name": "ROKWIRE-EXT-HS-API-KEY",
+            "in": "header"
         },
         "ProvidersAuth": {
             "type": "apiKey",

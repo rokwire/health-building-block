@@ -607,6 +607,36 @@ func (h ApisHandler) GetExtBuildingAccess(w http.ResponseWriter, r *http.Request
 	w.Write(data)
 }
 
+//GetUserByIdentifier gets an user by identifier
+// @Description Gets an user by identifier
+// @Tags External
+// @ID GetUserByIdentifier
+// @Param identifier query string true "Identifier"
+// @Success 200
+// @Security ExternalAuth
+// @Router /covid19/external/user [get]
+func (h ApisHandler) GetUserByIdentifier(w http.ResponseWriter, r *http.Request) {
+	externalIDKeys, ok := r.URL.Query()["identifier"]
+	if !ok || len(externalIDKeys[0]) < 1 {
+		log.Println("external key is missing")
+		return
+	}
+	identifier := externalIDKeys[0]
+
+	user, err := h.app.Services.GetUser(identifier)
+	if err != nil {
+		log.Printf("Error on getting user by identifier and last name %s", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	if user == nil {
+		http.Error(w, "There is no user with that identiier", http.StatusNotFound)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
 //GetCounty gets a county
 // @Description Gets a county
 // @Tags Covid19

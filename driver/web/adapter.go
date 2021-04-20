@@ -80,6 +80,10 @@ type Adapter struct {
 // @in header
 // @name GROUP
 
+// @securityDefinitions.apikey ExternalAuth
+// @in header
+// @name ROKWIRE-EXT-HS-API-KEY
+
 //Start starts the module
 func (we Adapter) Start() {
 
@@ -139,6 +143,9 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/ext/uin-overrides/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.UpdateExtUINOverride)).Methods("PUT")
 	covid19RestSubrouter.HandleFunc("/ext/uin-overrides/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.DeleteExtUINOverride)).Methods("DELETE")
 	covid19RestSubrouter.HandleFunc("/ext/building-access", we.providerAuthWrapFunc(we.apisHandler.GetExtBuildingAccess)).Methods("GET").Queries("uin", "")
+
+	//external auth
+	covid19RestSubrouter.HandleFunc("/external/user", we.externalAuthWrapFunc(we.apisHandler.GetUserByIdentifier)).Methods("GET").Queries("identifier", "")
 
 	// user or api key auth
 	covid19RestSubrouter.HandleFunc("/counties", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetCounties)).Methods("GET")
@@ -591,11 +598,25 @@ func (we Adapter) providerAuthWrapFunc(handler http.HandlerFunc) http.HandlerFun
 	}
 }
 
+func (we Adapter) externalAuthWrapFunc(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		utils.LogRequest(req)
+
+		authenticated := we.auth.externalAuthCheck(w, req)
+		if !authenticated {
+			return
+		}
+
+		handler(w, req)
+	}
+}
+
 //NewWebAdapter creates new WebAdapter instance
 func NewWebAdapter(host string, app *core.Application, appKeys []string, oidcProvider string,
 	oidcAppClientID string, adminAppClientID string, adminWebAppClientID string, phoneAuthSecret string,
-	authKeys string, authIssuer string, providersKeys []string) Adapter {
-	auth := NewAuth(app, appKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID, phoneAuthSecret, authKeys, authIssuer, providersKeys)
+	authKeys string, authIssuer string, providersKeys []string, externalAPIKeys []string) Adapter {
+	auth := NewAuth(app, appKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID,
+		phoneAuthSecret, authKeys, authIssuer, providersKeys, externalAPIKeys)
 	authorization := casbin.NewEnforcer("driver/web/authorization_model.conf", "driver/web/authorization_policy.csv")
 
 	apisHandler := rest.NewApisHandler(app)

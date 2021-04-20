@@ -95,6 +95,7 @@ func main() {
 
 	//web adapter
 	apiKeys := getAPIKeys()
+	externalAPIKeys := getExternalAPIKeys()
 	host := getEnvKey("HEALTH_HOST", true)
 	oidcProvider := getEnvKey("HEALTH_OIDC_PROVIDER", true)
 	oidcAppClientID := getEnvKey("HEALTH_OIDC_APP_CLIENT_ID", true)
@@ -106,7 +107,7 @@ func main() {
 	authIssuer := getEnvKey("HEALTH_AUTH_ISSUER", true)
 
 	webAdapter := driver.NewWebAdapter(host, application, apiKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID,
-		phoneSecret, authKeys, authIssuer, providersKeys)
+		phoneSecret, authKeys, authIssuer, providersKeys, externalAPIKeys)
 
 	webAdapter.Start()
 }
@@ -142,6 +143,19 @@ func getAPIKeys() []string {
 	}
 
 	return rokwireAPIKeysList
+}
+
+func getExternalAPIKeys() []string {
+	//get from the environment
+	rokwireExternalAPIKey := getEnvKey("ROKWIRE_EXT_HS_API_KEYS", true)
+
+	//it is comma separated format
+	externalKeyList := strings.Split(rokwireExternalAPIKey, ",")
+	if len(externalKeyList) <= 0 {
+		log.Fatal("The external keys list is empty")
+	}
+
+	return externalKeyList
 }
 
 func getHSAPIKeys() []string {

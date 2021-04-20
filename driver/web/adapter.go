@@ -141,7 +141,7 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/ext/building-access", we.providerAuthWrapFunc(we.apisHandler.GetExtBuildingAccess)).Methods("GET").Queries("uin", "")
 
 	//external auth
-	covid19RestSubrouter.HandleFunc("/external/user", we.externalAuthWrapFunc(we.apisHandler.GetUserByExernalIDAndLastName)).Methods("GET").Queries("last-name", "", "identifier", "")
+	covid19RestSubrouter.HandleFunc("/external/user", we.externalAuthWrapFunc(we.apisHandler.GetUserByIdentifier)).Methods("GET").Queries("identifier", "")
 
 	// user or api key auth
 	covid19RestSubrouter.HandleFunc("/counties", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetCounties)).Methods("GET")

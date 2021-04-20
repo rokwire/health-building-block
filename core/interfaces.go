@@ -97,7 +97,7 @@ type Services interface {
 	GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error)
 	UpdateExtJoinExternalApprovement(jeaID string, status string) error
 
-	GetUser(externalID string, lastName string) (*model.User, error)
+	GetUser(externalID string) (*model.User, error)
 }
 
 type servicesImpl struct {
@@ -304,8 +304,8 @@ func (s *servicesImpl) UpdateExtJoinExternalApprovement(jeaID string, status str
 	return s.app.updateExtJoinExternalApprovement(jeaID, status)
 }
 
-func (s *servicesImpl) GetUser(externalID string, lastName string) (*model.User, error) {
-	return s.app.getUser(externalID, lastName)
+func (s *servicesImpl) GetUser(externalID string) (*model.User, error) {
+	return s.app.getUser(externalID)
 }
 
 //Administration exposes administration APIs for the driver adapters

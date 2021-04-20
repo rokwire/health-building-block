@@ -543,14 +543,12 @@ func (app *Application) updateExtJoinExternalApprovement(jeaID string, status st
 	return nil
 }
 
-func (app *Application) getUser(externalID, lastName string) (*model.User, error) {
-	//1. ask the Storage for the user
+func (app *Application) getUser(externalID string) (*model.User, error) {
+	// ask the Storage for the user
 	user, err := app.storage.FindUserByExternalID(externalID)
 	if err != nil {
 		return nil, err
 	}
 
-	//TODO
-	//2. ask the Profile BB by last name
 	return user, nil
 }

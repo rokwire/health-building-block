@@ -677,22 +677,15 @@ func (h ApisHandler) GetCounty(appVersion *string, w http.ResponseWriter, r *htt
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
-func (h ApisHandler) GetUserByExernalIDAndLastName(w http.ResponseWriter, r *http.Request) {
+func (h ApisHandler) GetUserByIdentifier(w http.ResponseWriter, r *http.Request) {
 	externalIDKeys, ok := r.URL.Query()["identifier"]
 	if !ok || len(externalIDKeys[0]) < 1 {
 		log.Println("external key is missing")
 		return
 	}
-	externalID := externalIDKeys[0]
+	identifier := externalIDKeys[0]
 
-	lastNameKeys, ok := r.URL.Query()["last-name"]
-	if !ok || len(lastNameKeys[0]) < 1 {
-		log.Println("Last name is missing")
-		return
-	}
-	lastName := lastNameKeys[0]
-
-	user, err := h.app.Services.GetUser(externalID, lastName)
+	user, err := h.app.Services.GetUser(identifier)
 	if err != nil {
 		log.Printf("Error on getting user by identifier and last name %s", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

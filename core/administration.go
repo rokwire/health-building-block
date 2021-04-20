@@ -1673,12 +1673,12 @@ func (app *Application) deleteAccessRule(current model.User, group string, ID st
 	return nil
 }
 
-func (app *Application) getUserByExternalID(extrernalID string) (*model.User, error) {
-	externalID, err := app.storage.FindUserByExternalID(extrernalID)
+func (app *Application) getUserByExternalID(externalID string) (*model.User, error) {
+	user, err := app.storage.FindUserAccountsByExternalID(externalID)
 	if err != nil {
 		return nil, err
 	}
-	return externalID, nil
+	return user, nil
 }
 
 func (app *Application) createRoster(current model.User, group string, audit *string, phone string, uin string, firstName string,

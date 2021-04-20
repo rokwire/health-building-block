@@ -80,6 +80,10 @@ type Adapter struct {
 // @in header
 // @name GROUP
 
+// @securityDefinitions.apikey ExternalAuth
+// @in header
+// @name ROKWIRE-EXT-HS-API-KEY
+
 //Start starts the module
 func (we Adapter) Start() {
 

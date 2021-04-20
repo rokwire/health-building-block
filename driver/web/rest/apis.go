@@ -607,7 +607,14 @@ func (h ApisHandler) GetExtBuildingAccess(w http.ResponseWriter, r *http.Request
 	w.Write(data)
 }
 
-//GetUserByIdentifier get an user by identifier
+//GetUserByIdentifier gets an user by identifier
+// @Description Gets an user by identifier
+// @Tags External
+// @ID GetUserByIdentifier
+// @Param identifier query string true "Identifier"
+// @Success 200
+// @Security ExternalAuth
+// @Router /covid19/external/user [get]
 func (h ApisHandler) GetUserByIdentifier(w http.ResponseWriter, r *http.Request) {
 	externalIDKeys, ok := r.URL.Query()["identifier"]
 	if !ok || len(externalIDKeys[0]) < 1 {

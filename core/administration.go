@@ -30,14 +30,6 @@ import (
 	"github.com/google/uuid"
 )
 
-func (app *Application) getUserByExternalID(extrernalID string) (*model.User, error) {
-	externalID, err := app.storage.FindUserByExternalID(extrernalID)
-	if err != nil {
-		return nil, err
-	}
-	return externalID, nil
-}
-
 func (app *Application) getCovid19Config() (*model.COVID19Config, error) {
 	config, err := app.storage.ReadCovid19Config()
 	if err != nil {
@@ -1679,6 +1671,14 @@ func (app *Application) deleteAccessRule(current model.User, group string, ID st
 	userIdentifier, userInfo := current.GetLogData()
 	defer app.audit.LogDeleteEvent(userIdentifier, userInfo, group, "access-rule", ID)
 	return nil
+}
+
+func (app *Application) getUserByExternalID(extrernalID string) (*model.User, error) {
+	externalID, err := app.storage.FindUserByExternalID(extrernalID)
+	if err != nil {
+		return nil, err
+	}
+	return externalID, nil
 }
 
 func (app *Application) createRoster(current model.User, group string, audit *string, phone string, uin string, firstName string,

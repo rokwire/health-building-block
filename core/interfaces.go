@@ -744,6 +744,10 @@ func (s *administrationImpl) DeleteUINOverride(current model.User, group string,
 	return s.app.deleteUINOverride(current, group, uin)
 }
 
+func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User, error) {
+	return s.app.getUserByExternalID(externalID)
+}
+
 func (s *administrationImpl) CreateRoster(current model.User, group string, audit *string, phone string, uin string, firstName string,
 	middleName string, lastName string, birthDate string, gender string, address1 string, address2 string,
 	address3 string, city string, state string, zipCode string, email string, badgeType string) error {
@@ -797,10 +801,6 @@ func (s *administrationImpl) DeleteRawSubAccountByUIN(current model.User, group 
 
 func (s *administrationImpl) DeleteAllRawSubAccounts(current model.User, group string) error {
 	return s.app.deleteAllRawSubAccounts(current, group)
-}
-
-func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User, error) {
-	return s.app.getUserByExternalID(externalID)
 }
 
 func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {

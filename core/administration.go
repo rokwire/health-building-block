@@ -31,19 +31,13 @@ import (
 )
 
 func (app *Application) getUserByExternalID(extrernalID string) (*model.User, error) {
-	external_id, err := app.storage.FindUserByExternalID(extrernalID)
+	externalID, err := app.storage.FindUserByExternalID(extrernalID)
 	if err != nil {
 		return nil, err
 	}
-	return external_id, nil
+	return externalID, nil
 }
-func (app *Application) getUserExternalIDAndLastName(extrernalID, lastName string) (*model.User, error) {
-	external_id, err := app.storage.FindUserByExternalID(extrernalID)
-	if err != nil {
-		return nil, err
-	}
-	return external_id, nil
-}
+
 func (app *Application) getCovid19Config() (*model.COVID19Config, error) {
 	config, err := app.storage.ReadCovid19Config()
 	if err != nil {

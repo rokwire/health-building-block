@@ -607,6 +607,7 @@ func (h ApisHandler) GetExtBuildingAccess(w http.ResponseWriter, r *http.Request
 	w.Write(data)
 }
 
+//GetUserByIdentifier get an user by identifier
 func (h ApisHandler) GetUserByIdentifier(w http.ResponseWriter, r *http.Request) {
 	externalIDKeys, ok := r.URL.Query()["identifier"]
 	if !ok || len(externalIDKeys[0]) < 1 {

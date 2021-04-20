@@ -5509,14 +5509,3 @@ func abortTransaction(sessionContext mongo.SessionContext) {
 		log.Printf("error on aborting a transaction - %s", err)
 	}
 }
-
-//Get user externalID and Last
-func (sa *Adapter) GetUserByExernalIDAndLastName() ([]model.User, error) {
-	filter := bson.D{}
-	var result []model.User
-	err := sa.db.configs.Find(filter, &result, nil)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}

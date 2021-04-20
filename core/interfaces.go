@@ -200,9 +200,6 @@ func (s *servicesImpl) FindCounties(f *utils.Filter) ([]*model.County, error) {
 func (s *servicesImpl) GetCounty(ID string) (*model.County, error) {
 	return s.app.getCounty(ID)
 }
-func (s *servicesImpl) GetExternalIDAndLastName(external_id, lastName string) (*model.User, error) {
-	return s.app.getExternalIDAndLastName(external_id, lastName)
-}
 
 func (s *servicesImpl) GetRulesByCounty(countyID string) ([]*model.Rule, []*model.CountyStatus, []*model.TestType, error) {
 	return s.app.getRulesByCounty(countyID)
@@ -430,7 +427,6 @@ type Administration interface {
 	DeleteAllRawSubAccounts(current model.User, group string) error
 
 	GetUserByExternalID(externalID string) (*model.User, error)
-	GetUserExternalIDAndLastName(externalID, lastName string) (*model.User, error)
 
 	CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error)
 
@@ -440,13 +436,6 @@ type Administration interface {
 
 type administrationImpl struct {
 	app *Application
-}
-
-func (s *administrationImpl) GetUserByExternalID(external_id string) (*model.User, error) {
-	return s.app.getUserByExternalID(external_id)
-}
-func (s *administrationImpl) GetUserExternalIDAndLastName(external_id, lastName string) (*model.User, error) {
-	return s.app.getUserExternalIDAndLastName(external_id, lastName)
 }
 
 func (s *administrationImpl) GetCovid19Config() (*model.COVID19Config, error) {
@@ -808,6 +797,10 @@ func (s *administrationImpl) DeleteRawSubAccountByUIN(current model.User, group 
 
 func (s *administrationImpl) DeleteAllRawSubAccounts(current model.User, group string) error {
 	return s.app.deleteAllRawSubAccounts(current, group)
+}
+
+func (s *administrationImpl) GetUserByExternalID(externalID string) (*model.User, error) {
+	return s.app.getUserByExternalID(externalID)
 }
 
 func (s *administrationImpl) CreateAction(current model.User, group string, audit *string, providerID string, accountID string, encryptedKey string, encryptedBlob string) (*model.CTest, error) {

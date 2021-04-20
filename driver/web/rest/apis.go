@@ -625,11 +625,8 @@ func (h ApisHandler) GetUserByIdentifier(w http.ResponseWriter, r *http.Request)
 	if user == nil {
 		http.Error(w, "There is no user with that identiier", http.StatusNotFound)
 		return
-	} else {
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("nil"))
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 //GetCounty gets a county

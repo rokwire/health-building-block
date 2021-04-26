@@ -40,7 +40,11 @@ func (app *Application) clearUserData(current model.User) error {
 }
 
 func (app *Application) getTime(current model.User) (*time.Time, error) {
-	now := time.Now()
+	loc, err := time.LoadLocation("UTC")
+	if err != nil {
+		return nil, err
+	}
+	now := time.Now().In(loc)
 	return &now, nil
 }
 

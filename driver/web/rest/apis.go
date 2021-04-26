@@ -72,6 +72,10 @@ func (h ApisHandler) ClearUserData(current model.User, w http.ResponseWriter, r 
 	w.Write([]byte("Successfully cleared"))
 }
 
+func (h ApisHandler) GetTime(current model.User, w http.ResponseWriter, r *http.Request) {
+
+}
+
 type getUserByShibbolethIDResponse struct {
 	PublicKey string `json:"public_key"`
 	Consent   bool   `json:"consent"`

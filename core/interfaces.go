@@ -29,6 +29,8 @@ type Services interface {
 
 	ClearUserData(current model.User) error
 
+	GetTime(current model.User) (*time.Time, error)
+
 	GetUserByShibbolethUIN(shibbolethUIN string) (*model.User, error)
 	GetUsersForRePost() ([]*model.User, error)
 	GetUINsByOrderNumbers(orderNumbers []string) (map[string]*string, error)
@@ -110,6 +112,10 @@ func (s *servicesImpl) GetVersion() string {
 
 func (s *servicesImpl) ClearUserData(current model.User) error {
 	return s.app.clearUserData(current)
+}
+
+func (s *servicesImpl) GetTime(current model.User) (*time.Time, error) {
+	return s.app.getTime(current)
 }
 
 func (s *servicesImpl) GetUserByShibbolethUIN(shibbolethUIN string) (*model.User, error) {

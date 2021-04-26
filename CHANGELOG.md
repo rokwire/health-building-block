@@ -6,13 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.0] - 2022-04-26
+### Added
+- Expose external API to check if the user exists. [#128](https://github.com/rokwire/health-building-block/issues/128)
+- Expose get time client API. [#130](https://github.com/rokwire/health-building-block/issues/130)
+
+### Changed
+- Get email and phone from the Rokmetro system. [#126](https://github.com/rokwire/health-building-block/issues/126)
+- Make the log files on AWS readable. [#122](https://github.com/rokwire/health-building-block/issues/122)
+
 ## [2.6.0] - 2021-02-26
 ### Changed
 - Add date created field to the app version entity. [#117](https://github.com/rokwire/health-building-block/issues/117)
 
 ### Added
 - Expose get configs admin API. [#119](https://github.com/rokwire/health-building-block/issues/119)
-- Expose APIs for external join group approvement . [#121](https://github.com/rokwire/health-building-block/issues/121)
+- Expose APIs for external join group approvement. [#121](https://github.com/rokwire/health-building-block/issues/121)
 
 ## [2.5.0] - 2021-01-20
 ### Changed
@@ -221,7 +230,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v2.6.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v2.7.0...HEAD
+[2.7.0]: https://github.com/rokwire/health-building-block/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/rokwire/health-building-block/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/rokwire/health-building-block/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/rokwire/health-building-block/compare/v2.3.0...v2.4.0

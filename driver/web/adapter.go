@@ -49,7 +49,7 @@ type Adapter struct {
 
 // @title Rokwire Health Building Block API
 // @description Rokwire Health Building Block API Documentation.
-// @version 2.6.0
+// @version 2.7.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost
@@ -79,6 +79,10 @@ type Adapter struct {
 // @securityDefinitions.apikey AdminGroupAuth
 // @in header
 // @name GROUP
+
+// @securityDefinitions.apikey ExternalAuth
+// @in header
+// @name ROKWIRE-EXT-HS-API-KEY
 
 //Start starts the module
 func (we Adapter) Start() {
@@ -140,6 +144,9 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/ext/uin-overrides/uin/{uin}", we.providerAuthWrapFunc(we.apisHandler.DeleteExtUINOverride)).Methods("DELETE")
 	covid19RestSubrouter.HandleFunc("/ext/building-access", we.providerAuthWrapFunc(we.apisHandler.GetExtBuildingAccess)).Methods("GET").Queries("uin", "")
 
+	//external auth
+	covid19RestSubrouter.HandleFunc("/external/user", we.externalAuthWrapFunc(we.apisHandler.GetUserByIdentifier)).Methods("GET").Queries("identifier", "")
+
 	// user or api key auth
 	covid19RestSubrouter.HandleFunc("/counties", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetCounties)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/counties/{id}", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetCounty)).Methods("GET")
@@ -175,6 +182,8 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/trace/exposures", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetExposures)).Methods("GET")
 
 	covid19RestSubrouter.HandleFunc("/rosters/phone/{phone}", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetRosterByPhone)).Methods("GET")
+
+	covid19RestSubrouter.HandleFunc("/time", we.apiKeyOrTokenWrapFunc(we.apisHandler.GetTime)).Methods("GET")
 
 	// handle admin rest apis /////////////////
 	adminRestSubrouter := router.PathPrefix("/health/admin").Subrouter()
@@ -591,11 +600,25 @@ func (we Adapter) providerAuthWrapFunc(handler http.HandlerFunc) http.HandlerFun
 	}
 }
 
+func (we Adapter) externalAuthWrapFunc(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		utils.LogRequest(req)
+
+		authenticated := we.auth.externalAuthCheck(w, req)
+		if !authenticated {
+			return
+		}
+
+		handler(w, req)
+	}
+}
+
 //NewWebAdapter creates new WebAdapter instance
 func NewWebAdapter(host string, app *core.Application, appKeys []string, oidcProvider string,
 	oidcAppClientID string, adminAppClientID string, adminWebAppClientID string, phoneAuthSecret string,
-	authKeys string, authIssuer string, providersKeys []string) Adapter {
-	auth := NewAuth(app, appKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID, phoneAuthSecret, authKeys, authIssuer, providersKeys)
+	authKeys string, authIssuer string, providersKeys []string, externalAPIKeys []string) Adapter {
+	auth := NewAuth(app, appKeys, oidcProvider, oidcAppClientID, adminAppClientID, adminWebAppClientID,
+		phoneAuthSecret, authKeys, authIssuer, providersKeys, externalAPIKeys)
 	authorization := casbin.NewEnforcer("driver/web/authorization_model.conf", "driver/web/authorization_policy.csv")
 
 	apisHandler := rest.NewApisHandler(app)

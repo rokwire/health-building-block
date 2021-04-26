@@ -11,7 +11,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.6.0"
+        "version": "2.7.0"
     },
     "host": "localhost",
     "basePath": "/health",
@@ -4402,6 +4402,32 @@
                 }
             }
         },
+        "/covid19/external/user": {
+            "get": {
+                "security": [
+                    {
+                        "ExternalAuth": []
+                    }
+                ],
+                "description": "Gets an user by identifier",
+                "tags": [
+                    "External"
+                ],
+                "operationId": "GetUserByIdentifier",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Identifier",
+                        "name": "identifier",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
         "/covid19/faq": {
             "get": {
                 "security": [
@@ -4958,6 +4984,31 @@
                             "items": {
                                 "$ref": "#/definitions/TestType"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/time": {
+            "get": {
+                "security": [
+                    {
+                        "RokwireAuth": []
+                    }
+                ],
+                "description": "Gives the current time in UTC.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetTime",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Time"
                         }
                     }
                 }
@@ -6028,6 +6079,9 @@
                 "date_created": {
                     "type": "string"
                 },
+                "email": {
+                    "type": "string"
+                },
                 "external_approver_id": {
                     "type": "string"
                 },
@@ -6044,6 +6098,9 @@
                     "type": "string"
                 },
                 "last_name": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "status": {
@@ -6481,6 +6538,14 @@
                 },
                 "result_next_step_time_interval": {
                     "type": "integer"
+                }
+            }
+        },
+        "Time": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
                 }
             }
         },
@@ -8265,6 +8330,11 @@
             "type": "apiKey",
             "name": "Authorization",
             "in": "header (add Bearer prefix to the Authorization value)"
+        },
+        "ExternalAuth": {
+            "type": "apiKey",
+            "name": "ROKWIRE-EXT-HS-API-KEY",
+            "in": "header"
         },
         "ProvidersAuth": {
             "type": "apiKey",

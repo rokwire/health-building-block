@@ -96,6 +96,10 @@ type Services interface {
 
 	GetExtJoinExternalApproval(account model.Account) ([]RokmetroJoinGroupExtApprovement, error)
 	UpdateExtJoinExternalApprovement(jeaID string, status string) error
+
+	GetUser(externalID string) (*model.User, error)
+
+	GetTime() (*time.Time, error)
 }
 
 type servicesImpl struct {
@@ -297,6 +301,14 @@ func (s *servicesImpl) GetExtJoinExternalApproval(account model.Account) ([]Rokm
 
 func (s *servicesImpl) UpdateExtJoinExternalApprovement(jeaID string, status string) error {
 	return s.app.updateExtJoinExternalApprovement(jeaID, status)
+}
+
+func (s *servicesImpl) GetUser(externalID string) (*model.User, error) {
+	return s.app.getUser(externalID)
+}
+
+func (s *servicesImpl) GetTime() (*time.Time, error) {
+	return s.app.getTime()
 }
 
 //Administration exposes administration APIs for the driver adapters
@@ -821,6 +833,7 @@ type Storage interface {
 	FindUserAccountsByExternalID(externalID string) (*model.User, error)
 	FindUserByShibbolethID(shibbolethID string) (*model.User, error)
 	FindUsersByRePost(rePost bool) ([]*model.User, error)
+
 	CreateAppUser(externalID string,
 		uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) (*model.User, error)
 	CreateAdminUser(shibboAuth *model.ShibbolethAuth, externalID string,
@@ -1078,6 +1091,8 @@ type RokmetroJoinGroupExtApprovement struct {
 	GroupName                string    `json:"group_name"`
 	FirstName                string    `json:"first_name"`
 	LastName                 string    `json:"last_name"`
+	Email                    *string   `json:"email"`
+	Phone                    *string   `json:"phone"`
 	DateCreated              time.Time `json:"date_created"`
 	ExternalApproverID       string    `json:"external_approver_id"`
 	ExternalApproverLastName string    `json:"external_approver_last_name"`

@@ -227,6 +227,8 @@ definitions:
     properties:
       date_created:
         type: string
+      email:
+        type: string
       external_approver_id:
         type: string
       external_approver_last_name:
@@ -238,6 +240,8 @@ definitions:
       id:
         type: string
       last_name:
+        type: string
+      phone:
         type: string
       status:
         type: string
@@ -524,6 +528,11 @@ definitions:
         type: string
       result_next_step_time_interval:
         type: integer
+    type: object
+  Time:
+    properties:
+      time:
+        type: string
     type: object
   TraceExposure:
     properties:
@@ -1703,7 +1712,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 2.6.0
+  version: 2.7.0
 paths:
   /admin/access-rules:
     get:
@@ -4377,6 +4386,22 @@ paths:
       - ProvidersAuth: []
       tags:
       - Providers
+  /covid19/external/user:
+    get:
+      description: Gets an user by identifier
+      operationId: GetUserByIdentifier
+      parameters:
+      - description: Identifier
+        in: query
+        name: identifier
+        required: true
+        type: string
+      responses:
+        "200": {}
+      security:
+      - ExternalAuth: []
+      tags:
+      - External
   /covid19/faq:
     get:
       consumes:
@@ -4722,6 +4747,21 @@ paths:
             items:
               $ref: '#/definitions/TestType'
             type: array
+      security:
+      - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/time:
+    get:
+      consumes:
+      - application/json
+      description: Gives the current time in UTC.
+      operationId: GetTime
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Time'
       security:
       - RokwireAuth: []
       tags:
@@ -5185,6 +5225,10 @@ securityDefinitions:
   AppUserAuth:
     in: header (add Bearer prefix to the Authorization value)
     name: Authorization
+    type: apiKey
+  ExternalAuth:
+    in: header
+    name: ROKWIRE-EXT-HS-API-KEY
     type: apiKey
   ProvidersAuth:
     in: header

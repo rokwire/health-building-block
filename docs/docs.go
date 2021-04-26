@@ -4414,6 +4414,32 @@ var doc = `{
                 }
             }
         },
+        "/covid19/external/user": {
+            "get": {
+                "security": [
+                    {
+                        "ExternalAuth": []
+                    }
+                ],
+                "description": "Gets an user by identifier",
+                "tags": [
+                    "External"
+                ],
+                "operationId": "GetUserByIdentifier",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Identifier",
+                        "name": "identifier",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
         "/covid19/faq": {
             "get": {
                 "security": [
@@ -4970,6 +4996,31 @@ var doc = `{
                             "items": {
                                 "$ref": "#/definitions/TestType"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/time": {
+            "get": {
+                "security": [
+                    {
+                        "RokwireAuth": []
+                    }
+                ],
+                "description": "Gives the current time in UTC.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetTime",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Time"
                         }
                     }
                 }
@@ -6040,6 +6091,9 @@ var doc = `{
                 "date_created": {
                     "type": "string"
                 },
+                "email": {
+                    "type": "string"
+                },
                 "external_approver_id": {
                     "type": "string"
                 },
@@ -6056,6 +6110,9 @@ var doc = `{
                     "type": "string"
                 },
                 "last_name": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "status": {
@@ -6493,6 +6550,14 @@ var doc = `{
                 },
                 "result_next_step_time_interval": {
                     "type": "integer"
+                }
+            }
+        },
+        "Time": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
                 }
             }
         },
@@ -8278,6 +8343,11 @@ var doc = `{
             "name": "Authorization",
             "in": "header (add Bearer prefix to the Authorization value)"
         },
+        "ExternalAuth": {
+            "type": "apiKey",
+            "name": "ROKWIRE-EXT-HS-API-KEY",
+            "in": "header"
+        },
         "ProvidersAuth": {
             "type": "apiKey",
             "name": "ROKWIRE-HS-API-KEY",
@@ -8302,7 +8372,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "2.6.0",
+	Version:     "2.7.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

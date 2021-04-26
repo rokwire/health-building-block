@@ -5001,6 +5001,31 @@ var doc = `{
                 }
             }
         },
+        "/covid19/time": {
+            "get": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    }
+                ],
+                "description": "Gives the current time in UTC.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetTime",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Time"
+                        }
+                    }
+                }
+            }
+        },
         "/covid19/trace/exposures": {
             "get": {
                 "security": [
@@ -6525,6 +6550,14 @@ var doc = `{
                 },
                 "result_next_step_time_interval": {
                     "type": "integer"
+                }
+            }
+        },
+        "Time": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
                 }
             }
         },

@@ -73,6 +73,13 @@ func (h ApisHandler) ClearUserData(current model.User, w http.ResponseWriter, r 
 }
 
 //Get time gives the current time in UTC
+// @Description Gives the current time in UTC.
+// @Tags Covid19
+// @ID GetTime
+// @Accept json
+// @Success 200 {object} timeResponse
+// @Security AppUserAuth
+// @Router /covid19/time [get]
 func (h ApisHandler) GetTime(current model.User, w http.ResponseWriter, r *http.Request) {
 	time, err := h.app.Services.GetTime(current)
 	if err != nil {

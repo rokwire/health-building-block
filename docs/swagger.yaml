@@ -529,6 +529,11 @@ definitions:
       result_next_step_time_interval:
         type: integer
     type: object
+  Time:
+    properties:
+      time:
+        type: string
+    type: object
   TraceExposure:
     properties:
       date_added:
@@ -4744,6 +4749,21 @@ paths:
             type: array
       security:
       - RokwireAuth: []
+      tags:
+      - Covid19
+  /covid19/time:
+    get:
+      consumes:
+      - application/json
+      description: Gives the current time in UTC.
+      operationId: GetTime
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Time'
+      security:
+      - AppUserAuth: []
       tags:
       - Covid19
   /covid19/trace/exposures:

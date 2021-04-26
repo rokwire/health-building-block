@@ -72,8 +72,26 @@ func (h ApisHandler) ClearUserData(current model.User, w http.ResponseWriter, r 
 	w.Write([]byte("Successfully cleared"))
 }
 
+//Get time gives the current time in UTC
 func (h ApisHandler) GetTime(current model.User, w http.ResponseWriter, r *http.Request) {
+	time, err := h.app.Services.GetTime(current)
+	if err != nil {
+		log.Printf("error on getting current time - %s", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
 
+	response := timeResponse{Time: *time}
+	data, err := json.Marshal(response)
+	if err != nil {
+		log.Println("Error on marshal current time")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charser=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 type getUserByShibbolethIDResponse struct {

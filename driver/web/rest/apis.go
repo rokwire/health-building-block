@@ -72,7 +72,7 @@ func (h ApisHandler) ClearUserData(current model.User, w http.ResponseWriter, r 
 	w.Write([]byte("Successfully cleared"))
 }
 
-//Get time gives the current time in UTC
+//GetTime gives the current time in UTC
 // @Description Gives the current time in UTC.
 // @Tags Covid19
 // @ID GetTime

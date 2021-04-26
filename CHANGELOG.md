@@ -6,9 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Expose external API to check if the user exists[#128](https://github.com/rokwire/health-building-block/issues/128)
+- Expose external API to check if the user exists. [#128](https://github.com/rokwire/health-building-block/issues/128)
+- Expose get time client API. [#130](https://github.com/rokwire/health-building-block/issues/130)
+
 ### Changed
-- Get email and phone from the Rokmetro system[#126](https://github.com/rokwire/health-building-block/issues/126)
+- Get email and phone from the Rokmetro system. [#126](https://github.com/rokwire/health-building-block/issues/126)
 - Make the log files on AWS readable. [#122](https://github.com/rokwire/health-building-block/issues/122)
 
 ## [2.6.0] - 2021-02-26
@@ -17,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Expose get configs admin API. [#119](https://github.com/rokwire/health-building-block/issues/119)
-- Expose APIs for external join group approvement . [#121](https://github.com/rokwire/health-building-block/issues/121)
+- Expose APIs for external join group approvement. [#121](https://github.com/rokwire/health-building-block/issues/121)
 
 ## [2.5.0] - 2021-01-20
 ### Changed

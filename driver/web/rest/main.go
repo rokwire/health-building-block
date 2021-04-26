@@ -210,6 +210,10 @@ type joinGroupExtApprovement struct {
 	Status                   string    `json:"status"`
 } // @name JoinGroupExtApprovement
 
+type timeResponse struct {
+	Time time.Time `json:"time"`
+} // @name Time
+
 func convertToDaysOfOperations(list []locationOperationDayRequest) []model.OperationDay {
 	var doo []model.OperationDay
 	if list != nil {

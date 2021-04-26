@@ -72,6 +72,35 @@ func (h ApisHandler) ClearUserData(current model.User, w http.ResponseWriter, r 
 	w.Write([]byte("Successfully cleared"))
 }
 
+//GetTime gives the current time in UTC
+// @Description Gives the current time in UTC.
+// @Tags Covid19
+// @ID GetTime
+// @Accept json
+// @Success 200 {object} timeResponse
+// @Security AppUserAuth
+// @Router /covid19/time [get]
+func (h ApisHandler) GetTime(current model.User, w http.ResponseWriter, r *http.Request) {
+	time, err := h.app.Services.GetTime(current)
+	if err != nil {
+		log.Printf("error on getting current time - %s", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	response := timeResponse{Time: *time}
+	data, err := json.Marshal(response)
+	if err != nil {
+		log.Println("Error on marshal current time")
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charser=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 type getUserByShibbolethIDResponse struct {
 	PublicKey string `json:"public_key"`
 	Consent   bool   `json:"consent"`

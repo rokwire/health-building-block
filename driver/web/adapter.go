@@ -107,6 +107,7 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/login", we.loginUser).Methods("POST")
 	covid19RestSubrouter.HandleFunc("/user", we.getUser).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/user/clear", we.userAuthWrapFunc(we.apisHandler.ClearUserData)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/time", we.userAuthWrapFunc(we.apisHandler.GetTime)).Methods("GET")
 
 	covid19RestSubrouter.HandleFunc("/ctests", we.userAccountsAuthWrapFunc(we.apisHandler.GetCTests)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/ctests/{id}", we.userAccountsAuthWrapFunc(we.apisHandler.UpdateCTest)).Methods("PUT")

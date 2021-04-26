@@ -5005,7 +5005,7 @@ var doc = `{
             "get": {
                 "security": [
                     {
-                        "AppUserAuth": []
+                        "RokwireAuth": []
                     }
                 ],
                 "description": "Gives the current time in UTC.",

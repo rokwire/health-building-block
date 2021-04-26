@@ -4763,7 +4763,7 @@ paths:
           schema:
             $ref: '#/definitions/Time'
       security:
-      - AppUserAuth: []
+      - RokwireAuth: []
       tags:
       - Covid19
   /covid19/trace/exposures:

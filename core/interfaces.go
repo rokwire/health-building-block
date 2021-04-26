@@ -29,8 +29,6 @@ type Services interface {
 
 	ClearUserData(current model.User) error
 
-	GetTime(current model.User) (*time.Time, error)
-
 	GetUserByShibbolethUIN(shibbolethUIN string) (*model.User, error)
 	GetUsersForRePost() ([]*model.User, error)
 	GetUINsByOrderNumbers(orderNumbers []string) (map[string]*string, error)
@@ -100,6 +98,8 @@ type Services interface {
 	UpdateExtJoinExternalApprovement(jeaID string, status string) error
 
 	GetUser(externalID string) (*model.User, error)
+
+	GetTime() (*time.Time, error)
 }
 
 type servicesImpl struct {
@@ -112,10 +112,6 @@ func (s *servicesImpl) GetVersion() string {
 
 func (s *servicesImpl) ClearUserData(current model.User) error {
 	return s.app.clearUserData(current)
-}
-
-func (s *servicesImpl) GetTime(current model.User) (*time.Time, error) {
-	return s.app.getTime(current)
 }
 
 func (s *servicesImpl) GetUserByShibbolethUIN(shibbolethUIN string) (*model.User, error) {
@@ -309,6 +305,10 @@ func (s *servicesImpl) UpdateExtJoinExternalApprovement(jeaID string, status str
 
 func (s *servicesImpl) GetUser(externalID string) (*model.User, error) {
 	return s.app.getUser(externalID)
+}
+
+func (s *servicesImpl) GetTime() (*time.Time, error) {
+	return s.app.getTime()
 }
 
 //Administration exposes administration APIs for the driver adapters

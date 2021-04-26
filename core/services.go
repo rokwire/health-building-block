@@ -39,15 +39,6 @@ func (app *Application) clearUserData(current model.User) error {
 	return nil
 }
 
-func (app *Application) getTime(current model.User) (*time.Time, error) {
-	loc, err := time.LoadLocation("UTC")
-	if err != nil {
-		return nil, err
-	}
-	now := time.Now().In(loc)
-	return &now, nil
-}
-
 func (app *Application) getUserByShibbolethUIN(shibbolethUIN string) (*model.User, error) {
 	user, err := app.storage.FindUserAccountsByExternalID(shibbolethUIN)
 	if err != nil {
@@ -553,4 +544,13 @@ func (app *Application) getUser(externalID string) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+func (app *Application) getTime() (*time.Time, error) {
+	loc, err := time.LoadLocation("UTC")
+	if err != nil {
+		return nil, err
+	}
+	now := time.Now().In(loc)
+	return &now, nil
 }

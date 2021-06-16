@@ -11,7 +11,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.7.0"
+        "version": "2.8.0"
     },
     "host": "localhost",
     "basePath": "/health",
@@ -6034,6 +6034,9 @@
                 "consent": {
                     "type": "boolean"
                 },
+                "consent_vaccine": {
+                    "type": "boolean"
+                },
                 "public_key": {
                     "type": "string"
                 }
@@ -6267,6 +6270,9 @@
             "type": "object",
             "properties": {
                 "consent": {
+                    "type": "boolean"
+                },
+                "consent_vaccine": {
                     "type": "boolean"
                 },
                 "public_key": {
@@ -6607,6 +6613,9 @@
                     }
                 },
                 "consent": {
+                    "type": "boolean"
+                },
+                "consent_vaccine": {
                     "type": "boolean"
                 },
                 "encrypted_blob": {
@@ -7611,6 +7620,9 @@
             ],
             "properties": {
                 "consent": {
+                    "type": "boolean"
+                },
+                "consent_vaccine": {
                     "type": "boolean"
                 },
                 "encrypted_blob": {

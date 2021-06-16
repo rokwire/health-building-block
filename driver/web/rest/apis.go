@@ -73,8 +73,9 @@ func (h ApisHandler) ClearUserData(current model.User, w http.ResponseWriter, r 
 }
 
 type getUserByShibbolethIDResponse struct {
-	PublicKey string `json:"public_key"`
-	Consent   bool   `json:"consent"`
+	PublicKey      string `json:"public_key"`
+	Consent        bool   `json:"consent"`
+	ConsentVaccine bool   `json:"consent_vaccine"`
 } // @name GetUserByShibbolethUINResponse
 
 //GetUserByShibbolethUIN gives the user info needed for the providers
@@ -108,7 +109,7 @@ func (h ApisHandler) GetUserByShibbolethUIN(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	result := getUserByShibbolethIDResponse{PublicKey: user.PublicKey, Consent: user.Consent}
+	result := getUserByShibbolethIDResponse{PublicKey: user.PublicKey, Consent: user.Consent, ConsentVaccine: user.ConsentVaccine}
 
 	data, err := json.Marshal(result)
 	if err != nil {
@@ -142,7 +143,7 @@ func (h ApisHandler) GetUsersForRePost(w http.ResponseWriter, r *http.Request) {
 		result = make([]PUserResponse, 0)
 	} else {
 		for _, user := range users {
-			pUser := PUserResponse{UIN: user.ExternalID, Consent: user.Consent, PublicKey: user.PublicKey}
+			pUser := PUserResponse{UIN: user.ExternalID, Consent: user.Consent, ConsentVaccine: user.ConsentVaccine, PublicKey: user.PublicKey}
 			result = append(result, pUser)
 		}
 	}

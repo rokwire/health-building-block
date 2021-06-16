@@ -32,6 +32,7 @@ type User struct {
 	UUID                 string  `json:"uuid" bson:"uuid"`
 	PublicKey            string  `json:"public_key" bson:"public_key"`
 	Consent              bool    `json:"consent" bson:"consent"`
+	ConsentVaccine       bool    `json:"consent_vaccine" bson:"consent_vaccine"`
 	ExposureNotification bool    `json:"exposure_notification" bson:"exposure_notification"`
 	RePost               bool    `json:"re_post" bson:"re_post"`
 	EncryptedKey         *string `json:"encrypted_key" bson:"encrypted_key"`

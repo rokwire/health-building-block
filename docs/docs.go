@@ -6046,6 +6046,9 @@ var doc = `{
                 "consent": {
                     "type": "boolean"
                 },
+                "consent_vaccine": {
+                    "type": "boolean"
+                },
                 "public_key": {
                     "type": "string"
                 }
@@ -6279,6 +6282,9 @@ var doc = `{
             "type": "object",
             "properties": {
                 "consent": {
+                    "type": "boolean"
+                },
+                "consent_vaccine": {
                     "type": "boolean"
                 },
                 "public_key": {
@@ -6619,6 +6625,9 @@ var doc = `{
                     }
                 },
                 "consent": {
+                    "type": "boolean"
+                },
+                "consent_vaccine": {
                     "type": "boolean"
                 },
                 "encrypted_blob": {
@@ -7625,6 +7634,9 @@ var doc = `{
                 "consent": {
                     "type": "boolean"
                 },
+                "consent_vaccine": {
+                    "type": "boolean"
+                },
                 "encrypted_blob": {
                     "type": "string"
                 },
@@ -8372,7 +8384,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "2.7.0",
+	Version:     "2.8.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

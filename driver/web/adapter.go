@@ -407,6 +407,7 @@ type loginAppUserRequest struct {
 	UUID                 string  `json:"uuid" validate:"required"`
 	PublicKey            string  `json:"public_key" validate:"required"`
 	Consent              *bool   `json:"consent" validate:"required"`
+	ConsentVaccine       *bool   `json:"consent_vaccine"`
 	ExposureNotification *bool   `json:"exposure_notification" validate:"required"`
 	RePost               *bool   `json:"re_post"`
 	EncryptedKey         *string `json:"encrypted_key"`
@@ -462,6 +463,12 @@ func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 	uuid := requestData.UUID
 	publicKey := requestData.PublicKey
 	consent := requestData.Consent
+
+	consentVaccine := false
+	if requestData.ConsentVaccine != nil {
+		consentVaccine = *requestData.ConsentVaccine
+	}
+
 	exposureNotification := requestData.ExposureNotification
 	rePost := requestData.RePost
 	encryptedKey := requestData.EncryptedKey
@@ -475,7 +482,7 @@ func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 		if authType != nil && *authType == "shibboleth" {
 			rePostValue = true
 		}
-		err = we.auth.createAppUser(*externalID, uuid, publicKey, *consent, *exposureNotification, rePostValue, encryptedKey, encryptedBlob, encryptedPK)
+		err = we.auth.createAppUser(*externalID, uuid, publicKey, *consent, consentVaccine, *exposureNotification, rePostValue, encryptedKey, encryptedBlob, encryptedPK)
 		if err != nil {
 			log.Println("Error on creating user")
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -488,7 +495,7 @@ func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 	} else {
 		//we need to update
 
-		err = we.auth.updateAppUser(*user, uuid, publicKey, *consent, *exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
+		err = we.auth.updateAppUser(*user, uuid, publicKey, *consent, consentVaccine, *exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
 		if err != nil {
 			log.Println("Error on updating user")
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -535,7 +542,7 @@ func (we Adapter) getUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := rest.AppUserResponse{ID: user.ID, ExternalID: user.ExternalID, UUID: user.UUID, PublicKey: user.PublicKey,
-		Consent: user.Consent, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
+		Consent: user.Consent, ConsentVaccine: user.ConsentVaccine, ExposureNotification: user.ExposureNotification, RePost: user.RePost,
 		EncryptedKey: user.EncryptedKey, EncryptedBlob: user.EncryptedBlob, EncryptedPK: user.EncryptedPK, Accounts: accounts}
 	data, err := json.Marshal(response)
 	if err != nil {

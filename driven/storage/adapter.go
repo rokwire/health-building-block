@@ -419,7 +419,7 @@ func (sa *Adapter) FindUsersByRePost(rePost bool) ([]*model.User, error) {
 
 //CreateAppUser creates an app user
 func (sa *Adapter) CreateAppUser(externalID string,
-	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) (*model.User, error) {
+	userUUID string, publicKey string, consent bool, consentVaccine bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) (*model.User, error) {
 	var user *model.User
 
 	// transaction
@@ -473,7 +473,7 @@ func (sa *Adapter) CreateAppUser(externalID string,
 
 		//insert the created user
 		user = &model.User{ID: userID.String(), ExternalID: externalID, UUID: userUUID,
-			PublicKey: publicKey, Consent: consent, ExposureNotification: exposureNotification, RePost: rePost,
+			PublicKey: publicKey, Consent: consent, ConsentVaccine: consentVaccine, ExposureNotification: exposureNotification, RePost: rePost,
 			EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, EncryptedPK: encryptedPK, Accounts: accounts, DateCreated: time.Now()}
 		_, err = sa.db.users.InsertOneWithContext(sessionContext, user)
 		if err != nil {
@@ -498,14 +498,14 @@ func (sa *Adapter) CreateAppUser(externalID string,
 
 //CreateAdminUser creates an admin user
 func (sa *Adapter) CreateAdminUser(shibboAuth *model.ShibbolethAuth, externalID string,
-	userUUID string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
+	userUUID string, publicKey string, consent bool, consentVaccine bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string) (*model.User, error) {
 
 	id, _ := uuid.NewUUID()
 
 	dateCreated := time.Now()
 
 	user := model.User{ID: id.String(), ShibbolethAuth: shibboAuth, ExternalID: externalID, UUID: userUUID,
-		PublicKey: publicKey, Consent: consent, ExposureNotification: exposureNotification, RePost: rePost,
+		PublicKey: publicKey, Consent: consent, ConsentVaccine: consentVaccine, ExposureNotification: exposureNotification, RePost: rePost,
 		EncryptedKey: encryptedKey, EncryptedBlob: encryptedBlob, DateCreated: dateCreated}
 	_, err := sa.db.users.InsertOne(&user)
 	if err != nil {
@@ -4090,6 +4090,7 @@ type manualTestUserJoin struct {
 	UserUUID                 string  `bson:"user_uuid"`
 	UserPublicKey            string  `bson:"user_public_key"`
 	UserConsent              bool    `bson:"user_consent"`
+	UserConsentVaccine       bool    `bson:"user_consent_vaccine"`
 	UserExposureNotification bool    `bson:"user_exposure_notification"`
 	UserEncryptedKey         *string `bson:"user_encrypted_key"`
 	UserEncryptedBlob        *string `bson:"user_encrypted_blob"`
@@ -4151,7 +4152,7 @@ func (sa *Adapter) FindManualTestsByCountyIDDeep(countyID string, status *string
 		bson.M{"$project": bson.M{
 			"_id": 1, "ehistory_id": 1, "location_id": 1, "county_id": 1, "encrypted_key": 1, "encrypted_blob": 1, "status": 1, "date": 1, "date_created": 1,
 			"user_id": "$user._id", "user_external_id": "$user.external_id", "user_uuid": "$user.uuid", "user_public_key": "$user.public_key",
-			"user_consent": "$user.consent", "user_exposure_notification": "$user._exposure_notification",
+			"user_consent": "$user.consent", "user_consent_vaccine": "$user._consent_vaccine", "user_exposure_notification": "$user._exposure_notification",
 			"user_info": "$user.info", "user_encrypted_key": "$user.encrypted_key", "user_encrypted_blob": "$user.encrypted_blob",
 			"user_accounts": "$user.accounts",
 		}},
@@ -4181,7 +4182,7 @@ func (sa *Adapter) FindManualTestsByCountyIDDeep(countyID string, status *string
 		}
 
 		user := model.User{ID: item.UserID, ExternalID: item.UserExternalID, UUID: item.UserUUID, PublicKey: item.UserPublicKey,
-			Consent: item.UserConsent, ExposureNotification: item.UserExposureNotification,
+			Consent: item.UserConsent, ConsentVaccine: item.UserConsentVaccine, ExposureNotification: item.UserExposureNotification,
 			EncryptedKey: item.UserEncryptedKey, EncryptedBlob: item.UserEncryptedBlob, Accounts: accounts}
 
 		mt := model.EManualTest{ID: item.ID, HistoryID: item.HistoryID, LocationID: item.LocationID, CountyID: item.CountyID,

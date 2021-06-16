@@ -407,7 +407,7 @@ type loginAppUserRequest struct {
 	UUID                 string  `json:"uuid" validate:"required"`
 	PublicKey            string  `json:"public_key" validate:"required"`
 	Consent              *bool   `json:"consent" validate:"required"`
-	ConsentVaccine       *bool   `json:"consent_vaccine" validate: "required"`
+	ConsentVaccine       *bool   `json:"consent_vaccine"`
 	ExposureNotification *bool   `json:"exposure_notification" validate:"required"`
 	RePost               *bool   `json:"re_post"`
 	EncryptedKey         *string `json:"encrypted_key"`
@@ -463,7 +463,12 @@ func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 	uuid := requestData.UUID
 	publicKey := requestData.PublicKey
 	consent := requestData.Consent
-	consentVaccine := requestData.ConsentVaccine
+
+	consentVaccine := false
+	if requestData.ConsentVaccine != nil {
+		consentVaccine = *requestData.ConsentVaccine
+	}
+
 	exposureNotification := requestData.ExposureNotification
 	rePost := requestData.RePost
 	encryptedKey := requestData.EncryptedKey
@@ -477,7 +482,7 @@ func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 		if authType != nil && *authType == "shibboleth" {
 			rePostValue = true
 		}
-		err = we.auth.createAppUser(*externalID, uuid, publicKey, *consent, *consentVaccine, *exposureNotification, rePostValue, encryptedKey, encryptedBlob, encryptedPK)
+		err = we.auth.createAppUser(*externalID, uuid, publicKey, *consent, consentVaccine, *exposureNotification, rePostValue, encryptedKey, encryptedBlob, encryptedPK)
 		if err != nil {
 			log.Println("Error on creating user")
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -490,7 +495,7 @@ func (we Adapter) loginUser(w http.ResponseWriter, r *http.Request) {
 	} else {
 		//we need to update
 
-		err = we.auth.updateAppUser(*user, uuid, publicKey, *consent, *consentVaccine, *exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
+		err = we.auth.updateAppUser(*user, uuid, publicKey, *consent, consentVaccine, *exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
 		if err != nil {
 			log.Println("Error on updating user")
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

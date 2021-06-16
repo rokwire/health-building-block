@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.7.0] - 2022-04-26
 ### Added
+- Add ''consent_vaccine" flag [#133] (https://github.com/rokwire/health-building-block/issues/133)
 - Expose external API to check if the user exists. [#128](https://github.com/rokwire/health-building-block/issues/128)
 - Expose get time client API. [#130](https://github.com/rokwire/health-building-block/issues/130)
 

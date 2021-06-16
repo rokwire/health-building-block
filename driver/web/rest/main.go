@@ -42,6 +42,7 @@ type AppUserResponse struct {
 	UUID                 string  `json:"uuid"`
 	PublicKey            string  `json:"public_key"`
 	Consent              bool    `json:"consent"`
+	ConsentVaccine       bool    `json:"consent_vaccine"`
 	ExposureNotification bool    `json:"exposure_notification"`
 	RePost               bool    `json:"re_post"`
 	EncryptedKey         *string `json:"encrypted_key"`
@@ -156,9 +157,10 @@ type symptomResponse struct {
 
 //PUserResponse represents user response entity used by the providers
 type PUserResponse struct {
-	UIN       string `json:"uin"`
-	PublicKey string `json:"public_key"`
-	Consent   bool   `json:"consent"`
+	UIN            string `json:"uin"`
+	PublicKey      string `json:"public_key"`
+	Consent        bool   `json:"consent"`
+	ConsentVaccine bool   `json:"consent_vaccine"`
 } //@name PUser
 
 type historyResponse struct {

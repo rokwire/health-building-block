@@ -100,12 +100,12 @@ func (auth *Auth) userAccountsCheck(w http.ResponseWriter, r *http.Request) (boo
 	return auth.userAuth.userAccountsCheck(w, r)
 }
 
-func (auth *Auth) updateAppUser(user model.User, uuid string, publicKey string, consent bool, exposureNotification bool, rePost *bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
-	return auth.userAuth.updateAppUser(user, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
+func (auth *Auth) updateAppUser(user model.User, uuid string, publicKey string, consent bool, consentVaccine bool, exposureNotification bool, rePost *bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
+	return auth.userAuth.updateAppUser(user, uuid, publicKey, consent, consentVaccine, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
 }
 
-func (auth *Auth) createAppUser(externalID string, uuid string, publicKey string, consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
-	return auth.userAuth.createAppUser(externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
+func (auth *Auth) createAppUser(externalID string, uuid string, publicKey string, consent bool, consentVaccine bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
+	return auth.userAuth.createAppUser(externalID, uuid, publicKey, consent, consentVaccine, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
 }
 
 //NewAuth creates new auth handler
@@ -1129,9 +1129,9 @@ func (auth *UserAuth) getTokenType(token string) (*int, error) {
 }
 
 func (auth *UserAuth) createAppUser(externalID string, uuid string, publicKey string,
-	consent bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
+	consent bool, consentVaccine bool, exposureNotification bool, rePost bool, encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
 
-	_, err := auth.app.CreateAppUser(externalID, uuid, publicKey, consent, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
+	_, err := auth.app.CreateAppUser(externalID, uuid, publicKey, consent, consentVaccine, exposureNotification, rePost, encryptedKey, encryptedBlob, encryptedPK)
 	if err != nil {
 		return err
 	}
@@ -1139,7 +1139,7 @@ func (auth *UserAuth) createAppUser(externalID string, uuid string, publicKey st
 	return nil
 }
 
-func (auth *UserAuth) updateAppUser(user model.User, uuid string, publicKey string, consent bool, exposureNotification bool, rePost *bool,
+func (auth *UserAuth) updateAppUser(user model.User, uuid string, publicKey string, consent bool, consentVaccine bool, exposureNotification bool, rePost *bool,
 	encryptedKey *string, encryptedBlob *string, encryptedPK *string) error {
 
 	//1. remove it from the cache
@@ -1149,6 +1149,7 @@ func (auth *UserAuth) updateAppUser(user model.User, uuid string, publicKey stri
 	user.UUID = uuid
 	user.PublicKey = publicKey
 	user.Consent = consent
+	user.ConsentVaccine = consentVaccine
 	user.ExposureNotification = exposureNotification
 	if rePost != nil {
 		user.RePost = *rePost
@@ -1289,10 +1290,12 @@ func newUserAuth(app *core.Application, oidcProvider string, oidcAppClientID str
 	}
 	appIDTokenVerifier := provider.Verifier(&oidc.Config{ClientID: oidcAppClientID})
 
-	keysSet, err := jwk.ParseString(keys)
+	/*keysSet, err := jwk.ParseString(keys)
 	if err != nil {
 		log.Fatalln(err)
-	}
+	}*/
+	//TODO
+	var keysSet *jwk.Set
 
 	cacheUsers := &syncmap.Map{}
 	lock := &sync.RWMutex{}

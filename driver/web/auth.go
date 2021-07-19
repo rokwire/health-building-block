@@ -882,6 +882,10 @@ func (auth *UserAuth) userAccountsCheck(w http.ResponseWriter, r *http.Request) 
 	if !ok {
 		return false, nil, nil
 	}
+	if user == nil {
+		//it is ok but there is no user
+		return true, nil, nil
+	}
 
 	// determine the used user account
 	/// get the account id from the header

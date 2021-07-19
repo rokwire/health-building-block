@@ -586,6 +586,10 @@ func (app *Application) UpdateUser(user *model.User) error {
 	if err != nil {
 		return err
 	}
+
+	//notify that the user is updated
+	defer app.notifyListeners("onUserUpdated", *user)
+
 	return nil
 }
 

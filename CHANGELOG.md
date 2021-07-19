@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Inconsistent get user API return. [#136] (https://github.com/rokwire/health-building-block/issues/136)
 
 ## [2.8.0] - 2021-06-16
 - Add "consent_vaccine" flag [#133] (https://github.com/rokwire/health-building-block/issues/133)

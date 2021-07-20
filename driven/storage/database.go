@@ -19,7 +19,9 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"health/core"
+	"health/core/model"
 	"log"
 	"time"
 
@@ -779,11 +781,49 @@ func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 	} else if "users" == coll {
 		log.Println("users collection changed")
 
-		for key, value := range changeDoc {
-			log.Printf("%s - %s\n", key, value)
+		changeUser, err := m.getChangedUser(changeDoc)
+		if err != nil {
+			log.Printf("error getting the changed user - %s", err)
+			return
 		}
 
+		if m.listener != nil {
+			m.listener.OnUserChanged(*changeUser)
+		}
 	} else {
 		log.Println("other collection changed")
 	}
+}
+
+func (m *database) getChangedUser(changeDoc map[string]interface{}) (*model.User, error) {
+
+	for key, value := range changeDoc {
+		log.Printf("%s - %s\n", key, value)
+	}
+
+	//getting user id
+	documentKey := changeDoc["documentKey"]
+	documentKeyMap, ok := documentKey.(map[string]interface{})
+	if !ok {
+		return nil, errors.New("error asserting documentKey")
+	}
+	if len(documentKeyMap) == 0 {
+		return nil, errors.New("documentKey is empty")
+	}
+	documentID := documentKeyMap["_id"]
+	documentIDStr, ok := documentID.(string)
+	if !ok {
+		return nil, errors.New("error asserting documentKey id")
+	}
+	if len(documentIDStr) == 0 {
+		return nil, errors.New("_id is empty")
+	}
+
+	log.Printf("USER_ID:%s", documentIDStr)
+
+	//getting operation type
+	//	operationType := changeDoc["operationType"]
+
+	//TODO
+	return nil, errors.New("TODO")
 }

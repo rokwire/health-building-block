@@ -638,12 +638,12 @@ type AppListener struct {
 	adapter *Adapter
 }
 
-//OnClearUserData notifies that a user has been removed
-func (al *AppListener) OnClearUserData(user model.User) {
-	log.Println("AppListener -> OnClearUserData -> " + user.ID)
+//OnUserDeleted notifies that a user has been deleted
+func (al *AppListener) OnUserDeleted(userID string) {
+	log.Println("AppListener -> OnUserDeleted -> " + userID)
 
-	//take out the removed user from the cached users
-	al.adapter.auth.userAuth.deleteCacheUser(user.ExternalID)
+	//we cannot clear just the user as we do not have the external id, so clear all cached users
+	al.adapter.auth.userAuth.clearCacheUsers()
 }
 
 //OnUserUpdated notifies that a user has been updated
@@ -652,6 +652,13 @@ func (al *AppListener) OnUserUpdated(user model.User) {
 
 	//take out the updated user from the cached users
 	al.adapter.auth.userAuth.deleteCacheUser(user.ExternalID)
+}
+
+//OnUserCreated notifies that a user has been created
+func (al *AppListener) OnUserCreated(user model.User) {
+	log.Println("AppListener -> OnUserCreated -> " + user.ID)
+
+	//do nothing
 }
 
 //OnRostersUpdated notifies that the rosters are updated

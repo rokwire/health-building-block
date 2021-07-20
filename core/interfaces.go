@@ -1012,6 +1012,7 @@ type StorageListener interface {
 	OnAppVersionsChanged()
 	OnRostersChanged()
 	OnRawSubAccountsChanged()
+	OnUserChanged(user model.User)
 }
 
 type storageListenerImpl struct {
@@ -1036,6 +1037,10 @@ func (a *storageListenerImpl) OnRostersChanged() {
 func (a *storageListenerImpl) OnRawSubAccountsChanged() {
 	//notify that the raw sub accounts have been changed
 	a.app.notifyListeners("onRawSubAccountsUpdated", nil)
+}
+
+func (a *storageListenerImpl) OnUserChanged(user model.User) {
+	//TODO
 }
 
 //DataProvider is used by core to access needed data

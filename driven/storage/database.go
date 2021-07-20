@@ -271,6 +271,9 @@ func (m *database) start() error {
 	//watch for rawsubaccounts changes
 	go m.rawsubaccounts.Watch(nil)
 
+	//watch for users changes
+	go m.users.Watch(nil)
+
 	return nil
 }
 
@@ -773,6 +776,13 @@ func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 		if m.listener != nil {
 			m.listener.OnRawSubAccountsChanged()
 		}
+	} else if "users" == coll {
+		log.Println("users collection changed")
+
+		for key, value := range changeDoc {
+			log.Printf("%s - %s\n", key, value)
+		}
+
 	} else {
 		log.Println("other collection changed")
 	}

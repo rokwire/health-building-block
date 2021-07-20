@@ -33,9 +33,6 @@ func (app *Application) clearUserData(current model.User) error {
 	if err != nil {
 		return err
 	}
-
-	defer app.notifyListeners("onClearUserData", current)
-
 	return nil
 }
 
@@ -124,10 +121,7 @@ func (app *Application) createExternalCTest(providerID string, uin string, encry
 		return err
 	}
 
-	//2. notify that the user is updated
-	defer app.notifyListeners("onUserUpdated", *user)
-
-	//3. send a firebase notification to the user that the ctest is arrived.
+	//2. send a firebase notification to the user that the ctest is arrived.
 	go func(userUUID string) {
 		if len(userUUID) <= 0 {
 			log.Println("user uuid is empty")

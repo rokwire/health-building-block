@@ -1045,17 +1045,20 @@ func (a *storageListenerImpl) OnRawSubAccountsChanged() {
 
 func (a *storageListenerImpl) OnUserCreated(user model.User) {
 	log.Printf("storageListenerImpl -> OnUserCreated - %s", user.ID)
-	//TODO
+	//notify that a user has been created
+	a.app.notifyListeners("onUserCreated", user)
 }
 
 func (a *storageListenerImpl) OnUserUpdated(user model.User) {
 	log.Printf("storageListenerImpl -> OnUserUpdated - %s", user.ID)
-	//TODO
+	//notify that a user has been updated
+	a.app.notifyListeners("onUserUpdated", user)
 }
 
 func (a *storageListenerImpl) OnUserDeleted(userID string) {
 	log.Printf("storageListenerImpl -> OnUserDeleted - %s", userID)
-	//TODO
+	//notify that a user has been deleted
+	a.app.notifyListeners("onUserDeleted", userID)
 }
 
 //DataProvider is used by core to access needed data
@@ -1150,8 +1153,10 @@ type AuditDataEntry struct {
 
 //ApplicationListener represents application listener
 type ApplicationListener interface {
-	OnClearUserData(user model.User)
+	OnUserCreated(user model.User)
 	OnUserUpdated(user model.User)
+	OnUserDeleted(userID string)
+
 	OnRostersUpdated()
 	OnSubAccountsUpdated()
 }

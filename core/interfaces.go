@@ -20,6 +20,7 @@ package core
 import (
 	"health/core/model"
 	"health/utils"
+	"log"
 	"time"
 )
 
@@ -1012,7 +1013,10 @@ type StorageListener interface {
 	OnAppVersionsChanged()
 	OnRostersChanged()
 	OnRawSubAccountsChanged()
-	OnUserChanged(user model.User)
+
+	OnUserCreated(user model.User)
+	OnUserUpdated(user model.User)
+	OnUserDeleted(userID string)
 }
 
 type storageListenerImpl struct {
@@ -1039,7 +1043,18 @@ func (a *storageListenerImpl) OnRawSubAccountsChanged() {
 	a.app.notifyListeners("onRawSubAccountsUpdated", nil)
 }
 
-func (a *storageListenerImpl) OnUserChanged(user model.User) {
+func (a *storageListenerImpl) OnUserCreated(user model.User) {
+	log.Printf("storageListenerImpl -> OnUserCreated - %s", user.ID)
+	//TODO
+}
+
+func (a *storageListenerImpl) OnUserUpdated(user model.User) {
+	log.Printf("storageListenerImpl -> OnUserUpdated - %s", user.ID)
+	//TODO
+}
+
+func (a *storageListenerImpl) OnUserDeleted(userID string) {
+	log.Printf("storageListenerImpl -> OnUserDeleted - %s", userID)
 	//TODO
 }
 

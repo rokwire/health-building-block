@@ -19,6 +19,7 @@ package storage
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"health/core"
 	"health/core/model"
@@ -746,7 +747,8 @@ func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 	if changeDoc == nil {
 		return
 	}
-	log.Printf("onDataChanged: %+v\n", changeDoc)
+	//do not log as could have sensitive information
+	//log.Printf("onDataChanged: %+v\n", changeDoc)
 	ns := changeDoc["ns"]
 	if ns == nil {
 		return
@@ -781,28 +783,73 @@ func (m *database) onDataChanged(changeDoc map[string]interface{}) {
 	} else if "users" == coll {
 		log.Println("users collection changed")
 
-		changeUser, err := m.getChangedUser(changeDoc)
-		if err != nil {
-			log.Printf("error getting the changed user - %s", err)
+		if m.listener == nil {
 			return
 		}
 
-		if m.listener != nil {
-			m.listener.OnUserChanged(*changeUser)
+		operationType, err := m.getUserOperationType(changeDoc)
+		if err != nil {
+			log.Printf("error getting the user operation type - %s", err)
+			return
+		}
+
+		switch *operationType {
+		case "delete":
+			userID, err := m.getUserID(changeDoc)
+			if err != nil {
+				log.Printf("error getting user id for deletion operation - %s", err)
+				return
+			}
+			m.listener.OnUserDeleted(*userID)
+			return
+		case "insert":
+			user, err := m.getUserObject(changeDoc)
+			if err != nil {
+				log.Printf("error getting user for insert operation - %s", err)
+				return
+			}
+			m.listener.OnUserCreated(*user)
+			return
+		case "replace":
+			user, err := m.getUserObject(changeDoc)
+			if err != nil {
+				log.Printf("error getting user for replace operation - %s", err)
+				return
+			}
+			m.listener.OnUserUpdated(*user)
+		case "update":
+			user, err := m.getUserObject(changeDoc)
+			if err != nil {
+				log.Printf("error getting user for update operation - %s", err)
+				return
+			}
+			m.listener.OnUserUpdated(*user)
+			return
+		default:
+			return
 		}
 	} else {
 		log.Println("other collection changed")
 	}
 }
 
-func (m *database) getChangedUser(changeDoc map[string]interface{}) (*model.User, error) {
-
-	for key, value := range changeDoc {
-		log.Printf("%s - %s\n", key, value)
+func (m *database) getUserOperationType(changeDoc map[string]interface{}) (*string, error) {
+	operationType := changeDoc["operationType"]
+	if operationType == nil {
+		return nil, errors.New("operationType is nil")
 	}
+	operationTypeStr, ok := operationType.(string)
+	if !ok {
+		return nil, errors.New("error asserting operationType")
+	}
+	return &operationTypeStr, nil
+}
 
-	//getting user id
+func (m *database) getUserID(changeDoc map[string]interface{}) (*string, error) {
 	documentKey := changeDoc["documentKey"]
+	if documentKey == nil {
+		return nil, errors.New("documentKey is nil")
+	}
 	documentKeyMap, ok := documentKey.(map[string]interface{})
 	if !ok {
 		return nil, errors.New("error asserting documentKey")
@@ -811,19 +858,50 @@ func (m *database) getChangedUser(changeDoc map[string]interface{}) (*model.User
 		return nil, errors.New("documentKey is empty")
 	}
 	documentID := documentKeyMap["_id"]
-	documentIDStr, ok := documentID.(string)
+	userID, ok := documentID.(string)
 	if !ok {
 		return nil, errors.New("error asserting documentKey id")
 	}
-	if len(documentIDStr) == 0 {
+	if len(userID) == 0 {
 		return nil, errors.New("_id is empty")
 	}
+	return &userID, nil
+}
 
-	log.Printf("USER_ID:%s", documentIDStr)
+func (m *database) getUserObject(changeDoc map[string]interface{}) (*model.User, error) {
+	fullDocument := changeDoc["fullDocument"]
+	if fullDocument == nil {
+		return nil, errors.New("fullDocument is nil")
+	}
+	fullDocumentMap, ok := fullDocument.(map[string]interface{})
+	if !ok {
+		return nil, errors.New("error asserting fullDocument")
+	}
+	if len(fullDocumentMap) == 0 {
+		return nil, errors.New("fullDocument is empty")
+	}
 
-	//getting operation type
-	//	operationType := changeDoc["operationType"]
+	//convert user map to json
+	userJson, err := json.Marshal(fullDocumentMap)
+	if err != nil {
+		log.Printf("error converting user map to json - %s", err)
+		return nil, err
+	}
 
-	//TODO
-	return nil, errors.New("TODO")
+	//convert user json to struct
+	user := model.User{}
+	err = json.Unmarshal(userJson, &user)
+	if err != nil {
+		log.Printf("error converting user json to struct - %s", err)
+		return nil, err
+	}
+
+	userID, err := m.getUserID(changeDoc)
+	if err != nil {
+		log.Printf("error getting user id for the user object - %s", err)
+		return nil, err
+	}
+	user.ID = *userID
+
+	return &user, nil
 }

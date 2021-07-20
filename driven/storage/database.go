@@ -882,7 +882,7 @@ func (m *database) getUserObject(changeDoc map[string]interface{}) (*model.User,
 	}
 
 	//convert user map to json
-	userJson, err := json.Marshal(fullDocumentMap)
+	userJSON, err := json.Marshal(fullDocumentMap)
 	if err != nil {
 		log.Printf("error converting user map to json - %s", err)
 		return nil, err
@@ -890,7 +890,7 @@ func (m *database) getUserObject(changeDoc map[string]interface{}) (*model.User,
 
 	//convert user json to struct
 	user := model.User{}
-	err = json.Unmarshal(userJson, &user)
+	err = json.Unmarshal(userJSON, &user)
 	if err != nil {
 		log.Printf("error converting user json to struct - %s", err)
 		return nil, err

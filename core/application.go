@@ -235,10 +235,12 @@ func (app *Application) isLocationOpen(location *model.Location, day string, pas
 func (app *Application) notifyListeners(message string, data interface{}) {
 	go func() {
 		for _, listener := range app.listeners {
-			if message == "onClearUserData" {
-				listener.OnClearUserData(data.(model.User))
+			if message == "onUserDeleted" {
+				listener.OnUserDeleted(data.(string))
 			} else if message == "onUserUpdated" {
 				listener.OnUserUpdated(data.(model.User))
+			} else if message == "onUserCreated" {
+				listener.OnUserCreated(data.(model.User))
 			} else if message == "onRostersUpdated" {
 				listener.OnRostersUpdated()
 			} else if message == "onRawSubAccountsUpdated" {
@@ -586,10 +588,6 @@ func (app *Application) UpdateUser(user *model.User) error {
 	if err != nil {
 		return err
 	}
-
-	//notify that the user is updated
-	defer app.notifyListeners("onUserUpdated", *user)
-
 	return nil
 }
 

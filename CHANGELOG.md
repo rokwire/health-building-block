@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.0] - 2021-07-
+### Fixed
+-Update "jwt-go" library. [#141](https://github.com/rokwire/health-building-block/issues/141)
+
 ## [2.10.0] - 2021-07-20
 ### Fixed
 - Inconsistent get user API return. [#136] (https://github.com/rokwire/health-building-block/issues/136)

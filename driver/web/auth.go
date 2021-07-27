@@ -32,7 +32,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/lestrrat-go/jwx/jwk"
 	"golang.org/x/sync/syncmap"
 	"gopkg.in/ericchiang/go-oidc.v2"
@@ -1294,10 +1294,13 @@ func newUserAuth(app *core.Application, oidcProvider string, oidcAppClientID str
 	}
 	appIDTokenVerifier := provider.Verifier(&oidc.Config{ClientID: oidcAppClientID})
 
-	keysSet, err := jwk.ParseString(keys)
+	/*keysSet, err := jwk.ParseString(keys)
 	if err != nil {
 		log.Fatalln(err)
-	}
+	}*/
+
+	//TODO
+	var keysSet *jwk.Set
 
 	cacheUsers := &syncmap.Map{}
 	lock := &sync.RWMutex{}

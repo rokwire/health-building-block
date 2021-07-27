@@ -10,10 +10,10 @@ require (
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/casbin/casbin v1.9.1
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/ansi/v3 v3.0.0 // indirect
 	github.com/go-playground/pure/v5 v5.1.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/golang-jwt/jwt v3.2.1+incompatible
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.4
 	github.com/leodido/go-urn v1.2.0 // indirect
@@ -24,9 +24,9 @@ require (
 	github.com/swaggo/http-swagger v0.0.0-20200308142732-58ac5e232fba
 	github.com/swaggo/swag v1.6.7
 	go.mongodb.org/mongo-driver v1.3.4
-	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
+	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	google.golang.org/api v0.29.0
+	google.golang.org/api v0.29.0 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 	gopkg.in/ericchiang/go-oidc.v2 v2.2.1
 	gopkg.in/go-playground/validator.v9 v9.31.0

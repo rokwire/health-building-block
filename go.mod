@@ -1,6 +1,6 @@
 module health
 
-go 1.13
+go 1.16
 
 require (
 	cloud.google.com/go/firestore v1.3.0 // indirect
@@ -10,10 +10,10 @@ require (
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/casbin/casbin v1.9.1
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/ansi/v3 v3.0.0 // indirect
 	github.com/go-playground/pure/v5 v5.1.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/golang-jwt/jwt v3.2.1+incompatible
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.4
 	github.com/leodido/go-urn v1.2.0 // indirect

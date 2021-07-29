@@ -10,7 +10,7 @@ The service is based on clear hexagonal architecture.
 
 MongoDB v4.2.2+
 
-Go v1.13+
+Go v1.15+
 
 ### Environment variables
 The following Environment variables are supported. The service will not start unless those marked as Required are supplied.

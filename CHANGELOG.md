@@ -6,16 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.0] - 2021-08-04
+### Security
+- Upgrade mongo driver. [#144] (https://github.com/rokwire/health-building-block/issues/144)
+
 ## [2.11.0] - 2021-07-29
 ### Security
--Update "jwt-go" library. [#141] (https://github.com/rokwire/health-building-block/issues/141)
+- Update "jwt-go" library. [#141](https://github.com/rokwire/health-building-block/issues/141)
 
 ## [2.10.0] - 2021-07-20
 ### Fixed
-- Inconsistent get user API return. [#136] (https://github.com/rokwire/health-building-block/issues/136)
+- Inconsistent get user API return. [#136](https://github.com/rokwire/health-building-block/issues/136)
 
 ## [2.8.0] - 2021-06-16
-- Add "consent_vaccine" flag [#133] (https://github.com/rokwire/health-building-block/issues/133)
+- Add "consent_vaccine" flag [#133](https://github.com/rokwire/health-building-block/issues/133)
 
 ## [2.7.0] - 2021-04-26
 ### Added
@@ -241,7 +245,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v2.11.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v2.12.0...HEAD
+[2.12.0]: https://github.com/rokwire/health-building-block/compare/v2.11.0...v2.12.0
 [2.11.0]: https://github.com/rokwire/health-building-block/compare/v2.10.0...v2.11.0
 [2.10.0]: https://github.com/rokwire/health-building-block/compare/v2.9.0...v2.10.0
 [2.9.0]: https://github.com/rokwire/health-building-block/compare/v2.8.0...v2.9.0

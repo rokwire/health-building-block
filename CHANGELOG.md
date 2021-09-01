@@ -6,9 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.12.1] - 2021-09-01
+- Add activation time to UINOverride record [#147](https://github.com/rokwire/health-building-block/issues/147)
+
 ## [2.12.0] - 2021-08-04
 ### Security
-- Upgrade mongo driver. [#144] (https://github.com/rokwire/health-building-block/issues/144)
+- Upgrade mongo driver. [#144](https://github.com/rokwire/health-building-block/issues/144)
 
 ## [2.11.0] - 2021-07-29
 ### Security

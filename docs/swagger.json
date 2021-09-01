@@ -11,7 +11,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.12.0"
+        "version": "2.12.1"
     },
     "host": "localhost",
     "basePath": "/health",
@@ -413,7 +413,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/ACounty"
+                                "$ref": "#/definitions/health_driver_web_rest.ACounty"
                             }
                         }
                     },
@@ -472,7 +472,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/ACounty"
+                            "$ref": "#/definitions/health_driver_web_rest.ACounty"
                         }
                     }
                 }
@@ -521,7 +521,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/ACounty"
+                            "$ref": "#/definitions/health_driver_web_rest.ACounty"
                         }
                     }
                 }
@@ -595,7 +595,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/CountyStatus"
+                                "$ref": "#/definitions/health_driver_web_rest.CountyStatus"
                             }
                         }
                     },
@@ -654,7 +654,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/CountyStatus"
+                            "$ref": "#/definitions/health_driver_web_rest.CountyStatus"
                         }
                     }
                 }
@@ -703,7 +703,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/CountyStatus"
+                            "$ref": "#/definitions/health_driver_web_rest.CountyStatus"
                         }
                     }
                 }
@@ -1144,7 +1144,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Guideline"
+                                "$ref": "#/definitions/health_driver_web_rest.Guideline"
                             }
                         }
                     },
@@ -1203,7 +1203,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/Guideline"
+                            "$ref": "#/definitions/health_driver_web_rest.Guideline"
                         }
                     }
                 }
@@ -1252,7 +1252,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/Guideline"
+                            "$ref": "#/definitions/health_driver_web_rest.Guideline"
                         }
                     }
                 }
@@ -1636,7 +1636,7 @@
                 "tags": [
                     "Admin"
                 ],
-                "operationId": "GetNews",
+                "operationId": "getNews",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2716,7 +2716,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/ARule"
+                                "$ref": "#/definitions/health_driver_web_rest.ARule"
                             }
                         }
                     },
@@ -2775,7 +2775,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/ARule"
+                            "$ref": "#/definitions/health_driver_web_rest.ARule"
                         }
                     }
                 }
@@ -2824,7 +2824,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/ARule"
+                            "$ref": "#/definitions/health_driver_web_rest.ARule"
                         }
                     }
                 }
@@ -2890,7 +2890,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/SymptomGroup"
+                                "$ref": "#/definitions/health_driver_web_rest.SymptomGroup"
                             }
                         }
                     },
@@ -2940,7 +2940,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/SymptomRule"
+                                "$ref": "#/definitions/health_driver_web_rest.SymptomRule"
                             }
                         }
                     },
@@ -3000,7 +3000,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/SymptomRule"
+                            "$ref": "#/definitions/health_driver_web_rest.SymptomRule"
                         }
                     }
                 }
@@ -3050,7 +3050,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/SymptomRule"
+                            "$ref": "#/definitions/health_driver_web_rest.SymptomRule"
                         }
                     }
                 }
@@ -3203,7 +3203,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/Symptom"
+                            "$ref": "#/definitions/health_driver_web_rest.Symptom"
                         }
                     }
                 }
@@ -3253,7 +3253,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/Symptom"
+                            "$ref": "#/definitions/health_driver_web_rest.Symptom"
                         }
                     }
                 }
@@ -3328,7 +3328,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/TestTypeResult"
+                                "$ref": "#/definitions/health_driver_web_rest.TestTypeResult"
                             }
                         }
                     },
@@ -3387,7 +3387,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/TestTypeResult"
+                            "$ref": "#/definitions/health_driver_web_rest.TestTypeResult"
                         }
                     }
                 }
@@ -3436,7 +3436,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/TestTypeResult"
+                            "$ref": "#/definitions/health_driver_web_rest.TestTypeResult"
                         }
                     }
                 }
@@ -3501,7 +3501,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/ATestType"
+                                "$ref": "#/definitions/health_driver_web_rest.ATestType"
                             }
                         }
                     },
@@ -3560,7 +3560,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/ATestType"
+                            "$ref": "#/definitions/health_driver_web_rest.ATestType"
                         }
                     }
                 }
@@ -3609,7 +3609,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/ATestType"
+                            "$ref": "#/definitions/health_driver_web_rest.ATestType"
                         }
                     }
                 }
@@ -4424,7 +4424,9 @@
                     }
                 ],
                 "responses": {
-                    "200": {}
+                    "200": {
+                        "description": ""
+                    }
                 }
             }
         },
@@ -4711,7 +4713,7 @@
                 "tags": [
                     "Covid19"
                 ],
-                "operationId": "getProviders",
+                "operationId": "GetProviders",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4776,7 +4778,7 @@
                 "tags": [
                     "Covid19"
                 ],
-                "operationId": "getResources",
+                "operationId": "GetResources",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4875,7 +4877,7 @@
                 "tags": [
                     "Covid19"
                 ],
-                "operationId": "getSymptomGroups",
+                "operationId": "GetSymptomGroups",
                 "deprecated": true,
                 "responses": {
                     "200": {
@@ -4883,7 +4885,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/SymptomGroup"
+                                "$ref": "#/definitions/health_driver_web_rest.SymptomGroup"
                             }
                         }
                     }
@@ -4921,7 +4923,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/SymptomRule"
+                                "$ref": "#/definitions/health_driver_web_rest.SymptomRule"
                             }
                         }
                     }
@@ -5081,7 +5083,25 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/addTraceReportRequest"
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "tek",
+                                    "timestamp"
+                                ],
+                                "properties": {
+                                    "expirestamp": {
+                                        "type": "integer"
+                                    },
+                                    "tek": {
+                                        "type": "string"
+                                    },
+                                    "timestamp": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
                         }
                     }
                 ],
@@ -5730,71 +5750,6 @@
         }
     },
     "definitions": {
-        "ACounty": {
-            "type": "object",
-            "properties": {
-                "country": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "state_province": {
-                    "type": "string"
-                }
-            }
-        },
-        "ARule": {
-            "type": "object",
-            "properties": {
-                "county_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "priority": {
-                    "type": "integer"
-                },
-                "results_statuses": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ATestTypeResultCountyStatus"
-                    }
-                },
-                "test_type_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "ATestType": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "priority": {
-                    "type": "integer"
-                }
-            }
-        },
-        "ATestTypeResultCountyStatus": {
-            "type": "object",
-            "properties": {
-                "county_status_id": {
-                    "type": "string"
-                },
-                "test_type_result_id": {
-                    "type": "string"
-                }
-            }
-        },
         "AccessRule": {
             "type": "object",
             "properties": {
@@ -5920,13 +5875,13 @@
                 "county_statuses": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/CountyStatus"
+                        "$ref": "#/definitions/health_driver_web_rest.CountyStatus"
                     }
                 },
                 "guidelines": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/Guideline"
+                        "$ref": "#/definitions/health_driver_web_rest.Guideline"
                     }
                 },
                 "id": {
@@ -5936,20 +5891,6 @@
                     "type": "string"
                 },
                 "state_province": {
-                    "type": "string"
-                }
-            }
-        },
-        "CountyStatus": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
                     "type": "string"
                 }
             }
@@ -6038,40 +5979,6 @@
                     "type": "boolean"
                 },
                 "public_key": {
-                    "type": "string"
-                }
-            }
-        },
-        "Guideline": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/GuidelineItem"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "GuidelineItem": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "icon": {
-                    "type": "string"
-                },
-                "type": {
                     "type": "string"
                 }
             }
@@ -6213,7 +6120,6 @@
                     "type": "string"
                 },
                 "user": {
-                    "type": "object",
                     "$ref": "#/definitions/User"
                 }
             }
@@ -6425,74 +6331,6 @@
                 }
             }
         },
-        "Symptom": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "SymptomGroup": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "symptoms": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/Symptom"
-                    }
-                }
-            }
-        },
-        "SymptomRule": {
-            "type": "object",
-            "properties": {
-                "gr1_count": {
-                    "type": "integer"
-                },
-                "gr2_count": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/SymptomRuleItem"
-                    }
-                }
-            }
-        },
-        "SymptomRuleItem": {
-            "type": "object",
-            "properties": {
-                "county_status_id": {
-                    "type": "string"
-                },
-                "gr1": {
-                    "type": "boolean"
-                },
-                "gr2": {
-                    "type": "boolean"
-                },
-                "health_status": {
-                    "type": "string"
-                },
-                "next_step": {
-                    "type": "string"
-                }
-            }
-        },
         "TestType": {
             "type": "object",
             "properties": {
@@ -6508,19 +6346,8 @@
                 "results": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/TestTypeResult"
+                        "$ref": "#/definitions/health_driver_web_rest.TestTypeResult"
                     }
-                }
-            }
-        },
-        "TestTypeResult": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
                 }
             }
         },
@@ -6589,6 +6416,9 @@
         "UINOverride": {
             "type": "object",
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
@@ -6644,27 +6474,6 @@
                 },
                 "uuid": {
                     "type": "string"
-                }
-            }
-        },
-        "addTraceReportRequest": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "required": [
-                    "tek",
-                    "timestamp"
-                ],
-                "properties": {
-                    "expirestamp": {
-                        "type": "integer"
-                    },
-                    "tek": {
-                        "type": "string"
-                    },
-                    "timestamp": {
-                        "type": "integer"
-                    }
                 }
             }
         },
@@ -6819,6 +6628,9 @@
                 "uin"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
@@ -6857,7 +6669,6 @@
                     "type": "integer"
                 },
                 "question": {
-                    "type": "object",
                     "$ref": "#/definitions/createFAQQuestionRequest"
                 },
                 "section": {
@@ -7103,6 +6914,9 @@
                 "interval"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
@@ -7140,6 +6954,9 @@
         },
         "createRawSubAccountItemsRequest": {
             "type": "object",
+            "required": [
+                "items"
+            ],
             "properties": {
                 "audit": {
                     "type": "string"
@@ -7148,6 +6965,12 @@
                     "type": "array",
                     "items": {
                         "type": "object",
+                        "required": [
+                            "first_name",
+                            "last_name",
+                            "primary_account",
+                            "uin"
+                        ],
                         "properties": {
                             "address1": {
                                 "type": "string"
@@ -7168,19 +6991,13 @@
                                 "type": "string"
                             },
                             "first_name": {
-                                "type": "string",
-                                "required": [
-                                    "first_name"
-                                ]
+                                "type": "string"
                             },
                             "gender": {
                                 "type": "string"
                             },
                             "last_name": {
-                                "type": "string",
-                                "required": [
-                                    "last_name"
-                                ]
+                                "type": "string"
                             },
                             "middle_name": {
                                 "type": "string"
@@ -7192,19 +7009,13 @@
                                 "type": "string"
                             },
                             "primary_account": {
-                                "type": "string",
-                                "required": [
-                                    "primary_account"
-                                ]
+                                "type": "string"
                             },
                             "state": {
                                 "type": "string"
                             },
                             "uin": {
-                                "type": "string",
-                                "required": [
-                                    "uin"
-                                ]
+                                "type": "string"
                             },
                             "zip_code": {
                                 "type": "string"
@@ -7233,6 +7044,9 @@
         },
         "createRosterItemsRequest": {
             "type": "object",
+            "required": [
+                "items"
+            ],
             "properties": {
                 "audit": {
                     "type": "string"
@@ -7241,6 +7055,10 @@
                     "type": "array",
                     "items": {
                         "type": "object",
+                        "required": [
+                            "phone",
+                            "uin"
+                        ],
                         "properties": {
                             "address1": {
                                 "type": "string"
@@ -7276,19 +7094,13 @@
                                 "type": "string"
                             },
                             "phone": {
-                                "type": "string",
-                                "required": [
-                                    "phone"
-                                ]
+                                "type": "string"
                             },
                             "state": {
                                 "type": "string"
                             },
                             "uin": {
-                                "type": "string",
-                                "required": [
-                                    "uin"
-                                ]
+                                "type": "string"
                             },
                             "zip_code": {
                                 "type": "string"
@@ -7503,6 +7315,9 @@
                 "uin"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "audit": {
                     "type": "string"
                 },
@@ -7574,6 +7389,198 @@
             "type": "object",
             "additionalProperties": {
                 "type": "string"
+            }
+        },
+        "health_driver_web_rest.ACounty": {
+            "type": "object",
+            "properties": {
+                "country": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "state_province": {
+                    "type": "string"
+                }
+            }
+        },
+        "health_driver_web_rest.ARule": {
+            "type": "object",
+            "properties": {
+                "county_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "results_statuses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/health_driver_web_rest.ATestTypeResultCountyStatus"
+                    }
+                },
+                "test_type_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "health_driver_web_rest.ATestType": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                }
+            }
+        },
+        "health_driver_web_rest.ATestTypeResultCountyStatus": {
+            "type": "object",
+            "properties": {
+                "county_status_id": {
+                    "type": "string"
+                },
+                "test_type_result_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "health_driver_web_rest.CountyStatus": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "health_driver_web_rest.Guideline": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/health_driver_web_rest.GuidelineItem"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "health_driver_web_rest.GuidelineItem": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "health_driver_web_rest.Symptom": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "health_driver_web_rest.SymptomGroup": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symptoms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/health_driver_web_rest.Symptom"
+                    }
+                }
+            }
+        },
+        "health_driver_web_rest.SymptomRule": {
+            "type": "object",
+            "properties": {
+                "county_id": {
+                    "type": "string"
+                },
+                "gr1_count": {
+                    "type": "integer"
+                },
+                "gr2_count": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/health_driver_web_rest.SymptomRuleItem"
+                    }
+                }
+            }
+        },
+        "health_driver_web_rest.SymptomRuleItem": {
+            "type": "object",
+            "properties": {
+                "county_status_id": {
+                    "type": "string"
+                },
+                "gr1": {
+                    "type": "boolean"
+                },
+                "gr2": {
+                    "type": "boolean"
+                },
+                "next_step": {
+                    "type": "string"
+                }
+            }
+        },
+        "health_driver_web_rest.TestTypeResult": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
             }
         },
         "ilbuResponse": {
@@ -7864,6 +7871,9 @@
                 "interval"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
@@ -8307,6 +8317,9 @@
                 "interval"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "audit": {
                     "type": "string"
                 },

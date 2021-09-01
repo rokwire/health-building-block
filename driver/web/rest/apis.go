@@ -409,6 +409,7 @@ type createExtUINOverrideRequest struct {
 	UIN        string     `json:"uin" validate:"required"`
 	Interval   int        `json:"interval" validate:"required"`
 	Category   *string    `json:"category"`
+	Activation *time.Time `json:"activation"`
 	Expiration *time.Time `json:"expiration"`
 } // @name createExtUINOverrideRequest
 
@@ -450,9 +451,10 @@ func (h ApisHandler) CreateExtUINOverrides(w http.ResponseWriter, r *http.Reques
 	uin := requestData.UIN
 	interval := requestData.Interval
 	category := requestData.Category
+	activation := requestData.Activation
 	expiration := requestData.Expiration
 
-	uinOverride, err := h.app.Services.CreateExtUINOverride(uin, interval, category, expiration)
+	uinOverride, err := h.app.Services.CreateExtUINOverride(uin, interval, category, activation, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -474,6 +476,7 @@ func (h ApisHandler) CreateExtUINOverrides(w http.ResponseWriter, r *http.Reques
 type updateExtUINOverrideRequest struct {
 	Interval   int        `json:"interval" validate:"required"`
 	Category   *string    `json:"category"`
+	Activation *time.Time `json:"activation"`
 	Expiration *time.Time `json:"expiration"`
 } // @name updateExtUINOverrideRequest
 
@@ -523,9 +526,10 @@ func (h ApisHandler) UpdateExtUINOverride(w http.ResponseWriter, r *http.Request
 
 	interval := requestData.Interval
 	category := requestData.Category
+	activation := requestData.Activation
 	expiration := requestData.Expiration
 
-	uinOverride, err := h.app.Services.UpdateExtUINOverride(uin, interval, category, expiration)
+	uinOverride, err := h.app.Services.UpdateExtUINOverride(uin, interval, category, activation, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -983,7 +987,7 @@ func (h ApisHandler) DeleteCTests(current model.User, account model.Account, w h
 //GetResources gives the covid19 resources
 // @Description Gives the covid19 resources
 // @Tags Covid19
-// @ID getResources
+// @ID GetResources
 // @Accept  json
 // @Success 200 {array} model.Resource
 // @Security RokwireAuth
@@ -1574,6 +1578,7 @@ func (h ApisHandler) GetUINOverride(current model.User, account model.Account, w
 type createOrUpdateUINOverride struct {
 	Interval   int        `json:"interval" validate:"required"`
 	Category   *string    `json:"category"`
+	Activation *time.Time `json:"activation"`
 	Expiration *time.Time `json:"expiration"`
 } //@name createOrUpdateUINOverride
 
@@ -1614,9 +1619,10 @@ func (h ApisHandler) CreateOrUpdateUINOverride(current model.User, account model
 
 	interval := requestData.Interval
 	category := requestData.Category
+	activation := requestData.Activation
 	expiration := requestData.Expiration
 
-	err = h.app.Services.CreateOrUpdateUINOverride(account, interval, category, expiration)
+	err = h.app.Services.CreateOrUpdateUINOverride(account, interval, category, activation, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1783,7 +1789,7 @@ func (h ApisHandler) UpdateExtJoinExternalApproval(current model.User, account m
 //GetProviders gets the providers
 // @Description Gives all the providers
 // @Tags Covid19
-// @ID getProviders
+// @ID GetProviders
 // @Accept json
 // @Success 200 {array} rest.providerResponse
 // @Security RokwireAuth
@@ -2348,7 +2354,7 @@ type mSymptomResponse struct {
 // @Deprecated
 // @Description Gives the symptom groups
 // @Tags Covid19
-// @ID getSymptomGroups
+// @ID GetSymptomGroups
 // @Accept json
 // @Success 200 {array} getMSymptomGroupsResponse
 // @Security RokwireAuth

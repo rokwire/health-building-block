@@ -2,13 +2,10 @@
 
 ## Supported Versions
 Patches for **Health Building Block** in this repository will only be applied to the following versions:
-| Version | Supported          |
-| ------- | ------------------ |
-|    | :white_check_mark: |
-|    | :white_check_mark: |
-|    | :white_check_mark: |
-|    | :white_check_mark: |
-| <    | :x:              |
+| Version  | Supported          |
+| -------  | ------------------ |
+| 2.12.2   | :white_check_mark: |
+| < 2.12.2 | :x:                |
 
 ## Reporting a Vulnerability
 Vulnerabilities can be responsibly disclosed to [securitysupport@illinois.edu](mailto:securitysupport@illinois.edu).

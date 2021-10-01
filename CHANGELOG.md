@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.7.0] - 2021-04-26
 ### Added
+= Create Create a Security.md [#150] (https://github.com/rokwire/health-building-block/issues/150)
 - Expose external API to check if the user exists. [#128](https://github.com/rokwire/health-building-block/issues/128)
 - Expose get time client API. [#130](https://github.com/rokwire/health-building-block/issues/130)
 

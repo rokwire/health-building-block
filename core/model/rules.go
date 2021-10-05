@@ -77,6 +77,7 @@ type AccessRuleCountyStatus struct {
 //UINOverride represents uin rules exceptions
 type UINOverride struct {
 	UIN        string     `json:"uin" bson:"uin"`
+	Exempt     *bool      `json:"exempt" bson:"exempt"`
 	Interval   int        `json:"interval" bson:"interval"`
 	Category   *string    `json:"category" bson:"category"`
 	Activation *time.Time `json:"activation" bson:"activation"`

@@ -1559,6 +1559,15 @@ func (h ApisHandler) GetUINOverride(current model.User, account model.Account, w
 	h.getUINOverride(false, current, account, w, r)
 }
 
+//GetUINOverrideV2 gives the uin override for the user
+// @Description Gives the uin override for the user
+// @Tags Covid19
+// @ID GetUINOverrideV2
+// @Accept json
+// @Success 200 {object} model.UINOverride
+// @Security AppUserAuth
+// @Security AppUserAccountAuth
+// @Router /covid19/v2/uin-override [get]
 func (h ApisHandler) GetUINOverrideV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
 	h.getUINOverride(true, current, account, w, r)
 }

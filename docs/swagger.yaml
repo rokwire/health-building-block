@@ -1,5 +1,47 @@
 basePath: /health
 definitions:
+  ACounty:
+    properties:
+      country:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      state_province:
+        type: string
+    type: object
+  ARule:
+    properties:
+      county_id:
+        type: string
+      id:
+        type: string
+      priority:
+        type: integer
+      results_statuses:
+        items:
+          $ref: '#/definitions/ATestTypeResultCountyStatus'
+        type: array
+      test_type_id:
+        type: string
+    type: object
+  ATestType:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      priority:
+        type: integer
+    type: object
+  ATestTypeResultCountyStatus:
+    properties:
+      county_status_id:
+        type: string
+      test_type_result_id:
+        type: string
+    type: object
   AccessRule:
     properties:
       county_id:
@@ -82,17 +124,26 @@ definitions:
         type: string
       county_statuses:
         items:
-          $ref: '#/definitions/health_driver_web_rest.CountyStatus'
+          $ref: '#/definitions/CountyStatus'
         type: array
       guidelines:
         items:
-          $ref: '#/definitions/health_driver_web_rest.Guideline'
+          $ref: '#/definitions/Guideline'
         type: array
       id:
         type: string
       name:
         type: string
       state_province:
+        type: string
+    type: object
+  CountyStatus:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
         type: string
     type: object
   FAQ:
@@ -150,6 +201,28 @@ definitions:
       consent_vaccine:
         type: boolean
       public_key:
+        type: string
+    type: object
+  Guideline:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/GuidelineItem'
+        type: array
+      name:
+        type: string
+    type: object
+  GuidelineItem:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      type:
         type: string
     type: object
   JoinGroupExtApprovement:
@@ -244,6 +317,7 @@ definitions:
         type: string
       user:
         $ref: '#/definitions/User'
+        type: object
     type: object
   ManualTestImage:
     properties:
@@ -380,6 +454,50 @@ definitions:
       id:
         type: string
     type: object
+  Symptom:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  SymptomGroup:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      symptoms:
+        items:
+          $ref: '#/definitions/Symptom'
+        type: array
+    type: object
+  SymptomRule:
+    properties:
+      gr1_count:
+        type: integer
+      gr2_count:
+        type: integer
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/SymptomRuleItem'
+        type: array
+    type: object
+  SymptomRuleItem:
+    properties:
+      county_status_id:
+        type: string
+      gr1:
+        type: boolean
+      gr2:
+        type: boolean
+      health_status:
+        type: string
+      next_step:
+        type: string
+    type: object
   TestType:
     properties:
       id:
@@ -390,8 +508,15 @@ definitions:
         type: integer
       results:
         items:
-          $ref: '#/definitions/health_driver_web_rest.TestTypeResult'
+          $ref: '#/definitions/TestTypeResult'
         type: array
+    type: object
+  TestTypeResult:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
     type: object
   TestTypeResultCountyStatus:
     properties:
@@ -439,6 +564,8 @@ definitions:
         type: string
       category:
         type: string
+      exempt:
+        type: boolean
       expiration:
         type: string
       interval:
@@ -475,6 +602,20 @@ definitions:
       uuid:
         type: string
     type: object
+  addTraceReportRequest:
+    items:
+      properties:
+        expirestamp:
+          type: integer
+        tek:
+          type: string
+        timestamp:
+          type: integer
+      required:
+      - tek
+      - timestamp
+      type: object
+    type: array
   createAccessRuleItemRequest:
     properties:
       county_status_id:
@@ -605,6 +746,7 @@ definitions:
         type: integer
       question:
         $ref: '#/definitions/createFAQQuestionRequest'
+        type: object
       section:
         type: string
     type: object
@@ -814,10 +956,14 @@ definitions:
             email:
               type: string
             first_name:
+              required:
+              - first_name
               type: string
             gender:
               type: string
             last_name:
+              required:
+              - last_name
               type: string
             middle_name:
               type: string
@@ -826,22 +972,19 @@ definitions:
             phone:
               type: string
             primary_account:
+              required:
+              - primary_account
               type: string
             state:
               type: string
             uin:
+              required:
+              - uin
               type: string
             zip_code:
               type: string
-          required:
-          - first_name
-          - last_name
-          - primary_account
-          - uin
           type: object
         type: array
-    required:
-    - items
     type: object
   createResourceRequest:
     properties:
@@ -884,20 +1027,19 @@ definitions:
             middle_name:
               type: string
             phone:
+              required:
+              - phone
               type: string
             state:
               type: string
             uin:
+              required:
+              - uin
               type: string
             zip_code:
               type: string
-          required:
-          - phone
-          - uin
           type: object
         type: array
-    required:
-    - items
     type: object
   createRosterRequest:
     properties:
@@ -1086,130 +1228,6 @@ definitions:
   gubonResponse:
     additionalProperties:
       type: string
-    type: object
-  health_driver_web_rest.ACounty:
-    properties:
-      country:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      state_province:
-        type: string
-    type: object
-  health_driver_web_rest.ARule:
-    properties:
-      county_id:
-        type: string
-      id:
-        type: string
-      priority:
-        type: integer
-      results_statuses:
-        items:
-          $ref: '#/definitions/health_driver_web_rest.ATestTypeResultCountyStatus'
-        type: array
-      test_type_id:
-        type: string
-    type: object
-  health_driver_web_rest.ATestType:
-    properties:
-      id:
-        type: string
-      name:
-        type: string
-      priority:
-        type: integer
-    type: object
-  health_driver_web_rest.ATestTypeResultCountyStatus:
-    properties:
-      county_status_id:
-        type: string
-      test_type_result_id:
-        type: string
-    type: object
-  health_driver_web_rest.CountyStatus:
-    properties:
-      description:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-    type: object
-  health_driver_web_rest.Guideline:
-    properties:
-      description:
-        type: string
-      id:
-        type: string
-      items:
-        items:
-          $ref: '#/definitions/health_driver_web_rest.GuidelineItem'
-        type: array
-      name:
-        type: string
-    type: object
-  health_driver_web_rest.GuidelineItem:
-    properties:
-      description:
-        type: string
-      icon:
-        type: string
-      type:
-        type: string
-    type: object
-  health_driver_web_rest.Symptom:
-    properties:
-      id:
-        type: string
-      name:
-        type: string
-    type: object
-  health_driver_web_rest.SymptomGroup:
-    properties:
-      id:
-        type: string
-      name:
-        type: string
-      symptoms:
-        items:
-          $ref: '#/definitions/health_driver_web_rest.Symptom'
-        type: array
-    type: object
-  health_driver_web_rest.SymptomRule:
-    properties:
-      county_id:
-        type: string
-      gr1_count:
-        type: integer
-      gr2_count:
-        type: integer
-      id:
-        type: string
-      items:
-        items:
-          $ref: '#/definitions/health_driver_web_rest.SymptomRuleItem'
-        type: array
-    type: object
-  health_driver_web_rest.SymptomRuleItem:
-    properties:
-      county_status_id:
-        type: string
-      gr1:
-        type: boolean
-      gr2:
-        type: boolean
-      next_step:
-        type: string
-    type: object
-  health_driver_web_rest.TestTypeResult:
-    properties:
-      id:
-        type: string
-      name:
-        type: string
     type: object
   ilbuResponse:
     additionalProperties:
@@ -1957,7 +1975,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/health_driver_web_rest.ACounty'
+              $ref: '#/definitions/ACounty'
             type: array
         "400":
           description: Authentication error
@@ -1994,7 +2012,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.ACounty'
+            $ref: '#/definitions/ACounty'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -2045,7 +2063,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.ACounty'
+            $ref: '#/definitions/ACounty'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -2068,7 +2086,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/health_driver_web_rest.CountyStatus'
+              $ref: '#/definitions/CountyStatus'
             type: array
         "400":
           description: Authentication error
@@ -2105,7 +2123,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.CountyStatus'
+            $ref: '#/definitions/CountyStatus'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -2156,7 +2174,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.CountyStatus'
+            $ref: '#/definitions/CountyStatus'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -2400,7 +2418,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/health_driver_web_rest.Guideline'
+              $ref: '#/definitions/Guideline'
             type: array
         "400":
           description: Authentication error
@@ -2437,7 +2455,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.Guideline'
+            $ref: '#/definitions/Guideline'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -2488,7 +2506,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.Guideline'
+            $ref: '#/definitions/Guideline'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -3353,7 +3371,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/health_driver_web_rest.ARule'
+              $ref: '#/definitions/ARule'
             type: array
         "400":
           description: Authentication error
@@ -3390,7 +3408,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.ARule'
+            $ref: '#/definitions/ARule'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -3441,7 +3459,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.ARule'
+            $ref: '#/definitions/ARule'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -3459,7 +3477,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/health_driver_web_rest.SymptomGroup'
+              $ref: '#/definitions/SymptomGroup'
             type: array
         "400":
           description: Authentication error
@@ -3490,7 +3508,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/health_driver_web_rest.SymptomRule'
+              $ref: '#/definitions/SymptomRule'
             type: array
         "400":
           description: Authentication error
@@ -3528,7 +3546,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.SymptomRule'
+            $ref: '#/definitions/SymptomRule'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -3581,7 +3599,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.SymptomRule'
+            $ref: '#/definitions/SymptomRule'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -3627,7 +3645,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.Symptom'
+            $ref: '#/definitions/Symptom'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -3704,7 +3722,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.Symptom'
+            $ref: '#/definitions/Symptom'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -3727,7 +3745,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/health_driver_web_rest.TestTypeResult'
+              $ref: '#/definitions/TestTypeResult'
             type: array
         "400":
           description: Authentication error
@@ -3764,7 +3782,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.TestTypeResult'
+            $ref: '#/definitions/TestTypeResult'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -3815,7 +3833,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.TestTypeResult'
+            $ref: '#/definitions/TestTypeResult'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -3832,7 +3850,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/health_driver_web_rest.ATestType'
+              $ref: '#/definitions/ATestType'
             type: array
         "400":
           description: Authentication error
@@ -3869,7 +3887,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.ATestType'
+            $ref: '#/definitions/ATestType'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -3920,7 +3938,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/health_driver_web_rest.ATestType'
+            $ref: '#/definitions/ATestType'
       security:
       - AdminUserAuth: []
       - AdminGroupAuth: []
@@ -4401,8 +4419,7 @@ paths:
         required: true
         type: string
       responses:
-        "200":
-          description: ""
+        "200": {}
       security:
       - ExternalAuth: []
       tags:
@@ -4688,7 +4705,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/health_driver_web_rest.SymptomGroup'
+              $ref: '#/definitions/SymptomGroup'
             type: array
       security:
       - RokwireAuth: []
@@ -4712,7 +4729,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/health_driver_web_rest.SymptomRule'
+              $ref: '#/definitions/SymptomRule'
             type: array
       security:
       - RokwireAuth: []
@@ -4811,19 +4828,7 @@ paths:
         name: data
         required: true
         schema:
-          items:
-            properties:
-              expirestamp:
-                type: integer
-              tek:
-                type: string
-              timestamp:
-                type: integer
-            required:
-            - tek
-            - timestamp
-            type: object
-          type: array
+          $ref: '#/definitions/addTraceReportRequest'
       produces:
       - text/plain
       responses:
@@ -5208,6 +5213,22 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Status'
+      security:
+      - AppUserAuth: []
+      - AppUserAccountAuth: []
+      tags:
+      - Covid19
+  /covid19/v2/uin-override:
+    get:
+      consumes:
+      - application/json
+      description: Gives the uin override for the user
+      operationId: GetUINOverrideV2
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UINOverride'
       security:
       - AppUserAuth: []
       - AppUserAccountAuth: []

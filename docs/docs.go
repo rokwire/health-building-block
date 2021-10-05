@@ -1648,7 +1648,7 @@ var doc = `{
                 "tags": [
                     "Admin"
                 ],
-                "operationId": "GetNews",
+                "operationId": "getNews",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4723,7 +4723,7 @@ var doc = `{
                 "tags": [
                     "Covid19"
                 ],
-                "operationId": "getProviders",
+                "operationId": "GetProviders",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4788,7 +4788,7 @@ var doc = `{
                 "tags": [
                     "Covid19"
                 ],
-                "operationId": "getResources",
+                "operationId": "GetResources",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4887,7 +4887,7 @@ var doc = `{
                 "tags": [
                     "Covid19"
                 ],
-                "operationId": "getSymptomGroups",
+                "operationId": "GetSymptomGroups",
                 "deprecated": true,
                 "responses": {
                     "200": {
@@ -5718,6 +5718,34 @@ var doc = `{
                         "description": "Successfully deleted",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/v2/uin-override": {
+            "get": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
+                    }
+                ],
+                "description": "Gives the uin override for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetUINOverrideV2",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UINOverride"
                         }
                     }
                 }
@@ -6601,8 +6629,14 @@ var doc = `{
         "UINOverride": {
             "type": "object",
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
+                },
+                "exempt": {
+                    "type": "boolean"
                 },
                 "expiration": {
                     "type": "string"
@@ -6831,6 +6865,9 @@ var doc = `{
                 "uin"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
@@ -7115,6 +7152,9 @@ var doc = `{
                 "interval"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
@@ -7511,15 +7551,20 @@ var doc = `{
         "createUINOverrideRequest": {
             "type": "object",
             "required": [
-                "interval",
                 "uin"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "audit": {
                     "type": "string"
                 },
                 "category": {
                     "type": "string"
+                },
+                "exempt": {
+                    "type": "boolean"
                 },
                 "expiration": {
                     "type": "string"
@@ -7876,6 +7921,9 @@ var doc = `{
                 "interval"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
@@ -8315,15 +8363,18 @@ var doc = `{
         },
         "updateUINOverrideRequest": {
             "type": "object",
-            "required": [
-                "interval"
-            ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "audit": {
                     "type": "string"
                 },
                 "category": {
                     "type": "string"
+                },
+                "exempt": {
+                    "type": "boolean"
                 },
                 "expiration": {
                     "type": "string"
@@ -8384,7 +8435,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "2.12.0",
+	Version:     "2.13.0",
 	Host:        "localhost",
 	BasePath:    "/health",
 	Schemes:     []string{"https"},

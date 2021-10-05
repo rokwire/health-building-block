@@ -560,8 +560,12 @@ definitions:
     type: object
   UINOverride:
     properties:
+      activation:
+        type: string
       category:
         type: string
+      exempt:
+        type: boolean
       expiration:
         type: string
       interval:
@@ -711,6 +715,8 @@ definitions:
     type: object
   createExtUINOverrideRequest:
     properties:
+      activation:
+        type: string
       category:
         type: string
       expiration:
@@ -903,6 +909,8 @@ definitions:
     type: object
   createOrUpdateUINOverride:
     properties:
+      activation:
+        type: string
       category:
         type: string
       expiration:
@@ -1168,10 +1176,14 @@ definitions:
     type: object
   createUINOverrideRequest:
     properties:
+      activation:
+        type: string
       audit:
         type: string
       category:
         type: string
+      exempt:
+        type: boolean
       expiration:
         type: string
       interval:
@@ -1179,7 +1191,6 @@ definitions:
       uin:
         type: string
     required:
-    - interval
     - uin
     type: object
   getRosterByPhoneResponse:
@@ -1407,6 +1418,8 @@ definitions:
     type: object
   updateExtUINOverrideRequest:
     properties:
+      activation:
+        type: string
       category:
         type: string
       expiration:
@@ -1701,16 +1714,18 @@ definitions:
     type: object
   updateUINOverrideRequest:
     properties:
+      activation:
+        type: string
       audit:
         type: string
       category:
         type: string
+      exempt:
+        type: boolean
       expiration:
         type: string
       interval:
         type: integer
-    required:
-    - interval
     type: object
 host: localhost
 info:
@@ -1720,7 +1735,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Rokwire Health Building Block API
-  version: 2.12.0
+  version: 2.13.0
 paths:
   /admin/access-rules:
     get:
@@ -2702,7 +2717,7 @@ paths:
       consumes:
       - application/json
       description: Gives news.
-      operationId: GetNews
+      operationId: getNews
       responses:
         "200":
           description: OK
@@ -4583,7 +4598,7 @@ paths:
       consumes:
       - application/json
       description: Gives all the providers
-      operationId: getProviders
+      operationId: GetProviders
       responses:
         "200":
           description: OK
@@ -4623,7 +4638,7 @@ paths:
       consumes:
       - application/json
       description: Gives the covid19 resources
-      operationId: getResources
+      operationId: GetResources
       responses:
         "200":
           description: OK
@@ -4685,7 +4700,7 @@ paths:
       - application/json
       deprecated: true
       description: Gives the symptom groups
-      operationId: getSymptomGroups
+      operationId: GetSymptomGroups
       responses:
         "200":
           description: OK
@@ -5199,6 +5214,22 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Status'
+      security:
+      - AppUserAuth: []
+      - AppUserAccountAuth: []
+      tags:
+      - Covid19
+  /covid19/v2/uin-override:
+    get:
+      consumes:
+      - application/json
+      description: Gives the uin override for the user
+      operationId: GetUINOverrideV2
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UINOverride'
       security:
       - AppUserAuth: []
       - AppUserAccountAuth: []

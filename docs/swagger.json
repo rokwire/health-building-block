@@ -11,7 +11,7 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "2.12.0"
+        "version": "2.13.0"
     },
     "host": "localhost",
     "basePath": "/health",
@@ -1636,7 +1636,7 @@
                 "tags": [
                     "Admin"
                 ],
-                "operationId": "GetNews",
+                "operationId": "getNews",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4711,7 +4711,7 @@
                 "tags": [
                     "Covid19"
                 ],
-                "operationId": "getProviders",
+                "operationId": "GetProviders",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4776,7 +4776,7 @@
                 "tags": [
                     "Covid19"
                 ],
-                "operationId": "getResources",
+                "operationId": "GetResources",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4875,7 +4875,7 @@
                 "tags": [
                     "Covid19"
                 ],
-                "operationId": "getSymptomGroups",
+                "operationId": "GetSymptomGroups",
                 "deprecated": true,
                 "responses": {
                     "200": {
@@ -5706,6 +5706,34 @@
                         "description": "Successfully deleted",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/covid19/v2/uin-override": {
+            "get": {
+                "security": [
+                    {
+                        "AppUserAuth": []
+                    },
+                    {
+                        "AppUserAccountAuth": []
+                    }
+                ],
+                "description": "Gives the uin override for the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Covid19"
+                ],
+                "operationId": "GetUINOverrideV2",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UINOverride"
                         }
                     }
                 }
@@ -6589,8 +6617,14 @@
         "UINOverride": {
             "type": "object",
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
+                },
+                "exempt": {
+                    "type": "boolean"
                 },
                 "expiration": {
                     "type": "string"
@@ -6819,6 +6853,9 @@
                 "uin"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
@@ -7103,6 +7140,9 @@
                 "interval"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
@@ -7499,15 +7539,20 @@
         "createUINOverrideRequest": {
             "type": "object",
             "required": [
-                "interval",
                 "uin"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "audit": {
                     "type": "string"
                 },
                 "category": {
                     "type": "string"
+                },
+                "exempt": {
+                    "type": "boolean"
                 },
                 "expiration": {
                     "type": "string"
@@ -7864,6 +7909,9 @@
                 "interval"
             ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "category": {
                     "type": "string"
                 },
@@ -8303,15 +8351,18 @@
         },
         "updateUINOverrideRequest": {
             "type": "object",
-            "required": [
-                "interval"
-            ],
             "properties": {
+                "activation": {
+                    "type": "string"
+                },
                 "audit": {
                     "type": "string"
                 },
                 "category": {
                     "type": "string"
+                },
+                "exempt": {
+                    "type": "boolean"
                 },
                 "expiration": {
                     "type": "string"

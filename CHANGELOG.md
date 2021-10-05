@@ -6,9 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.13.0] - 2021-10-05
+### Changed
+- Add "exempt" changes to UINOverride entity [#152](https://github.com/rokwire/health-building-block/issues/152)
+
+## [2.12.1] - 2021-09-01
+### Added
+- Add activation time to UINOverride record [#147](https://github.com/rokwire/health-building-block/issues/147)
+
 ## [2.12.0] - 2021-08-04
 ### Security
-- Upgrade mongo driver. [#144] (https://github.com/rokwire/health-building-block/issues/144)
+- Upgrade mongo driver. [#144](https://github.com/rokwire/health-building-block/issues/144)
 
 ## [2.11.0] - 2021-07-29
 ### Security
@@ -23,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.7.0] - 2021-04-26
 ### Added
+= Create Create a Security.md [#150] (https://github.com/rokwire/health-building-block/issues/150)
 - Expose external API to check if the user exists. [#128](https://github.com/rokwire/health-building-block/issues/128)
 - Expose get time client API. [#130](https://github.com/rokwire/health-building-block/issues/130)
 
@@ -245,7 +254,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update access rule admin api.
 - Delete access rule admin api.
 
-[Unreleased]: https://github.com/rokwire/health-building-block/compare/v2.12.0...HEAD
+[Unreleased]: https://github.com/rokwire/health-building-block/compare/v2.13.0...HEAD
+[2.13.0]: https://github.com/rokwire/health-building-block/compare/v2.12.1...v2.13.0
+[2.12.1]: https://github.com/rokwire/health-building-block/compare/v2.12.0...v2.12.1
 [2.12.0]: https://github.com/rokwire/health-building-block/compare/v2.11.0...v2.12.0
 [2.11.0]: https://github.com/rokwire/health-building-block/compare/v2.10.0...v2.11.0
 [2.10.0]: https://github.com/rokwire/health-building-block/compare/v2.9.0...v2.10.0

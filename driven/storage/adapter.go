@@ -4657,12 +4657,13 @@ func (sa *Adapter) findEUIDsBasedOnUserAccounts(orderNumbers []string) (map[stri
 }
 
 //CreateOrUpdateUINOverride creates a new uin override entity or updates it if already created
-func (sa *Adapter) CreateOrUpdateUINOverride(uin string, interval int, category *string, expiration *time.Time) error {
+func (sa *Adapter) CreateOrUpdateUINOverride(uin string, interval int, category *string, activation *time.Time, expiration *time.Time) error {
 	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
 	update := bson.D{
 		primitive.E{Key: "$set", Value: bson.D{
 			primitive.E{Key: "interval", Value: interval},
 			primitive.E{Key: "category", Value: category},
+			primitive.E{Key: "activation", Value: activation},
 			primitive.E{Key: "expiration", Value: expiration},
 		}},
 	}
@@ -4680,15 +4681,27 @@ func (sa *Adapter) CreateOrUpdateUINOverride(uin string, interval int, category 
 	return nil
 }
 
-//FindUINOverride finds the uin override for the provided uin. It makes additional check for the expiration because of the mongoDB TTL delay
-func (sa *Adapter) FindUINOverride(uin string) (*model.UINOverride, error) {
+//FindUINOverride finds the uin override for the provided uin.
+//	v1 only - it makes additional check for the activation and expiration because of the mongoDB TTL delay
+func (sa *Adapter) FindUINOverride(uin string, v2 bool) (*model.UINOverride, error) {
 	now := time.Now()
-	filter := bson.D{
-		primitive.E{Key: "uin", Value: uin},
-		primitive.E{Key: "$or", Value: []interface{}{
-			bson.D{primitive.E{Key: "expiration", Value: bson.M{"$gte": now}}},
-			bson.D{primitive.E{Key: "expiration", Value: nil}},
-		}},
+
+	var filter bson.D
+	if v2 {
+		filter = bson.D{primitive.E{Key: "uin", Value: uin}}
+	} else {
+		//v1
+		filter = bson.D{
+			primitive.E{Key: "uin", Value: uin},
+			primitive.E{Key: "$or", Value: []interface{}{
+				bson.D{primitive.E{Key: "expiration", Value: bson.M{"$gte": now}}},
+				bson.D{primitive.E{Key: "expiration", Value: nil}},
+			}},
+			primitive.E{Key: "$or", Value: []interface{}{
+				bson.D{primitive.E{Key: "activation", Value: bson.M{"$lte": now}}},
+				bson.D{primitive.E{Key: "activation", Value: nil}},
+			}},
+		}
 	}
 
 	var uinOverrides []*model.UINOverride
@@ -4728,8 +4741,8 @@ func (sa *Adapter) FindUINOverrides(uin *string, sort *string) ([]*model.UINOver
 }
 
 //CreateUINOverride creates a new uin override entity
-func (sa *Adapter) CreateUINOverride(uin string, interval int, category *string, expiration *time.Time) (*model.UINOverride, error) {
-	uinOverride := model.UINOverride{UIN: uin, Interval: interval, Category: category, Expiration: expiration}
+func (sa *Adapter) CreateUINOverride(uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
+	uinOverride := model.UINOverride{UIN: uin, Interval: interval, Exempt: exempt, Category: category, Activation: activation, Expiration: expiration}
 	_, err := sa.db.uinoverrides.InsertOne(&uinOverride)
 	if err != nil {
 		return nil, err
@@ -4739,12 +4752,14 @@ func (sa *Adapter) CreateUINOverride(uin string, interval int, category *string,
 }
 
 //UpdateUINOverride updates uin override entity
-func (sa *Adapter) UpdateUINOverride(uin string, interval int, category *string, expiration *time.Time) (*string, error) {
+func (sa *Adapter) UpdateUINOverride(uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
 	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
 	update := bson.D{
 		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "exempt", Value: exempt},
 			primitive.E{Key: "interval", Value: interval},
 			primitive.E{Key: "category", Value: category},
+			primitive.E{Key: "activation", Value: activation},
 			primitive.E{Key: "expiration", Value: expiration},
 		}},
 	}

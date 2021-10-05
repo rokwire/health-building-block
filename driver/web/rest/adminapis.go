@@ -199,7 +199,7 @@ func (h AdminApisHandler) CreateAppVersion(current model.User, group string, w h
 //GetNews gets news
 // @Description Gives news.
 // @Tags Admin
-// @ID GetNews
+// @ID getNews
 // @Accept  json
 // @Success 200 {array} model.News
 // @Failure 400 {object} string "Authentication error"
@@ -4196,8 +4196,10 @@ func (h AdminApisHandler) GetUINOverrides(current model.User, group string, w ht
 type createUINOverrideRequest struct {
 	Audit      *string    `json:"audit"`
 	UIN        string     `json:"uin" validate:"required"`
-	Interval   int        `json:"interval" validate:"required"`
+	Exempt     *bool      `json:"exempt"`
+	Interval   *int       `json:"interval"`
 	Category   *string    `json:"category"`
+	Activation *time.Time `json:"activation"`
 	Expiration *time.Time `json:"expiration"`
 } // @name createUINOverrideRequest
 
@@ -4239,11 +4241,13 @@ func (h AdminApisHandler) CreateUINOverride(current model.User, group string, w 
 
 	audit := requestData.Audit
 	uin := requestData.UIN
+	exempt := requestData.Exempt
 	interval := requestData.Interval
 	category := requestData.Category
+	activation := requestData.Activation
 	expiration := requestData.Expiration
 
-	uinOverride, err := h.app.Administration.CreateUINOverride(current, group, audit, uin, interval, category, expiration)
+	uinOverride, err := h.app.Administration.CreateUINOverride(current, group, audit, uin, exempt, interval, category, activation, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -4264,8 +4268,10 @@ func (h AdminApisHandler) CreateUINOverride(current model.User, group string, w 
 
 type updateUINOverrideRequest struct {
 	Audit      *string    `json:"audit"`
-	Interval   int        `json:"interval" validate:"required"`
+	Exempt     *bool      `json:"exempt"`
+	Interval   *int       `json:"interval"`
 	Category   *string    `json:"category"`
+	Activation *time.Time `json:"activation"`
 	Expiration *time.Time `json:"expiration"`
 } // @name updateUINOverrideRequest
 
@@ -4315,11 +4321,13 @@ func (h AdminApisHandler) UpdateUINOverride(current model.User, group string, w 
 	}
 
 	audit := requestData.Audit
+	exempt := requestData.Exempt
 	interval := requestData.Interval
 	category := requestData.Category
+	activation := requestData.Activation
 	expiration := requestData.Expiration
 
-	uinOverride, err := h.app.Administration.UpdateUINOverride(current, group, audit, uin, interval, category, expiration)
+	uinOverride, err := h.app.Administration.UpdateUINOverride(current, group, audit, uin, exempt, interval, category, activation, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

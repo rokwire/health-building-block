@@ -49,7 +49,7 @@ type Adapter struct {
 
 // @title Rokwire Health Building Block API
 // @description Rokwire Health Building Block API Documentation.
-// @version 2.12.0
+// @version 2.13.0
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost
@@ -125,6 +125,7 @@ func (we Adapter) Start() {
 	covid19RestSubrouter.HandleFunc("/v2/histories", we.userAccountsAuthWrapFunc(we.apisHandler.DeleteHistoriesV2)).Methods("DELETE")
 
 	covid19RestSubrouter.HandleFunc("/uin-override", we.userAccountsAuthWrapFunc(we.apisHandler.GetUINOverride)).Methods("GET")
+	covid19RestSubrouter.HandleFunc("/v2/uin-override", we.userAccountsAuthWrapFunc(we.apisHandler.GetUINOverrideV2)).Methods("GET")
 	covid19RestSubrouter.HandleFunc("/uin-override", we.userAccountsAuthWrapFunc(we.apisHandler.CreateOrUpdateUINOverride)).Methods("PUT")
 
 	covid19RestSubrouter.HandleFunc("/building-access", we.userAccountsAuthWrapFunc(we.apisHandler.SetUINBuildingAccess)).Methods("PUT")

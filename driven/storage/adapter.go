@@ -4741,7 +4741,7 @@ func (sa *Adapter) FindUINOverrides(uin *string, sort *string) ([]*model.UINOver
 }
 
 //CreateUINOverride creates a new uin override entity
-func (sa *Adapter) CreateUINOverride(uin string, exempt *bool, interval int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
+func (sa *Adapter) CreateUINOverride(uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
 	uinOverride := model.UINOverride{UIN: uin, Interval: interval, Exempt: exempt, Category: category, Activation: activation, Expiration: expiration}
 	_, err := sa.db.uinoverrides.InsertOne(&uinOverride)
 	if err != nil {
@@ -4752,7 +4752,7 @@ func (sa *Adapter) CreateUINOverride(uin string, exempt *bool, interval int, cat
 }
 
 //UpdateUINOverride updates uin override entity
-func (sa *Adapter) UpdateUINOverride(uin string, exempt *bool, interval int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
+func (sa *Adapter) UpdateUINOverride(uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
 	filter := bson.D{primitive.E{Key: "uin", Value: uin}}
 	update := bson.D{
 		primitive.E{Key: "$set", Value: bson.D{

@@ -1182,6 +1182,8 @@ definitions:
         type: string
       category:
         type: string
+      exempt:
+        type: boolean
       expiration:
         type: string
       interval:
@@ -1189,7 +1191,6 @@ definitions:
       uin:
         type: string
     required:
-    - interval
     - uin
     type: object
   getRosterByPhoneResponse:
@@ -1719,12 +1720,12 @@ definitions:
         type: string
       category:
         type: string
+      exempt:
+        type: boolean
       expiration:
         type: string
       interval:
         type: integer
-    required:
-    - interval
     type: object
 host: localhost
 info:

@@ -7551,7 +7551,6 @@ var doc = `{
         "createUINOverrideRequest": {
             "type": "object",
             "required": [
-                "interval",
                 "uin"
             ],
             "properties": {
@@ -7563,6 +7562,9 @@ var doc = `{
                 },
                 "category": {
                     "type": "string"
+                },
+                "exempt": {
+                    "type": "boolean"
                 },
                 "expiration": {
                     "type": "string"
@@ -8361,9 +8363,6 @@ var doc = `{
         },
         "updateUINOverrideRequest": {
             "type": "object",
-            "required": [
-                "interval"
-            ],
             "properties": {
                 "activation": {
                     "type": "string"
@@ -8373,6 +8372,9 @@ var doc = `{
                 },
                 "category": {
                     "type": "string"
+                },
+                "exempt": {
+                    "type": "boolean"
                 },
                 "expiration": {
                     "type": "string"

@@ -86,8 +86,8 @@ type Services interface {
 	CreateOrUpdateUINOverride(account model.Account, interval int, category *string, activation *time.Time, expiration *time.Time) error
 
 	GetExtUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
-	CreateExtUINOverride(uin string, interval int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error)
-	UpdateExtUINOverride(uin string, interval int, category *string, activation *time.Time, expiration *time.Time) (*string, error)
+	CreateExtUINOverride(uin string, interval *int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error)
+	UpdateExtUINOverride(uin string, interval *int, category *string, activation *time.Time, expiration *time.Time) (*string, error)
 	DeleteExtUINOverride(uin string) error
 
 	SetUINBuildingAccess(account model.Account, date time.Time, access string) error
@@ -272,11 +272,11 @@ func (s *servicesImpl) GetExtUINOverrides(uin *string, sort *string) ([]*model.U
 	return s.app.getExtUINOverrides(uin, sort)
 }
 
-func (s *servicesImpl) CreateExtUINOverride(uin string, interval int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
+func (s *servicesImpl) CreateExtUINOverride(uin string, interval *int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
 	return s.app.createExtUINOverride(uin, interval, category, activation, expiration)
 }
 
-func (s *servicesImpl) UpdateExtUINOverride(uin string, interval int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
+func (s *servicesImpl) UpdateExtUINOverride(uin string, interval *int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
 	return s.app.updateExtUINOverride(uin, interval, category, activation, expiration)
 }
 
@@ -411,8 +411,8 @@ type Administration interface {
 	CreateOrUpdateSymptoms(current model.User, group string, audit *string, appVersion string, items string) error
 
 	GetUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
-	CreateUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error)
-	UpdateUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval int, category *string, activation *time.Time, expiration *time.Time) (*string, error)
+	CreateUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error)
+	UpdateUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*string, error)
 	DeleteUINOverride(current model.User, group string, uin string) error
 
 	CreateRoster(current model.User, group string, audit *string, phone string, uin string, firstName string,
@@ -739,11 +739,11 @@ func (s *administrationImpl) GetUINOverrides(uin *string, sort *string) ([]*mode
 	return s.app.getUINOverrides(uin, sort)
 }
 
-func (s *administrationImpl) CreateUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
+func (s *administrationImpl) CreateUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
 	return s.app.createUINOverride(current, group, audit, uin, exempt, interval, category, activation, expiration)
 }
 
-func (s *administrationImpl) UpdateUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
+func (s *administrationImpl) UpdateUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
 	return s.app.updateUINOverride(current, group, audit, uin, exempt, interval, category, activation, expiration)
 }
 
@@ -981,8 +981,8 @@ type Storage interface {
 
 	//finds the uin override for the provided uin. If uin is nil then it gives all
 	FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
-	CreateUINOverride(uin string, exempt *bool, interval int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error)
-	UpdateUINOverride(uin string, exempt *bool, interval int, category *string, activation *time.Time, expiration *time.Time) (*string, error)
+	CreateUINOverride(uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error)
+	UpdateUINOverride(uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*string, error)
 	DeleteUINOverride(uin string) error
 
 	FindUINBuildingAccess(uin string) (*model.UINBuildingAccess, error)

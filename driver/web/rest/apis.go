@@ -454,7 +454,7 @@ func (h ApisHandler) CreateExtUINOverrides(w http.ResponseWriter, r *http.Reques
 	activation := requestData.Activation
 	expiration := requestData.Expiration
 
-	uinOverride, err := h.app.Services.CreateExtUINOverride(uin, interval, category, activation, expiration)
+	uinOverride, err := h.app.Services.CreateExtUINOverride(uin, &interval, category, activation, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -529,7 +529,7 @@ func (h ApisHandler) UpdateExtUINOverride(w http.ResponseWriter, r *http.Request
 	activation := requestData.Activation
 	expiration := requestData.Expiration
 
-	uinOverride, err := h.app.Services.UpdateExtUINOverride(uin, interval, category, activation, expiration)
+	uinOverride, err := h.app.Services.UpdateExtUINOverride(uin, &interval, category, activation, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

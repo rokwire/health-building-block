@@ -7539,7 +7539,6 @@
         "createUINOverrideRequest": {
             "type": "object",
             "required": [
-                "interval",
                 "uin"
             ],
             "properties": {
@@ -7551,6 +7550,9 @@
                 },
                 "category": {
                     "type": "string"
+                },
+                "exempt": {
+                    "type": "boolean"
                 },
                 "expiration": {
                     "type": "string"
@@ -8349,9 +8351,6 @@
         },
         "updateUINOverrideRequest": {
             "type": "object",
-            "required": [
-                "interval"
-            ],
             "properties": {
                 "activation": {
                     "type": "string"
@@ -8361,6 +8360,9 @@
                 },
                 "category": {
                     "type": "string"
+                },
+                "exempt": {
+                    "type": "boolean"
                 },
                 "expiration": {
                     "type": "string"

@@ -1011,7 +1011,7 @@ func (app *Application) getUINOverrides(uin *string, sort *string) ([]*model.UIN
 	return uinOverrides, nil
 }
 
-func (app *Application) createUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
+func (app *Application) createUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
 	uinOverride, err := app.storage.CreateUINOverride(uin, exempt, interval, category, activation, expiration)
 	if err != nil {
 		return nil, err
@@ -1026,7 +1026,7 @@ func (app *Application) createUINOverride(current model.User, group string, audi
 	return uinOverride, nil
 }
 
-func (app *Application) updateUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
+func (app *Application) updateUINOverride(current model.User, group string, audit *string, uin string, exempt *bool, interval *int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
 	result, err := app.storage.UpdateUINOverride(uin, exempt, interval, category, activation, expiration)
 	if err != nil {
 		return nil, err

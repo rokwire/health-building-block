@@ -4197,7 +4197,7 @@ type createUINOverrideRequest struct {
 	Audit      *string    `json:"audit"`
 	UIN        string     `json:"uin" validate:"required"`
 	Exempt     *bool      `json:"exempt"`
-	Interval   int        `json:"interval" validate:"required"`
+	Interval   *int       `json:"interval"`
 	Category   *string    `json:"category"`
 	Activation *time.Time `json:"activation"`
 	Expiration *time.Time `json:"expiration"`
@@ -4269,7 +4269,7 @@ func (h AdminApisHandler) CreateUINOverride(current model.User, group string, w 
 type updateUINOverrideRequest struct {
 	Audit      *string    `json:"audit"`
 	Exempt     *bool      `json:"exempt"`
-	Interval   int        `json:"interval" validate:"required"`
+	Interval   *int       `json:"interval"`
 	Category   *string    `json:"category"`
 	Activation *time.Time `json:"activation"`
 	Expiration *time.Time `json:"expiration"`

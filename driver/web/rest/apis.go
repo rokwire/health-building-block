@@ -454,7 +454,7 @@ func (h ApisHandler) CreateExtUINOverrides(w http.ResponseWriter, r *http.Reques
 	activation := requestData.Activation
 	expiration := requestData.Expiration
 
-	uinOverride, err := h.app.Services.CreateExtUINOverride(uin, interval, category, activation, expiration)
+	uinOverride, err := h.app.Services.CreateExtUINOverride(uin, &interval, category, activation, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -529,7 +529,7 @@ func (h ApisHandler) UpdateExtUINOverride(w http.ResponseWriter, r *http.Request
 	activation := requestData.Activation
 	expiration := requestData.Expiration
 
-	uinOverride, err := h.app.Services.UpdateExtUINOverride(uin, interval, category, activation, expiration)
+	uinOverride, err := h.app.Services.UpdateExtUINOverride(uin, &interval, category, activation, expiration)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -1556,7 +1556,24 @@ func (h ApisHandler) DeleteHistoriesV2(current model.User, account model.Account
 // @Security AppUserAccountAuth
 // @Router /covid19/uin-override [get]
 func (h ApisHandler) GetUINOverride(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
-	uinOverride, err := h.app.Services.GetUINOverride(account)
+	h.getUINOverride(false, current, account, w, r)
+}
+
+//GetUINOverrideV2 gives the uin override for the user
+// @Description Gives the uin override for the user
+// @Tags Covid19
+// @ID GetUINOverrideV2
+// @Accept json
+// @Success 200 {object} model.UINOverride
+// @Security AppUserAuth
+// @Security AppUserAccountAuth
+// @Router /covid19/v2/uin-override [get]
+func (h ApisHandler) GetUINOverrideV2(current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	h.getUINOverride(true, current, account, w, r)
+}
+
+func (h ApisHandler) getUINOverride(v2 bool, current model.User, account model.Account, w http.ResponseWriter, r *http.Request) {
+	uinOverride, err := h.app.Services.GetUINOverride(account, v2)
 	if err != nil {
 		log.Printf("Error on getting the uin override item - %s\n", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

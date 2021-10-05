@@ -376,10 +376,10 @@ func (app *Application) getExposures(timestamp *int64, dateAdded *int64) ([]mode
 	return items, nil
 }
 
-func (app *Application) getUINOverride(account model.Account) (*model.UINOverride, error) {
+func (app *Application) getUINOverride(account model.Account, v2 bool) (*model.UINOverride, error) {
 	//supported only for Shibboleth users - uin
 	uin := account.ExternalID
-	uinOverride, err := app.storage.FindUINOverride(uin)
+	uinOverride, err := app.storage.FindUINOverride(uin, v2)
 	if err != nil {
 		return nil, err
 	}
@@ -406,8 +406,8 @@ func (app *Application) getExtUINOverrides(uin *string, sort *string) ([]*model.
 	return uinOverrides, nil
 }
 
-func (app *Application) createExtUINOverride(uin string, interval int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
-	uinOverride, err := app.storage.CreateUINOverride(uin, interval, category, activation, expiration)
+func (app *Application) createExtUINOverride(uin string, interval *int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
+	uinOverride, err := app.storage.CreateUINOverride(uin, nil, interval, category, activation, expiration)
 	if err != nil {
 		return nil, err
 	}
@@ -415,8 +415,8 @@ func (app *Application) createExtUINOverride(uin string, interval int, category 
 	return uinOverride, nil
 }
 
-func (app *Application) updateExtUINOverride(uin string, interval int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
-	uinOverride, err := app.storage.UpdateUINOverride(uin, interval, category, activation, expiration)
+func (app *Application) updateExtUINOverride(uin string, interval *int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
+	uinOverride, err := app.storage.UpdateUINOverride(uin, nil, interval, category, activation, expiration)
 	if err != nil {
 		return nil, err
 	}

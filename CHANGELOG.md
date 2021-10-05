@@ -5,8 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Add "exempt" changes to UINOverride entity [#152](https://github.com/rokwire/health-building-block/issues/152)
 
 ## [2.12.1] - 2021-09-01
+### Added
 - Add activation time to UINOverride record [#147](https://github.com/rokwire/health-building-block/issues/147)
 
 ## [2.12.0] - 2021-08-04

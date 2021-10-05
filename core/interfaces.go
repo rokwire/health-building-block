@@ -82,7 +82,7 @@ type Services interface {
 	AddTraceReport(items []model.TraceExposure) (int, error)
 	GetExposures(timestamp *int64, dateAdded *int64) ([]model.TraceExposure, error)
 
-	GetUINOverride(account model.Account) (*model.UINOverride, error)
+	GetUINOverride(account model.Account, v2 bool) (*model.UINOverride, error)
 	CreateOrUpdateUINOverride(account model.Account, interval int, category *string, activation *time.Time, expiration *time.Time) error
 
 	GetExtUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)
@@ -260,8 +260,8 @@ func (s *servicesImpl) GetExposures(timestamp *int64, dateAdded *int64) ([]model
 	return s.app.getExposures(timestamp, dateAdded)
 }
 
-func (s *servicesImpl) GetUINOverride(account model.Account) (*model.UINOverride, error) {
-	return s.app.getUINOverride(account)
+func (s *servicesImpl) GetUINOverride(account model.Account, v2 bool) (*model.UINOverride, error) {
+	return s.app.getUINOverride(account, v2)
 }
 
 func (s *servicesImpl) CreateOrUpdateUINOverride(account model.Account, interval int, category *string, activation *time.Time, expiration *time.Time) error {
@@ -975,8 +975,9 @@ type Storage interface {
 	FindExternalUserIDsByTestsOrderNumbers(orderNumbers []string) (map[string]*string, error)
 
 	CreateOrUpdateUINOverride(uin string, interval int, category *string, activation *time.Time, expiration *time.Time) error
-	//finds the uin override for the provided uin. It makes additional check for the expiration because of the mongoDB TTL delay
-	FindUINOverride(uin string) (*model.UINOverride, error)
+	//FindUINOverride finds the uin override for the provided uin.
+	//	v1 only - it makes additional check for the activation and expiration because of the mongoDB TTL delay
+	FindUINOverride(uin string, v2 bool) (*model.UINOverride, error)
 
 	//finds the uin override for the provided uin. If uin is nil then it gives all
 	FindUINOverrides(uin *string, sort *string) ([]*model.UINOverride, error)

@@ -376,10 +376,10 @@ func (app *Application) getExposures(timestamp *int64, dateAdded *int64) ([]mode
 	return items, nil
 }
 
-func (app *Application) getUINOverride(account model.Account) (*model.UINOverride, error) {
+func (app *Application) getUINOverride(account model.Account, v2 bool) (*model.UINOverride, error) {
 	//supported only for Shibboleth users - uin
 	uin := account.ExternalID
-	uinOverride, err := app.storage.FindUINOverride(uin)
+	uinOverride, err := app.storage.FindUINOverride(uin, v2)
 	if err != nil {
 		return nil, err
 	}

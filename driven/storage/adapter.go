@@ -4681,19 +4681,27 @@ func (sa *Adapter) CreateOrUpdateUINOverride(uin string, interval int, category 
 	return nil
 }
 
-//FindUINOverride finds the uin override for the provided uin. It makes additional check for the activation and expiration because of the mongoDB TTL delay
-func (sa *Adapter) FindUINOverride(uin string) (*model.UINOverride, error) {
+//FindUINOverride finds the uin override for the provided uin.
+//	v1 only - it makes additional check for the activation and expiration because of the mongoDB TTL delay
+func (sa *Adapter) FindUINOverride(uin string, v2 bool) (*model.UINOverride, error) {
 	now := time.Now()
-	filter := bson.D{
-		primitive.E{Key: "uin", Value: uin},
-		primitive.E{Key: "$or", Value: []interface{}{
-			bson.D{primitive.E{Key: "expiration", Value: bson.M{"$gte": now}}},
-			bson.D{primitive.E{Key: "expiration", Value: nil}},
-		}},
-		primitive.E{Key: "$or", Value: []interface{}{
-			bson.D{primitive.E{Key: "activation", Value: bson.M{"$lte": now}}},
-			bson.D{primitive.E{Key: "activation", Value: nil}},
-		}},
+
+	var filter bson.D
+	if v2 {
+		filter = bson.D{primitive.E{Key: "uin", Value: uin}}
+	} else {
+		//v1
+		filter = bson.D{
+			primitive.E{Key: "uin", Value: uin},
+			primitive.E{Key: "$or", Value: []interface{}{
+				bson.D{primitive.E{Key: "expiration", Value: bson.M{"$gte": now}}},
+				bson.D{primitive.E{Key: "expiration", Value: nil}},
+			}},
+			primitive.E{Key: "$or", Value: []interface{}{
+				bson.D{primitive.E{Key: "activation", Value: bson.M{"$lte": now}}},
+				bson.D{primitive.E{Key: "activation", Value: nil}},
+			}},
+		}
 	}
 
 	var uinOverrides []*model.UINOverride

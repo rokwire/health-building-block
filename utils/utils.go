@@ -211,6 +211,14 @@ func GetString(v *string) string {
 	return *v
 }
 
+//GetBoolString gives the string value
+func GetBoolString(v *bool) string {
+	if v == nil {
+		return ""
+	}
+	return fmt.Sprintf("%b", v)
+}
+
 //GetTime gives the value which this pointer points. Gives empty string if the pointer is nil
 func GetTime(time *time.Time) string {
 	if time == nil {

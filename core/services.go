@@ -407,7 +407,7 @@ func (app *Application) getExtUINOverrides(uin *string, sort *string) ([]*model.
 }
 
 func (app *Application) createExtUINOverride(uin string, interval int, category *string, activation *time.Time, expiration *time.Time) (*model.UINOverride, error) {
-	uinOverride, err := app.storage.CreateUINOverride(uin, interval, category, activation, expiration)
+	uinOverride, err := app.storage.CreateUINOverride(uin, nil, interval, category, activation, expiration)
 	if err != nil {
 		return nil, err
 	}
@@ -416,7 +416,7 @@ func (app *Application) createExtUINOverride(uin string, interval int, category 
 }
 
 func (app *Application) updateExtUINOverride(uin string, interval int, category *string, activation *time.Time, expiration *time.Time) (*string, error) {
-	uinOverride, err := app.storage.UpdateUINOverride(uin, interval, category, activation, expiration)
+	uinOverride, err := app.storage.UpdateUINOverride(uin, nil, interval, category, activation, expiration)
 	if err != nil {
 		return nil, err
 	}

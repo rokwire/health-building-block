@@ -1,4 +1,4 @@
-# Health building block
+# Health building block (Archived)
 
 Go project to provide rest service for rokwire building block health results.
 
